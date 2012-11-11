@@ -7,7 +7,24 @@ coordsForEvent = ($el, e) ->
   return [t.clientX - p.left, t.clientY - p.top]
 
 
+IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
+$.fn.nodoubletapzoom = ->
+  if (IS_IOS)
+    $(this).bind 'touchstart', (e) ->
+      t2 = e.timeStamp
+      t1 = $(this).data('lastTouch') || t2
+      dt = t2 - t1
+      fingers = e.originalEvent.touches.length;
+      $(this).data('lastTouch', t2);
+      if !dt || dt > 500 || fingers > 1 then return; # not double-tap
+
+      e.preventDefault() # double tap - prevent the zoom
+      # also synthesize click events we just swallowed up
+      $(this).trigger('click').trigger('click')
+
+
 $.fn.literallycanvas = ->
+  @nodoubletapzoom()
 
   $c = @find('canvas')
   c = $c.get(0)
