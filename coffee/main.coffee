@@ -38,7 +38,7 @@ class LC.LiterallyCanvas
       @saveShape()
 
     @isDrawing = true
-    @currentShape = new LC.LinePathShape([quickPoint(x, y)])
+    @currentShape = new LC.LinePathShape(quickPoint(x, y))
     @currentShape.drawLatest(@ctx)
 
   continueDraw: (x, y) ->
@@ -51,8 +51,12 @@ class LC.LiterallyCanvas
     @isDrawing = false
     @currentShape.addPoint(x, y)
     @currentShape.drawLatest(@ctx)
+    @saveShape()
 
   saveShape: ->
+    console.log @currentShape.points
+    @currentShape.points = LC.bspline LC.bspline LC.bspline @currentShape.points
+    console.log @currentShape.points
     @shapes.push(@currentShape)
     @currentShape.drawLatest(@ctx)
     @currentShape = undefined
