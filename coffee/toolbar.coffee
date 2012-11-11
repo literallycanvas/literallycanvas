@@ -87,6 +87,9 @@ class LC.Toolbar
     @$el.find('.tool-pan').tooltip({title: "Pan"}).click (e) =>
       @lc.tool = new LC.Pan()
 
+    @$el.find('.tool-eye-dropper').tooltip({title: "Eye Dropper"}).click (e) =>
+      @lc.tool = new LC.EyeDropper()
+
   initZoom: ->
     @$el.find('.zoom-in-button').tooltip({title: "Zoom in"}).click (e) =>
       @lc.zoom(0.2)
