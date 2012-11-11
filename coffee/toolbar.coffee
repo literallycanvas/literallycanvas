@@ -36,4 +36,10 @@ class LC.Toolbar
 
   initButtons: ->
     @$el.find('.clear-button').click (e) =>
-      @lc.deleteAllShapes()
+      @lc.clear()
+
+    @$el.find('.undo-button').click (e) =>
+      @lc.undo()
+
+    @$el.find('.redo-button').click (e) =>
+      @lc.redo()

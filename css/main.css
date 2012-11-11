@@ -50,6 +50,6 @@ h1 {
   border-bottom: 5px solid rgb(0, 0, 0);
 }
 
-.literally .toolbar .clear-button {
+.literally .toolbar .btn {
   margin-top: -30px; /* why??? */
 }

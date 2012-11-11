@@ -108,9 +108,16 @@ class LC.LiterallyCanvas
       s.draw(@ctx)
     if @isDrawing then @currentShape.draw(@ctx)
 
-  deleteAllShapes: ->
+  clear: ->
+    @undoStack.push(@shapes)
     @shapes = []
     @repaint()
+
+  undo: ->
+    @shapes = _.initial(@shapes)
+    @repaint()
+
+  redo: ->
  
 
 class LC.LinePathShape
