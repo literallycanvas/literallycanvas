@@ -51,6 +51,7 @@ class LC.LiterallyCanvas
     @isDrawing = false
     @currentShape.addPoint(x, y)
     @currentShape.drawLatest(@ctx)
+    @saveShape()
 
   saveShape: ->
     @shapes.push(@currentShape)
