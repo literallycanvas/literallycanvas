@@ -51,8 +51,18 @@ h1 {
 }
 
 .literally .toolbar .action-buttons,
+.literally .toolbar .zoom-buttons,
 .literally .toolbar .tools {
   line-height: 40px;
-  float: left;
   margin-left: 5px;
+}
+
+.literally .toolbar .action-buttons,
+.literally .toolbar .tools {
+  float: left;
+}
+
+.literally .toolbar .zoom-buttons {
+  float: right;
+  margin-right: 5px;
 }
