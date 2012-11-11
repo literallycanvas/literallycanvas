@@ -167,7 +167,6 @@ class LC.LiterallyCanvas
     @ctx.restore()
 
   clear: ->
-    @undoStack.push(@shapes)
     @shapes = []
     @repaint()
 
