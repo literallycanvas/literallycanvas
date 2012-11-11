@@ -63,6 +63,9 @@ class LC.LiterallyCanvas
     @saveShape()
 
   saveShape: ->
+    console.log @currentShape.points
+    @currentShape.points = LC.bspline LC.bspline LC.bspline @currentShape.points
+    console.log @currentShape.points
     @shapes.push(@currentShape)
     @currentShape.drawLatest(@ctx)
     @currentShape = undefined
