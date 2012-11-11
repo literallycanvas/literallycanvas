@@ -1,9 +1,10 @@
 window.LC = window.LC ? {}
 
 
-coordsForEvent = (e) ->
+coordsForEvent = ($el, e) ->
   t = e.originalEvent.changedTouches[0]
-  return [t.clientX, t.clientY]
+  p = $el.position()
+  return [t.clientX - p.left, t.clientY - p.top]
 
 
 $.fn.literallycanvas = ->
@@ -28,7 +29,7 @@ $.fn.literallycanvas = ->
 
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
-    coords = coordsForEvent(e)
+    coords = coordsForEvent($c, e)
     if e.originalEvent.touches.length == 1
       lc.beginDraw(coords[0], coords[1])
     else
@@ -36,19 +37,19 @@ $.fn.literallycanvas = ->
 
   $c.bind 'touchmove', (e) ->
     e.preventDefault()
-    coords = coordsForEvent(e)
+    coords = coordsForEvent($c, e)
     lc.continueDraw(coords[0], coords[1])
 
   $c.bind 'touchend', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    coords = coordsForEvent(e)
+    coords = coordsForEvent($c, e)
     lc.endDraw(coords[0], coords[1])
 
   $c.bind 'touchcancel', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    coords = coordsForEvent(e)
+    coords = coordsForEvent($c, e)
     lc.endDraw(coords[0], coords[1])
 
 
