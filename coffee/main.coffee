@@ -103,7 +103,7 @@ class LC.Pencil extends LC.Tool
     x = x - lc.position.x
     y = y - lc.position.y
     @isDrawing = true
-    @currentShape = new LC.LinePathShape(this)
+    @currentShape = @makeShape()
     @currentShape.addPoint(x, y)
 
   continue: (x, y, lc) ->
@@ -123,6 +123,7 @@ class LC.Pencil extends LC.Tool
     @currentShape = undefined
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, @color)
+  makeShape: -> new LC.LinePathShape(this)
 
 
 class LC.LiterallyCanvas
