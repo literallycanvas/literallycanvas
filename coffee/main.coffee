@@ -48,6 +48,7 @@ class LiterallyCanvas
     @addLine(x, y)
 
   endDraw: (x, y) ->
+    return unless @isDrawing
     @isDrawing = false
     @addLine(x, y)
 
