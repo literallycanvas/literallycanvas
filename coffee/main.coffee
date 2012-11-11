@@ -112,6 +112,12 @@ class LC.Pencil extends LC.Tool
   makeShape: -> new LC.LinePathShape(this)
 
 
+class LC.Eraser extends LC.Pencil
+
+  makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
+  makeShape: -> new LC.EraseLinePathShape(this)
+
+
 class LC.Pan extends LC.Tool
 
   begin: (x, y, lc) ->
@@ -214,6 +220,21 @@ class LC.LinePathShape
     ctx.moveTo(pair[0].x, pair[0].y)
     ctx.lineTo(pair[1].x, pair[1].y)
     ctx.stroke()
+
+
+class LC.EraseLinePathShape extends LC.LinePathShape
+
+  draw: (ctx) ->
+    ctx.save()
+    ctx.globalCompositeOperation = "destination-out"
+    super(ctx)
+    ctx.restore()
+
+  drawLatest: (ctx) ->
+    ctx.save()
+    ctx.globalCompositeOperation = "destination-out"
+    super(ctx)
+    ctx.restore()
 
 
 class LC.Point

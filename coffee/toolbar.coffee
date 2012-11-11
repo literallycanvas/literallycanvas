@@ -80,5 +80,8 @@ class LC.Toolbar
     @$el.find('.tool-pencil').click (e) =>
       @lc.tool = new LC.Pencil()
 
+    @$el.find('.tool-eraser').click (e) =>
+      @lc.tool = new LC.Eraser()
+
     @$el.find('.tool-pan').click (e) =>
       @lc.tool = new LC.Pan()
