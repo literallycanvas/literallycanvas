@@ -49,6 +49,7 @@ class LC.Toolbar
   constructor: (@lc, @$el) ->
     @initColors()
     @initButtons()
+    @initTools()
 
   initColors: ->
     $stroke = @$el.find('.stroke-picker')
@@ -74,3 +75,10 @@ class LC.Toolbar
 
     @$el.find('.redo-button').click (e) =>
       @lc.redo()
+
+  initTools: ->
+    @$el.find('.tool-pencil').click (e) =>
+      @lc.tool = new LC.Pencil()
+
+    @$el.find('.tool-pan').click (e) =>
+      @lc.tool = new LC.Pan()

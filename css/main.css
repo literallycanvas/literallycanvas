@@ -54,7 +54,8 @@ h1 {
   float: left;
 }
 
-.literally .toolbar .action-buttons {
+.literally .toolbar .action-buttons,
+.literally .toolbar .tools {
   line-height: 40px;
   float: left;
   margin-left: 5px;
