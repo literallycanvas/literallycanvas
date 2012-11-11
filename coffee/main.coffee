@@ -15,12 +15,16 @@ $.fn.literallycanvas = ->
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 
   $c.mousedown (e) =>
+    # disable selection while dragging
+    document.onselectstart = -> false
     lc.beginDraw(e.offsetX, e.offsetY)
 
   $c.mousemove (e) =>
     lc.continueDraw(e.offsetX, e.offsetY)
 
   $c.mouseup (e) =>
+    # disable selection while dragging
+    document.onselectstart = -> true
     lc.endDraw(e.offsetX, e.offsetY)
 
   $c.mouseout (e) =>
@@ -103,6 +107,10 @@ class LC.LiterallyCanvas
     _.each @shapes, (s) =>
       s.draw(@ctx)
     if @isDrawing then @currentShape.draw(@ctx)
+
+  deleteAllShapes: ->
+    @shapes = []
+    @repaint()
  
 
 class LC.LinePathShape

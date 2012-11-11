@@ -20,6 +20,7 @@ h1 {
 }
 
 .literally canvas {
+  cursor: default;
   width: 100%;
   height: 400px;
   background-color: blue;
@@ -32,14 +33,23 @@ h1 {
   background-color: rgb(220, 220, 220);
 }
 
-.literally .color-square {
+.literally .toolbar .colors {
+  display: inline-block;
+}
+
+.literally .toolbar .color-square {
+  cursor: pointer;
   width: 40px;
   height: 40px;
   display: inline-block;
 }
 
-.literally .color-square.active {
+.literally .toolbar .color-square.active {
   height: 30px;
   border-top: 5px solid rgb(255, 255, 255);
   border-bottom: 5px solid rgb(0, 0, 0);
+}
+
+.literally .toolbar .clear-button {
+  margin-top: -30px; /* why??? */
 }

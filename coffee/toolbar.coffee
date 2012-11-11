@@ -18,13 +18,22 @@ LC.defaultColors = [
 
 class LC.Toolbar
   constructor: (@lc, @$el) ->
+    @initColors()
+    @initButtons()
+
+  initColors: ->
+    $colorsEl = @$el.find('.colors')
     _.each LC.defaultColors, (c) =>
       $sq = $("
         <div class='color-square'></div>
       ")
       $sq.css('background-color', c)
-      @$el.append($sq)
+      $colorsEl.append($sq)
       $sq.click =>
         @lc.state.strokeColor = c
-        @$el.find('.color-square').removeClass('active')
+        $colorsEl.find('.color-square').removeClass('active')
         $sq.addClass('active')
+
+  initButtons: ->
+    @$el.find('.clear-button').click (e) =>
+      @lc.deleteAllShapes()
