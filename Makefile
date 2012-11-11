@@ -12,5 +12,6 @@ update-gh-pages:
 	git checkout gh-pages -f
 	git merge master -m "Update gh-pages"
 	coffee -o js/gen -c coffee
+	git commit -am "Update js in gh-pages"
 	git push origin gh-pages
 	git checkout master -f
