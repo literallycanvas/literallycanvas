@@ -1,13 +1,20 @@
 window.LC = window.LC ? {}
 
 
+coordsForEvent = (e) ->
+  t = e.originalEvent.changedTouches[0]
+  return [t.clientX, t.clientY]
+
+
 $.fn.literallycanvas = ->
-  lc = new LC.LiterallyCanvas(@find('canvas').get(0))
+  $c = @find('canvas')
+  c = $c.get(0)
+
+  lc = new LC.LiterallyCanvas(c)
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 
-  $c = @find('canvas')
-
   $c.mousedown (e) =>
+    alert 'yes'
     lc.beginDraw(e.offsetX, e.offsetY)
 
   $c.mousemove (e) =>
@@ -18,6 +25,31 @@ $.fn.literallycanvas = ->
 
   $c.mouseout (e) =>
     lc.endDraw(e.offsetX, e.offsetY)
+
+  $c.bind 'touchstart', (e) ->
+    e.preventDefault()
+    coords = coordsForEvent(e)
+    if e.originalEvent.touches.length == 1
+      lc.beginDraw(coords[0], coords[1])
+    else
+      lc.continueDraw(coords[0], coords[1])
+
+  $c.bind 'touchmove', (e) ->
+    e.preventDefault()
+    coords = coordsForEvent(e)
+    lc.continueDraw(coords[0], coords[1])
+
+  $c.bind 'touchend', (e) ->
+    e.preventDefault()
+    return unless e.originalEvent.touches.length == 0
+    coords = coordsForEvent(e)
+    lc.endDraw(coords[0], coords[1])
+
+  $c.bind 'touchcancel', (e) ->
+    e.preventDefault()
+    return unless e.originalEvent.touches.length == 0
+    coords = coordsForEvent(e)
+    lc.endDraw(coords[0], coords[1])
 
 
 class LC.LiterallyCanvasState
