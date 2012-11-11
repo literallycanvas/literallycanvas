@@ -115,13 +115,25 @@ class LC.LinePathShape
 
   draw: (ctx) ->
     return unless @smoothedPoints.length
+    fp = @smoothedPoints[0]
+    lp = _.last(@smoothedPoints)
+
+    _.each [fp, lp], (p) ->
+      ctx.beginPath()
+      ctx.fillStyle = p.color
+      ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.closePath()
+
     ctx.beginPath()
-    ctx.moveTo(@smoothedPoints[0].x, @smoothedPoints[0].y)
+    ctx.moveTo(fp.x, fp.y)
+
     _.each _.rest(@smoothedPoints), (p) ->
       ctx.strokeStyle = p.color
       ctx.lineWidth = p.size
       ctx.lineTo(p.x, p.y)
     ctx.stroke()
+    ctx.closePath()
 
   drawLatest: (ctx) ->
     pair = _.last(@points, 2)
