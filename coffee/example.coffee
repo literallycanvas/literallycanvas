@@ -1,2 +1,2 @@
-$ ->
+$(document).ready ->
   $('.literally').literallycanvas()

@@ -17,15 +17,16 @@
   background-color: blue;
 }
 
-.literally toolbar-bottom {
+.literally .toolbar {
   width: 100%;
-  height: 265px;
-  background-color: red;
+  margin-top: -5px;
+  height: 24px;
+  background-color: rgb(220, 220, 220);
 }
 
 .literally .color-square {
   width: 20px;
   height: 20px;
   display: inline-block;
-  margin-left: 2px;
+  margin: 2px;
 }
