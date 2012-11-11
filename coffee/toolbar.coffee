@@ -77,11 +77,11 @@ class LC.Toolbar
       @lc.redo()
 
   initTools: ->
-    @$el.find('.tool-pencil').click (e) =>
+    @$el.find('.tool-pencil').tooltip({title: "Pencil"}).click (e) =>
       @lc.tool = new LC.Pencil()
 
-    @$el.find('.tool-eraser').click (e) =>
+    @$el.find('.tool-eraser').tooltip({title: "Eraser"}).click (e) =>
       @lc.tool = new LC.Eraser()
 
-    @$el.find('.tool-pan').click (e) =>
+    @$el.find('.tool-pan').tooltip({title: "Pan"}).click (e) =>
       @lc.tool = new LC.Pan()
