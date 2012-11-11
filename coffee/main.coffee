@@ -79,13 +79,13 @@ class LC.LinePathShape
 
   addPoint: (x, y) ->
     @points.push(@lcState.makePoint(x, y))
+    @smoothedPoints = LC.bspline(LC.bspline(LC.bspline(@points)))
 
   draw: (ctx) ->
-    smoothedPoints = LC.bspline(LC.bspline(LC.bspline(@points)))
-    return unless smoothedPoints.length
+    return unless @smoothedPoints.length
     ctx.beginPath()
-    ctx.moveTo(smoothedPoints[0].x, smoothedPoints[0].y)
-    _.each _.rest(smoothedPoints), (p) ->
+    ctx.moveTo(@smoothedPoints[0].x, @smoothedPoints[0].y)
+    _.each _.rest(@smoothedPoints), (p) ->
       ctx.strokeStyle = p.color
       ctx.lineWidth = p.size
       ctx.lineTo(p.x, p.y)
