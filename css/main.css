@@ -29,7 +29,7 @@ h1 {
 .literally .toolbar {
   width: 100%;
   margin-top: -5px;
-  height: 40px;
+  height: 38px;
   background-color: rgb(220, 220, 220);
 }
 
@@ -39,8 +39,8 @@ h1 {
 
 .literally .color-square {
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   margin: 5px;
   margin-right: 0;
   display: inline-block;
@@ -57,7 +57,7 @@ h1 {
 .literally .toolbar .action-buttons,
 .literally .toolbar .zoom-buttons,
 .literally .toolbar .tools {
-  line-height: 40px;
+  line-height: 38px;
   margin-left: 5px;
 }
 
