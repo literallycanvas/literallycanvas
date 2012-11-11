@@ -1,5 +1,9 @@
+window.LC = window.LC ? {}
+
+
 $.fn.literallycanvas = ->
-  lc = new LiterallyCanvas(@find('canvas').get(0))
+  lc = new LC.LiterallyCanvas(@find('canvas').get(0))
+  tb = new LC.Toolbar(lc, @find('.toolbar'))
 
   $c = @find('canvas')
 
@@ -16,12 +20,13 @@ $.fn.literallycanvas = ->
     lc.endDraw(e.offsetX, e.offsetY)
 
 
-quickPoint = (x, y) -> new Point(x, y, 5, 'black')
+quickPoint = (x, y) -> new LC.Point(x, y, 5, 'black')
 
 
-class LiterallyCanvas
+class LC.LiterallyCanvas
 
   constructor: (@canvas) ->
+    @$canvas = $(@canvas)
     @ctx = @canvas.getContext('2d')
     $(@canvas).css('background-color', '#eee')
     @shapes = []
@@ -33,7 +38,7 @@ class LiterallyCanvas
       @saveShape()
 
     @isDrawing = true
-    @currentShape = new LinePathShape([quickPoint(x, y)])
+    @currentShape = new LC.LinePathShape([quickPoint(x, y)])
     @currentShape.drawLatest(@ctx)
 
   continueDraw: (x, y) ->
@@ -56,7 +61,7 @@ class LiterallyCanvas
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
  
 
-class LinePathShape
+class LC.LinePathShape
   constructor: (startPoint) ->
     @points = [startPoint]
 
@@ -80,7 +85,7 @@ class LinePathShape
     ctx.stroke()
 
 
-class Point
+class LC.Point
   constructor: (@x, @y, @size, @color) ->
   lastPoint: -> this
   draw: (ctx) -> console.log 'draw point', @x, @y, @size, @color
