@@ -46,6 +46,10 @@ h1 {
   display: inline-block;
 }
 
+.literally .color-square:last-child {
+  margin-left: 0;
+}
+
 .literally .color-pickers {
   float: left;
 }
