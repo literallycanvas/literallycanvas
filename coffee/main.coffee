@@ -154,8 +154,8 @@ class LC.LiterallyCanvas
 
   clientCoordsToDrawingCoords: (x, y) ->
     {
-      x: x - @position.x,
-      y: y - @position.y,
+      x: x - (@position.x * @scale),
+      y: y - (@position.y * @scale),
     }
 
   begin: (x, y) ->

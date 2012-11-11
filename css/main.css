@@ -1,3 +1,5 @@
+/* example */
+
 body {
   background-color: black;
 }
@@ -5,6 +7,13 @@ body {
 h1 {
   color: white;
 }
+
+.log {
+  color: red;
+  font-family: Monaco;
+}
+
+/* component */
 
 .literally {
   margin: auto;
