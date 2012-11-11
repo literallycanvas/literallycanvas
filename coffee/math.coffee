@@ -26,3 +26,9 @@ mid = (a, b) ->
                       a.y + ((b.y - a.y) / 2),
                       a.size + ((b.size - a.size) / 2),
                       a.color
+
+
+LC.scalePositionScalar = (val, viewportSize, oldScale, newScale) ->
+  oldSize = viewportSize * oldScale
+  newSize = viewportSize * newScale
+  return val + (oldSize - newSize) / 2

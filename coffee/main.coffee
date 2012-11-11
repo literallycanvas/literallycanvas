@@ -163,10 +163,17 @@ class LC.LiterallyCanvas
     @position.y = @position.y - y
 
   zoom: (factor) ->
+    oldScale = @scale
     @scale = @scale + factor
     @scale = Math.max(@scale, 0.2)
     @scale = Math.min(@scale, 4.0)
     @scale = Math.round(@scale*100)/100
+
+    @position.x = LC.scalePositionScalar(
+      @position.x, @canvas.width, oldScale, @scale)
+    @position.y = LC.scalePositionScalar(
+      @position.y, @canvas.height, oldScale, @scale)
+
     @repaint()
 
   repaint: (currentShape = null) ->
