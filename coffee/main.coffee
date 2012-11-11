@@ -8,6 +8,7 @@ coordsForEvent = ($el, e) ->
 
 
 $.fn.literallycanvas = ->
+
   $c = @find('canvas')
   c = $c.get(0)
 
@@ -15,16 +16,14 @@ $.fn.literallycanvas = ->
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 
   $c.mousedown (e) =>
-    # disable selection while dragging
-    document.onselectstart = -> false
+    document.onselectstart = -> false # disable selection while dragging
     lc.beginDraw(e.offsetX, e.offsetY)
 
   $c.mousemove (e) =>
     lc.continueDraw(e.offsetX, e.offsetY)
 
   $c.mouseup (e) =>
-    # disable selection while dragging
-    document.onselectstart = -> true
+    document.onselectstart = -> true # disable selection while dragging
     lc.endDraw(e.offsetX, e.offsetY)
 
   $c.mouseout (e) =>
