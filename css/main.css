@@ -45,8 +45,17 @@ h1 {
   width: 100%;
 }
 
-.literally .toolbar .colors {
-  display: inline-block;
+.literally .toolbar-row-left,
+.literally .toolbar-row-right {
+  margin-bottom: -5px;
+}
+
+.literally .toolbar-row-left {
+  float: left;
+}
+
+.literally .toolbar-row-right {
+  float: right;
 }
 
 .literally .color-square {
@@ -55,11 +64,7 @@ h1 {
   height: 28px;
   margin: 5px;
   margin-right: 0;
-  display: inline-block;
-}
-
-.literally .color-square:last-child {
-  margin-left: 0;
+  float: left;
 }
 
 .literally .color-square:first-child {
@@ -67,7 +72,12 @@ h1 {
 }
 
 .literally .color-pickers {
-  float: left;
+  display: inline-block;
+}
+
+.literally .color-palette {
+  display: inline-block;
+  margin-left: 10px;
 }
 
 .literally .toolbar .action-buttons .clear-button {
@@ -81,13 +91,8 @@ h1 {
   margin-left: 5px;
 }
 
-.literally .toolbar .tools {
-  float: left;
-}
-
 .literally .toolbar .action-buttons,
 .literally .toolbar .zoom-buttons {
-  float: right;
   margin-right: 5px;
 }
 
