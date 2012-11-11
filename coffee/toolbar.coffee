@@ -13,6 +13,7 @@ LC.defaultColors = [
   'rgba(255, 0, 128, 0.9)',
 ]
 
+
 class LC.Toolbar
   constructor: (@lc, @$el) ->
     _.each LC.defaultColors, (c) =>
@@ -21,3 +22,6 @@ class LC.Toolbar
       ")
       sq.css('background-color', c)
       @$el.append(sq)
+      $(sq).click =>
+        console.log c
+        @lc.state.strokeColor = c
