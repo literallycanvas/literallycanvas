@@ -35,11 +35,12 @@ h1 {
   background-color: blue;
 }
 
+/* toolbar structure */
+
 .literally .toolbar {
   width: 100%;
   margin-top: -5px;
 }
-
 .literally .toolbar-row {
   background-color: rgb(220, 220, 220);
   width: 100%;
@@ -58,27 +59,7 @@ h1 {
   float: right;
 }
 
-.literally .color-square {
-  cursor: pointer;
-  width: 28px;
-  height: 28px;
-  margin: 5px;
-  margin-right: 0;
-  float: left;
-}
-
-.literally .color-square:first-child {
-  margin-left: 5px;
-}
-
-.literally .color-pickers {
-  display: inline-block;
-}
-
-.literally .color-palette {
-  display: inline-block;
-  margin-left: 10px;
-}
+/* action/tool buttons */
 
 .literally .toolbar .action-buttons .clear-button {
   margin-right: 15px;
@@ -98,4 +79,49 @@ h1 {
 
 .literally .toolbar .zoom-buttons .zoom-display {
   display: inline;
+}
+
+/* color palette */
+
+.literally .color-pickers {
+  display: inline-block;
+}
+
+.literally .color-palette {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+/* color squares */
+
+.literally .color-square {
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  margin: 5px 0px;
+  float: left;
+  border: 1px solid rgb(150, 150, 150);
+  border-left: none;
+}
+
+.literally .color-square:first-child {
+  margin-left: 5px;
+  border-left: 1px solid rgb(150, 150, 150);
+  -webkit-border-radius: 3px 0px 0px 3px;
+  border-radius: 3px 0px 0px 3px;
+}
+
+.literally .color-square:last-child {
+  -webkit-border-radius: 0px 3px 3px 0px;
+  border-radius: 0px 3px 3px 0px;
+}
+
+.literally .color-square:first-child:last-child {
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.literally .color-square.empty-color-square {
+  line-height: 26px;
+  text-align: center;
 }
