@@ -51,6 +51,14 @@ $.fn.literallycanvas = ->
     coords = coordsForEvent($c, e)
     lc.endDraw(coords[0], coords[1])
 
+  $(document).keydown (e) ->
+    switch e.which
+      when 37 then lc.pan -10, 0
+      when 38 then lc.pan 0, -10
+      when 39 then lc.pan 10, 0
+      when 40 then lc.pan 0, 10
+
+    lc.repaint()
 
 class LC.LiterallyCanvasState
 
@@ -71,12 +79,15 @@ class LC.LiterallyCanvas
     $(@canvas).css('background-color', '#eee')
     @shapes = []
     @isDrawing = false
+    @position = {x: 0, y: 0}
     @repaint()
 
   beginDraw: (x, y) ->
     if @isDrawing
       @saveShape()
-
+    
+    x = x - @position.x
+    y = y - @position.y
     @isDrawing = true
     @currentShape = new LC.LinePathShape(@state)
     @currentShape.addPoint(x, y)
@@ -84,11 +95,15 @@ class LC.LiterallyCanvas
 
   continueDraw: (x, y) ->
     return unless @isDrawing
+    x = x - @position.x
+    y = y - @position.y
     @currentShape.addPoint(x, y)
     @repaint()
 
   endDraw: (x, y) ->
     return unless @isDrawing
+    x = x - @position.x
+    y = y - @position.y
     @isDrawing = false
     @currentShape.addPoint(x, y)
     @saveShape()
@@ -98,12 +113,20 @@ class LC.LiterallyCanvas
     @currentShape = undefined
     @repaint()
 
+  pan: (x, y) ->
+    # Subtract because we are moving the viewport
+    @position.x = @position.x - x
+    @position.y = @position.y - y
+
   repaint: ->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+    @ctx.save()
+    @ctx.translate @position.x, @position.y
     _.each @shapes, (s) =>
       s.draw(@ctx)
     if @isDrawing then @currentShape.draw(@ctx)
- 
+    @ctx.restore()
+
 
 class LC.LinePathShape
   constructor: (@lcState) ->
