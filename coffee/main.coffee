@@ -53,21 +53,16 @@ class LC.LiterallyCanvas
   continueDraw: (x, y) ->
     return unless @isDrawing
     @currentShape.addPoint(x, y)
-    @currentShape.drawLatest(@ctx)
+    @repaint()
 
   endDraw: (x, y) ->
     return unless @isDrawing
     @isDrawing = false
     @currentShape.addPoint(x, y)
-    @currentShape.drawLatest(@ctx)
     @saveShape()
 
   saveShape: ->
-    console.log @currentShape.points
-    @currentShape.points = LC.bspline LC.bspline LC.bspline @currentShape.points
-    console.log @currentShape.points
     @shapes.push(@currentShape)
-    @currentShape.drawLatest(@ctx)
     @currentShape = undefined
     @repaint()
 
@@ -75,6 +70,7 @@ class LC.LiterallyCanvas
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     _.each @shapes, (s) =>
       s.draw(@ctx)
+    if @isDrawing then @currentShape.draw(@ctx)
  
 
 class LC.LinePathShape
@@ -85,9 +81,11 @@ class LC.LinePathShape
     @points.push(@lcState.makePoint(x, y))
 
   draw: (ctx) ->
+    smoothedPoints = LC.bspline(LC.bspline(LC.bspline(@points)))
+    return unless smoothedPoints.length
     ctx.beginPath()
-    ctx.moveTo(@points[0].x, @points[0].y)
-    _.each _.rest(@points), (p) ->
+    ctx.moveTo(smoothedPoints[0].x, smoothedPoints[0].y)
+    _.each _.rest(smoothedPoints), (p) ->
       ctx.strokeStyle = p.color
       ctx.lineWidth = p.size
       ctx.lineTo(p.x, p.y)
