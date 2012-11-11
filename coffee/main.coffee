@@ -152,15 +152,24 @@ class LC.LiterallyCanvas
     @secondaryColor = '#fff'
     @repaint()
 
+  clientCoordsToDrawingCoords: (x, y) ->
+    {
+      x: x - @position.x,
+      y: y - @position.y,
+    }
+
   begin: (x, y) ->
-    @tool.begin x - @position.x, y - @position.y, this
+    newPos = @clientCoordsToDrawingCoords(x, y)
+    @tool.begin newPos.x, newPos.y, this
     @isDragging = true
 
   continue: (x, y) ->
-    @tool.continue x - @position.x, y - @position.y, this if @isDragging
+    newPos = @clientCoordsToDrawingCoords(x, y)
+    @tool.continue newPos.x, newPos.y, this if @isDragging
 
   end: (x, y) ->
-    @tool.end x - @position.x, y - @position.y, this if @isDragging
+    newPos = @clientCoordsToDrawingCoords(x, y)
+    @tool.end newPos.x, newPos.y, this if @isDragging
     @isDragging = false
 
   saveShape: (shape) ->
