@@ -85,3 +85,6 @@ class LC.Toolbar
 
     @$el.find('.tool-pan').tooltip({title: "Pan"}).click (e) =>
       @lc.tool = new LC.Pan()
+
+    @$el.find('.tool-eye-dropper').tooltip({title: "Eye Dropper"}).click (e) =>
+      @lc.tool = new LC.EyeDropper()

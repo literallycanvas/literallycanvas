@@ -127,6 +127,16 @@ class LC.Pan extends LC.Tool
     lc.pan @start.x - x, @start.y - y
     lc.repaint()
 
+
+class LC.EyeDropper extends LC.Tool
+
+  begin: (x, y, lc) ->
+    lc.primaryColor = lc.getPixel(x, y)
+
+  continue: (x, y, lc) ->
+    lc.primaryColor = lc.getPixel(x, y)
+
+
 class LC.LiterallyCanvas
 
   constructor: (@canvas) ->
@@ -179,7 +189,11 @@ class LC.LiterallyCanvas
     @repaint()
 
   redo: ->
- 
+
+  getPixel: (x, y) ->
+    pixel = @ctx.getImageData(x + @position.x, y + @position.y, 1, 1).data
+    return "rgb(" + pixel[0] + "," + pixel[1] + ","  + pixel[2] + ")"
+
 
 class LC.LinePathShape
   constructor: (@tool) ->
