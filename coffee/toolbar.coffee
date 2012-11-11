@@ -30,7 +30,7 @@ class LC.Toolbar
       $sq.css('background-color', c)
       $colorsEl.append($sq)
       $sq.click =>
-        @lc.state.strokeColor = c
+        @lc.primaryColor = c
         $colorsEl.find('.color-square').removeClass('active')
         $sq.addClass('active')
 
