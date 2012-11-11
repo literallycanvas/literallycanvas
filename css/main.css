@@ -1,6 +1,17 @@
 .literally {
-  position: absolute:
+  margin: auto;
   width: 100%;
-  height: 100%;
   background-color: rgb(200, 200, 200);
+}
+
+.literally canvas {
+  width: 100%;
+  height: 600px;
+  background-color: blue;
+}
+
+.literally toolbar-bottom {
+  width: 100%;
+  height: 265px;
+  background-color: red;
 }
