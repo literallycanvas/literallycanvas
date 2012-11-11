@@ -31,14 +31,18 @@ h1 {
 .literally canvas {
   cursor: default;
   width: 100%;
-  height: 400px;
+  height: 350px;
   background-color: blue;
 }
 
 .literally .toolbar {
   width: 100%;
   margin-top: -5px;
+}
+
+.literally .toolbar-row {
   background-color: rgb(220, 220, 220);
+  width: 100%;
 }
 
 .literally .toolbar .colors {
@@ -58,8 +62,16 @@ h1 {
   margin-left: 0;
 }
 
+.literally .color-square:first-child {
+  margin-left: 5px;
+}
+
 .literally .color-pickers {
   float: left;
+}
+
+.literally .toolbar .action-buttons .clear-button {
+  margin-right: 15px;
 }
 
 .literally .toolbar .action-buttons,
@@ -69,11 +81,11 @@ h1 {
   margin-left: 5px;
 }
 
-.literally .toolbar .action-buttons,
 .literally .toolbar .tools {
   float: left;
 }
 
+.literally .toolbar .action-buttons,
 .literally .toolbar .zoom-buttons {
   float: right;
   margin-right: 5px;
