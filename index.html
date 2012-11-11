@@ -11,14 +11,21 @@
       <div class="literally">
         <canvas width="940" height="400"></canvas>
         <div class="toolbar">
-          <div class="colors"></div>
-          <div class="btn btn-warning undo-button">Undo</div>
-          <div class="btn btn-warning redo-button">Redo</div>
-          <div class="btn btn-danger clear-button">Clear</div>
+          <div class="color-pickers">
+            <div class="color-square stroke-picker">&nbsp;</div>
+            <div class="color-square fill-picker">&nbsp;</div>
+          </div>
+          <div class="action-buttons">
+            <div class="btn btn-warning undo-button">Undo</div>
+            <div class="btn btn-warning redo-button">Redo</div>
+            <div class="btn btn-danger clear-button">Clear</div>
+          </div>
+          <div class="clearfix"></div>
         </div>
       </div>
     </div>
     <script src="js/jquery-1.8.2.js"></script>
+    <script src="js/bootstrap.js"></script>
     <script src="js/underscore-1.4.2.js"></script>
     <script src="js/gen/math.js"></script>
     <script src="js/gen/main.js"></script>
