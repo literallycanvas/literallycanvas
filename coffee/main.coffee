@@ -28,61 +28,59 @@ class LiterallyCanvas
     @isDrawing = false
     @repaint()
 
-  addLine: (x, y) ->
-    newLine = new Line(
-      _.last(@currentShapeGroup.shapes).lastPoint(),
-      quickPoint(x, y))
-    @currentShapeGroup.shapes.push(newLine)
-    @currentShapeGroup.drawLatest(@ctx)
-
   beginDraw: (x, y) ->
     if @isDrawing
       @saveShape()
 
     @isDrawing = true
-    @currentShapeGroup = new ShapeGroup([quickPoint(x, y)])
-    @currentShapeGroup.drawLatest(@ctx)
+    @currentShape = new LinePathShape([quickPoint(x, y)])
+    @currentShape.drawLatest(@ctx)
 
   continueDraw: (x, y) ->
     return unless @isDrawing
-    @addLine(x, y)
+    @currentShape.addPoint(x, y)
+    @currentShape.drawLatest(@ctx)
 
   endDraw: (x, y) ->
     return unless @isDrawing
     @isDrawing = false
-    @addLine(x, y)
+    @currentShape.addPoint(x, y)
+    @currentShape.drawLatest(@ctx)
 
   saveShape: ->
-    @shapes.push(@currentShapeGroup)
-    @currentShapeGroup.drawLatest(@ctx)
-    @currentShapeGroup = undefined
+    @shapes.push(@currentShape)
+    @currentShape.drawLatest(@ctx)
+    @currentShape = undefined
 
   repaint: ->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
  
 
-class ShapeGroup
-  constructor: (@shapes = []) ->
+class LinePathShape
+  constructor: (startPoint) ->
+    @points = [startPoint]
+
+  addPoint: (x, y) ->
+    @points.push(quickPoint(x, y))
+
   draw: (ctx) ->
-    _.each @shapes, (shape) ->
-      shape.draw(ctx)
+    ctx.beginPath()
+    ctx.moveTo(@points[0].x, @points[0].y)
+    _.each _.rest(@points), (p) ->
+      ctx.lineWidth = p.size
+      ctx.lineTo(p.x, p.y)
+    ctx.stroke()
 
   drawLatest: (ctx) ->
-    _.last(@shapes).draw(ctx)
+    pair = _.last(@points, 2)
+    ctx.beginPath()
+    ctx.lineWidth = pair[1].size
+    ctx.moveTo(pair[0].x, pair[0].y)
+    ctx.lineTo(pair[1].x, pair[1].y)
+    ctx.stroke()
 
 
 class Point
   constructor: (@x, @y, @size, @color) ->
   lastPoint: -> this
   draw: (ctx) -> console.log 'draw point', @x, @y, @size, @color
-
-
-class Line
-  constructor: (@start, @end) ->
-  lastPoint: -> @end
-  draw: (ctx) ->
-    ctx.lineWidth = @start.size
-    ctx.beginPath()
-    ctx.moveTo(@start.x, @start.y)
-    ctx.lineTo(@end.x, @end.y)
-    ctx.stroke()
