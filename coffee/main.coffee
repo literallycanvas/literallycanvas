@@ -95,29 +95,15 @@ class LC.Pencil extends LC.Tool
     @strokeWidth = 5
 
   begin: (x, y, lc) ->
-    if @isDrawing
-      @saveShape()
-
     @color = lc.primaryColor
-    
-    x = x - lc.position.x
-    y = y - lc.position.y
-    @isDrawing = true
     @currentShape = @makeShape()
     @currentShape.addPoint(x, y)
 
   continue: (x, y, lc) ->
-    return unless @isDrawing
-    x = x - lc.position.x
-    y = y - lc.position.y
     @currentShape.addPoint(x, y)
     lc.repaint(@currentShape)
 
   end: (x, y, lc) ->
-    return unless @isDrawing
-    x = x - lc.position.x
-    y = y - lc.position.y
-    @isDrawing = false
     @currentShape.addPoint(x, y)
     lc.saveShape(@currentShape)
     @currentShape = undefined
@@ -133,7 +119,7 @@ class LC.LiterallyCanvas
     @ctx = @canvas.getContext('2d')
     $(@canvas).css('background-color', '#eee')
     @shapes = []
-    @isDrawing = false
+    @isDragging = false
     @position = {x: 0, y: 0}
     @tool = new LC.Pencil
     @primaryColor = '#000'
@@ -141,13 +127,15 @@ class LC.LiterallyCanvas
     @repaint()
 
   begin: (x, y) ->
-    @tool.begin x, y, this
+    @tool.begin x - @position.x, y - @position.y, this
+    @isDragging = true
 
   continue: (x, y) ->
-    @tool.continue x, y, this
+    @tool.continue x - @position.x, y - @position.y, this if @isDragging
 
   end: (x, y) ->
-    @tool.end x, y, this
+    @tool.end x - @position.x, y - @position.y, this if @isDragging
+    @isDragging = false
 
   saveShape: (shape) ->
     @shapes.push(shape)
