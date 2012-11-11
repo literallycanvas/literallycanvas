@@ -38,7 +38,7 @@ class LC.LiterallyCanvas
       @saveShape()
 
     @isDrawing = true
-    @currentShape = new LC.LinePathShape([quickPoint(x, y)])
+    @currentShape = new LC.LinePathShape(quickPoint(x, y))
     @currentShape.drawLatest(@ctx)
 
   continueDraw: (x, y) ->
