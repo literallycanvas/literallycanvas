@@ -34,42 +34,42 @@ $.fn.literallycanvas = ->
 
   $c.mousedown (e) =>
     document.onselectstart = -> false # disable selection while dragging
-    lc.beginDraw(e.offsetX, e.offsetY)
+    lc.begin(e.offsetX, e.offsetY)
 
   $c.mousemove (e) =>
-    lc.continueDraw(e.offsetX, e.offsetY)
+    lc.continue(e.offsetX, e.offsetY)
 
   $c.mouseup (e) =>
     document.onselectstart = -> true # disable selection while dragging
-    lc.endDraw(e.offsetX, e.offsetY)
+    lc.end(e.offsetX, e.offsetY)
 
   $c.mouseout (e) =>
-    lc.endDraw(e.offsetX, e.offsetY)
+    lc.end(e.offsetX, e.offsetY)
 
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
     coords = coordsForEvent($c, e)
     if e.originalEvent.touches.length == 1
-      lc.beginDraw(coords[0], coords[1])
+      lc.begin(coords[0], coords[1])
     else
-      lc.continueDraw(coords[0], coords[1])
+      lc.continue(coords[0], coords[1])
 
   $c.bind 'touchmove', (e) ->
     e.preventDefault()
     coords = coordsForEvent($c, e)
-    lc.continueDraw(coords[0], coords[1])
+    lc.continue(coords[0], coords[1])
 
   $c.bind 'touchend', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
     coords = coordsForEvent($c, e)
-    lc.endDraw(coords[0], coords[1])
+    lc.end(coords[0], coords[1])
 
   $c.bind 'touchcancel', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
     coords = coordsForEvent($c, e)
-    lc.endDraw(coords[0], coords[1])
+    lc.end(coords[0], coords[1])
 
   $(document).keydown (e) ->
     switch e.which
@@ -80,57 +80,76 @@ $.fn.literallycanvas = ->
 
     lc.repaint()
 
-class LC.LiterallyCanvasState
+
+class LC.Tool
+
+  begin: (x, y, lc) ->
+  continue: (x, y, lc) ->
+  end: (x, y, lc) ->
+
+
+class LC.Pencil extends LC.Tool
 
   constructor: ->
-    @strokeColor = 'rgba(0, 0, 0, 0.9)'
+    @isDrawing = false
     @strokeWidth = 5
 
-  makePoint: (x, y) -> new LC.Point(x, y, @strokeWidth, @strokeColor)
+  begin: (x, y, lc) ->
+    if @isDrawing
+      @saveShape()
+
+    @color = lc.primaryColor
+    
+    x = x - lc.position.x
+    y = y - lc.position.y
+    @isDrawing = true
+    @currentShape = new LC.LinePathShape(this)
+    @currentShape.addPoint(x, y)
+
+  continue: (x, y, lc) ->
+    return unless @isDrawing
+    x = x - lc.position.x
+    y = y - lc.position.y
+    @currentShape.addPoint(x, y)
+    lc.repaint(@currentShape)
+
+  end: (x, y, lc) ->
+    return unless @isDrawing
+    x = x - lc.position.x
+    y = y - lc.position.y
+    @isDrawing = false
+    @currentShape.addPoint(x, y)
+    lc.saveShape(@currentShape)
+    @currentShape = undefined
+
+  makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, @color)
 
 
 class LC.LiterallyCanvas
 
   constructor: (@canvas) ->
-    @state = new LC.LiterallyCanvasState()
-
     @$canvas = $(@canvas)
     @ctx = @canvas.getContext('2d')
     $(@canvas).css('background-color', '#eee')
     @shapes = []
     @isDrawing = false
     @position = {x: 0, y: 0}
+    @tool = new LC.Pencil
+    @primaryColor = '#000'
+    @secondaryColor = '#fff'
     @repaint()
 
-  beginDraw: (x, y) ->
-    if @isDrawing
-      @saveShape()
-    
-    x = x - @position.x
-    y = y - @position.y
-    @isDrawing = true
-    @currentShape = new LC.LinePathShape(@state)
-    @currentShape.addPoint(x, y)
-    @currentShape.drawLatest(@ctx)
+  begin: (x, y) ->
+    @tool.begin x, y, this
 
-  continueDraw: (x, y) ->
-    return unless @isDrawing
-    x = x - @position.x
-    y = y - @position.y
-    @currentShape.addPoint(x, y)
-    @repaint()
+  continue: (x, y) ->
+    @tool.continue x, y, this
 
-  endDraw: (x, y) ->
-    return unless @isDrawing
-    x = x - @position.x
-    y = y - @position.y
-    @isDrawing = false
-    @currentShape.addPoint(x, y)
-    @saveShape()
+  end: (x, y) ->
+    @tool.end x, y, this
 
-  saveShape: ->
-    @shapes.push(@currentShape)
-    @currentShape = undefined
+  saveShape: (shape) ->
+    @shapes.push(shape)
     @repaint()
 
   pan: (x, y) ->
@@ -138,13 +157,13 @@ class LC.LiterallyCanvas
     @position.x = @position.x - x
     @position.y = @position.y - y
 
-  repaint: ->
+  repaint: (currentShape) ->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     @ctx.save()
     @ctx.translate @position.x, @position.y
     _.each @shapes, (s) =>
       s.draw(@ctx)
-    if @isDrawing then @currentShape.draw(@ctx)
+    currentShape.draw(@ctx) if currentShape
     @ctx.restore()
 
   clear: ->
@@ -160,11 +179,11 @@ class LC.LiterallyCanvas
  
 
 class LC.LinePathShape
-  constructor: (@lcState) ->
+  constructor: (@tool) ->
     @points = []
 
   addPoint: (x, y) ->
-    @points.push(@lcState.makePoint(x, y))
+    @points.push(@tool.makePoint(x, y))
     @smoothedPoints = LC.bspline(LC.bspline(LC.bspline(@points)))
 
   draw: (ctx) ->

@@ -53,15 +53,14 @@ class LC.Toolbar
   initColors: ->
     $stroke = @$el.find('.stroke-picker')
     $stroke.css('background-color', LC.defaultStrokeColor)
-
-    LC.makeColorPicker $stroke, 'Foreground color', (c) ->
+    LC.makeColorPicker $stroke, 'Foreground color', (c) =>
       $stroke.css('background-color', c)
       $stroke.popover('hide')
       @lc.primaryColor = c
 
     $fill = @$el.find('.fill-picker')
     $fill.css('background-color', LC.defaultFillColor)
-    LC.makeColorPicker $fill, 'Background color', (c) ->
+    LC.makeColorPicker $fill, 'Background color', (c) =>
       $fill.css('background-color', c)
       $fill.popover('hide')
       @lc.secondaryColor = c
