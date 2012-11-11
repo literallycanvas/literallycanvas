@@ -66,3 +66,7 @@ h1 {
   float: right;
   margin-right: 5px;
 }
+
+.literally .toolbar .zoom-buttons .zoom-display {
+  display: inline;
+}

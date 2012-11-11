@@ -136,6 +136,7 @@ class LC.LiterallyCanvas
     @shapes = []
     @isDragging = false
     @position = {x: 0, y: 0}
+    @scale = 1.0
     @tool = new LC.Pencil
     @primaryColor = '#000'
     @secondaryColor = '#fff'
@@ -161,9 +162,17 @@ class LC.LiterallyCanvas
     @position.x = @position.x - x
     @position.y = @position.y - y
 
-  repaint: (currentShape) ->
+  zoom: (factor) ->
+    @scale = @scale + factor
+    @scale = Math.max(@scale, 0.2)
+    @scale = Math.min(@scale, 4.0)
+    @scale = Math.round(@scale*100)/100
+    @repaint()
+
+  repaint: (currentShape = null) ->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     @ctx.save()
+    @ctx.scale @scale, @scale
     @ctx.translate @position.x, @position.y
     _.each @shapes, (s) =>
       s.draw(@ctx)

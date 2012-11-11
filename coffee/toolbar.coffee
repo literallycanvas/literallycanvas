@@ -50,6 +50,7 @@ class LC.Toolbar
     @initColors()
     @initButtons()
     @initTools()
+    @initZoom()
 
   initColors: ->
     $stroke = @$el.find('.stroke-picker')
@@ -85,3 +86,12 @@ class LC.Toolbar
 
     @$el.find('.tool-pan').tooltip({title: "Pan"}).click (e) =>
       @lc.tool = new LC.Pan()
+
+  initZoom: ->
+    @$el.find('.zoom-in-button').tooltip({title: "Zoom in"}).click (e) =>
+      @lc.zoom(0.2)
+      @$el.find('.zoom-display').html(@lc.scale)
+
+    @$el.find('.zoom-out-button').tooltip({title: "Zoom out"}).click (e) =>
+      @lc.zoom(-0.2)
+      @$el.find('.zoom-display').html(@lc.scale)
