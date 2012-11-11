@@ -67,13 +67,13 @@ class LC.Toolbar
       @lc.secondaryColor = c
 
   initButtons: ->
-    @$el.find('.clear-button').click (e) =>
+    @$el.find('.clear-button').tooltip({title: "Clear"}).click (e) =>
       @lc.clear()
 
-    @$el.find('.undo-button').click (e) =>
+    @$el.find('.undo-button').tooltip({title: "Undo"}).click (e) =>
       @lc.undo()
 
-    @$el.find('.redo-button').click (e) =>
+    @$el.find('.redo-button').tooltip({title: "Redo"}).click (e) =>
       @lc.redo()
 
   initTools: ->
