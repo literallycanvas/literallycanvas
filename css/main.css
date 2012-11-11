@@ -1,7 +1,15 @@
+body {
+  background-color: black;
+}
+
+h1 {
+  color: white;
+}
+
 .literally {
   margin: auto;
   width: 100%;
-  background-color: rgb(200, 200, 200);
+  background-color: rgb(255, 255, 255);
 
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -20,13 +28,18 @@
 .literally .toolbar {
   width: 100%;
   margin-top: -5px;
-  height: 24px;
+  height: 40px;
   background-color: rgb(220, 220, 220);
 }
 
 .literally .color-square {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   display: inline-block;
-  margin: 2px;
+}
+
+.literally .color-square.active {
+  height: 30px;
+  border-top: 5px solid rgb(255, 255, 255);
+  border-bottom: 5px solid rgb(0, 0, 0);
 }

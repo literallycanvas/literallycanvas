@@ -15,7 +15,6 @@ $.fn.literallycanvas = ->
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 
   $c.mousedown (e) =>
-    alert 'yes'
     lc.beginDraw(e.offsetX, e.offsetY)
 
   $c.mousemove (e) =>
