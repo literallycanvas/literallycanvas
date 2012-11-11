@@ -26,4 +26,6 @@
 .literally .color-square {
   width: 20px;
   height: 20px;
+  display: inline-block;
+  margin-left: 2px;
 }

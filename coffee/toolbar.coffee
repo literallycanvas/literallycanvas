@@ -15,7 +15,7 @@ LC.defaultColors = [
 
 class LC.Toolbar
   constructor: (@lc, @$el) ->
-    _.each LC.defaultColors, (c) ->
+    _.each LC.defaultColors, (c) =>
       sq = $("
         <div class='color-square'></div>
       ")
