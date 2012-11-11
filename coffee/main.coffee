@@ -56,9 +56,12 @@ class LC.LiterallyCanvas
     @shapes.push(@currentShape)
     @currentShape.drawLatest(@ctx)
     @currentShape = undefined
+    @repaint()
 
   repaint: ->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+    _.each @shapes, (s) =>
+      s.draw(@ctx)
  
 
 class LC.LinePathShape
@@ -78,6 +81,7 @@ class LC.LinePathShape
 
   drawLatest: (ctx) ->
     pair = _.last(@points, 2)
+    return unless pair.length > 1
     ctx.beginPath()
     ctx.lineWidth = pair[1].size
     ctx.moveTo(pair[0].x, pair[0].y)
