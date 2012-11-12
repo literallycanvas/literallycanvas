@@ -51,6 +51,9 @@ class LC.Toolbar
     @lc.$canvas.mousedown ->
       cp.hide()
 
+    @lc.on 'colorChange', (color) ->
+      $stroke.css('background-color', color)
+
   initButtons: ->
     @$el.find('.clear-button').tooltip({title: "Clear"}).click (e) =>
       @lc.clear()
