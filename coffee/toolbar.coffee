@@ -22,14 +22,16 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.makeColorPicker = ($el, title, callback) ->
   $el.data('color', 'rgb(0, 0, 0)')
   cp = $el.colorpicker(format: 'rgb').data('colorpicker')
-  cp.show()
   cp.hide()
+  $el.on 'changeColor', (e) ->
+    callback(e.color.toRGB())
   $el.click (e) ->
-    cp.place()
-    $el.on 'changeColor', (e) ->
-      callback(e.color.toRGB())
-
-  return $el
+    if cp.picker.is(':visible')
+      cp.hide()
+    else
+      cp.show()
+      cp.place()
+  return cp
 
 
 class LC.Toolbar
@@ -42,10 +44,12 @@ class LC.Toolbar
   initColors: ->
     $stroke = @$el.find('.stroke-picker')
     $stroke.css('background-color', LC.defaultStrokeColor)
-    LC.makeColorPicker $stroke, 'Foreground color', (c) =>
+    cp = LC.makeColorPicker $stroke, 'Foreground color', (c) =>
       val = "rgba(#{c.r}, #{c.g}, #{c.b}, 1)"
       $stroke.css('background-color', val)
       @lc.primaryColor = val
+    @lc.$canvas.mousedown ->
+      cp.hide()
 
     @lc.on 'colorChange', (color) ->
       $stroke.css('background-color', color)
