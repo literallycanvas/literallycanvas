@@ -1,4 +1,4 @@
-JS_FILES =  js/jquery-1.8.2.js js/underscore-1.4.2.js js/backbone-0.9.2.js js/bootstrap-just-popovers.js
+JS_FILES =  js/jquery-1.8.2.js js/underscore-1.4.2.js js/bootstrap-just-popovers.js
 
 watch-js:
 	watch -n 2 make js-dev
