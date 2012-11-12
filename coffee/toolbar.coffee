@@ -50,6 +50,8 @@ class LC.Toolbar
       @lc.primaryColor = val
     @lc.$canvas.mousedown ->
       cp.hide()
+    @lc.$canvas.on 'touchstart', ->
+      cp.hide()
 
     @lc.on 'colorChange', (color) ->
       $stroke.css('background-color', color)

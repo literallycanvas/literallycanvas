@@ -18,6 +18,16 @@
 # ========================================================= 
 size = 200
 
+
+positionForEvent = (e) ->
+  if typeof e.pageX == "undefined"
+    if typeof e.originalEvent == "undefined"
+      return null
+    return e.originalEvent.changedTouches[0]
+  else
+    return e
+
+
 class Color
   constructor: (val) ->
     @value =
@@ -116,7 +126,9 @@ class Colorpicker
     @format = CPGlobal.translateFormats[format]
     @isInput = @element.is("input")
     @component = (if @element.is(".color") then @element.find(".add-on") else false)
-    @picker = $(CPGlobal.template).appendTo("body").on("mousedown", $.proxy(@mousedown, this))
+    @picker = $(CPGlobal.template).appendTo("body")
+    @picker.on("mousedown", $.proxy(@mousedown, this))
+    @picker.on("touchstart", $.proxy(@mousedown, this))
     if @isInput
       @element.on
         focus: $.proxy(@show, this)
@@ -204,11 +216,12 @@ class Colorpicker
 
   pointer: null
   slider: null
+
   mousedown: (e) ->
     e.stopPropagation()
     e.preventDefault()
     target = $(e.target)
-    
+
     #detect the slider and set the limits and callbacks
     zone = target.closest("div")
     unless zone.is(".colorpicker")
@@ -221,28 +234,51 @@ class Colorpicker
       else
         return false
       offset = zone.offset()
-      
+
+      p = positionForEvent(e)
+
       #reference to knob's style
       @slider.knob = zone.find("i")[0].style
-      @slider.left = e.pageX - offset.left
-      @slider.top = e.pageY - offset.top
+      @slider.left = p.pageX - offset.left
+      @slider.top = p.pageY - offset.top
       @pointer =
-        left: e.pageX
-        top: e.pageY
+        left: p.pageX
+        top: p.pageY
 
-      
       #trigger mousemove to move the knob to the current position
-      $(document).on(
+      $(@picker).on(
         mousemove: $.proxy(@mousemove, this)
         mouseup: $.proxy(@mouseup, this)
+        touchmove: $.proxy(@mousemove, this)
+        touchend: $.proxy(@mouseup, this)
+        touchcancel: $.proxy(@mouseup, this)
       ).trigger "mousemove"
     false
 
   mousemove: (e) ->
     e.stopPropagation()
     e.preventDefault()
-    left = Math.max(0, Math.min(@slider.maxLeft, @slider.left + ((e.pageX or @pointer.left) - @pointer.left)))
-    top = Math.max(0, Math.min(@slider.maxTop, @slider.top + ((e.pageY or @pointer.top) - @pointer.top)))
+
+    p = positionForEvent(e)
+    x = if p then p.pageX else @pointer.left
+    y = if p then p.pageY else @pointer.top
+
+    left = Math.max(
+      0,
+      Math.min(
+        @slider.maxLeft,
+        @slider.left + ((p.pageX or @pointer.left) - @pointer.left)
+      )
+    )
+
+    top = Math.max(
+      0,
+      Math.min(
+        @slider.maxTop,
+        @slider.top + ((p.pageY or @pointer.top) - @pointer.top)
+      )
+    )
+
     @slider.knob.left = left + "px"
     @slider.knob.top = top + "px"
     @color[@slider.callLeft].call @color, left / size  if @slider.callLeft
