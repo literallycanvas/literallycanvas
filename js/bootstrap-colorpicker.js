@@ -148,14 +148,6 @@
 				'focus': $.proxy(this.show, this),
 				'keyup': $.proxy(this.update, this)
 			});
-		} else if (this.component){
-			this.component.on({
-				'click': $.proxy(this.show, this)
-			});
-		} else {
-			this.element.on({
-				'click': $.proxy(this.show, this)
-			});
 		}
 		if (format === 'rgba' || format === 'hsla') {
 			this.picker.addClass('alpha');
@@ -187,9 +179,6 @@
 					e.preventDefault();
 				}
 			}
-			$(document).on({
-				'mousedown': $.proxy(this.hide, this)
-			});
 			this.element.trigger({
 				type: 'show',
 				color: this.color
@@ -222,9 +211,6 @@
 			this.picker.hide();
 			$(window).off('resize', this.place);
 			if (!this.isInput) {
-				$(document).off({
-					'mousedown': this.hide
-				});
 				if (this.component){
 					this.element.find('input').prop('value', this.format.call(this));
 				}
