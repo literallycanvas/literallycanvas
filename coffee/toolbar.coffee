@@ -47,7 +47,7 @@ class LC.Toolbar
     LC.makeColorPicker $stroke, 'Foreground color', (c) =>
       val = "rgba(#{c.r}, #{c.g}, #{c.b}, 1)"
       $stroke.css('background-color', val)
-      @lc.primaryColor = c
+      @lc.primaryColor = val
 
   initButtons: ->
     @$el.find('.clear-button').tooltip({title: "Clear"}).click (e) =>

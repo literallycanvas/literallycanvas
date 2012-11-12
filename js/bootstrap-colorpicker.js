@@ -237,9 +237,10 @@
 		},
 		
 		place: function(){
-			var offset = this.component ? this.component.offset() : this.element.offset();
+      var thing = this.component ? this.component : this.element;
+			var offset = thing.offset();
 			this.picker.css({
-				top: offset.top + this.height,
+				top: offset.top - (thing.height() + this.picker.height()),
 				left: offset.left
 			});
 		},
