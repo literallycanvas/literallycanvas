@@ -67,6 +67,9 @@ class LC.Toolbar
       $fill.popover('hide')
       @lc.secondaryColor = c
 
+    @lc.on 'colorChange', (color) ->
+      $stroke.css('background-color', color)
+
   initButtons: ->
     @$el.find('.clear-button').tooltip({title: "Clear"}).click (e) =>
       @lc.clear()

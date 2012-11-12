@@ -132,6 +132,7 @@ class LC.EyeDropper extends LC.Tool
 
   begin: (x, y, lc) ->
     lc.primaryColor = lc.getPixel(x, y)
+    lc.trigger 'colorChange', lc.primaryColor
 
   continue: (x, y, lc) ->
     lc.primaryColor = lc.getPixel(x, y)
@@ -151,6 +152,15 @@ class LC.LiterallyCanvas
     @primaryColor = '#000'
     @secondaryColor = '#fff'
     @repaint()
+
+  trigger: (name, data) ->
+    @canvas.dispatchEvent new CustomEvent(name, {
+      detail: data
+    })
+
+  on: (name, fn) ->
+    @canvas.addEventListener name, (e) ->
+      fn e.detail
 
   clientCoordsToDrawingCoords: (x, y) ->
     {
