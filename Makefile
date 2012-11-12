@@ -1,8 +1,14 @@
 watch-coffee:
-	coffee -w -o js/gen -c coffee
+	coffee -w -o js/coffee -c coffee
 
-js:
-	coffee -o js/gen -c coffee
+coffee:
+	coffee -o js/coffee -c coffee
+
+js-dev: coffee
+	uglifyjs2 js/coffee/* js/*.js -o js/gen/packed.js
+
+js-prod: coffee
+	uglifyjs2 js/coffee/* js/*.js -o js/gen/packed.js --compress
 
 serve:
 	python -m SimpleHTTPServer 8000 .
