@@ -18,6 +18,8 @@
  * ========================================================= */
  
 !function( $ ) {
+
+  var size = 200;
 	
 	// Color object
 	
@@ -197,18 +199,18 @@
 		update: function(){
 			this.color = new Color(this.isInput ? this.element.prop('value') : this.element.data('color'));
 			this.picker.find('i')
-				.eq(0).css({left: this.color.value.s*100, top: 100 - this.color.value.b*100}).end()
-				.eq(1).css('top', 100 * (1 - this.color.value.h)).end()
-				.eq(2).css('top', 100 * (1 - this.color.value.a));
+				.eq(0).css({left: this.color.value.s*size, top: size - this.color.value.b*size}).end()
+				.eq(1).css('top', size * (1 - this.color.value.h)).end()
+				.eq(2).css('top', size * (1 - this.color.value.a));
 			this.previewColor();
 		},
 		
 		setValue: function(newColor) {
 			this.color = new Color(newColor);
 			this.picker.find('i')
-				.eq(0).css({left: this.color.value.s*100, top: 100 - this.color.value.b*100}).end()
-				.eq(1).css('top', 100 * (1 - this.color.value.h)).end()
-				.eq(2).css('top', 100 * (1 - this.color.value.a));
+				.eq(0).css({left: this.color.value.s*size, top: size - this.color.value.b*size}).end()
+				.eq(1).css('top', size * (1 - this.color.value.h)).end()
+				.eq(2).css('top', size * (1 - this.color.value.a));
 			this.previewColor();
 			this.element.trigger({
 				type: 'changeColor',
@@ -322,10 +324,10 @@
 			this.slider.knob.left = left + 'px';
 			this.slider.knob.top = top + 'px';
 			if (this.slider.callLeft) {
-				this.color[this.slider.callLeft].call(this.color, left/100);
+				this.color[this.slider.callLeft].call(this.color, left/size);
 			}
 			if (this.slider.callTop) {
-				this.color[this.slider.callTop].call(this.color, top/100);
+				this.color[this.slider.callTop].call(this.color, top/size);
 			}
 			this.previewColor();
 			this.element.trigger({
@@ -394,22 +396,22 @@
 		
 		sliders: {
 			saturation: {
-				maxLeft: 100,
-				maxTop: 100,
+				maxLeft: size,
+				maxTop: size,
 				callLeft: 'setSaturation',
 				callTop: 'setLightness'
 			},
 			
 			hue: {
 				maxLeft: 0,
-				maxTop: 100,
+				maxTop: size,
 				callLeft: false,
 				callTop: 'setHue'
 			},
 			
 			alpha: {
 				maxLeft: 0,
-				maxTop: 100,
+				maxTop: size,
 				callLeft: false,
 				callTop: 'setAlpha'
 			}
@@ -530,7 +532,7 @@
 				}
 			}
 		],
-		template: '<div class="colorpicker dropdown-menu">'+
+		template: '<div class="colorpicker">'+
 							'<div class="colorpicker-saturation"><i><b></b></i></div>'+
 							'<div class="colorpicker-hue"><i></i></div>'+
 							'<div class="colorpicker-alpha"><i></i></div>'+

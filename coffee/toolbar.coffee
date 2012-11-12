@@ -22,8 +22,6 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.makeColorPicker = ($el, title, callback) ->
   $el.data('color', 'rgb(0, 0, 0)')
   cp = $el.colorpicker(format: 'rgb').data('colorpicker')
-  cp.picker.css('position', 'absolute')
-  cp.picker.css('background-color', 'rgb(150, 150, 150)')
   cp.show()
   cp.hide()
   $el.click (e) ->
