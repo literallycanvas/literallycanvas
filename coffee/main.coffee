@@ -33,13 +33,16 @@ $.fn.literallycanvas = ->
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 
   $c.mousedown (e) =>
+    e.originalEvent.preventDefault();
     document.onselectstart = -> false # disable selection while dragging
     lc.begin(e.offsetX, e.offsetY)
 
   $c.mousemove (e) =>
+    e.originalEvent.preventDefault();
     lc.continue(e.offsetX, e.offsetY)
 
   $c.mouseup (e) =>
+    e.originalEvent.preventDefault();
     document.onselectstart = -> true # disable selection while dragging
     lc.end(e.offsetX, e.offsetY)
 

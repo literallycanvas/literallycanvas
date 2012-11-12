@@ -89,6 +89,7 @@ h1 {
 
 .literally .color-palette {
   display: inline-block;
+  display: none;
   margin-left: 10px;
 }
 
