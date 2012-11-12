@@ -136,6 +136,7 @@ class LC.EyeDropper extends LC.Tool
 
   continue: (x, y, lc) ->
     lc.primaryColor = lc.getPixel(x, y)
+    lc.trigger 'colorChange', lc.primaryColor
 
 
 class LC.LiterallyCanvas
