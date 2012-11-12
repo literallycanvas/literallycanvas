@@ -137,28 +137,6 @@ class LC.EyeDropper extends LC.Tool
     lc.primaryColor = lc.getPixel(x, y)
 
 
-LC.Drawing = Backbone.Model.extend
-
-  initialize: ->
-    console.log()
-
-
-LC.Canvas = Backbone.View.extend
-
-  initialize: ->
-    @ctx = @el.getContext('2d')
-
-  render: ->
-    @ctx.clearRect(0, 0, @el.width, @el.height)
-    @ctx.save()
-    @ctx.translate @model.get('position.x'), @model.get('position.y')
-    @ctx.scale @scale, @scale
-    _.each @shapes, (s) =>
-      s.draw(@ctx)
-    currentShape.draw(@ctx) if currentShape
-    @ctx.restore()
-
-
 class LC.LiterallyCanvas
 
   constructor: (@canvas) ->
