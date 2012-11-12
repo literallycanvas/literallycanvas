@@ -168,6 +168,12 @@ class LC.LiterallyCanvas
       y: (y - @position.y) / @scale,
     }
 
+  drawingCoordsToClientCoords: (x, y) ->
+    {
+      x: x * @scale + @position.x,
+      y: y * @scale + @position.y
+    }
+
   begin: (x, y) ->
     newPos = @clientCoordsToDrawingCoords(x, y)
     @tool.begin newPos.x, newPos.y, this
@@ -226,7 +232,8 @@ class LC.LiterallyCanvas
   redo: ->
 
   getPixel: (x, y) ->
-    pixel = @ctx.getImageData(x + @position.x, y + @position.y, 1, 1).data
+    p = @drawingCoordsToClientCoords x, y
+    pixel = @ctx.getImageData(p.x, p.y, 1, 1).data
     return "rgb(" + pixel[0] + "," + pixel[1] + ","  + pixel[2] + ")"
 
 
