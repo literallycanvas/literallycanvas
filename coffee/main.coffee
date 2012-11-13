@@ -23,6 +23,17 @@ $.fn.nodoubletapzoom = ->
       $(this).trigger('click').trigger('click')
 
 
+position = (e) ->
+  if e.offsetX?
+    {left: e.offsetX, top: e.offsetY}
+  else
+    p = $(e.delegateTarget).position()
+    {
+      left: e.pageX - p.left,
+      top: e.pageY - p.top,
+    }
+
+
 $.fn.literallycanvas = ->
   @nodoubletapzoom()
 
@@ -35,19 +46,24 @@ $.fn.literallycanvas = ->
   $c.mousedown (e) =>
     e.originalEvent.preventDefault();
     document.onselectstart = -> false # disable selection while dragging
-    lc.begin(e.offsetX, e.offsetY)
+    p = position(e)
+    console.log p
+    lc.begin(p.left, p.top)
 
   $c.mousemove (e) =>
     e.originalEvent.preventDefault();
-    lc.continue(e.offsetX, e.offsetY)
+    p = position(e)
+    lc.continue(p.left, p.top)
 
   $c.mouseup (e) =>
     e.originalEvent.preventDefault();
     document.onselectstart = -> true # disable selection while dragging
-    lc.end(e.offsetX, e.offsetY)
+    p = position(e)
+    lc.end(p.left, p.top)
 
   $c.mouseout (e) =>
-    lc.end(e.offsetX, e.offsetY)
+    p = position(e)
+    lc.end(p.left, p.top)
 
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
