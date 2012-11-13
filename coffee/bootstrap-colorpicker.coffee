@@ -267,7 +267,7 @@ class Colorpicker
       0,
       Math.min(
         @slider.maxLeft,
-        @slider.left + ((p.pageX or @pointer.left) - @pointer.left)
+        @slider.left + (x - @pointer.left)
       )
     )
 
@@ -275,7 +275,7 @@ class Colorpicker
       0,
       Math.min(
         @slider.maxTop,
-        @slider.top + ((p.pageY or @pointer.top) - @pointer.top)
+        @slider.top + (y - @pointer.top)
       )
     )
 
