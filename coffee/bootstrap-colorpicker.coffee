@@ -293,7 +293,7 @@ class Colorpicker
   mouseup: (e) ->
     e.stopPropagation()
     e.preventDefault()
-    $(document).off
+    $(@picker).off
       mousemove: @mousemove
       mouseup: @mouseup
 
