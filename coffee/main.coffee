@@ -47,7 +47,6 @@ $.fn.literallycanvas = ->
     e.originalEvent.preventDefault();
     document.onselectstart = -> false # disable selection while dragging
     p = position(e)
-    console.log p
     lc.begin(p.left, p.top)
 
   $c.mousemove (e) =>
