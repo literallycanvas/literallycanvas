@@ -19,7 +19,7 @@ LC.defaultStrokeColor = 'rgba(0, 0, 0, 0.9)'
 LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 
 
-LC.toolbarTemplate = '
+LC.toolbarHTML = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
       <div class="color-square stroke-picker">&nbsp;</div>
@@ -70,7 +70,7 @@ LC.makeColorPicker = ($el, title, callback) ->
 class LC.Toolbar
 
   constructor: (@lc, @$el) ->
-    @$el.append(_.template(LC.toolbarTemplate)())
+    @$el.append(LC.toolbarHTML)
     @initColors()
     @initButtons()
     @initTools()
