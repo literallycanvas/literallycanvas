@@ -1,6 +1,8 @@
 Literally Canvas
 ================
 
+![Screenshot](img/screenshot.png)
+
 ```
 coffee/       Coffeescript source code
 css/          Documentation CSS
