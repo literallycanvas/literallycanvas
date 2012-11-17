@@ -1,8 +1,10 @@
 class LC.Tool
 
-  createOptions: ->
+  # text to be shown in a hypothetical tooltip
   title: undefined
   cssSuffix: undefined
+  buttonContents: -> undefined
+  optionsContents: ->
   begin: (x, y, lc) ->
   continue: (x, y, lc) ->
   end: (x, y, lc) ->
@@ -17,19 +19,19 @@ class LC.Pencil extends LC.Tool
 
   title: "Pencil"
   cssSuffix: "pencil"
-
-  createOptions: ($el) ->
-    @$el = $el
-    @$el.html($('
-      <span class="brush-width-min">1 px</span>
-      <input type="range" min="1" max="50" step="1" value="5">
-      <span class="brush-width-max">50 px</span>
-      <span class="brush-width-val">(5 px)</span>
-    '))
-    brushWidthVal = @$el.find('.brush-width-val')
-    @$el.find('input').change (e) =>
+  buttonContents: -> '<i class="icon-pencil"></i>'
+  optionsContents: ->
+    $el = $("
+      <span class='brush-width-min'>1 px</span>
+      <input type='range' min='1' max='50' step='1' value='#{@strokeWidth}'>
+      <span class='brush-width-max'>50 px</span>
+      <span class='brush-width-val'>(5 px)</span>
+    ")
+    brushWidthVal = $el.find('.brush-width-val')
+    $el.find('input').change (e) =>
       @strokeWidth = e.currentTarget.valueAsNumber
       brushWidthVal.html("(#{@strokeWidth} px)")
+    return $el
 
   begin: (x, y, lc) ->
     @color = lc.primaryColor
@@ -54,8 +56,13 @@ class LC.Pencil extends LC.Tool
 
 class LC.Eraser extends LC.Pencil
 
+  constructor: ->
+    super
+    @strokeWidth = 10
+
   title: "Eraser"
   cssSuffix: "eraser"
+  buttonContents: -> '<i class="icon-edit"></i>'
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
   makeShape: -> new LC.EraseLinePathShape(this)
@@ -65,6 +72,7 @@ class LC.Pan extends LC.Tool
 
   title: "Pan"
   cssSuffix: "pan"
+  buttonContents: -> '<i class="icon-move"></i>'
 
   begin: (x, y, lc) ->
     @start = {x:x, y:y}
@@ -78,6 +86,7 @@ class LC.EyeDropper extends LC.Tool
 
   title: "Eyedropper"
   cssSuffix: "eye-dropper"
+  buttonContents: -> '<i class="icon-eye-open"></i>'
 
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)

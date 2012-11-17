@@ -23,18 +23,8 @@ LC.toolbarTemplate = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
       <div class="color-square stroke-picker">&nbsp;</div>
-      <div class="tools" data-toggle="buttons-radio">
-        <div class="btn tool-pencil active">
-          <i class="icon-pencil"></i></div>
-        <div class="btn tool-eraser">
-          <i class="icon-edit"></i></div>
-        <div class="btn tool-pan">
-          <i class="icon-move"></i></div>
-        <div class="btn tool-eye-dropper">
-          <i class="icon-eye-open"></i></div>
-      </div>
-      <div class="tool-options-container">
-      </div>
+      <div class="tools" data-toggle="buttons-radio"></div>
+      <div class="tool-options-container"></div>
     </div>
 
     <div class="toolbar-row-right">
@@ -115,11 +105,16 @@ class LC.Toolbar
     @tools = [new LC.Pencil, new LC.Eraser, new LC.Pan, new LC.EyeDropper]
     _.each @tools, (t) =>
       optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
+      optsEl.html(t.optionsContents())
       optsEl.hide()
+      t.$el = optsEl
       @$el.find('.tool-options-container').append(optsEl)
-      t.createOptions($(optsEl))
 
-      @$el.find(".tool-#{t.cssSuffix}").click (e) =>
+      buttonEl = $("<div class='btn tool-#{t.cssSuffix}'></div>")
+      buttonEl.html(t.buttonContents())
+      @$el.find('.tools').append(buttonEl)
+
+      buttonEl.click (e) =>
         @selectTool(t)
 
   initZoom: ->
