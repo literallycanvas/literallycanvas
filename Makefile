@@ -10,7 +10,7 @@ clean:
 	rm -f lib/js/literallycanvas.*.js
 
 watch-js:
-	watch -n 2 make js/gen/literallycanvas.fat.js
+	watch -n 2 make lib/js/literallycanvas.fat.js
 
 coffee: coffee/*.coffee
 	coffee -o js/coffee -c coffee
@@ -26,9 +26,6 @@ lib/js/literallycanvas.thin.js: coffee
 
 lib/js/literallycanvas.thin.min.js: coffee
 	uglifyjs2 js/coffee/* -o lib/js/literallycanvas.thin.min.js --compress
-
-js/gen/literallycanvas.fat.js: lib/js/literallycanvas.fat.js
-	cp lib/js/literallycanvas.fat.js js/gen/literallycanvas.fat.js
 
 docs:
 	python gen_html.py index.jinja2 -o index.html -s trac
