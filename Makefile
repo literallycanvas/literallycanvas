@@ -32,7 +32,6 @@ js/gen/literallycanvas.fat.js: literallycanvas.fat.js
 serve:
 	python -m SimpleHTTPServer 8000 .
 
-
 update-gh-pages:
 	git checkout gh-pages -f
 	git merge master -m "Update gh-pages"
