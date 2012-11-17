@@ -43,6 +43,7 @@ coffee/       Coffeescript source code
 css/          Documentation CSS
 js/           Javascript dependencies and temporary Javascript files
 lib/          Things you need to use Literally Canvas on your page
+LICENSE       The license. Spoiler: it's BSD!
 example.html  A very simple example of how to use Literally Canvas
 index.html    Documentation home page
 README.md     You are here
