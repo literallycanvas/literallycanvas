@@ -6,7 +6,14 @@ h1 {
   color: white;
 }
 
-.log {
-  color: red;
-  font-family: Monaco;
+.literally {
+  margin: auto;
+  width: 940px;
+}
+
+.literally canvas {
+  cursor: default;
+  width: 100%;
+  height: 350px;
+  background-color: blue;
 }

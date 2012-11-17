@@ -51,10 +51,10 @@ LC.toolbarTemplate = '
         <div class="btn btn-inverse zoom-out-button">
           <i class="icon-zoom-out icon-white"></i>
         </div>
-        <div class="zoom-display badge badge-inverse">1</div>
         <div class="btn btn-inverse zoom-in-button">
           <i class="icon-zoom-in icon-white"></i>
         </div>
+        <div class="zoom-display badge badge-inverse">1</div>
       </div>
     </div>
     <div class="clearfix"></div>

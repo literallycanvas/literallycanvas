@@ -39,6 +39,8 @@ $.fn.literallycanvas = ->
 
   $c = @find('canvas')
   c = $c.get(0)
+  $c.attr('width', $c.width())
+  $c.attr('height', $c.height())
 
   @append($('<div class="toolbar">'))
 

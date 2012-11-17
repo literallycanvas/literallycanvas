@@ -1,6 +1,4 @@
 .literally {
-  margin: auto;
-  width: 100%;
   background-color: rgb(255, 255, 255);
 
   -webkit-touch-callout: none;
@@ -13,8 +11,6 @@
 
 .literally canvas {
   cursor: default;
-  width: 100%;
-  height: 350px;
   background-color: blue;
 }
 
@@ -43,32 +39,34 @@
 
 /* action/tool buttons */
 
-.literally .toolbar .action-buttons .clear-button {
+.literally .action-buttons .clear-button,
+.literally .action-buttons .redo-button {
   margin-right: 15px;
 }
 
-.literally .toolbar .action-buttons,
-.literally .toolbar .zoom-buttons,
-.literally .toolbar .tool-options,
-.literally .toolbar .tools {
+.literally .action-buttons,
+.literally .zoom-buttons,
+.literally .tool-options,
+.literally .tools {
   line-height: 38px;
   margin-left: 5px;
 }
 
-.literally .toolbar .tools {
+.literally .tools {
   float: left;
 }
 
-.literally .toolbar .action-buttons,
-.literally .toolbar .zoom-buttons {
+.literally .action-buttons,
+.literally .zoom-buttons {
   margin-right: 5px;
 }
 
-.literally .toolbar .zoom-buttons .zoom-display {
-  width: 20px;
+.literally .zoom-display {
+  text-align: center;
+  width: 1.5em;
 }
 
-.tool-options-container {
+.literally .tool-options-container {
   float: left;
 }
 
@@ -87,7 +85,7 @@
   border-radius: 3px;
 }
 
-.literally .color-square.empty-color-square {
+.literally .color-square {
   line-height: 26px;
   text-align: center;
 }
