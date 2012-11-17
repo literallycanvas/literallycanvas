@@ -48,7 +48,6 @@ h1 {
 
 .literally .toolbar-row-left,
 .literally .toolbar-row-right {
-  margin-bottom: -5px;
 }
 
 .literally .toolbar-row-left {
@@ -72,6 +71,10 @@ h1 {
   margin-left: 5px;
 }
 
+.literally .toolbar .tools {
+  float: left;
+}
+
 .literally .toolbar .action-buttons,
 .literally .toolbar .zoom-buttons {
   margin-right: 5px;
@@ -84,13 +87,7 @@ h1 {
 /* color palette */
 
 .literally .color-pickers {
-  display: inline-block;
-}
-
-.literally .color-palette {
-  display: inline-block;
-  display: none;
-  margin-left: 10px;
+  float: left;
 }
 
 /* color squares */

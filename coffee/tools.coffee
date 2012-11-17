@@ -1,15 +1,29 @@
 class LC.Tool
 
+  constructor: (@el) ->
+    @$el = $(@el)
+  title: undefined
+  buttonClass: undefined
   begin: (x, y, lc) ->
   continue: (x, y, lc) ->
   end: (x, y, lc) ->
+  createToolbar: (el) ->
+  removeToolbar: (el) ->
 
 
 class LC.Pencil extends LC.Tool
 
-  constructor: ->
+  constructor: (@el) ->
+    super @el
     @isDrawing = false
     @strokeWidth = 5
+
+    @$el.find('a').click (e) ->
+      e.preventDefault()
+      alert("You clicked me!")
+
+  title: "Pencil"
+  buttonClass: "tool-pencil"
 
   begin: (x, y, lc) ->
     @color = lc.primaryColor
@@ -31,11 +45,16 @@ class LC.Pencil extends LC.Tool
 
 class LC.Eraser extends LC.Pencil
 
+  title: "Eraser"
+  buttonClass: "tool-eraser"
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
   makeShape: -> new LC.EraseLinePathShape(this)
 
 
 class LC.Pan extends LC.Tool
+
+  title: "Pan"
+  buttonClass: "tool-pan"
 
   begin: (x, y, lc) ->
     @start = {x:x, y:y}
@@ -46,6 +65,9 @@ class LC.Pan extends LC.Tool
 
 
 class LC.EyeDropper extends LC.Tool
+
+  title: "Eyedropper"
+  buttonClass: "tool-eyedropper"
 
   begin: (x, y, lc) ->
     lc.primaryColor = lc.getPixel(x, y)

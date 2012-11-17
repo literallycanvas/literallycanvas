@@ -13,7 +13,7 @@ class LC.LiterallyCanvas
     @isDragging = false
     @position = {x: 0, y: 0}
     @scale = 1.0
-    @tool = new LC.Pencil
+    @tool = undefined
     @primaryColor = '#000'
     @secondaryColor = '#fff'
     @repaint()

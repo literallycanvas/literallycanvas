@@ -42,8 +42,9 @@ $.fn.literallycanvas = ->
 
   @append($('<div class="toolbar">'))
 
-  lc = new LC.LiterallyCanvas(c)
+  lc = new LC.LiterallyCanvas(c, @find('.toolbar-options'))
   tb = new LC.Toolbar(lc, @find('.toolbar'))
+  lc.tool = tb.tools[0]
 
   down = false
 

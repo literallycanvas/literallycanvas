@@ -22,6 +22,9 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.toolbarTemplate = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
+      <div class="color-pickers">
+        <div class="color-square stroke-picker">&nbsp;</div>
+      </div>
       <div class="tools" data-toggle="buttons-radio">
         <div class="btn tool-pencil active">
           <i class="icon-pencil"></i></div>
@@ -50,27 +53,9 @@ LC.toolbarTemplate = '
 
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="color-pickers">
-        <div class="color-square stroke-picker">&nbsp;</div>
-      </div>
-      <div class="color-palette">
-        <div class="color-square choosy-color-square"
-          style="background-color: rgb(255, 0, 0);">&nbsp;</div>
-        <div class="color-square choosy-color-square"
-          style="background-color: rgb(0, 255, 0);">&nbsp;</div>
-        <div class="color-square choosy-color-square"
-          style="background-color: rgb(0, 0, 255);">&nbsp;</div>
-        <div class="color-square choosy-color-square"
-          style="background-color: rgb(255, 255, 0);">&nbsp;</div>
-        <div class="color-square choosy-color-square"
-          style="background-color: rgb(0, 255, 255);">&nbsp;</div>
-        <div class="color-square empty-color-square"
-          style="background-color: transparent;">
-          <i class="icon-plus"></i>
-        </div>
+      <div class="tool-options">
       </div>
     </div>
-
     <div class="toolbar-row-right">
       <div class="action-buttons">
         <div class="btn btn-danger clear-button">
@@ -139,17 +124,15 @@ class LC.Toolbar
       @lc.redo()
 
   initTools: ->
-    @$el.find('.tool-pencil').tooltip({title: "Pencil"}).click (e) =>
-      @lc.tool = new LC.Pencil()
-
-    @$el.find('.tool-eraser').tooltip({title: "Eraser"}).click (e) =>
-      @lc.tool = new LC.Eraser()
-
-    @$el.find('.tool-pan').tooltip({title: "Pan"}).click (e) =>
-      @lc.tool = new LC.Pan()
-
-    @$el.find('.tool-eye-dropper').tooltip({title: "Eye Dropper"}).click (e) =>
-      @lc.tool = new LC.EyeDropper()
+    @tools = [
+      new LC.Pencil(@$el.find('.tool-options')),
+      new LC.Eraser(@$el.find('.tool-options')),
+      new LC.Pan(@$el.find('.tool-options')),
+      new LC.EyeDropper(@$el.find('.tool-options')),
+    ]
+    _.each @tools, (t) =>
+      @$el.find(".#{t.buttonClass}").tooltip({title: t.title}).click (e) =>
+        @lc.tool = t
 
   initZoom: ->
     @$el.find('.zoom-in-button').tooltip({title: "Zoom in"}).click (e) =>
