@@ -44,7 +44,7 @@ $.fn.literallycanvas = ->
 
   lc = new LC.LiterallyCanvas(c, @find('.toolbar-options'))
   tb = new LC.Toolbar(lc, @find('.toolbar'))
-  lc.tool = tb.tools[0]
+  tb.selectTool(tb.tools[0])
 
   down = false
 

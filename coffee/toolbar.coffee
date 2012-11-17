@@ -53,7 +53,7 @@ LC.toolbarTemplate = '
 
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="tool-options">
+      <div class="tool-options-container">
       </div>
     </div>
     <div class="toolbar-row-right">
@@ -124,15 +124,15 @@ class LC.Toolbar
       @lc.redo()
 
   initTools: ->
-    @tools = [
-      new LC.Pencil(@$el.find('.tool-options')),
-      new LC.Eraser(@$el.find('.tool-options')),
-      new LC.Pan(@$el.find('.tool-options')),
-      new LC.EyeDropper(@$el.find('.tool-options')),
-    ]
+    @tools = [new LC.Pencil, new LC.Eraser, new LC.Pan, new LC.EyeDropper]
     _.each @tools, (t) =>
-      @$el.find(".#{t.buttonClass}").tooltip({title: t.title}).click (e) =>
-        @lc.tool = t
+      optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
+      optsEl.hide()
+      @$el.find('.tool-options-container').append(optsEl)
+      t.createOptions($(optsEl))
+
+      @$el.find(".tool-#{t.cssSuffix}").tooltip({title: t.title}).click (e) =>
+        @selectTool(t)
 
   initZoom: ->
     @$el.find('.zoom-in-button').tooltip({title: "Zoom in"}).click (e) =>
@@ -142,3 +142,8 @@ class LC.Toolbar
     @$el.find('.zoom-out-button').tooltip({title: "Zoom out"}).click (e) =>
       @lc.zoom(-0.2)
       @$el.find('.zoom-display').html(@lc.scale)
+
+  selectTool: (t) ->
+    @lc.tool = t
+    @$el.find('.tool-options').hide()
+    t.$el.show() if t.$el
