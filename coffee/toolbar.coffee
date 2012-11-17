@@ -69,7 +69,7 @@ LC.makeColorPicker = ($el, title, callback) ->
 
 class LC.Toolbar
 
-  constructor: (@lc, @$el) ->
+  constructor: (@lc, @$el, @toolClasses) ->
     @$el.append(LC.toolbarHTML)
     @initColors()
     @initButtons()
@@ -102,7 +102,7 @@ class LC.Toolbar
       @lc.redo()
 
   initTools: ->
-    @tools = [new LC.Pencil, new LC.Eraser, new LC.Pan, new LC.EyeDropper]
+    @tools = (new ToolClass for ToolClass in @toolClasses)
     _.each @tools, (t) =>
       optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
       optsEl.html(t.optionsContents())

@@ -18,7 +18,7 @@ position = (e) ->
     }
 
 
-initLiterallyCanvas = (el) ->
+initLiterallyCanvas = (el, opts = {}) ->
   $el = $(el)
 
   $c = $el.find('canvas')
@@ -28,7 +28,10 @@ initLiterallyCanvas = (el) ->
   $el.append($('<div class="toolbar">'))
 
   lc = new LC.LiterallyCanvas($c.get(0), $el.find('.toolbar-options'))
-  tb = new LC.Toolbar(lc, $el.find('.toolbar'))
+
+  opts.toolClasses = opts.toolClasses or [
+    LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
+  tb = new LC.Toolbar(lc, $el.find('.toolbar'), opts.toolClasses)
   tb.selectTool(tb.tools[0])
 
   $(window).resize (e) ->
@@ -97,7 +100,7 @@ initLiterallyCanvas = (el) ->
 
 
 IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
-$.fn.literallycanvas = ->
+$.fn.literallycanvas = (opts = {}) ->
   if (IS_IOS)
     @bind 'touchstart', (e) ->
       t2 = e.timeStamp
@@ -112,4 +115,4 @@ $.fn.literallycanvas = ->
       @trigger('click').trigger('click')
 
   @each (ix, el) ->
-    initLiterallyCanvas(el)
+    initLiterallyCanvas(el, opts)
