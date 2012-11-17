@@ -11,6 +11,7 @@
 
 .literally canvas {
   cursor: default;
+  width: 100%;
   background-color: blue;
 }
 
@@ -46,14 +47,10 @@
 
 .literally .action-buttons,
 .literally .zoom-buttons,
-.literally .tool-options,
+.literally .tool-options-container,
 .literally .tools {
   line-height: 38px;
   margin-left: 5px;
-}
-
-.literally .tools {
-  float: left;
 }
 
 .literally .action-buttons,
@@ -66,8 +63,11 @@
   width: 1.5em;
 }
 
+
+.literally .stroke-picker,
+.literally .tools,
 .literally .tool-options-container {
-  float: left;
+  display: inline-block;
 }
 
 /* color palette */
@@ -78,7 +78,6 @@
   height: 28px;
   margin: 5px 0px;
   margin-left: 5px;
-  float: left;
   border: 1px solid rgb(150, 150, 150);
   border-left: none;
   -webkit-border-radius: 3px;

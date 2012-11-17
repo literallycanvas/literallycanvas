@@ -1,0 +1,29 @@
+h1.title {
+  line-height: 60px;
+  text-align: center;
+  font-family: 'Finger Paint', cursive;
+  font-weight: normal;
+}
+
+.title-literally {
+  margin-right: 10px;
+  color: red;
+}
+
+.title-canvas {
+}
+
+.literally {
+  width: 100%;
+}
+
+.literally canvas {
+  height: 200px;
+}
+
+.demo {
+}
+
+.demo .literally .tool-options-container input {
+  width: 70px;
+}

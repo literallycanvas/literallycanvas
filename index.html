@@ -2,19 +2,34 @@
 <html>
   <head>
     <title>Literally Canvas</title>
-    <link href="css/example.css" rel="stylesheet">
+    <link href="css/bootstrap-custom.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+
     <link href="lib/css/colorpicker.css" rel="stylesheet">
     <link href="lib/css/literally.css" rel="stylesheet">
 
     <!-- only needed for buttons and icons -->
     <link href="lib/css/bootstrap-components.css" rel="stylesheet">
+
+    <link href='http://fonts.googleapis.com/css?family=Finger+Paint'
+      rel='stylesheet' type='text/css'>
   </head>
 
   <body>
     <div class="container">
-      <h1>Literally Canvas</h1>
-      <div class="literally"><canvas></canvas></div>
+      <h1 class="title">
+        <span class="title-literally">Literally</span>
+        <span class="title-canvas">&ldquo;Canvas&rdquo;</span>
+      </h1>
+      <div class="row">
+        <div class="demo span6 offset3">
+          <div class="literally"><canvas></canvas></div>
+        </div>
+      </div>
     </div>
     <script src="js/gen/literallycanvas.fat.js"></script>
+    <script type="text/javascript">
+      $('.literally').literallycanvas();
+    </script>
   </body>
 </html>
