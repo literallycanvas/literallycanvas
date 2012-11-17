@@ -105,6 +105,7 @@ LC.makeColorPicker = ($el, title, callback) ->
 
 
 class LC.Toolbar
+
   constructor: (@lc, @$el) ->
     @$el.append(_.template(LC.toolbarTemplate))
     @initColors()

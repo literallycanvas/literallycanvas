@@ -45,26 +45,34 @@ $.fn.literallycanvas = ->
   lc = new LC.LiterallyCanvas(c)
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 
+  down = false
+
   $c.mousedown (e) =>
+    down = true
     e.originalEvent.preventDefault();
     document.onselectstart = -> false # disable selection while dragging
     p = position(e)
     lc.begin(p.left, p.top)
 
   $c.mousemove (e) =>
-    e.originalEvent.preventDefault();
+    e.originalEvent.preventDefault()
     p = position(e)
+    if e.which and not down
+      lc.begin(p.left, p.top)
+      down = true
     lc.continue(p.left, p.top)
 
   $c.mouseup (e) =>
-    e.originalEvent.preventDefault();
+    e.originalEvent.preventDefault()
     document.onselectstart = -> true # disable selection while dragging
     p = position(e)
     lc.end(p.left, p.top)
+    down = false
 
   $c.mouseout (e) =>
     p = position(e)
     lc.end(p.left, p.top)
+    down = false
 
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
