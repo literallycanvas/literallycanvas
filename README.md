@@ -60,3 +60,9 @@ index.html    Documentation home page
 README.md     You are here
 watch_js.sh   Simple watch script for people who don't have make (...)
 ```
+
+Developing
+----------
+
+To build the docs, you need Python 2.7, `jinja2`, and `pygments`. Read the
+`Makefile`.
