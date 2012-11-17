@@ -114,13 +114,13 @@ class LC.Toolbar
       $stroke.css('background-color', color)
 
   initButtons: ->
-    @$el.find('.clear-button').tooltip({title: "Clear"}).click (e) =>
+    @$el.find('.clear-button').click (e) =>
       @lc.clear()
 
-    @$el.find('.undo-button').tooltip({title: "Undo"}).click (e) =>
+    @$el.find('.undo-button').click (e) =>
       @lc.undo()
 
-    @$el.find('.redo-button').tooltip({title: "Redo"}).click (e) =>
+    @$el.find('.redo-button').click (e) =>
       @lc.redo()
 
   initTools: ->
@@ -131,15 +131,15 @@ class LC.Toolbar
       @$el.find('.tool-options-container').append(optsEl)
       t.createOptions($(optsEl))
 
-      @$el.find(".tool-#{t.cssSuffix}").tooltip({title: t.title}).click (e) =>
+      @$el.find(".tool-#{t.cssSuffix}").click (e) =>
         @selectTool(t)
 
   initZoom: ->
-    @$el.find('.zoom-in-button').tooltip({title: "Zoom in"}).click (e) =>
+    @$el.find('.zoom-in-button').click (e) =>
       @lc.zoom(0.2)
       @$el.find('.zoom-display').html(@lc.scale)
 
-    @$el.find('.zoom-out-button').tooltip({title: "Zoom out"}).click (e) =>
+    @$el.find('.zoom-out-button').click (e) =>
       @lc.zoom(-0.2)
       @$el.find('.zoom-display').html(@lc.scale)
 
