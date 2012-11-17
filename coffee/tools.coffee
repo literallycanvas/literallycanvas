@@ -2,12 +2,28 @@ class LC.Tool
 
   # text to be shown in a hypothetical tooltip
   title: undefined
+
+  # suffix of the CSS elements that are generated for this class.
+  # specficially tool-{suffix} for the button, and tool-options-{suffix} for
+  # the options container.
   cssSuffix: undefined
+
+  # function that returns the HTML of the tool button's contents
   buttonContents: -> undefined
-  optionsContents: ->
+
+  # function that returns the HTML of the tool options
+  optionsContents: -> undefined
+
+  # called when the user starts dragging
   begin: (x, y, lc) ->
+
+  # called when the user moves while dragging
   continue: (x, y, lc) ->
+
+  # called when the user finishes dragging
   end: (x, y, lc) ->
+
+  # should draw whatever shape is in progress and isn't part of the drawing yet
   drawCurrent: (ctx) ->
 
 
