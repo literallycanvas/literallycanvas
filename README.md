@@ -1,7 +1,7 @@
 Literally Canvas
 ================
 
-![Screenshot](img/screenshot.png)
+![Screenshot](raw/master/img/screenshot.png)
 
 ```
 coffee/       Coffeescript source code
