@@ -7197,31 +7197,13 @@
 }).call(this);
 
 (function() {
-    var IS_IOS, coordsForEvent, position, _ref;
+    var IS_IOS, coordsForEvent, initLiterallyCanvas, position, _ref;
     window.LC = (_ref = window.LC) != null ? _ref : {};
     coordsForEvent = function($el, e) {
         var p, t;
         t = e.originalEvent.changedTouches[0];
         p = $el.position();
         return [ t.clientX - p.left, t.clientY - p.top ];
-    };
-    IS_IOS = /iphone|ipad/i.test(navigator.userAgent);
-    $.fn.nodoubletapzoom = function() {
-        if (IS_IOS) {
-            return $(this).bind("touchstart", function(e) {
-                var dt, fingers, t1, t2;
-                t2 = e.timeStamp;
-                t1 = $(this).data("lastTouch") || t2;
-                dt = t2 - t1;
-                fingers = e.originalEvent.touches.length;
-                $(this).data("lastTouch", t2);
-                if (!dt || dt > 500 || fingers > 1) {
-                    return;
-                }
-                e.preventDefault();
-                return $(this).trigger("click").trigger("click");
-            });
-        }
     };
     position = function(e) {
         var p;
@@ -7238,16 +7220,15 @@
             };
         }
     };
-    $.fn.literallycanvas = function() {
-        var $c, c, down, lc, tb, _this = this;
-        this.nodoubletapzoom();
-        $c = this.find("canvas");
-        c = $c.get(0);
+    initLiterallyCanvas = function(el) {
+        var $c, $el, down, lc, tb, _this = this;
+        $el = $(el);
+        $c = $el.find("canvas");
         $c.attr("width", $c.width());
         $c.attr("height", $c.height());
-        this.append($('<div class="toolbar">'));
-        lc = new LC.LiterallyCanvas(c, this.find(".toolbar-options"));
-        tb = new LC.Toolbar(lc, this.find(".toolbar"));
+        $el.append($('<div class="toolbar">'));
+        lc = new LC.LiterallyCanvas($c.get(0), $el.find(".toolbar-options"));
+        tb = new LC.Toolbar(lc, $el.find(".toolbar"));
         tb.selectTool(tb.tools[0]);
         $(window).resize(function(e) {
             $c.attr("width", $c.width());
@@ -7343,6 +7324,27 @@
                 lc.pan(0, 10);
             }
             return lc.repaint();
+        });
+    };
+    IS_IOS = /iphone|ipad/i.test(navigator.userAgent);
+    $.fn.literallycanvas = function() {
+        if (IS_IOS) {
+            this.bind("touchstart", function(e) {
+                var dt, fingers, t1, t2;
+                t2 = e.timeStamp;
+                t1 = this.data("lastTouch") || t2;
+                dt = t2 - t1;
+                fingers = e.originalEvent.touches.length;
+                this.data("lastTouch", t2);
+                if (!dt || dt > 500 || fingers > 1) {
+                    return;
+                }
+                e.preventDefault();
+                return this.trigger("click").trigger("click");
+            });
+        }
+        return this.each(function(ix, el) {
+            return initLiterallyCanvas(el);
         });
     };
 }).call(this);

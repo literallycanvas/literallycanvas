@@ -7,22 +7,6 @@ coordsForEvent = ($el, e) ->
   return [t.clientX - p.left, t.clientY - p.top]
 
 
-IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
-$.fn.nodoubletapzoom = ->
-  if (IS_IOS)
-    $(this).bind 'touchstart', (e) ->
-      t2 = e.timeStamp
-      t1 = $(this).data('lastTouch') || t2
-      dt = t2 - t1
-      fingers = e.originalEvent.touches.length;
-      $(this).data('lastTouch', t2);
-      if !dt || dt > 500 || fingers > 1 then return; # not double-tap
-
-      e.preventDefault() # double tap - prevent the zoom
-      # also synthesize click events we just swallowed up
-      $(this).trigger('click').trigger('click')
-
-
 position = (e) ->
   if e.offsetX?
     {left: e.offsetX, top: e.offsetY}
@@ -34,18 +18,17 @@ position = (e) ->
     }
 
 
-$.fn.literallycanvas = ->
-  @nodoubletapzoom()
+initLiterallyCanvas = (el) ->
+  $el = $(el)
 
-  $c = @find('canvas')
-  c = $c.get(0)
+  $c = $el.find('canvas')
   $c.attr('width', $c.width())
   $c.attr('height', $c.height())
 
-  @append($('<div class="toolbar">'))
+  $el.append($('<div class="toolbar">'))
 
-  lc = new LC.LiterallyCanvas(c, @find('.toolbar-options'))
-  tb = new LC.Toolbar(lc, @find('.toolbar'))
+  lc = new LC.LiterallyCanvas($c.get(0), $el.find('.toolbar-options'))
+  tb = new LC.Toolbar(lc, $el.find('.toolbar'))
   tb.selectTool(tb.tools[0])
 
   $(window).resize (e) ->
@@ -115,3 +98,22 @@ $.fn.literallycanvas = ->
       when 40 then lc.pan 0, 10
 
     lc.repaint()
+
+
+IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
+$.fn.literallycanvas = ->
+  if (IS_IOS)
+    @bind 'touchstart', (e) ->
+      t2 = e.timeStamp
+      t1 = @data('lastTouch') || t2
+      dt = t2 - t1
+      fingers = e.originalEvent.touches.length;
+      @data('lastTouch', t2);
+      if !dt || dt > 500 || fingers > 1 then return; # not double-tap
+
+      e.preventDefault() # double tap - prevent the zoom
+      # also synthesize click events we just swallowed up
+      @trigger('click').trigger('click')
+
+  @each (ix, el) ->
+    initLiterallyCanvas(el)
