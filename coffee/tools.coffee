@@ -7,8 +7,6 @@ class LC.Tool
   continue: (x, y, lc) ->
   end: (x, y, lc) ->
   drawCurrent: (ctx) ->
-  createToolbar: (el) ->
-  removeToolbar: (el) ->
 
 
 class LC.Pencil extends LC.Tool
