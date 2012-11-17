@@ -21,10 +21,16 @@ class LC.Pencil extends LC.Tool
 
   createOptions: ($el) ->
     @$el = $el
-    @$el.html($('<a>Pen tool</a>'))
-    @$el.find('a').click (e) ->
-      e.preventDefault()
-      alert("You clicked me!")
+    @$el.html($('
+      <span class="brush-width-min">1 px</span>
+      <input type="range" min="1" max="50" step="1" value="5">
+      <span class="brush-width-max">50 px</span>
+      <span class="brush-width-val">(5 px)</span>
+    '))
+    brushWidthVal = @$el.find('.brush-width-val')
+    @$el.find('input').change (e) =>
+      @strokeWidth = e.currentTarget.valueAsNumber
+      brushWidthVal.html("(#{@strokeWidth} px)")
 
   begin: (x, y, lc) ->
     @color = lc.primaryColor
@@ -48,13 +54,6 @@ class LC.Eraser extends LC.Pencil
 
   title: "Eraser"
   cssSuffix: "eraser"
-
-  createOptions: ($el) ->
-    @$el = $el
-    @$el.html($('<a>Eraser tool</a>'))
-    @$el.find('a').click (e) ->
-      e.preventDefault()
-      alert("You clicked me!")
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
   makeShape: -> new LC.EraseLinePathShape(this)
