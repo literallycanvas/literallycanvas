@@ -20,9 +20,9 @@
 .literally .toolbar {
   width: 100%;
   margin-top: -5px;
+  background-color: rgb(220, 220, 220);
 }
 .literally .toolbar-row {
-  background-color: rgb(220, 220, 220);
   width: 100%;
 }
 
