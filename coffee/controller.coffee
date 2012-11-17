@@ -75,14 +75,14 @@ class LC.LiterallyCanvas
 
     @repaint()
 
-  repaint: (currentShape = null) ->
+  repaint: ->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     @ctx.save()
     @ctx.translate @position.x, @position.y
     @ctx.scale @scale, @scale
     _.each @shapes, (s) =>
       s.draw(@ctx)
-    currentShape.draw(@ctx) if currentShape
+    @tool.drawCurrent(@ctx) if @tool
     @ctx.restore()
 
   clear: ->

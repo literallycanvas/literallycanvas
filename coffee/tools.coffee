@@ -6,6 +6,7 @@ class LC.Tool
   begin: (x, y, lc) ->
   continue: (x, y, lc) ->
   end: (x, y, lc) ->
+  drawCurrent: (ctx) ->
   createToolbar: (el) ->
   removeToolbar: (el) ->
 
@@ -45,6 +46,9 @@ class LC.Pencil extends LC.Tool
     @currentShape.addPoint(x, y)
     lc.saveShape(@currentShape)
     @currentShape = undefined
+
+  drawCurrent: (ctx) ->
+    @currentShape.draw(ctx) if @currentShape
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, @color)
   makeShape: -> new LC.LinePathShape(this)
