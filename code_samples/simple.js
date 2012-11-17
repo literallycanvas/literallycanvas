@@ -1,0 +1,1 @@
+$('.literally').literallycanvas();

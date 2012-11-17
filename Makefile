@@ -2,7 +2,7 @@
 
 JS_DEPS =  js/jquery-1.8.2.js js/underscore-1.4.2.js
 
-all: lib/js/literallycanvas.fat.js lib/js/literallycanvas.fat.min.js lib/js/literallycanvas.thin.js lib/js/literallycanvas.thin.min.js
+all: lib/js/literallycanvas.fat.js lib/js/literallycanvas.fat.min.js lib/js/literallycanvas.thin.js lib/js/literallycanvas.thin.min.js docs
 
 clean:
 	rm -f js/coffee/*.js
@@ -29,6 +29,9 @@ lib/js/literallycanvas.thin.min.js: coffee
 
 js/gen/literallycanvas.fat.js: lib/js/literallycanvas.fat.js
 	cp lib/js/literallycanvas.fat.js js/gen/literallycanvas.fat.js
+
+docs:
+	python gen_html.py index.jinja2 -o index.html
 
 serve:
 	python -m SimpleHTTPServer 8000 .

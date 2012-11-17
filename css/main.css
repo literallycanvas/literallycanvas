@@ -1,8 +1,15 @@
-h1.title {
-  line-height: 60px;
+h1, h2 {
   text-align: center;
   font-family: 'Finger Paint', cursive;
   font-weight: normal;
+}
+
+h1.title {
+  line-height: 60px;
+}
+
+p {
+  text-indent: 4em;
 }
 
 .title-literally {
@@ -19,9 +26,6 @@ h1.title {
 
 .literally canvas {
   height: 200px;
-}
-
-.demo {
 }
 
 .demo .literally .tool-options-container input {
