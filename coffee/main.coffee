@@ -21,6 +21,7 @@ position = (e) ->
 initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
+    keyboardShortcuts: true
     toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
   }, opts)
   $el = $(el)
@@ -90,14 +91,15 @@ initLiterallyCanvas = (el, opts = {}) ->
     return unless e.originalEvent.touches.length == 0
     lc.end(coordsForEvent($c, e)...)
 
-  $(document).keydown (e) ->
-    switch e.which
-      when 37 then lc.pan -10, 0
-      when 38 then lc.pan 0, -10
-      when 39 then lc.pan 10, 0
-      when 40 then lc.pan 0, 10
+  if opts.keyboardShortcuts
+    $(document).keydown (e) ->
+      switch e.which
+        when 37 then lc.pan -10, 0
+        when 38 then lc.pan 0, -10
+        when 39 then lc.pan 10, 0
+        when 40 then lc.pan 0, 10
 
-    lc.repaint()
+      lc.repaint()
 
 
 IS_IOS = /iphone|ipad/i.test(navigator.userAgent)

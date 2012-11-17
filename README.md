@@ -35,11 +35,13 @@ $(document).bind('touchmove', function(e) {
 });
 ```
 
-You can also pass in the background color and a set of tools to use:
+You can also pass in the background color, a set of tools to use, and whether
+to enable keyboard shortcuts:
 
 ```javascript
 $('.literally').literallycanvas({
-  backgroundColor: 'rgb(255, 0, 0)',
+  backgroundColor: 'rgb(255, 0, 0)',  // default rgb(230, 230, 230)
+  keyboardShortcuts: false,           // default true
   toolClasses: [LC.Pencil]
 });
 ```
