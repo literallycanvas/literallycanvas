@@ -16,5 +16,18 @@
       <div class="literally"><canvas></canvas></div>
     </div>
     <script src="js/gen/literallycanvas.fat.js"></script>
+    <script>
+      $(document).ready(function() {
+        // disable scrolling on touch devices so we can actually draw
+        $(document).bind('touchmove', function(e) {
+          if (e.target === document.documentElement) {
+            return e.preventDefault();
+          }
+        });
+
+        // the only LC-specific thing we have to do
+        $('.literally').literallycanvas();
+      });
+    </script>
   </body>
 </html>
