@@ -15,11 +15,11 @@ Add the files under `lib/css` and `lib/img` to your project, as well as the
 appropriate file from `lib/js`. Then do this:
 
 ```html
-  <div class="literally"><canvas></canvas></div>
+<div class="literally"><canvas></canvas></div>
 ```
 
 ```javascript
-  $('.literally').literallycanvas();
+$('.literally').literallycanvas();
 ```
 
 The end!
@@ -28,11 +28,11 @@ Although you may also want to do something like this to prevent scrolling on
 touch devices:
 
 ```javascript
-  $(document).bind('touchmove', function(e) {
-    if (e.target === document.documentElement) {
-      return e.preventDefault();
-    }
-  });
+$(document).bind('touchmove', function(e) {
+  if (e.target === document.documentElement) {
+    return e.preventDefault();
+  }
+});
 ```
 
 Files
