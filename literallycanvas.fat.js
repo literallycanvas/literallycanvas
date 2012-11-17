@@ -7249,6 +7249,11 @@
         lc = new LC.LiterallyCanvas(c, this.find(".toolbar-options"));
         tb = new LC.Toolbar(lc, this.find(".toolbar"));
         tb.selectTool(tb.tools[0]);
+        $(window).resize(function(e) {
+            $c.attr("width", $c.width());
+            $c.attr("height", $c.height());
+            return lc.repaint();
+        });
         down = false;
         $c.mousedown(function(e) {
             var p;
