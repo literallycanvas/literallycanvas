@@ -7273,38 +7273,30 @@
             return down = false;
         });
         $c.bind("touchstart", function(e) {
-            var coords;
             e.preventDefault();
-            coords = coordsForEvent($c, e);
             if (e.originalEvent.touches.length === 1) {
-                return lc.begin(coords[0], coords[1]);
+                return lc.begin.apply(lc, coordsForEvent($c, e));
             } else {
-                return lc["continue"](coords[0], coords[1]);
+                return lc["continue"].apply(lc, coordsForEvent($c, e));
             }
         });
         $c.bind("touchmove", function(e) {
-            var coords;
             e.preventDefault();
-            coords = coordsForEvent($c, e);
-            return lc["continue"](coords[0], coords[1]);
+            return lc["continue"].apply(lc, coordsForEvent($c, e));
         });
         $c.bind("touchend", function(e) {
-            var coords;
             e.preventDefault();
             if (e.originalEvent.touches.length !== 0) {
                 return;
             }
-            coords = coordsForEvent($c, e);
-            return lc.end(coords[0], coords[1]);
+            return lc.end.apply(lc, coordsForEvent($c, e));
         });
         $c.bind("touchcancel", function(e) {
-            var coords;
             e.preventDefault();
             if (e.originalEvent.touches.length !== 0) {
                 return;
             }
-            coords = coordsForEvent($c, e);
-            return lc.end(coords[0], coords[1]);
+            return lc.end.apply(lc, coordsForEvent($c, e));
         });
         return $(document).keydown(function(e) {
             switch (e.which) {

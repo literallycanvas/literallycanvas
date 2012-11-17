@@ -67,28 +67,24 @@ initLiterallyCanvas = (el) ->
 
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
-    coords = coordsForEvent($c, e)
     if e.originalEvent.touches.length == 1
-      lc.begin(coords[0], coords[1])
+      lc.begin(coordsForEvent($c, e)...)
     else
-      lc.continue(coords[0], coords[1])
+      lc.continue(coordsForEvent($c, e)...)
 
   $c.bind 'touchmove', (e) ->
     e.preventDefault()
-    coords = coordsForEvent($c, e)
-    lc.continue(coords[0], coords[1])
+    lc.continue(coordsForEvent($c, e)...)
 
   $c.bind 'touchend', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    coords = coordsForEvent($c, e)
-    lc.end(coords[0], coords[1])
+    lc.end(coordsForEvent($c, e)...)
 
   $c.bind 'touchcancel', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    coords = coordsForEvent($c, e)
-    lc.end(coords[0], coords[1])
+    lc.end(coordsForEvent($c, e)...)
 
   $(document).keydown (e) ->
     switch e.which
