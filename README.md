@@ -35,6 +35,15 @@ $(document).bind('touchmove', function(e) {
 });
 ```
 
+You can also pass in the background color and a set of tools to use:
+
+```javascript
+$('.literally').literallycanvas({
+  backgroundColor: 'rgb(255, 0, 0)',
+  toolClasses: [LC.Pencil]
+});
+```
+
 Files
 -----
 

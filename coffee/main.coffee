@@ -19,6 +19,10 @@ position = (e) ->
 
 
 initLiterallyCanvas = (el, opts = {}) ->
+  opts = _.extend({
+    backgroundColor: 'rgb(230, 230, 230)'
+    toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
+  }, opts)
   $el = $(el)
 
   $c = $el.find('canvas')
@@ -27,10 +31,7 @@ initLiterallyCanvas = (el, opts = {}) ->
 
   $el.append($('<div class="toolbar">'))
 
-  lc = new LC.LiterallyCanvas($c.get(0), $el.find('.toolbar-options'))
-
-  opts.toolClasses = opts.toolClasses or [
-    LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
+  lc = new LC.LiterallyCanvas($c.get(0), opts.backgroundColor)
   tb = new LC.Toolbar(lc, $el.find('.toolbar'), opts.toolClasses)
   tb.selectTool(tb.tools[0])
 

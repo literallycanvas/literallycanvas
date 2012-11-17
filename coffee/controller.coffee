@@ -3,10 +3,9 @@ window.LC = window.LC ? {}
 
 class LC.LiterallyCanvas
 
-  constructor: (@canvas) ->
+  constructor: (@canvas, @backgroundColor = 'rgb(230, 230, 230)') ->
     @$canvas = $(@canvas)
     @ctx = @canvas.getContext('2d')
-    @backgroundColor = 'rgb(230, 230, 230)'
     $(@canvas).css('background-color', @backgroundColor)
     @shapes = []
     @undoStack = []
