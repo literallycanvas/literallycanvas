@@ -1,20 +1,3 @@
-/* example */
-
-body {
-  background-color: black;
-}
-
-h1 {
-  color: white;
-}
-
-.log {
-  color: red;
-  font-family: Monaco;
-}
-
-/* component */
-
 .literally {
   margin: auto;
   width: 100%;

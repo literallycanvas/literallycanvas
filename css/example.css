@@ -1,0 +1,12 @@
+body {
+  background-color: black;
+}
+
+h1 {
+  color: white;
+}
+
+.log {
+  color: red;
+  font-family: Monaco;
+}
