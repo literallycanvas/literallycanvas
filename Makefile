@@ -31,7 +31,7 @@ js/gen/literallycanvas.fat.js: lib/js/literallycanvas.fat.js
 	cp lib/js/literallycanvas.fat.js js/gen/literallycanvas.fat.js
 
 docs:
-	python gen_html.py index.jinja2 -o index.html
+	python gen_html.py index.jinja2 -o index.html -s trac
 
 serve:
 	python -m SimpleHTTPServer 8000 .

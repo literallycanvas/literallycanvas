@@ -2,7 +2,6 @@
 
 import argparse
 import codecs
-import sys
 
 import jinja2
 
@@ -17,7 +16,7 @@ help_string = """Process a jinja2 template with no context except for
 and gives back the contents of the files with syntax highlighting."""
 
 
-STYLE_NAME = 'tango'
+STYLE_NAME = None
 
 
 def render(name, outfile, *args, **kwargs):
