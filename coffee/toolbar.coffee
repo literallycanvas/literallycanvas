@@ -144,6 +144,8 @@ class LC.Toolbar
       @$el.find('.zoom-display').html(@lc.scale)
 
   selectTool: (t) ->
+    @$el.find(".tools .btn").removeClass("active")
+    @$el.find(".tools .tool-#{t.cssSuffix}").addClass("active")
     @lc.tool = t
     @$el.find('.tool-options').hide()
     t.$el.show() if t.$el
