@@ -9,6 +9,7 @@ class LC.LiterallyCanvas
     $(@canvas).css('background-color', '#eee')
     @shapes = []
     @undoStack = []
+    @redoStack = []
     @isDragging = false
     @position = {x: 0, y: 0}
     @scale = 1.0
@@ -92,12 +93,19 @@ class LC.LiterallyCanvas
   execute: (action) ->
     @undoStack.push(action)
     action.do()
+    @redoStack = []
 
   undo: ->
+    return unless @undoStack.length
     action = @undoStack.pop()
     action.undo()
+    @redoStack.push(action)
 
   redo: ->
+    return unless @redoStack.length
+    action = @redoStack.pop()
+    @undoStack.push(action)
+    action.do()
 
   getPixel: (x, y) ->
     p = @drawingCoordsToClientCoords x, y
