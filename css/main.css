@@ -66,6 +66,7 @@ h1 {
 
 .literally .toolbar .action-buttons,
 .literally .toolbar .zoom-buttons,
+.literally .toolbar .tool-options,
 .literally .toolbar .tools {
   line-height: 38px;
   margin-left: 5px;
