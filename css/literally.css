@@ -65,40 +65,24 @@
 }
 
 .literally .toolbar .zoom-buttons .zoom-display {
-  display: inline;
+  width: 20px;
+}
+
+.tool-options-container {
+  float: left;
 }
 
 /* color palette */
 
-.literally .color-pickers {
-  float: left;
-}
-
-/* color squares */
-
 .literally .color-square {
   cursor: pointer;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   margin: 5px 0px;
+  margin-left: 5px;
   float: left;
   border: 1px solid rgb(150, 150, 150);
   border-left: none;
-}
-
-.literally .color-square:first-child {
-  margin-left: 5px;
-  border-left: 1px solid rgb(150, 150, 150);
-  -webkit-border-radius: 3px 0px 0px 3px;
-  border-radius: 3px 0px 0px 3px;
-}
-
-.literally .color-square:last-child {
-  -webkit-border-radius: 0px 3px 3px 0px;
-  border-radius: 0px 3px 3px 0px;
-}
-
-.literally .color-square:first-child:last-child {
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }

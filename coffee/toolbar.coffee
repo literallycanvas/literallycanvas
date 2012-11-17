@@ -22,9 +22,7 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.toolbarTemplate = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="color-pickers">
-        <div class="color-square stroke-picker">&nbsp;</div>
-      </div>
+      <div class="color-square stroke-picker">&nbsp;</div>
       <div class="tools" data-toggle="buttons-radio">
         <div class="btn tool-pencil active">
           <i class="icon-pencil"></i></div>
@@ -35,27 +33,10 @@ LC.toolbarTemplate = '
         <div class="btn tool-eye-dropper">
           <i class="icon-eye-open"></i></div>
       </div>
-    </div>
-
-    <div class="toolbar-row-right">
-      <div class="zoom-buttons">
-        <div class="btn btn-inverse zoom-out-button">
-          <i class="icon-zoom-out icon-white"></i>
-        </div>
-        <div class="zoom-display badge badge-inverse">1</div>
-        <div class="btn btn-inverse zoom-in-button">
-          <i class="icon-zoom-in icon-white"></i>
-        </div>
-      </div>
-    </div>
-    <div class="clearfix"></div>
-  </div>
-
-  <div class="toolbar-row">
-    <div class="toolbar-row-left">
       <div class="tool-options-container">
       </div>
     </div>
+
     <div class="toolbar-row-right">
       <div class="action-buttons">
         <div class="btn btn-danger clear-button">
@@ -66,6 +47,13 @@ LC.toolbarTemplate = '
         </div>
         <div class="btn btn-warning redo-button">
           <i class="icon-arrow-right icon-white"></i>
+        </div>
+        <div class="btn btn-inverse zoom-out-button">
+          <i class="icon-zoom-out icon-white"></i>
+        </div>
+        <div class="zoom-display badge badge-inverse">1</div>
+        <div class="btn btn-inverse zoom-in-button">
+          <i class="icon-zoom-in icon-white"></i>
         </div>
       </div>
     </div>
