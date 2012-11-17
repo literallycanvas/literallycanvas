@@ -7026,7 +7026,8 @@
             this.canvas = canvas;
             this.$canvas = $(this.canvas);
             this.ctx = this.canvas.getContext("2d");
-            $(this.canvas).css("background-color", "#eee");
+            this.backgroundColor = "rgb(230, 230, 230)";
+            $(this.canvas).css("background-color", this.backgroundColor);
             this.shapes = [];
             this.undoStack = [];
             this.redoStack = [];
@@ -7148,7 +7149,11 @@
             var p, pixel;
             p = this.drawingCoordsToClientCoords(x, y);
             pixel = this.ctx.getImageData(p.x, p.y, 1, 1).data;
-            return "rgb(" + pixel[0] + "," + pixel[1] + "," + pixel[2] + ")";
+            if (pixel[3]) {
+                return "rgb(" + pixel[0] + "," + pixel[1] + "," + pixel[2] + ")";
+            } else {
+                return null;
+            }
         };
         return LiterallyCanvas;
     }();
@@ -7695,14 +7700,22 @@
             return EyeDropper.__super__.constructor.apply(this, arguments);
         }
         EyeDropper.prototype.title = "Eyedropper";
-        EyeDropper.prototype.cssSuffix = "eyedropper";
-        EyeDropper.prototype.begin = function(x, y, lc) {
-            lc.primaryColor = lc.getPixel(x, y);
+        EyeDropper.prototype.cssSuffix = "eye-dropper";
+        EyeDropper.prototype.readColor = function(x, y, lc) {
+            var newColor;
+            newColor = lc.getPixel(x, y);
+            if (newColor) {
+                lc.primaryColor = newColor;
+            } else {
+                lc.primaryColor = lc.backgroundColor;
+            }
             return lc.trigger("colorChange", lc.primaryColor);
         };
+        EyeDropper.prototype.begin = function(x, y, lc) {
+            return this.readColor(x, y, lc);
+        };
         EyeDropper.prototype["continue"] = function(x, y, lc) {
-            lc.primaryColor = lc.getPixel(x, y);
-            return lc.trigger("colorChange", lc.primaryColor);
+            return this.readColor(x, y, lc);
         };
         return EyeDropper;
     }(LC.Tool);

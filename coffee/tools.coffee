@@ -79,12 +79,18 @@ class LC.Pan extends LC.Tool
 class LC.EyeDropper extends LC.Tool
 
   title: "Eyedropper"
-  cssSuffix: "eyedropper"
+  cssSuffix: "eye-dropper"
+
+  readColor: (x, y, lc) ->
+    newColor = lc.getPixel(x, y)
+    if newColor
+      lc.primaryColor = newColor
+    else
+      lc.primaryColor = lc.backgroundColor
+    lc.trigger 'colorChange', lc.primaryColor
 
   begin: (x, y, lc) ->
-    lc.primaryColor = lc.getPixel(x, y)
-    lc.trigger 'colorChange', lc.primaryColor
+    @readColor(x, y, lc)
 
   continue: (x, y, lc) ->
-    lc.primaryColor = lc.getPixel(x, y)
-    lc.trigger 'colorChange', lc.primaryColor
+    @readColor(x, y, lc)

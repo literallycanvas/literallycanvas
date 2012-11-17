@@ -6,7 +6,8 @@ class LC.LiterallyCanvas
   constructor: (@canvas) ->
     @$canvas = $(@canvas)
     @ctx = @canvas.getContext('2d')
-    $(@canvas).css('background-color', '#eee')
+    @backgroundColor = 'rgb(230, 230, 230)'
+    $(@canvas).css('background-color', @backgroundColor)
     @shapes = []
     @undoStack = []
     @redoStack = []
@@ -110,7 +111,10 @@ class LC.LiterallyCanvas
   getPixel: (x, y) ->
     p = @drawingCoordsToClientCoords x, y
     pixel = @ctx.getImageData(p.x, p.y, 1, 1).data
-    return "rgb(" + pixel[0] + "," + pixel[1] + ","  + pixel[2] + ")"
+    if pixel[3]
+      "rgb(" + pixel[0] + "," + pixel[1] + ","  + pixel[2] + ")"
+    else
+      null
 
 
 # maybe add checks to these in the future to make sure you never double-undo or
