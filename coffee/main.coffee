@@ -40,6 +40,8 @@ $.fn.literallycanvas = ->
   $c = @find('canvas')
   c = $c.get(0)
 
+  @append($('<div class="toolbar">'))
+
   lc = new LC.LiterallyCanvas(c)
   tb = new LC.Toolbar(lc, @find('.toolbar'))
 

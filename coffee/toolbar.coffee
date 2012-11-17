@@ -19,6 +19,76 @@ LC.defaultStrokeColor = 'rgba(0, 0, 0, 0.9)'
 LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 
 
+LC.toolbarTemplate = '
+  <div class="toolbar-row">
+    <div class="toolbar-row-left">
+      <div class="tools" data-toggle="buttons-radio">
+        <div class="btn tool-pencil active">
+          <i class="icon-pencil"></i></div>
+        <div class="btn tool-eraser">
+          <i class="icon-edit"></i></div>
+        <div class="btn tool-pan">
+          <i class="icon-move"></i></div>
+        <div class="btn tool-eye-dropper">
+          <i class="icon-eye-open"></i></div>
+      </div>
+    </div>
+
+    <div class="toolbar-row-right">
+      <div class="zoom-buttons">
+        <div class="btn btn-inverse zoom-out-button">
+          <i class="icon-zoom-out icon-white"></i>
+        </div>
+        <div class="zoom-display badge badge-inverse">1</div>
+        <div class="btn btn-inverse zoom-in-button">
+          <i class="icon-zoom-in icon-white"></i>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+
+  <div class="toolbar-row">
+    <div class="toolbar-row-left">
+      <div class="color-pickers">
+        <div class="color-square stroke-picker">&nbsp;</div>
+      </div>
+      <div class="color-palette">
+        <div class="color-square choosy-color-square"
+          style="background-color: rgb(255, 0, 0);">&nbsp;</div>
+        <div class="color-square choosy-color-square"
+          style="background-color: rgb(0, 255, 0);">&nbsp;</div>
+        <div class="color-square choosy-color-square"
+          style="background-color: rgb(0, 0, 255);">&nbsp;</div>
+        <div class="color-square choosy-color-square"
+          style="background-color: rgb(255, 255, 0);">&nbsp;</div>
+        <div class="color-square choosy-color-square"
+          style="background-color: rgb(0, 255, 255);">&nbsp;</div>
+        <div class="color-square empty-color-square"
+          style="background-color: transparent;">
+          <i class="icon-plus"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar-row-right">
+      <div class="action-buttons">
+        <div class="btn btn-danger clear-button">
+          <i class="icon-remove icon-white"></i>
+        </div>
+        <div class="btn btn-warning undo-button">
+          <i class="icon-arrow-left icon-white"></i>
+        </div>
+        <div class="btn btn-warning redo-button">
+          <i class="icon-arrow-right icon-white"></i>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+'
+
+
 LC.makeColorPicker = ($el, title, callback) ->
   $el.data('color', 'rgb(0, 0, 0)')
   cp = $el.colorpicker(format: 'rgb').data('colorpicker')
@@ -36,6 +106,7 @@ LC.makeColorPicker = ($el, title, callback) ->
 
 class LC.Toolbar
   constructor: (@lc, @$el) ->
+    @$el.append(_.template(LC.toolbarTemplate))
     @initColors()
     @initButtons()
     @initTools()
