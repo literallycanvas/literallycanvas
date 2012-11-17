@@ -1,6 +1,10 @@
-.PHONY: coffee
+.PHONY: coffee clean
 
 JS_FILES =  js/jquery-1.8.2.js js/underscore-1.4.2.js
+
+clean:
+	rm -f js/coffee/*.js
+	rm -f js/gen/*.js
 
 watch-js:
 	watch -n 2 make js-dev
