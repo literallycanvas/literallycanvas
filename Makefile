@@ -27,16 +27,14 @@ lib/js/literallycanvas.thin.js: coffee
 lib/js/literallycanvas.thin.min.js: coffee
 	uglifyjs2 js/coffee/* -o lib/js/literallycanvas.thin.min.js --compress
 
-docs:
+docs: lib/js/literallycanvas.fat.js
 	python gen_html.py index.jinja2 -o index.html -s trac
 
 serve:
 	python -m SimpleHTTPServer 8000 .
 
-update-gh-pages:
-	git checkout gh-pages -f
-	git merge master -m "Update gh-pages"
-	make js/gen/literallycanvas.fat.js
-	git commit -am "Update js in gh-pages"
+update-gh-pages: all
+	git checkout gh-pages
+	git merge master --ff-only
 	git push origin gh-pages
 	git checkout master -f
