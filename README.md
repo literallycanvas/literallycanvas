@@ -1,7 +1,7 @@
 Literally Canvas
 ================
 
-![Screenshot](raw/master/img/screenshot.png)
+![Screenshot](http://steveasleep.com/literallycanvas/img/screenshot.png)
 
 ```
 coffee/       Coffeescript source code
