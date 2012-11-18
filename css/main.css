@@ -50,3 +50,7 @@ p {
 .example-link, .github, .downloads {
   margin-bottom: 1em;
 }
+
+.alert {
+  text-align: center;
+}
