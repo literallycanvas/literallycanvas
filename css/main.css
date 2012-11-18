@@ -45,3 +45,7 @@ p {
 .demo .literally .tool-options-container input {
   width: 70px;
 }
+
+.example-link, .github {
+  margin-bottom: 2em;
+}
