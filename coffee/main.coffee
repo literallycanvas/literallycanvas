@@ -26,6 +26,7 @@ initLiterallyCanvas = (el, opts = {}) ->
     toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
   }, opts)
   $el = $(el)
+  $el.addClass('literally')
   $tbEl = $('<div class="toolbar">')
 
   $el.append($tbEl)
