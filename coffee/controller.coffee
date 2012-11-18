@@ -6,8 +6,9 @@ class LC.LiterallyCanvas
   constructor: (@canvas, @opts) ->
     @$canvas = $(@canvas)
     @backgroundColor = @opts.backgroundColor or 'rgb(230, 230, 230)'
-
+    @buffer = $('<canvas>').get(0)
     @ctx = @canvas.getContext('2d')
+    @bufferCtx = @buffer.getContext('2d')
     $(@canvas).css('background-color', @backgroundColor)
     @shapes = []
     @undoStack = []
@@ -57,6 +58,7 @@ class LC.LiterallyCanvas
 
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
+    @repaint()
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
@@ -77,25 +79,29 @@ class LC.LiterallyCanvas
 
     @repaint()
 
-  repaint: (drawBackground = false)->
+  repaint: (dirty = true, drawBackground = false) ->
+    if dirty
+      @buffer.width = @canvas.width
+      @buffer.height = @canvas.height
+      @bufferCtx.clearRect(0, 0, @buffer.width, @buffer.height)
+      if drawBackground
+        @bufferCtx.fillStyle = @backgroundColor
+        @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
+      @draw @shapes, @bufferCtx
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-    if drawBackground
-      @ctx.fillStyle = @backgroundColor
-      @ctx.fillRect(0, 0, @canvas.width, @canvas.height)
-    @ctx.save()
-    @ctx.translate @position.x, @position.y
-    @ctx.scale @scale, @scale
-    _.each @shapes, (s) =>
-      s.draw(@ctx)
-    @tool.drawCurrent(@ctx) if @tool
-    @ctx.restore()
+    @ctx.drawImage @buffer, 0, 0
 
   update: (shape) ->
-    @ctx.save()
-    @ctx.translate @position.x, @position.y
-    @ctx.scale @scale, @scale
-    shape.drawLatest(@ctx)
-    @ctx.restore()
+    @repaint false
+    @draw [shape], @ctx
+
+  draw: (shapes, ctx) ->
+    ctx.save()
+    ctx.translate @position.x, @position.y
+    ctx.scale @scale, @scale
+    _.each shapes, (s) =>
+      s.draw(ctx)
+    ctx.restore()
 
   clear: ->
     @execute(new LC.ClearAction(this))
@@ -146,7 +152,7 @@ class LC.LiterallyCanvas
       d.promise()
       return d
 
-    @repaint(true)
+    @repaint(true, true)
     img = @canvas.toDataURL().split(',')[1];
 
     # upload to imgur using jquery/CORS
@@ -196,7 +202,7 @@ class LC.AddShapeAction
   do: ->
     @ix = @lc.shapes.length
     @lc.shapes.push(@shape)
-    #@lc.repaint()
+    @lc.repaint()
 
   undo: ->
     @lc.shapes.pop(@ix)

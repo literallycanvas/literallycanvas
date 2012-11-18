@@ -29,6 +29,45 @@ mid = (a, b) ->
                       a.size + ((b.size - a.size) / 2),
                       a.color
 
+LC.toPoly = (line) ->
+  polyLeft = []
+  polyRight = []
+
+  _.each line, (point, index) =>
+    n = normals(point, slope(line, index))
+    polyLeft = polyLeft.concat([n[0]])
+    polyRight = [n[1]].concat(polyRight)
+
+  return polyLeft.concat(polyRight)
+
+slope = (line, index) ->
+  if line.length < 3
+    point =  {x:0, y:0}
+  if index == 0
+    point = slope(line, index + 1)
+  else if index == line.length - 1
+    point = slope(line, index - 1)
+  else
+    point = diff line[index - 1], line[index + 1]
+
+  return point
+
+diff = (a, b) ->
+  return {x: b.x - a.x, y: b.y - a.y}
+
+unit = (vector) ->
+  length = len(vector)
+  return {x: vector.x / length, y: vector.y / length}
+
+normals = (p, slope) ->
+  slope = unit(slope)
+  slope.x = slope.x * p.size / 2
+  slope.y = slope.y * p.size / 2
+  return [{x: p.x - slope.y, y: p.y + slope.x, color: p.color},
+          {x: p.x + slope.y, y: p.y - slope.x, color: p.color}]
+
+len = (vector) ->
+  return Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2))
 
 LC.scalePositionScalar = (val, viewportSize, oldScale, newScale) ->
   oldSize = viewportSize * oldScale

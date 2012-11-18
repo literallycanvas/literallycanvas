@@ -19,40 +19,25 @@ class LC.LinePathShape
 
   draw: (ctx) ->
     return unless @smoothedPoints.length
-    fp = @smoothedPoints[0]
-    lp = _.last(@smoothedPoints)
-
-    _.each [fp, lp], (p) ->
-      ctx.beginPath()
-      ctx.fillStyle = p.color
-      ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2)
-      ctx.fill()
-      ctx.closePath()
-
-    ctx.beginPath()
-    ctx.moveTo(fp.x, fp.y)
-
-    _.each _.rest(@smoothedPoints), (p) ->
-      ctx.strokeStyle = p.color
-      ctx.lineWidth = p.size
-      ctx.lineTo(p.x, p.y)
-    ctx.stroke()
-    ctx.closePath()
-
-  drawLatest: (ctx) ->
-    tail = _.last(@smoothedPoints, Math.pow(2, @order) + 1)
-    return unless tail.length > 1
+    poly = LC.toPoly(@smoothedPoints)
     
-    ctx.beginPath()
-    ctx.lineCap = 'round'
-    ctx.moveTo(tail[0].x, tail[0].y)
+    # TODO: Fix line-caps
+    #fp = @smoothedPoints[0]
+    #lp = _.last(@smoothedPoints)
 
-    _.each _.rest(tail), (p) =>
-      ctx.strokeStyle = p.color
-      ctx.lineWidth = p.size
-      ctx.lineTo(p.x, p.y)
-    ctx.stroke()
+    #_.each [fp, lp], (p) ->
+    #  ctx.beginPath()
+    #  ctx.fillStyle = p.color
+    #  ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2)
+    #  ctx.fill()
+    #  ctx.closePath()
+
+    ctx.beginPath(poly[0].x, poly[0].y)
+    ctx.fillStyle = poly[0].color
+    _.each poly, (point) ->
+      ctx.lineTo(point.x, point.y)
     ctx.closePath()
+    ctx.fill()
 
 
 class LC.EraseLinePathShape extends LC.LinePathShape
