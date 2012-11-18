@@ -2,19 +2,148 @@
 <html>
   <head>
     <title>Literally Canvas</title>
-    <link href="css/example.css" rel="stylesheet">
+    <link href="css/bootstrap-custom.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+
     <link href="lib/css/colorpicker.css" rel="stylesheet">
     <link href="lib/css/literally.css" rel="stylesheet">
 
     <!-- only needed for buttons and icons -->
     <link href="lib/css/bootstrap-components.css" rel="stylesheet">
+
+    <link href='http://fonts.googleapis.com/css?family=Finger+Paint'
+      rel='stylesheet' type='text/css'>
+
+    <!-- pygments CSS -->
+    <style type="text/css">.hll { background-color: #ffffcc }
+.c { color: #999988; font-style: italic } /* Comment */
+.err { color: #a61717; background-color: #e3d2d2 } /* Error */
+.k { font-weight: bold } /* Keyword */
+.o { font-weight: bold } /* Operator */
+.cm { color: #999988; font-style: italic } /* Comment.Multiline */
+.cp { color: #999999; font-weight: bold } /* Comment.Preproc */
+.c1 { color: #999988; font-style: italic } /* Comment.Single */
+.cs { color: #999999; font-weight: bold; font-style: italic } /* Comment.Special */
+.gd { color: #000000; background-color: #ffdddd } /* Generic.Deleted */
+.ge { font-style: italic } /* Generic.Emph */
+.gr { color: #aa0000 } /* Generic.Error */
+.gh { color: #999999 } /* Generic.Heading */
+.gi { color: #000000; background-color: #ddffdd } /* Generic.Inserted */
+.go { color: #888888 } /* Generic.Output */
+.gp { color: #555555 } /* Generic.Prompt */
+.gs { font-weight: bold } /* Generic.Strong */
+.gu { color: #aaaaaa } /* Generic.Subheading */
+.gt { color: #aa0000 } /* Generic.Traceback */
+.kc { font-weight: bold } /* Keyword.Constant */
+.kd { font-weight: bold } /* Keyword.Declaration */
+.kn { font-weight: bold } /* Keyword.Namespace */
+.kp { font-weight: bold } /* Keyword.Pseudo */
+.kr { font-weight: bold } /* Keyword.Reserved */
+.kt { color: #445588; font-weight: bold } /* Keyword.Type */
+.m { color: #009999 } /* Literal.Number */
+.s { color: #bb8844 } /* Literal.String */
+.na { color: #008080 } /* Name.Attribute */
+.nb { color: #999999 } /* Name.Builtin */
+.nc { color: #445588; font-weight: bold } /* Name.Class */
+.no { color: #008080 } /* Name.Constant */
+.ni { color: #800080 } /* Name.Entity */
+.ne { color: #990000; font-weight: bold } /* Name.Exception */
+.nf { color: #990000; font-weight: bold } /* Name.Function */
+.nn { color: #555555 } /* Name.Namespace */
+.nt { color: #000080 } /* Name.Tag */
+.nv { color: #008080 } /* Name.Variable */
+.ow { font-weight: bold } /* Operator.Word */
+.w { color: #bbbbbb } /* Text.Whitespace */
+.mf { color: #009999 } /* Literal.Number.Float */
+.mh { color: #009999 } /* Literal.Number.Hex */
+.mi { color: #009999 } /* Literal.Number.Integer */
+.mo { color: #009999 } /* Literal.Number.Oct */
+.sb { color: #bb8844 } /* Literal.String.Backtick */
+.sc { color: #bb8844 } /* Literal.String.Char */
+.sd { color: #bb8844 } /* Literal.String.Doc */
+.s2 { color: #bb8844 } /* Literal.String.Double */
+.se { color: #bb8844 } /* Literal.String.Escape */
+.sh { color: #bb8844 } /* Literal.String.Heredoc */
+.si { color: #bb8844 } /* Literal.String.Interpol */
+.sx { color: #bb8844 } /* Literal.String.Other */
+.sr { color: #808000 } /* Literal.String.Regex */
+.s1 { color: #bb8844 } /* Literal.String.Single */
+.ss { color: #bb8844 } /* Literal.String.Symbol */
+.bp { color: #999999 } /* Name.Builtin.Pseudo */
+.vc { color: #008080 } /* Name.Variable.Class */
+.vg { color: #008080 } /* Name.Variable.Global */
+.vi { color: #008080 } /* Name.Variable.Instance */
+.il { color: #009999 } /* Literal.Number.Integer.Long */</style>
   </head>
 
   <body>
     <div class="container">
-      <h1>Literally Canvas</h1>
-      <div class="literally"><canvas></canvas></div>
+
+      <h1 class="title">
+        <span class="title-literally">Literally</span>
+        <span class="title-canvas">&ldquo;Canvas&rdquo;</span>
+      </h1>
+
+      <div class="row">
+        <div class="demo span6 offset3">
+          <div class="literally"><canvas></canvas></div>
+        </div>
+        <div class="span3">
+          <a href="example.html">Fullscreen demo &gt;&gt;</a>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="span6 offset3">
+
+          <p>
+            Literally Canvas is an extensible, BSD-licensed, HTML5 drawing
+            widget that currently supports a minimal set of drawing operations.
+            You can draw, erase, set the color with the eyedropper, undo, redo,
+            pan, and zoom.
+          </p>
+
+          <p>
+            The project will always depend on
+            <a href="http://jquery.com/">jQuery</a> and
+            <a href="http://underscorejs.org/">underscore.js</a>. At the moment,
+            it also depends on a small subset of
+            <a href="http://twitter.github.com/bootstrap">Twitter Bootstrap</a>
+            which is being phased out.
+          </p>
+
+        </div>
+      </div>
+
+      <hr>
+
+      <h2>Usage</h2>
+
+      <div class="row">
+        <div class="span6 offset3">
+          <div class="highlight"><pre><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;literally&quot;</span><span class="nt">&gt;&lt;canvas&gt;&lt;/canvas&gt;&lt;/div&gt;</span>
+</pre></div>
+
+          <div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.literally&#39;</span><span class="p">).</span><span class="nx">literallycanvas</span><span class="p">();</span>
+</pre></div>
+
+          <div class="highlight"><pre><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;.literally&#39;</span><span class="p">).</span><span class="nx">literallycanvas</span><span class="p">({</span>
+  <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;rgb(255, 0, 0)&#39;</span><span class="p">,</span> <span class="c1">// default rgb(230, 230, 230)</span>
+  <span class="nx">keyboardShortcuts</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>          <span class="c1">// default true</span>
+  <span class="nx">sizeToContainer</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>            <span class="c1">// default true</span>
+  <span class="nx">toolClasses</span><span class="o">:</span> <span class="p">[</span><span class="nx">LC</span><span class="p">.</span><span class="nx">Pencil</span><span class="p">]</span>           <span class="c1">// see coffee/tools.coffee</span>
+<span class="p">});</span>
+</pre></div>
+
+        </div>
+      </div>
+
     </div>
-    <script src="js/gen/literallycanvas.fat.js"></script>
+    <script src="lib/js/literallycanvas.fat.js"></script>
+    <script type="text/javascript">
+      $('.literally').literallycanvas({backgroundColor: 'whiteSmoke'});
+    </script>
   </body>
 </html>

@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Literally Canvas</title>
+    <link href="css/bootstrap-custom.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet">
+
+    <link href="lib/css/colorpicker.css" rel="stylesheet">
+    <link href="lib/css/literally.css" rel="stylesheet">
+
+    <!-- only needed for buttons and icons -->
+    <link href="lib/css/bootstrap-components.css" rel="stylesheet">
+
+    <link href='http://fonts.googleapis.com/css?family=Finger+Paint'
+      rel='stylesheet' type='text/css'>
+
+    <!-- pygments CSS -->
+    <style type="text/css">{{ pygments_css }}</style>
+  </head>
+
+  <body>
+    <div class="container">
+
+      <h1 class="title">
+        <span class="title-literally">Literally</span>
+        <span class="title-canvas">&ldquo;Canvas&rdquo;</span>
+      </h1>
+
+      <div class="row">
+        <div class="demo span6 offset3">
+          <div class="literally"><canvas></canvas></div>
+        </div>
+        <div class="span3">
+          <a href="example.html">Fullscreen demo &gt;&gt;</a>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <div class="span6 offset3">
+
+          <p>
+            Literally Canvas is an extensible, BSD-licensed, HTML5 drawing
+            widget that currently supports a minimal set of drawing operations.
+            You can draw, erase, set the color with the eyedropper, undo, redo,
+            pan, and zoom.
+          </p>
+
+          <p>
+            The project will always depend on
+            <a href="http://jquery.com/">jQuery</a> and
+            <a href="http://underscorejs.org/">underscore.js</a>. At the moment,
+            it also depends on a small subset of
+            <a href="http://twitter.github.com/bootstrap">Twitter Bootstrap</a>
+            which is being phased out.
+          </p>
+
+        </div>
+      </div>
+
+      <hr>
+
+      <h2>Usage</h2>
+
+      <div class="row">
+        <div class="span6 offset3">
+          {{ "code_samples/simple.html" | code }}
+          {{ "code_samples/simple.js" | code }}
+          {{ "code_samples/options.js" | code }}
+        </div>
+      </div>
+
+    </div>
+    <script src="lib/js/literallycanvas.fat.js"></script>
+    <script type="text/javascript">
+      $('.literally').literallycanvas({backgroundColor: 'whiteSmoke'});
+    </script>
+  </body>
+</html>

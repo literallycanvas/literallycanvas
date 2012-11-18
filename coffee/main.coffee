@@ -22,24 +22,29 @@ initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
     keyboardShortcuts: true
+    sizeToContainer: true
     toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
   }, opts)
   $el = $(el)
+  $tbEl = $('<div class="toolbar">')
+
+  $el.append($tbEl)
 
   $c = $el.find('canvas')
-  $c.attr('width', $c.width())
-  $c.attr('height', $c.height())
-
-  $el.append($('<div class="toolbar">'))
 
   lc = new LC.LiterallyCanvas($c.get(0), opts.backgroundColor)
-  tb = new LC.Toolbar(lc, $el.find('.toolbar'), opts.toolClasses)
+  tb = new LC.Toolbar(lc, $tbEl, opts.toolClasses)
   tb.selectTool(tb.tools[0])
 
-  $(window).resize (e) ->
+  resize = ->
+    if opts.sizeToContainer
+      $c.css('height', "#{$el.height() - $tbEl.height()}px")
     $c.attr('width', $c.width())
     $c.attr('height', $c.height())
     lc.repaint()
+
+  $(window).resize(resize)
+  resize()
 
   down = false
 

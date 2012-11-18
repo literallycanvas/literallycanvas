@@ -2,21 +2,39 @@
 <html>
   <head>
     <title>Literally Canvas</title>
-    <link href="css/example.css" rel="stylesheet">
     <link href="lib/css/colorpicker.css" rel="stylesheet">
     <link href="lib/css/literally.css" rel="stylesheet">
 
     <!-- only needed for buttons and icons -->
     <link href="lib/css/bootstrap-components.css" rel="stylesheet">
+
+    <style type="text/css">
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin: 0;
+      }
+
+      .fs-container {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+
+      .literally {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
 
   <body>
-    <div class="container">
-      <h1>Literally Canvas</h1>
+    <div class="fs-container">
       <div class="literally"><canvas></canvas></div>
     </div>
-    <script src="js/gen/literallycanvas.fat.js"></script>
-    <script>
+    <script src="lib/js/literallycanvas.fat.js"></script>
+    <script type="text/javascript">
       $(document).ready(function() {
         // disable scrolling on touch devices so we can actually draw
         $(document).bind('touchmove', function(e) {
