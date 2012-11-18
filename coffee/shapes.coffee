@@ -1,10 +1,21 @@
 class LC.LinePathShape
   constructor: (@tool) ->
     @points = []
+    # Order of the bspline applied to the curve
+    # Higher values make the curve smoother, 3 is a cubic bspline
+    @order = 3
+    # The number of points used to calculate the bspline to the newest point
+    # Higher values make slope at joints better, must be at least 3
+    @tail = 4
 
   addPoint: (x, y) ->
     @points.push(@tool.makePoint(x, y))
-    @smoothedPoints = LC.bspline(LC.bspline(LC.bspline(@points)))
+    if not @smoothedPoints or @points.length < @tail
+      @smoothedPoints = LC.bspline(@points, @order)
+    else
+      @smoothedPoints = @smoothedPoints.concat(
+        _.last(LC.bspline(_.last(@points, @tail), @order), Math.pow(2, @order))
+      )
 
   draw: (ctx) ->
     return unless @smoothedPoints.length

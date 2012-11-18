@@ -1,7 +1,9 @@
 window.LC = window.LC ? {}
 
-LC.bspline = (points) ->
-  return dual(dual(refine(points)))
+LC.bspline = (points, order) ->
+  if not order
+    return points
+  return LC.bspline(dual(dual(refine(points))), order - 1)
 
 refine = (points) ->
   refined = []
