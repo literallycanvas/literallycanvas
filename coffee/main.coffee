@@ -18,6 +18,13 @@ position = (e) ->
     }
 
 
+buttonIsDown = (e) ->
+  if e.buttons?
+    return e.buttons == 1
+  else
+    return e.which > 0
+
+
 initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
@@ -59,7 +66,7 @@ initLiterallyCanvas = (el, opts = {}) ->
   $c.mousemove (e) =>
     e.originalEvent.preventDefault()
     p = position(e)
-    if e.which and not down
+    if buttonIsDown(e) and not down
       lc.begin(p.left, p.top)
       down = true
     lc.continue(p.left, p.top)
