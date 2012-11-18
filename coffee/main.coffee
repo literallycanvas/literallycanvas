@@ -11,7 +11,7 @@ position = (e) ->
   if e.offsetX?
     {left: e.offsetX, top: e.offsetY}
   else
-    p = $(e.delegateTarget).position()
+    p = $(e.target).offset()
     {
       left: e.pageX - p.left,
       top: e.pageY - p.top,
