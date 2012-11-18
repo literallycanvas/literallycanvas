@@ -90,6 +90,9 @@ class LC.LiterallyCanvas
     @tool.drawCurrent(@ctx) if @tool
     @ctx.restore()
 
+  update: (shape) ->
+    shape.drawLatest(@ctx)
+
   clear: ->
     @execute(new LC.ClearAction(this))
     @shapes = []
@@ -189,7 +192,7 @@ class LC.AddShapeAction
   do: ->
     @ix = @lc.shapes.length
     @lc.shapes.push(@shape)
-    @lc.repaint()
+    #@lc.repaint()
 
   undo: ->
     @lc.shapes.pop(@ix)

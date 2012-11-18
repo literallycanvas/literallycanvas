@@ -56,7 +56,7 @@ class LC.Pencil extends LC.Tool
 
   continue: (x, y, lc) ->
     @currentShape.addPoint(x, y)
-    lc.repaint(@currentShape)
+    lc.update(@currentShape)
 
   end: (x, y, lc) ->
     @currentShape.addPoint(x, y)

@@ -40,14 +40,19 @@ class LC.LinePathShape
     ctx.closePath()
 
   drawLatest: (ctx) ->
-    pair = _.last(@points, 2)
-    return unless pair.length > 1
+    tail = _.last(@smoothedPoints, Math.pow(2, @order) + 1)
+    return unless tail.length > 1
+    
     ctx.beginPath()
-    ctx.strokeStyle = pair[1].color
-    ctx.lineWidth = pair[1].size
-    ctx.moveTo(pair[0].x, pair[0].y)
-    ctx.lineTo(pair[1].x, pair[1].y)
+    ctx.lineCap = 'round'
+    ctx.moveTo(tail[0].x, tail[0].y)
+
+    _.each _.rest(tail), (p) =>
+      ctx.strokeStyle = p.color
+      ctx.lineWidth = p.size
+      ctx.lineTo(p.x, p.y)
     ctx.stroke()
+    ctx.closePath()
 
 
 class LC.EraseLinePathShape extends LC.LinePathShape
