@@ -31,7 +31,7 @@ class LC.Pencil extends LC.Tool
 
   constructor: ->
     @isDrawing = false
-    @strokeWidth = 5
+    @strokeWidth = 2
 
   title: "Pencil"
   cssSuffix: "pencil"

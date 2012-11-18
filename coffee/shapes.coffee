@@ -9,7 +9,10 @@ class LC.LinePathShape
     @tail = 4
 
   addPoint: (x, y) ->
-    @points.push(@tool.makePoint(x, y))
+    newPoint = @tool.makePoint(x, y)
+    distance = LC.len(LC.diff(_.last(@points), newPoint)) if @points.length
+    newPoint.size = newPoint.size + Math.sqrt(distance) if distance
+    @points.push(newPoint)
     if not @smoothedPoints or @points.length < @tail
       @smoothedPoints = LC.bspline(@points, @order)
     else

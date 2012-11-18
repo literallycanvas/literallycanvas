@@ -48,15 +48,15 @@ slope = (line, index) ->
   else if index == line.length - 1
     point = slope(line, index - 1)
   else
-    point = diff line[index - 1], line[index + 1]
+    point = LC.diff line[index - 1], line[index + 1]
 
   return point
 
-diff = (a, b) ->
+LC.diff = (a, b) ->
   return {x: b.x - a.x, y: b.y - a.y}
 
 unit = (vector) ->
-  length = len(vector)
+  length = LC.len(vector)
   return {x: vector.x / length, y: vector.y / length}
 
 normals = (p, slope) ->
@@ -66,7 +66,7 @@ normals = (p, slope) ->
   return [{x: p.x - slope.y, y: p.y + slope.x, color: p.color},
           {x: p.x + slope.y, y: p.y - slope.x, color: p.color}]
 
-len = (vector) ->
+LC.len = (vector) ->
   return Math.sqrt(Math.pow(vector.x, 2) + Math.pow(vector.y, 2))
 
 LC.scalePositionScalar = (val, viewportSize, oldScale, newScale) ->
