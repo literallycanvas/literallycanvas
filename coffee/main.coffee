@@ -133,8 +133,13 @@ $.fn.literallycanvas = (opts = {}) ->
       # also synthesize click events we just swallowed up
       @trigger('click').trigger('click')
 
-  ret = null
   @each (ix, el) =>
     val = initLiterallyCanvas(el, opts)
     el.literallycanvas = val[0]
     el.literallycanvasToolbar = val[1]
+
+  this
+
+
+$.fn.uploadCanvasToImgur = (opts = {}) ->
+  @get(0).literallycanvas.shareToImgur(opts)

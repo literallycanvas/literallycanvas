@@ -120,9 +120,15 @@ class LC.LiterallyCanvas
     else
       null
 
-  # shamelessly stolen from
+  # Starting point (but not most of the code) from here:
   # http://29a.ch/2011/9/11/uploading-from-html5-canvas-to-imgur-data-uri
-  shareToImgur: ->
+  shareToImgur: (opts) ->
+    opts = _.extend({
+      name: 'drawing.png'
+      title: 'A Drawing'
+      caption: 'Drawn with Literally Canvas - http://steveasleep.com/literallycanvas'
+    }, opts)
+
     d = new $.Deferred()
     unless @opts.imgurKey
       d.reject("This application is not configured to support Imgur.")
@@ -144,9 +150,9 @@ class LC.LiterallyCanvas
         data: {
             type: 'base64',
             key: @opts.imgurKey,
-            name: 'drawing.png',
-            title: 'Drawing',
-            caption: 'Drawn with Literally Canvas - http://steveasleep.com/literallycanvas',
+            name: opts.name,
+            title: opts.title,
+            caption: opts.caption,
             image: img
         },
         dataType: 'json'
