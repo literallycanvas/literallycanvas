@@ -91,7 +91,11 @@ class LC.LiterallyCanvas
     @ctx.restore()
 
   update: (shape) ->
+    @ctx.save()
+    @ctx.translate @position.x, @position.y
+    @ctx.scale @scale, @scale
     shape.drawLatest(@ctx)
+    @ctx.restore()
 
   clear: ->
     @execute(new LC.ClearAction(this))
