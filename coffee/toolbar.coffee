@@ -50,10 +50,16 @@ LC.makeColorPicker = ($el, title, callback) ->
   cp.hide()
   $el.on 'changeColor', (e) ->
     callback(e.color.toRGB())
+    $(document).one 'click', ->
+      cp.hide()
   $el.click (e) ->
     if cp.picker.is(':visible')
       cp.hide()
     else
+      $(document).one 'click', ->
+        # quick hack; we're actually still in the same click event
+        $(document).one 'click', ->
+          cp.hide()
       cp.show()
       cp.place()
   return cp

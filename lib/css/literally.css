@@ -69,6 +69,10 @@
   width: 12px;
 }
 
+.literally .button.color-square:hover {
+  background-image: none;
+}
+
 /* buttons derived from
  * https://github.com/necolas/css3-github-buttons/blob/master/gh-buttons.css
  */
