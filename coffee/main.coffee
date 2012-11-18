@@ -22,6 +22,7 @@ initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
     keyboardShortcuts: true
+    sizeToContainer: true
     toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
   }, opts)
   $el = $(el)
@@ -36,7 +37,8 @@ initLiterallyCanvas = (el, opts = {}) ->
   tb.selectTool(tb.tools[0])
 
   resize = ->
-    $c.css('height', "#{$el.height() - $tbEl.height()}px")
+    if opts.sizeToContainer
+      $c.css('height', "#{$el.height() - $tbEl.height()}px")
     $c.attr('width', $c.width())
     $c.attr('height', $c.height())
     lc.repaint()
