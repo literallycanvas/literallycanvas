@@ -1,4 +1,4 @@
-.PHONY: coffee clean all
+.PHONY: coffee clean all update-gh-pages
 
 JS_DEPS =  js/jquery-1.8.2.js js/underscore-1.4.2.js
 
@@ -33,7 +33,7 @@ docs: lib/js/literallycanvas.fat.js
 serve:
 	python -m SimpleHTTPServer 8000 .
 
-update-gh-pages: all
+update-gh-pages:
 	git checkout gh-pages
 	git merge master --ff-only
 	git push origin gh-pages
