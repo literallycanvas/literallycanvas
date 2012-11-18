@@ -26,13 +26,13 @@ p {
 
 .literally {
   width: 100%;
+  height: 240px;
   border-radius: 4px;
   -webkit-border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .demo .literally canvas {
-  height: 200px;
   -webkit-border-radius: 3px 3px 0px 0px;
   border-radius: 3px 3px 0px 0px;
 }
@@ -46,6 +46,6 @@ p {
   width: 70px;
 }
 
-.example-link, .github {
-  margin-bottom: 2em;
+.example-link, .github, .downloads {
+  margin-bottom: 1em;
 }
