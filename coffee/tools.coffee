@@ -38,10 +38,12 @@ class LC.Pencil extends LC.Tool
   buttonContents: -> '<i class="icon-pencil"></i>'
   optionsContents: ->
     $el = $("
-      <span class='brush-width-min'>1 px</span>
-      <input type='range' min='1' max='50' step='1' value='#{@strokeWidth}'>
-      <span class='brush-width-max'>50 px</span>
-      <span class='brush-width-val'>(5 px)</span>
+      <div>
+        <span class='brush-width-min'>1 px</span>
+        <input type='range' min='1' max='50' step='1' value='#{@strokeWidth}'>
+        <span class='brush-width-max'>50 px</span>
+        <span class='brush-width-val'>(5 px)</span>
+        </input>
     ")
     brushWidthVal = $el.find('.brush-width-val')
     $el.find('input').change (e) =>
