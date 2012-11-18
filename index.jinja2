@@ -21,24 +21,38 @@
   <body>
     <div class="container">
 
+      <a name="demo"></a>
       <h1 class="title">
         <span class="title-literally">Literally</span>
         <span class="title-canvas">&ldquo;Canvas&rdquo;</span>
       </h1>
 
       <div class="row">
-        <div class="demo span6 offset3">
-          <div class="literally"><canvas></canvas></div>
+        <div class="span3">
+          <ul class="nav nav-list">
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#usage">Usage</a></li>
+          </ul>
         </div>
+
+        <div class="span6">
+
+          <div class="demo">
+            <div class="literally"><canvas></canvas></div>
+          </div>
+
+        </div>
+
         <div class="span3">
           <a href="example.html">Fullscreen demo &gt;&gt;</a>
         </div>
       </div>
 
-      <hr>
-
+      <hr><a name="about"></a>
       <div class="row">
         <div class="span6 offset3">
+          <h2>About</h2>
 
           <p>
             Literally Canvas is an extensible, BSD-licensed, HTML5 drawing
@@ -55,19 +69,17 @@
             <a href="http://twitter.github.com/bootstrap">Twitter Bootstrap</a>
             which is being phased out.
           </p>
-
         </div>
       </div>
 
-      <hr>
-
-      <h2>Usage</h2>
-
+      <hr><a name="usage"></a>
       <div class="row">
         <div class="span6 offset3">
+          <h2>Usage</h2>
           {{ "code_samples/simple.html" | code }}
           {{ "code_samples/simple.js" | code }}
           {{ "code_samples/options.js" | code }}
+
         </div>
       </div>
 

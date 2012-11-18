@@ -12,6 +12,10 @@ p {
   text-indent: 4em;
 }
 
+.nav-list {
+  text-align: right;
+}
+
 .title-literally {
   margin-right: 10px;
   color: red;
