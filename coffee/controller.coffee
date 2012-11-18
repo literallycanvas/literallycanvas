@@ -3,8 +3,10 @@ window.LC = window.LC ? {}
 
 class LC.LiterallyCanvas
 
-  constructor: (@canvas, @backgroundColor = 'rgb(230, 230, 230)') ->
+  constructor: (@canvas, @opts) ->
     @$canvas = $(@canvas)
+    @backgroundColor = @opts.backgroundColor or 'rgb(230, 230, 230)'
+
     @ctx = @canvas.getContext('2d')
     $(@canvas).css('background-color', @backgroundColor)
     @shapes = []
@@ -75,8 +77,11 @@ class LC.LiterallyCanvas
 
     @repaint()
 
-  repaint: ->
+  repaint: (drawBackground = false)->
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+    if drawBackground
+      @ctx.fillStyle = @backgroundColor
+      @ctx.fillRect(0, 0, @canvas.width, @canvas.height)
     @ctx.save()
     @ctx.translate @position.x, @position.y
     @ctx.scale @scale, @scale
@@ -114,6 +119,34 @@ class LC.LiterallyCanvas
       "rgb(" + pixel[0] + "," + pixel[1] + ","  + pixel[2] + ")"
     else
       null
+
+  # shamelessly stolen from
+  # http://29a.ch/2011/9/11/uploading-from-html5-canvas-to-imgur-data-uri
+  shareToImgur: ->
+    unless @opts.imgurKey
+      alert('This application has not configured Imgur upload support.')
+      return
+    @repaint(true)
+    img = @canvas.toDataURL().split(',')[1];
+
+    # upload to imgur using jquery/CORS
+    # https://developer.mozilla.org/En/HTTP_access_control
+    $.ajax
+        url: 'http://api.imgur.com/2/upload.json',
+        type: 'POST',
+        data: {
+            type: 'base64',
+            key: @opts.imgurKey,
+            name: 'drawing.png',
+            title: 'Drawing',
+            caption: 'Drawin with Literally Canvas',
+            image: img
+        },
+        dataType: 'json'
+        success: (data) ->
+          console.log 'uploaded to', data['upload']['links']['imgur_page']
+        error: (r) ->
+          console.log r
 
 
 # maybe add checks to these in the future to make sure you never double-undo or

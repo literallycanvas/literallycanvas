@@ -101,6 +101,7 @@
 
           <div class="demo">
             <div class="literally"><canvas></canvas></div>
+            <button class="share-to-imgur">Share to Imgur</button>
           </div>
 
         </div>
@@ -285,7 +286,15 @@
 
     <script src="lib/js/literallycanvas.fat.js"></script>
     <script type="text/javascript">
-      $('.literally').literallycanvas({backgroundColor: 'whiteSmoke'});
+      var lc = $('.literally').literallycanvas({
+        backgroundColor: 'whiteSmoke',
+        imgurKey: '9600756ae5f127ca192d991140ee28c4'
+      });
+      $('.share-to-imgur').click(function(e) {
+        lc.each(function(ix, el) {
+          el.literallycanvas.shareToImgur();
+        })
+      })
     </script>
   </body>
 </html>

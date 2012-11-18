@@ -28,6 +28,7 @@ buttonIsDown = (e) ->
 initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
+    imgurKey: null
     keyboardShortcuts: true
     sizeToContainer: true
     toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
@@ -40,7 +41,7 @@ initLiterallyCanvas = (el, opts = {}) ->
 
   $c = $el.find('canvas')
 
-  lc = new LC.LiterallyCanvas($c.get(0), opts.backgroundColor)
+  lc = new LC.LiterallyCanvas($c.get(0), opts)
   tb = new LC.Toolbar(lc, $tbEl, opts.toolClasses)
   tb.selectTool(tb.tools[0])
 
@@ -114,6 +115,8 @@ initLiterallyCanvas = (el, opts = {}) ->
 
       lc.repaint()
 
+  [lc, tb]
+
 
 IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
 $.fn.literallycanvas = (opts = {}) ->
@@ -130,5 +133,9 @@ $.fn.literallycanvas = (opts = {}) ->
       # also synthesize click events we just swallowed up
       @trigger('click').trigger('click')
 
-  @each (ix, el) ->
-    initLiterallyCanvas(el, opts)
+  console.log this
+  ret = null
+  @each (ix, el) =>
+    val = initLiterallyCanvas(el, opts)
+    el.literallycanvas = val[0]
+    el.literallycanvasToolbar = val[1]
