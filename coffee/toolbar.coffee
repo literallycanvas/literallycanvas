@@ -36,7 +36,7 @@ LC.toolbarHTML = '
         <div class="button-group">
           <div class="button btn-inverse zoom-out-button">&ndash;</div><div class="button btn-inverse zoom-in-button">+</div>
         </div>
-        <div class="zoom-display badge badge-inverse">1</div>
+        <div class="zoom-display">1</div>
       </div>
     </div>
     <div class="clearfix"></div>

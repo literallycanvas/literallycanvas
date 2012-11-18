@@ -43,6 +43,15 @@
 .literally .zoom-display {
   text-align: center;
   width: 1.5em;
+  border-radius: 5px;
+  background-color: #333;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+  line-height: 14px;
+  padding: 5px 5px 5px 5px;
+  margin: 4px 0 2px 0;
+  font-size: 12px;
 }
 
 .literally .tool-options-container {
