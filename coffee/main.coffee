@@ -133,7 +133,6 @@ $.fn.literallycanvas = (opts = {}) ->
       # also synthesize click events we just swallowed up
       @trigger('click').trigger('click')
 
-  console.log this
   ret = null
   @each (ix, el) =>
     val = initLiterallyCanvas(el, opts)

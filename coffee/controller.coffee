@@ -123,9 +123,16 @@ class LC.LiterallyCanvas
   # shamelessly stolen from
   # http://29a.ch/2011/9/11/uploading-from-html5-canvas-to-imgur-data-uri
   shareToImgur: ->
+    d = new $.Deferred()
     unless @opts.imgurKey
-      alert('This application has not configured Imgur upload support.')
-      return
+      d.reject("This application is not configured to support Imgur.")
+      d.promise()
+      return d
+    unless @shapes.length
+      d.reject("You haven't drawn anything.")
+      d.promise()
+      return d
+
     @repaint(true)
     img = @canvas.toDataURL().split(',')[1];
 
@@ -139,14 +146,18 @@ class LC.LiterallyCanvas
             key: @opts.imgurKey,
             name: 'drawing.png',
             title: 'Drawing',
-            caption: 'Drawin with Literally Canvas',
+            caption: 'Drawn with Literally Canvas - http://steveasleep.com/literallycanvas',
             image: img
         },
         dataType: 'json'
         success: (data) ->
-          console.log 'uploaded to', data['upload']['links']['imgur_page']
-        error: (r) ->
-          console.log r
+          d.resolve(data.upload.links.imgur_page)
+        error: (rsp) ->
+          d.reject("Image upload failed.")
+          console.log(rsp)
+
+    d.promise()
+    return d
 
 
 # maybe add checks to these in the future to make sure you never double-undo or
