@@ -58,7 +58,6 @@ class LC.LiterallyCanvas
 
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
-    @repaint()
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
