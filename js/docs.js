@@ -24,4 +24,7 @@
   $('.get-image').click(function(e) {
     window.open($('.literally').canvasImageURL());
   });
+
+  // courtesy of jQuery UI
+  $('.literally').resizable();
 }).call(this);
