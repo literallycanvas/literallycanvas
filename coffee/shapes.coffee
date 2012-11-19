@@ -10,8 +10,11 @@ class LC.LinePathShape
 
   addPoint: (x, y) ->
     newPoint = @tool.makePoint(x, y)
-    distance = LC.len(LC.diff(_.last(@points), newPoint)) if @points.length
-    newPoint.size = newPoint.size + Math.sqrt(distance) if distance
+    
+    # Brush Variance Code
+    #distance = LC.len(LC.diff(_.last(@points), newPoint)) if @points.length
+    #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
+    
     @points.push(newPoint)
     if not @smoothedPoints or @points.length < @tail
       @smoothedPoints = LC.bspline(@points, @order)
@@ -22,11 +25,18 @@ class LC.LinePathShape
 
   draw: (ctx) ->
     return unless @smoothedPoints.length
-    poly = LC.toPoly(@smoothedPoints)
     
-    # TODO: Fix line-caps
-    #fp = @smoothedPoints[0]
-    #lp = _.last(@smoothedPoints)
+    ctx.strokeStyle = @smoothedPoints[0].color
+    ctx.lineWidth = @smoothedPoints[0].size
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(@smoothedPoints[0].x, @smoothedPoints[0].y)
+    _.each _.rest(@smoothedPoints), (point) ->
+      ctx.lineTo(point.x, point.y)
+    ctx.stroke()
+
+    # Polygonal Line Code
+    #poly = LC.toPoly(@smoothedPoints)
 
     #_.each [fp, lp], (p) ->
     #  ctx.beginPath()
@@ -35,12 +45,12 @@ class LC.LinePathShape
     #  ctx.fill()
     #  ctx.closePath()
 
-    ctx.beginPath(poly[0].x, poly[0].y)
-    ctx.fillStyle = poly[0].color
-    _.each poly, (point) ->
-      ctx.lineTo(point.x, point.y)
-    ctx.closePath()
-    ctx.fill()
+    #ctx.beginPath(poly[0].x, poly[0].y)
+    #ctx.fillStyle = poly[0].color
+    #_.each poly, (point) ->
+    #  ctx.lineTo(point.x, point.y)
+    #ctx.closePath()
+    #ctx.fill()
 
 
 class LC.EraseLinePathShape extends LC.LinePathShape
