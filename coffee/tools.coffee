@@ -43,10 +43,9 @@ class LC.Pencil extends LC.Tool
       <span class='brush-width-max'>50 px</span>
       <span class='brush-width-val'>(5 px)</span>
     ")
-    brushWidthVal = $el.find('.brush-width-val')
     $el.filter('input').change (e) =>
-      @strokeWidth = e.currentTarget.valueAsNumber
-      brushWidthVal.html("(#{@strokeWidth} px)")
+      @strokeWidth = $(e.currentTarget).val()
+      $el.filter('.brush-width-val').html("(#{@strokeWidth} px)")
     return $el
 
   begin: (x, y, lc) ->

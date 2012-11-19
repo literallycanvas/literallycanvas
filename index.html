@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Literally Canvas</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link href="css/bootstrap-custom.css" rel="stylesheet">
     <link href="css/main.css" rel="stylesheet">
 
@@ -203,8 +204,10 @@
               <tr>
                 <td>Firefox</td>
                 <td>
-                  All works except changing brush size because we're using
-                  <tt>&lt;input type="range"&gt;</tt>
+                  Requires a shim like
+                  <a href="https://github.com/fryn/html5slider">html5slider.js
+                  </a> because we're using <tt>&lt;input type="range"&gt;</tt>
+                  for brush width
                 </td>
               </tr>
 
@@ -253,14 +256,14 @@
 
           <div class="well">
             <h4><tt>$('.literally').uploadCanvasToImgur(options)</tt></h4>
-            <p>
-              As you can see from the demo at the top of this page, Literally
-              Canvas supports convenient uploads to the Imgur image hosting web
-              site.
+            As you can see from the demo at the top of this page, Literally
+            Canvas supports convenient uploads to the Imgur image hosting web
+            site. We assume you want to do your own UI, so it's just a
+            function you can call.
+            <br><br>
 
-              The options available are <tt>name</tt>, <tt>title</tt>, and
-              <tt>caption</tt>.
-            </p>
+            The options available are <tt>name</tt>, <tt>title</tt>, and
+            <tt>caption</tt>.
           </div>
         </div>
       </div>
@@ -309,6 +312,9 @@
       </div>
 
     </div>
+
+    <!-- Fix sliders for Firefox -->
+    <script src="js/html5slider.js"></script>
 
     <script src="lib/js/literallycanvas.fat.js"></script>
     <script src="js/docs.js"></script>
