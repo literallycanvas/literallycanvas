@@ -52,7 +52,7 @@ initLiterallyCanvas = (el, opts = {}) ->
     $c.attr('height', $c.height())
     lc.repaint()
 
-  $(window).resize(resize)
+  $el.resize(resize)
   resize()
 
   down = false
