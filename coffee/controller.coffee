@@ -135,7 +135,7 @@ class LC.LiterallyCanvas
 
   # Starting point (but not most of the code) from here:
   # http://29a.ch/2011/9/11/uploading-from-html5-canvas-to-imgur-data-uri
-  shareToImgur: (opts) ->
+  uploadToImgur: (opts) ->
     opts = _.extend({
       name: 'drawing.png'
       title: 'A Drawing'
@@ -153,7 +153,7 @@ class LC.LiterallyCanvas
       return d
 
     @repaint(true, true)
-    img = @canvas.toDataURL().split(',')[1];
+    img = @imageURL().split(',')[1];
 
     # upload to imgur using jquery/CORS
     # https://developer.mozilla.org/En/HTTP_access_control
@@ -177,6 +177,10 @@ class LC.LiterallyCanvas
 
     d.promise()
     return d
+
+  imageURL:  ->
+    @repaint(true, true)
+    @canvas.toDataURL();
 
 
 # maybe add checks to these in the future to make sure you never double-undo or

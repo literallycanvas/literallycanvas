@@ -54,3 +54,7 @@ p {
 .alert {
   text-align: center;
 }
+
+.share-to-imgur {
+  display: inline-block;
+}

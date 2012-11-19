@@ -142,4 +142,8 @@ $.fn.literallycanvas = (opts = {}) ->
 
 
 $.fn.uploadCanvasToImgur = (opts = {}) ->
-  @get(0).literallycanvas.shareToImgur(opts)
+  @get(0).literallycanvas.uploadToImgur(opts)
+
+
+$.fn.canvasImageURL = ->
+  @get(0).literallycanvas.imageURL()

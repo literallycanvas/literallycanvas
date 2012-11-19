@@ -20,4 +20,8 @@
       $button.removeAttr('disabled');
     });
   });
+
+  $('.get-image').click(function(e) {
+    window.open($('.literally').canvasImageURL());
+  });
 }).call(this);
