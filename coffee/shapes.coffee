@@ -6,7 +6,7 @@ class LC.LinePathShape
     @order = 3
     # The number of points used to calculate the bspline to the newest point
     # Higher values make slope at joints better, must be at least 3
-    @tail = 4
+    @tailSize = 4
 
   addPoint: (x, y) ->
     newPoint = @tool.makePoint(x, y)
@@ -16,22 +16,24 @@ class LC.LinePathShape
     #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
     
     @points.push(newPoint)
-    if not @smoothedPoints or @points.length < @tail
+    if not @smoothedPoints or @points.length < @tailSize
       @smoothedPoints = LC.bspline(@points, @order)
     else
-      @smoothedPoints = @smoothedPoints.concat(
-        _.last(LC.bspline(_.last(@points, @tail), @order), Math.pow(2, @order))
+      @tail = [_.last(@smoothedPoints)].concat _.last(
+        LC.bspline(_.last(@points, @tailSize), @order), Math.pow(2, @order)
       )
-
-  draw: (ctx) ->
-    return unless @smoothedPoints.length
+      @smoothedPoints = @smoothedPoints.concat(_.rest(@tail))
     
-    ctx.strokeStyle = @smoothedPoints[0].color
-    ctx.lineWidth = @smoothedPoints[0].size
+
+  draw: (ctx, points = @smoothedPoints) ->
+    return unless points.length
+    
+    ctx.strokeStyle = points[0].color
+    ctx.lineWidth = points[0].size
     ctx.lineCap = 'round'
     ctx.beginPath()
-    ctx.moveTo(@smoothedPoints[0].x, @smoothedPoints[0].y)
-    _.each _.rest(@smoothedPoints), (point) ->
+    ctx.moveTo(points[0].x, points[0].y)
+    _.each _.rest(points), (point) ->
       ctx.lineTo(point.x, point.y)
     ctx.stroke()
 
@@ -51,6 +53,9 @@ class LC.LinePathShape
     #  ctx.lineTo(point.x, point.y)
     #ctx.closePath()
     #ctx.fill()
+    
+  drawTail: (ctx) ->
+    @draw(ctx, @tail)
 
 
 class LC.EraseLinePathShape extends LC.LinePathShape

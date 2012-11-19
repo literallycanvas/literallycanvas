@@ -91,8 +91,15 @@ class LC.LiterallyCanvas
     @ctx.drawImage @buffer, 0, 0
 
   update: (shape) ->
-    @repaint false
-    @draw [shape], @ctx
+    if shape.tail
+      @ctx.save()
+      @ctx.translate @position.x, @position.y
+      @ctx.scale @scale, @scale
+      shape.drawTail(@ctx)
+      @ctx.restore()
+    else
+      @repaint false
+      @draw [shape], @ctx
 
   draw: (shapes, ctx) ->
     ctx.save()
