@@ -17,10 +17,10 @@ class LC.LinePathShape
     
     @points.push(newPoint)
     if not @smoothedPoints or @points.length < @tailSize
-      @smoothedPoints = LC.bspline(@points, @order)
+      @smoothedPoints = [@points[0]].concat LC.bspline(@points, @order)
     else
-      @tail = [_.last(@smoothedPoints)].concat _.last(
-        LC.bspline(_.last(@points, @tailSize), @order), Math.pow(2, @order)
+      @tail = _.last(
+        LC.bspline(_.last(@points, @tailSize), @order), Math.pow(2, @order) + 1
       )
       @smoothedPoints = @smoothedPoints.concat(_.rest(@tail))
     
