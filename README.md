@@ -1,7 +1,7 @@
 Literally Canvas
 ================
 
-![Screenshot](http://steveasleep.com/literallycanvas/img/screenshot.png)
+![Screenshot](https://raw.github.com/literallycanvas/literallycanvas/master/img/screenshot.png)
 
 Usage
 -----
