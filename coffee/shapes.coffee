@@ -1,12 +1,22 @@
 class LC.LinePathShape
   constructor: (@tool) ->
     @points = []
+
     # Order of the bspline applied to the curve
-    # Higher values make the curve smoother, 3 is a cubic bspline
+    # Higher values make the curve smoother but are more expensive
     @order = 3
+    
+    # The number of smoothed points generated for each point added
+    @segmentSize = Math.pow(2, @order)
+    
+    # The number of segments to use as the tail
+    # In other words, when a point is added, how many points do you need to go
+    # back before the slope of the old smoothed curve is the same as the slope
+    # of the new smoothed curve.
+    @tailSize = 3
+    
     # The number of points used to calculate the bspline to the newest point
-    # Higher values make slope at joints better, must be at least 3
-    @tailSize = 4
+    @sampleSize = @sampleSize + 1
 
   addPoint: (x, y) ->
     newPoint = @tool.makePoint(x, y)
@@ -16,14 +26,27 @@ class LC.LinePathShape
     #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
     
     @points.push(newPoint)
-    if not @smoothedPoints or @points.length < @tailSize
+    
+    if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = [@points[0]].concat LC.bspline(@points, @order)
     else
       @tail = _.last(
-        LC.bspline(_.last(@points, @tailSize), @order), Math.pow(2, @order) + 1
+        LC.bspline(_.last(@points, @sampleSize), @order), @segmentSize * @tailSize
       )
-      @smoothedPoints = @smoothedPoints.concat(_.rest(@tail))
-    
+
+      # Remove the last @tailSize - 1 segments from @smoothedPoints
+      # then concat the tail. This is done because smoothed points
+      # close to the end of the path will change as new points are
+      # added.
+      @smoothedPoints = _.initial(
+        @smoothedPoints, @segmentSize * (@tailSize - 1)
+      ).concat(@tail)
+
+    # Force full redraw of shape because we have no way to remove the
+    # smoothed points that shift when a new point is added.
+    # This does not mean the entire canvas is being redrawn, just this shape.
+    # TODO: Remove this once tail buffer is implemented
+    @tail = undefined
 
   draw: (ctx, points = @smoothedPoints) ->
     return unless points.length

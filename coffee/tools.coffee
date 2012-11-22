@@ -67,7 +67,6 @@ class LC.Pencil extends LC.Tool
     lc.update(@currentShape)
 
   end: (x, y, lc) ->
-    @currentShape.addPoint(x, y)
     lc.saveShape(@currentShape)
     @currentShape = undefined
 
