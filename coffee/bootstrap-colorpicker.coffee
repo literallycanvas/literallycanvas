@@ -3,6 +3,7 @@
 # http://www.eyecon.ro/bootstrap-colorpicker
 # =========================================================
 # Copyright 2012 Stefan Petre
+# Heavy modifications by Stephen Johnson
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
