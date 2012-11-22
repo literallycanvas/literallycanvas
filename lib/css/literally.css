@@ -67,6 +67,7 @@
 .literally .button.color-square {
   background-image: none;
   width: 12px;
+  height: 15px;
 }
 
 .literally .button.color-square:hover {
