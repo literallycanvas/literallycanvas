@@ -8,8 +8,7 @@ Usage
 
 Literally Canvas depends on jQuery (tested on 1.8.2) and underscore.js (tested
 on 1.4.2). The "fat" version includes these dependencies. The "thin" version
-does not. The minified thin version is ~26k and should shrink significantly
-when we remove the stupid color picker dependency.
+does not.
 
 Add the files under `lib/css` and `lib/img` to your project, as well as the
 appropriate file from `lib/js`. Then do this:
