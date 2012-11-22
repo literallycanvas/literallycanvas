@@ -46,6 +46,16 @@
 
 /* action/tool buttons */
 
+.literally .tools .button {
+  padding: 3px 5px 3px 5px;
+  line-height: 18px;
+}
+
+.literally .tools .button img {
+    width: 16px;
+    height: 16px;
+}
+
 .literally .zoom-display {
   text-align: center;
   width: 1.5em;

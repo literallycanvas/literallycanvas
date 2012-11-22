@@ -88,7 +88,8 @@ class LC.LiterallyCanvas
         @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
       @draw @shapes, @bufferCtx
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-    @ctx.drawImage @buffer, 0, 0
+    if @canvas.width > 0 and @canvas.height > 0
+      @ctx.drawImage @buffer, 0, 0
 
   update: (shape) ->
     if shape.tail

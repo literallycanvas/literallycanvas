@@ -35,7 +35,7 @@ class LC.Pencil extends LC.Tool
 
   title: "Pencil"
   cssSuffix: "pencil"
-  buttonContents: -> '<i class="icon-pencil"></i>'
+  buttonContents: -> '<img src="lib/img/pencil.png">'
   optionsContents: ->
     $el = $("
       <span class='brush-width-min'>1 px</span>
@@ -86,7 +86,7 @@ class LC.Eraser extends LC.Pencil
 
   title: "Eraser"
   cssSuffix: "eraser"
-  buttonContents: -> '<i class="icon-edit"></i>'
+  buttonContents: -> '<img src="lib/img/eraser.png">'
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
   makeShape: -> new LC.EraseLinePathShape(this)
@@ -96,7 +96,7 @@ class LC.Pan extends LC.Tool
 
   title: "Pan"
   cssSuffix: "pan"
-  buttonContents: -> '<i class="icon-move"></i>'
+  buttonContents: -> '<img src="lib/img/pan.png">'
 
   begin: (x, y, lc) ->
     @start = {x:x, y:y}
@@ -110,7 +110,7 @@ class LC.EyeDropper extends LC.Tool
 
   title: "Eyedropper"
   cssSuffix: "eye-dropper"
-  buttonContents: -> '<i class="icon-eye-open"></i>'
+  buttonContents: -> '<img src="lib/img/eyedropper.png">'
 
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)
