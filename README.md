@@ -24,6 +24,10 @@ $('.literally').literallycanvas();
 For options and other information, see the [full
 documentation](http://literallycanvas.github.com).
 
+The color picker is derived from (but not identical to) [this one by Stefan
+Petre](http://www.eyecon.ro/bootstrap-colorpicker/). We intend to replace it in
+the next version.
+
 Files
 -----
 
