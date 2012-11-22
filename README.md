@@ -1,8 +1,6 @@
 Literally Canvas
 ================
 
-![Screenshot](https://raw.github.com/literallycanvas/literallycanvas/master/img/screenshot.png)
-
 Usage
 -----
 
