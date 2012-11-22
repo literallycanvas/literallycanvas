@@ -2,7 +2,7 @@
 
 JS_DEPS =  js/jquery-1.8.2.js js/underscore-1.4.2.js
 
-all: lib/js/literallycanvas.fat.js lib/js/literallycanvas.fat.min.js lib/js/literallycanvas.thin.js lib/js/literallycanvas.thin.min.js docs
+all: lib/js/literallycanvas.fat.js lib/js/literallycanvas.fat.min.js lib/js/literallycanvas.thin.js lib/js/literallycanvas.thin.min.js
 
 clean:
 	rm -f js/coffee/*.js
@@ -27,14 +27,5 @@ lib/js/literallycanvas.thin.js: coffee
 lib/js/literallycanvas.thin.min.js: coffee
 	uglifyjs2 js/coffee/* -o lib/js/literallycanvas.thin.min.js --compress
 
-docs: lib/js/literallycanvas.fat.js
-	python gen_html.py index.jinja2 -o index.html -s trac
-
 serve:
 	python -m SimpleHTTPServer 8000 .
-
-update-gh-pages:
-	git checkout gh-pages
-	git merge master --ff-only
-	git push origin gh-pages
-	git checkout master -f
