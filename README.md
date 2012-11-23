@@ -1,6 +1,11 @@
 Literally Canvas
 ================
 
+Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
+widget that currently supports a minimal set of drawing operations. You can
+draw, erase, set the color with the eyedropper, undo, redo, pan, and zoom. It
+depends on jQuery and Underscore.js.
+
 Usage
 -----
 
