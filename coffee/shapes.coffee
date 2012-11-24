@@ -16,7 +16,7 @@ class LC.LinePathShape
     @tailSize = 3
     
     # The number of points used to calculate the bspline to the newest point
-    @sampleSize = @sampleSize + 1
+    @sampleSize = @tailSize + 1
 
   addPoint: (x, y) ->
     newPoint = @tool.makePoint(x, y)
@@ -28,7 +28,7 @@ class LC.LinePathShape
     @points.push(newPoint)
     
     if not @smoothedPoints or @points.length < @sampleSize
-      @smoothedPoints = [@points[0]].concat LC.bspline(@points, @order)
+      @smoothedPoints = LC.bspline(@points, @order)
     else
       @tail = _.last(
         LC.bspline(_.last(@points, @sampleSize), @order), @segmentSize * @tailSize
