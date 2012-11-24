@@ -1,4 +1,14 @@
-class LC.LinePathShape
+class LC.Shape
+
+  # Redraw the entire shape
+  draw: (ctx) ->
+
+  # Draw just the most recent portion of the shape if applicable
+  update: (ctx) ->
+    @draw(ctx)
+
+
+class LC.LinePathShape extends LC.Shape
   constructor: ->
     @points = []
 
@@ -69,9 +79,6 @@ class LC.LinePathShape
     #ctx.closePath()
     #ctx.fill()
     
-  update: (ctx) ->
-    @draw(ctx)
-
 
 class LC.EraseLinePathShape extends LC.LinePathShape
 
