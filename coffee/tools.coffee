@@ -24,10 +24,30 @@ class LC.Tool
   end: (x, y, lc) ->
 
 
+class LC.RectangleTool extends LC.Tool
+
+  constructor: ->
+    @strokeWidth = 5
+
+  title: 'Rectangle'
+  cssSuffix: 'rectangle'
+  buttonContents: -> '<img src="lib/img/rectangle.png">'
+
+  begin: (x, y, lc) ->
+    @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.primaryColor)
+
+  continue: (x, y, lc) ->
+    @currentShape.width = x - @currentShape.x
+    @currentShape.height = y - @currentShape.y
+    lc.update(@currentShape)
+
+  end: (x, y, lc) ->
+    lc.saveShape(@currentShape)
+   
+
 class LC.Pencil extends LC.Tool
 
   constructor: ->
-    @isDrawing = false
     @strokeWidth = 5
 
   title: "Pencil"

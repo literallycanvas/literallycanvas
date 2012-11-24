@@ -31,7 +31,7 @@ initLiterallyCanvas = (el, opts = {}) ->
     imgurKey: null
     keyboardShortcuts: true
     sizeToContainer: true
-    toolClasses: [LC.Pencil, LC.Eraser, LC.Pan, LC.EyeDropper]
+    toolClasses: [LC.Pencil, LC.RectangleTool, LC.Eraser, LC.Pan, LC.EyeDropper]
   }, opts)
   $el = $(el)
   $el.addClass('literally')

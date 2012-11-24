@@ -8,6 +8,17 @@ class LC.Shape
     @draw(ctx)
 
 
+class LC.Rectangle extends LC.Shape
+
+  constructor: (@x, @y, @strokeWidth, @color) ->
+    @width = 0
+    @height = 0
+
+  draw: (ctx) ->
+    ctx.lineWidth = @strokeWidth
+    ctx.strokeStyle = @color
+    ctx.strokeRect(@x, @y, @width, @height)
+  
 class LC.LinePathShape extends LC.Shape
   constructor: ->
     @points = []
