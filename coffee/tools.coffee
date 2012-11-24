@@ -23,9 +23,6 @@ class LC.Tool
   # called when the user finishes dragging
   end: (x, y, lc) ->
 
-  # should draw whatever shape is in progress and isn't part of the drawing yet
-  drawCurrent: (ctx) ->
-
 
 class LC.Pencil extends LC.Tool
 
@@ -69,9 +66,6 @@ class LC.Pencil extends LC.Tool
   end: (x, y, lc) ->
     lc.saveShape(@currentShape)
     @currentShape = undefined
-
-  drawCurrent: (ctx) ->
-    @currentShape.draw(ctx) if @currentShape
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, @color)
   makeShape: -> new LC.LinePathShape(this)
