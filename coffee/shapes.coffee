@@ -1,5 +1,5 @@
 class LC.LinePathShape
-  constructor: (@tool) ->
+  constructor: ->
     @points = []
 
     # Order of the bspline applied to the curve
@@ -18,14 +18,12 @@ class LC.LinePathShape
     # The number of points used to calculate the bspline to the newest point
     @sampleSize = @tailSize + 1
 
-  addPoint: (x, y) ->
-    newPoint = @tool.makePoint(x, y)
-    
+  addPoint: (point) ->
     # Brush Variance Code
     #distance = LC.len(LC.diff(_.last(@points), newPoint)) if @points.length
     #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
     
-    @points.push(newPoint)
+    @points.push(point)
     
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = LC.bspline(@points, @order)

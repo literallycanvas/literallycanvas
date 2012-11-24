@@ -57,10 +57,10 @@ class LC.Pencil extends LC.Tool
   begin: (x, y, lc) ->
     @color = lc.primaryColor
     @currentShape = @makeShape()
-    @currentShape.addPoint(x, y)
+    @currentShape.addPoint(@makePoint(x, y, lc))
 
   continue: (x, y, lc) ->
-    @currentShape.addPoint(x, y)
+    @currentShape.addPoint(@makePoint(x, y, lc))
     lc.update(@currentShape)
 
   end: (x, y, lc) ->
