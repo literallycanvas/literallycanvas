@@ -42,12 +42,6 @@ class LC.LinePathShape
         @smoothedPoints, @segmentSize * (@tailSize - 1)
       ).concat(@tail)
 
-    # Force full redraw of shape because we have no way to remove the
-    # smoothed points that shift when a new point is added.
-    # This does not mean the entire canvas is being redrawn, just this shape.
-    # TODO: Remove this once tail buffer is implemented
-    @tail = undefined
-
   draw: (ctx, points = @smoothedPoints) ->
     return unless points.length
     
@@ -77,8 +71,8 @@ class LC.LinePathShape
     #ctx.closePath()
     #ctx.fill()
     
-  drawTail: (ctx) ->
-    @draw(ctx, @tail)
+  update: (ctx) ->
+    @draw(ctx)
 
 
 class LC.EraseLinePathShape extends LC.LinePathShape
@@ -89,7 +83,7 @@ class LC.EraseLinePathShape extends LC.LinePathShape
     super(ctx)
     ctx.restore()
 
-  drawLatest: (ctx) ->
+  update: (ctx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
     super(ctx)

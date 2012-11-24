@@ -78,6 +78,11 @@ class LC.LiterallyCanvas
 
     @repaint()
 
+  # Repaints the canvas.
+  # If dirty is true then all saved shapes are completely redrawn,
+  # otherwise the back buffer is simply copied to the screen as is.
+  # If drawBackground is true, the background is rendered as a solid
+  # color, otherwise it is left transparent.
   repaint: (dirty = true, drawBackground = false) ->
     if dirty
       @buffer.width = @canvas.width
@@ -91,23 +96,32 @@ class LC.LiterallyCanvas
     if @canvas.width > 0 and @canvas.height > 0
       @ctx.drawImage @buffer, 0, 0
 
+  # Redraws the back buffer to the screen in its current state
+  # then draws the given shape translated and scaled on top of that.
+  # This is used for updating a shape while it is being drawn
+  # without doing a full repaint.
+  # The context is restored to its original state before returning.
   update: (shape) ->
-    if shape.tail
-      @ctx.save()
-      @ctx.translate @position.x, @position.y
-      @ctx.scale @scale, @scale
-      shape.drawTail(@ctx)
-      @ctx.restore()
-    else
-      @repaint false
-      @draw [shape], @ctx
+    @repaint false
+    @transformed =>
+      shape.update(@ctx)
+    , @ctx
 
+  # Draws the given shapes translated and scaled to the given context.
+  # The context is restored to its original state before returning.
   draw: (shapes, ctx) ->
+    @transformed ->
+      _.each shapes, (s) =>
+        s.draw(ctx)
+    , ctx
+
+  # Executes the given function after translating and scaling the context.
+  # The context is restored to its original state before returning.
+  transformed: (fn, ctx) ->
     ctx.save()
     ctx.translate @position.x, @position.y
     ctx.scale @scale, @scale
-    _.each shapes, (s) =>
-      s.draw(ctx)
+    fn()
     ctx.restore()
 
   clear: ->
