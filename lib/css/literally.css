@@ -47,13 +47,17 @@
 /* action/tool buttons */
 
 .literally .tools .button {
-  padding: 3px 5px 3px 5px;
-  line-height: 18px;
+  padding: 0;
+  text-align: center;
+  line-height: 24px;
+  width: 24px;
+  height: 24px;
 }
 
 .literally .tools .button img {
-    width: 16px;
-    height: 16px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
 }
 
 .literally .zoom-display {
@@ -66,7 +70,7 @@
   display: inline-block;
   line-height: 14px;
   padding: 5px 5px 5px 5px;
-  margin: 4px 0 2px 0;
+  margin: 2px 0 2px 0;
   font-size: 12px;
 }
 
@@ -78,6 +82,7 @@
   background-image: none;
   width: 12px;
   height: 14px;
+  margin-top: 0;
 }
 
 .literally .button.color-square:hover {
@@ -92,7 +97,7 @@
   display: inline-block;
   padding: 5px 7px 5px 5px;
   text-align: center;
-  margin: 4px 0 2px 0;
+  margin: 2px 0 2px 0;
   font-size: 12px;
   line-height: 14px;
   text-decoration: none;
