@@ -1,9 +1,9 @@
 window.LC = window.LC ? {}
 
 
-coordsForEvent = ($el, e) ->
+coordsForTouchEvent = ($el, e) ->
   t = e.originalEvent.changedTouches[0]
-  p = $el.position()
+  p = $el.offset()
   return [t.clientX - p.left, t.clientY - p.top]
 
 
@@ -88,23 +88,23 @@ initLiterallyCanvas = (el, opts = {}) ->
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
     if e.originalEvent.touches.length == 1
-      lc.begin(coordsForEvent($c, e)...)
+      lc.begin(coordsForTouchEvent($c, e)...)
     else
-      lc.continue(coordsForEvent($c, e)...)
+      lc.continue(coordsForTouchEvent($c, e)...)
 
   $c.bind 'touchmove', (e) ->
     e.preventDefault()
-    lc.continue(coordsForEvent($c, e)...)
+    lc.continue(coordsForTouchEvent($c, e)...)
 
   $c.bind 'touchend', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    lc.end(coordsForEvent($c, e)...)
+    lc.end(coordsForTouchEvent($c, e)...)
 
   $c.bind 'touchcancel', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    lc.end(coordsForEvent($c, e)...)
+    lc.end(coordsForTouchEvent($c, e)...)
 
   if opts.keyboardShortcuts
     $(document).keydown (e) ->
@@ -122,7 +122,7 @@ initLiterallyCanvas = (el, opts = {}) ->
 IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
 $.fn.literallycanvas = (opts = {}) ->
   if (IS_IOS)
-    @bind 'touchstart', (e) ->
+    @bind 'touchstart', (e) =>
       t2 = e.timeStamp
       t1 = @data('lastTouch') || t2
       dt = t2 - t1
