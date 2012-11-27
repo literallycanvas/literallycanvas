@@ -56,8 +56,6 @@ initLiterallyCanvas = (el, opts = {}) ->
   $(window).resize(resize)
   resize()
 
-  down = false
-
   $c.mousedown (e) =>
     down = true
     e.originalEvent.preventDefault();
@@ -68,22 +66,22 @@ initLiterallyCanvas = (el, opts = {}) ->
   $c.mousemove (e) =>
     e.originalEvent.preventDefault()
     p = position(e)
-    if buttonIsDown(e) and not down
-      lc.begin(p.left, p.top)
-      down = true
     lc.continue(p.left, p.top)
 
   $c.mouseup (e) =>
     e.originalEvent.preventDefault()
-    document.onselectstart = -> true # disable selection while dragging
+    document.onselectstart = -> true # enable selection while dragging
     p = position(e)
     lc.end(p.left, p.top)
-    down = false
+
+  $c.mouseenter (e) =>
+    p = position(e)
+    if buttonIsDown(e)
+      lc.begin(p.left, p.top)
 
   $c.mouseout (e) =>
     p = position(e)
     lc.end(p.left, p.top)
-    down = false
 
   $c.bind 'touchstart', (e) ->
     e.preventDefault()
