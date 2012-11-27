@@ -1,0 +1,7 @@
+v0.2:
+ * Speed improvements
+ * Rectangle tool
+ * Better iOS support (fix several bugs)
+ * Toolbar style tweaks
+
+v0.1: Initial release
