@@ -1,5 +1,7 @@
 class LC.Tool
 
+  constructor: (@opts) ->
+
   # text to be shown in a hypothetical tooltip
   title: undefined
 
@@ -26,12 +28,12 @@ class LC.Tool
 
 class LC.RectangleTool extends LC.Tool
 
-  constructor: ->
+  constructor: (@opts) ->
     @strokeWidth = 5
 
   title: 'Rectangle'
   cssSuffix: 'rectangle'
-  buttonContents: -> '<img src="lib/img/rectangle.png">'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/rectangle.png'>"
 
   begin: (x, y, lc) ->
     @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.primaryColor)
@@ -47,12 +49,12 @@ class LC.RectangleTool extends LC.Tool
 
 class LC.Pencil extends LC.Tool
 
-  constructor: ->
+  constructor: (@opts) ->
     @strokeWidth = 5
 
   title: "Pencil"
   cssSuffix: "pencil"
-  buttonContents: -> '<img src="lib/img/pencil.png">'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/pencil.png'>"
   optionsContents: ->
     $el = $("
       <span class='brush-width-min'>1 px</span>
@@ -93,13 +95,13 @@ class LC.Pencil extends LC.Tool
 
 class LC.Eraser extends LC.Pencil
 
-  constructor: ->
+  constructor: (@opts) ->
     super
     @strokeWidth = 10
 
   title: "Eraser"
   cssSuffix: "eraser"
-  buttonContents: -> '<img src="lib/img/eraser.png">'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/eraser.png'>"
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
   makeShape: -> new LC.EraseLinePathShape(this)
@@ -109,7 +111,7 @@ class LC.Pan extends LC.Tool
 
   title: "Pan"
   cssSuffix: "pan"
-  buttonContents: -> '<img src="lib/img/pan.png">'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/pan.png'>"
 
   begin: (x, y, lc) ->
     @start = {x:x, y:y}
@@ -123,7 +125,7 @@ class LC.EyeDropper extends LC.Tool
 
   title: "Eyedropper"
   cssSuffix: "eye-dropper"
-  buttonContents: -> '<img src="lib/img/eyedropper.png">'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/eyedropper.png'>"
 
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)

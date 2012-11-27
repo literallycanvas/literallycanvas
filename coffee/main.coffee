@@ -28,6 +28,7 @@ buttonIsDown = (e) ->
 initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
+    imageURLPrefix: 'lib/img'
     keyboardShortcuts: true
     sizeToContainer: true
     toolClasses: [LC.Pencil, LC.RectangleTool, LC.Eraser, LC.Pan, LC.EyeDropper]
@@ -41,7 +42,7 @@ initLiterallyCanvas = (el, opts = {}) ->
   $c = $el.find('canvas')
 
   lc = new LC.LiterallyCanvas($c.get(0), opts)
-  tb = new LC.Toolbar(lc, $tbEl, opts.toolClasses)
+  tb = new LC.Toolbar(lc, $tbEl, opts)
   tb.selectTool(tb.tools[0])
 
   resize = ->
