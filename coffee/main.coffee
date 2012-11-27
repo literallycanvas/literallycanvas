@@ -117,26 +117,11 @@ initLiterallyCanvas = (el, opts = {}) ->
   [lc, tb]
 
 
-IS_IOS = /iphone|ipad/i.test(navigator.userAgent)
 $.fn.literallycanvas = (opts = {}) ->
-  if (IS_IOS)
-    @bind 'touchstart', (e) =>
-      t2 = e.timeStamp
-      t1 = @data('lastTouch') || t2
-      dt = t2 - t1
-      fingers = e.originalEvent.touches.length;
-      @data('lastTouch', t2);
-      if !dt || dt > 500 || fingers > 1 then return; # not double-tap
-
-      e.preventDefault() # double tap - prevent the zoom
-      # also synthesize click events we just swallowed up
-      @trigger('click').trigger('click')
-
   @each (ix, el) =>
     val = initLiterallyCanvas(el, opts)
     el.literallycanvas = val[0]
     el.literallycanvasToolbar = val[1]
-
   this
 
 
