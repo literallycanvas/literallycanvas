@@ -154,54 +154,9 @@ class LC.LiterallyCanvas
     else
       null
 
-  # Starting point (but not most of the code) from here:
-  # http://29a.ch/2011/9/11/uploading-from-html5-canvas-to-imgur-data-uri
-  uploadToImgur: (opts) ->
-    opts = _.extend({
-      name: 'drawing.png'
-      title: 'A Drawing'
-      caption: 'Drawn with Literally Canvas - http://steveasleep.com/literallycanvas'
-    }, opts)
-
-    d = new $.Deferred()
-    unless @opts.imgurKey
-      d.reject("This application is not configured to support Imgur.")
-      d.promise()
-      return d
-    unless @shapes.length
-      d.reject("You haven't drawn anything.")
-      d.promise()
-      return d
-
+  canvasForExport: ->
     @repaint(true, true)
-    img = @imageURL().split(',')[1];
-
-    # upload to imgur using jquery/CORS
-    # https://developer.mozilla.org/En/HTTP_access_control
-    $.ajax
-        url: 'http://api.imgur.com/2/upload.json',
-        type: 'POST',
-        data: {
-            type: 'base64',
-            key: @opts.imgurKey,
-            name: opts.name,
-            title: opts.title,
-            caption: opts.caption,
-            image: img
-        },
-        dataType: 'json'
-        success: (data) ->
-          d.resolve(data.upload.links.imgur_page)
-        error: (rsp) ->
-          d.reject("Image upload failed.")
-          console.log(rsp)
-
-    d.promise()
-    return d
-
-  imageURL:  ->
-    @repaint(true, true)
-    @canvas.toDataURL();
+    @canvas
 
 
 # maybe add checks to these in the future to make sure you never double-undo or

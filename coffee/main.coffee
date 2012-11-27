@@ -28,7 +28,6 @@ buttonIsDown = (e) ->
 initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
     backgroundColor: 'rgb(230, 230, 230)'
-    imgurKey: null
     keyboardShortcuts: true
     sizeToContainer: true
     toolClasses: [LC.Pencil, LC.RectangleTool, LC.Eraser, LC.Pan, LC.EyeDropper]
