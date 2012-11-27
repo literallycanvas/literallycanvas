@@ -122,11 +122,3 @@ $.fn.literallycanvas = (opts = {}) ->
     el.literallycanvas = val[0]
     el.literallycanvasToolbar = val[1]
   this
-
-
-$.fn.uploadCanvasToImgur = (opts = {}) ->
-  @get(0).literallycanvas.uploadToImgur(opts)
-
-
-$.fn.canvasImageURL = ->
-  @get(0).literallycanvas.imageURL()
