@@ -3,5 +3,6 @@ v0.2:
  * Rectangle tool
  * Better iOS support (fix several bugs)
  * Toolbar style tweaks
+ * Replace Imgur stuff with canvasForExport()
 
 v0.1: Initial release
