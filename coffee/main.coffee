@@ -122,3 +122,7 @@ $.fn.literallycanvas = (opts = {}) ->
     el.literallycanvas = val[0]
     el.literallycanvasToolbar = val[1]
   this
+
+
+$.fn.canvasForExport = ->
+  @get(0).literallycanvas.canvasForExport()
