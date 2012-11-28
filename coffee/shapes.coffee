@@ -20,6 +20,21 @@ class LC.Rectangle extends LC.Shape
     ctx.strokeRect(@x, @y, @width, @height)
 
 
+class LC.Line extends LC.Shape
+
+  constructor: (@x1, @y1, @strokeWidth, @color) ->
+    @x2 = @x1
+    @y2 = @y1
+
+  draw: (ctx) ->
+    ctx.lineWidth = @strokeWidth
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(@x1, @y1)
+    ctx.lineTo(@x2, @y2)
+    ctx.stroke()
+
+
 class LC.LinePathShape extends LC.Shape
   constructor: ->
     @points = []
