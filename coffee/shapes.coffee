@@ -28,6 +28,7 @@ class LC.Line extends LC.Shape
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
+    ctx.strokeStyle = @color
     ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.moveTo(@x1, @y1)
