@@ -26,25 +26,12 @@
         margin-top: 10px;
         line-height: 30px;
       }
-      .bg-picker {
-        box-sizing: border-box;
-        width: 30px;
-        height: 30px;
-        display: inline-block;
-        background-color: rgb(230, 230, 230);
-        border: 1px solid rgb(190, 190, 190);
-        border-radius: 5px;
-      }
     </style>
   </head>
 
   <body>
     <div class="fs-container">
       <div class="literally"><canvas></canvas></div>
-      <div class="tool-extra">
-        Background color:
-        <div class="bg-picker">&nbsp;</div>
-      </div>
     </div>
 
     <script src="/demo/jquery-1.8.2.js"></script>
@@ -61,14 +48,7 @@
         });
 
         // the only LC-specific thing we have to do
-        var lcController = $('.literally').literallycanvas(
-          {imageURLPrefix: '/lib/img'}).get(0).literallycanvas;
-        var $bgPicker = $('.bg-picker')
-        LC.makeColorPicker($bgPicker, 'Background color', function(c) {
-          var val = "rgba(" + c.r + ", " + c.g + ", " + c.b + ", 1)";
-          $bgPicker.css('background-color', val);
-          lcController.setBackgroundColor(val);
-        });
+        $('.literally').literallycanvas({imageURLPrefix: '/lib/img'});
       });
     </script>
   </body>

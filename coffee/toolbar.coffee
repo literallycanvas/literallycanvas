@@ -7,9 +7,9 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.toolbarHTML = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="color-square stroke-picker">&nbsp;</div>
       <div class="tools button-group"></div>
-      <div class="tool-options-container"></div>
+      &nbsp;&nbsp;&nbsp;&nbsp;Background:
+      <div class="color-square bg-picker">&nbsp;</div>
     </div>
 
     <div class="toolbar-row-right">
@@ -23,6 +23,13 @@ LC.toolbarHTML = '
         </div>
         <div class="zoom-display">1</div>
       </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="toolbar-row">
+    <div class="toolbar-row-left">
+      <div class="color-square stroke-picker">&nbsp;</div>
+      <div class="tool-options-container"></div>
     </div>
     <div class="clearfix"></div>
   </div>
@@ -73,6 +80,13 @@ class LC.Toolbar
 
     @lc.on 'colorChange', (color) ->
       $stroke.css('background-color', color)
+
+    $bgPicker = $('.bg-picker')
+    $bgPicker.css('background-color', @lc.backgroundColor)
+    LC.makeColorPicker $bgPicker, 'Background color', (c) =>
+      val = "rgba(#{c.r}, #{c.g}, #{c.b}, 1)"
+      $bgPicker.css('background-color', val);
+      @lc.setBackgroundColor(val);
 
   initButtons: ->
     @$el.find('.clear-button').click (e) =>

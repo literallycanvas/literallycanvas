@@ -133,22 +133,34 @@
     background-color: gainsboro; }
     .literally .toolbar, .literally .toolbar * {
       box-sizing: border-box; }
-  .literally .toolbar-row:first-child {
-    width: 100%;
-    height: 30px; }
-  .literally .toolbar-row-left, .literally .toolbar-row-right {
-    margin-top: 3px;
-    margin-bottom: 3px;
-    height: 24px;
-    line-height: 24px; }
-  .literally .toolbar-row-left {
-    float: left;
-    padding-left: 3px; }
-  .literally .toolbar-row-right {
-    width: 13em;
-    float: right;
-    text-align: right;
-    padding-right: 3px; }
+  .literally .toolbar-row {
+    border-top: 1px solid #c8c8c8; }
+    .literally .toolbar-row:first-child {
+      width: 100%;
+      height: 30px; }
+    .literally .toolbar-row .toolbar-row-left, .literally .toolbar-row .toolbar-row-right {
+      margin-top: 3px;
+      margin-bottom: 3px;
+      height: 24px;
+      line-height: 24px; }
+    .literally .toolbar-row .toolbar-row-left {
+      float: left;
+      padding-left: 3px; }
+    .literally .toolbar-row .toolbar-row-right {
+      width: 13em;
+      float: right;
+      text-align: right;
+      padding-right: 3px; }
+    .literally .toolbar-row .color-square {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      border: 1px solid #c8c8c8;
+      margin-right: 3px; }
+      .literally .toolbar-row .color-square.stroke-picker {
+        float: left; }
+      .literally .toolbar-row .color-square.bg-picker {
+        display: inline-block; }
   .literally .tools {
     float: left; }
     .literally .tools .button {
@@ -176,14 +188,6 @@
     padding: 5px 5px 5px 5px; }
   .literally .tool-options-container {
     display: inline-block; }
-  .literally .color-square {
-    width: 24px;
-    height: 24px;
-    border-radius: 5px;
-    float: left;
-    margin-right: 3px; }
-    .literally .color-square:hover {
-      background-image: none; }
   .literally .button {
     display: inline-block;
     padding-left: 5px;
