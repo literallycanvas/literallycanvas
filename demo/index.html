@@ -2,8 +2,8 @@
 <html>
   <head>
     <title>Literally Canvas</title>
-    <link href="lib/css/colorpicker.css" rel="stylesheet">
-    <link href="lib/css/literally.css" rel="stylesheet">
+    <link href="/lib/css/colorpicker.css" rel="stylesheet">
+    <link href="/lib/css/literally.css" rel="stylesheet">
 
     <style type="text/css">
       body {
@@ -30,7 +30,9 @@
       <div class="literally"><canvas></canvas></div>
     </div>
 
-    <script src="lib/js/literallycanvas.fat.js"></script>
+    <script src="/demo/jquery-1.8.2.js"></script>
+    <script src="/demo/underscore-1.4.2.js"></script>
+    <script src="/lib/js/literallycanvas.js"></script>
 
     <script type="text/javascript">
       $(document).ready(function() {
@@ -42,7 +44,7 @@
         });
 
         // the only LC-specific thing we have to do
-        $('.literally').literallycanvas();
+        $('.literally').literallycanvas({imageURLPrefix: '/lib/img'});
       });
     </script>
   </body>
