@@ -1,5 +1,16 @@
 /* toolbar structure */
 
+@mixin grad($a, $b) {
+    background: {
+      color: $a;
+      image: -webkit-gradient(linear, 0 0, 0 100%, from($a), to($b));
+      image: -moz-linear-gradient($a, $b);
+      image: -ms-linear-gradient($a, $b);
+      image: -o-linear-gradient($a, $b);
+      image: linear-gradient($a, $b);
+    }
+}
+
 .literally {
   .toolbar {
     position: absolute;
@@ -7,38 +18,75 @@
     left: 0;
     width: 100%;
     background-color: rgb(220, 220, 220);
+
+    &, * {
+      box-sizing: border-box;
+    }
   }
+
   .toolbar-row {
-    width: 100%;
-  }
+    border-top: 1px solid rgb(200, 200, 200);
+    &:first-child {
+      width: 100%;
+      height: 30px;
+    }
 
-  .toolbar-row-left {
-    float: left;
-    padding-left: 3px;
-  }
+    .toolbar-row-left, .toolbar-row-right {
+      margin-top: 3px;
+      margin-bottom: 3px;
+      height: 24px;
+      line-height: 24px;
+    }
 
-  .toolbar-row-right {
-    width: 13em;
-    float: right;
-    text-align: right;
-    padding-right: 3px;
+    .toolbar-row-left {
+      float: left;
+      padding-left: 3px;
+    }
+
+    .toolbar-row-right {
+      width: 13em;
+      float: right;
+      text-align: right;
+      padding-right: 3px;
+    }
+
+    .color-square {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      border: 1px solid rgb(200, 200, 200);
+      margin-right: 3px;
+
+      &.stroke-picker {
+        float: left;
+      }
+
+      &.bg-picker {
+        display: inline-block;
+      }
+    }
   }
 
   /* action/tool buttons */
 
   .tools {
+    float: left;
 
     .button {
-      padding: 0;
       text-align: center;
-      line-height: 24px;
-      width: 24px;
+      width: 30px;
       height: 24px;
+      padding: 0;
+      position: relative;
 
-      img {
-        width: 16px;
-        height: 16px;
-        vertical-align: middle;
+      .tool-image-wrapper {
+        height: 24px;
+        padding-top: 3px;
+        img {
+          width: 18px;
+          height: 18px;
+          vertical-align: top;
+        }
       }
     }
   }
@@ -53,23 +101,10 @@
     display: inline-block;
     line-height: 14px;
     padding: 5px 5px 5px 5px;
-    margin: 2px 0 2px 0;
-    font-size: 12px;
   }
 
   .tool-options-container {
     display: inline-block;
-  }
-
-  .button.color-square {
-    background-image: none;
-    width: 12px;
-    height: 14px;
-    margin-top: 0;
-  }
-
-  .button.color-square:hover {
-    background-image: none;
   }
 
   /* buttons derived from
@@ -78,11 +113,9 @@
 
   .button {
     display: inline-block;
-    padding: 5px 7px 5px 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     text-align: center;
-    margin: 2px 0 2px 0;
-    font-size: 12px;
-    line-height: 14px;
     text-decoration: none;
     text-shadow: 1px 1px 0 #fff;
     color: #333;
@@ -90,12 +123,8 @@
     cursor: pointer;
     outline: none;
 
+    @include grad(#f4f4f4, #ececec);
     background-color: #ececec;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f4f4f4), to(#ececec));
-    background-image: -moz-linear-gradient(#f4f4f4, #ececec);
-    background-image: -ms-linear-gradient(#f4f4f4, #ececec);
-    background-image: -o-linear-gradient(#f4f4f4, #ececec);
-    background-image: linear-gradient(#f4f4f4, #ececec);
     -moz-background-clip: padding; /* for Firefox 3.6 */
     background-clip: padding-box;
     border-radius: 5px;
@@ -111,21 +140,12 @@
     text-decoration: none;
     text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
     color: #fff;
-    background-color: #3c8dde;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
-    background-image: -moz-linear-gradient(#599bdc, #3072b3);
-    background-image: -o-linear-gradient(#599bdc, #3072b3);
-    background-image: linear-gradient(#599bdc, #3072b3);
+    @include grad(#599bdc, #3072b3);
   }
 
   .button:active,
   .button.active {
-    background-color: #3072b3;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3072b3), to(#599bdc));
-    background-image: -moz-linear-gradient(#3072b3, #599bdc);
-    background-image: -ms-linear-gradient(#3072b3, #599bdc);
-    background-image: -o-linear-gradient(#3072b3, #599bdc);
-    background-image: linear-gradient(#3072b3, #599bdc);
+    @include grad(#3072b3, #599bdc);
   }
 
   /* overrides extra padding on button elements in Firefox */
@@ -137,12 +157,7 @@
   .button.danger {
     color: white;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
-    background-color: #F37873;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#F37873), to(#CB0500));
-    background-image: -moz-linear-gradient(#dc5f59, #b33630);
-    background-image: -ms-linear-gradient(#dc5f59, #b33630);
-    background-image: -o-linear-gradient(#dc5f59, #b33630);
-    background-image: linear-gradient(#dc5f59, #b33630);
+    @include grad(#f37873, #b33630);
   }
 
   .button.danger:hover,
@@ -151,24 +166,14 @@
     border-color: #b53f3a;
     border-bottom-color: #a0302a;
     color: #fff;
-    background-color: #dc5f59;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dc5f59), to(#b33630));
-    background-image: -moz-linear-gradient(#dc5f59, #b33630);
-    background-image: -ms-linear-gradient(#dc5f59, #b33630);
-    background-image: -o-linear-gradient(#dc5f59, #b33630);
-    background-image: linear-gradient(#dc5f59, #b33630);
+    @include grad(#dc5f59, #b33630);
   }
 
   .button.danger:active,
   .button.danger.active {
     border-color: #a0302a;
     border-bottom-color: #bf4843;
-    background-color: #b33630;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b33630), to(#dc5f59));
-    background-image: -moz-linear-gradient(#b33630, #dc5f59);
-    background-image: -ms-linear-gradient(#b33630, #dc5f59);
-    background-image: -o-linear-gradient(#b33630, #dc5f59);
-    background-image: linear-gradient(#b33630, #dc5f59);
+    @include grad(#b33630, #dc5f59);
   }
 
   /* did my own button groups */
