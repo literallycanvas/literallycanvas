@@ -27,6 +27,8 @@ buttonIsDown = (e) ->
 
 initLiterallyCanvas = (el, opts = {}) ->
   opts = _.extend({
+    primaryColor: '#000'
+    secondaryColor: '#fff'
     backgroundColor: 'rgb(230, 230, 230)'
     imageURLPrefix: 'lib/img'
     keyboardShortcuts: true

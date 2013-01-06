@@ -68,25 +68,23 @@ class LC.Toolbar
 
   initColors: ->
     $stroke = @$el.find('.stroke-picker')
-    $stroke.css('background-color', LC.defaultStrokeColor)
-    cp = LC.makeColorPicker $stroke, 'Foreground color', (c) =>
-      val = "rgba(#{c.r}, #{c.g}, #{c.b}, 1)"
-      $stroke.css('background-color', val)
-      @lc.primaryColor = val
-    @lc.$canvas.mousedown ->
-      cp.hide()
-    @lc.$canvas.on 'touchstart', ->
-      cp.hide()
-
-    @lc.on 'colorChange', (color) ->
+    $stroke.css('background-color', @lc.getColor('primary'))
+    cp1 = LC.makeColorPicker $stroke, 'Foreground color', (c) =>
+      @lc.setColor('primary', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)")
+    @lc.on 'primaryColorChange', (color) ->
       $stroke.css('background-color', color)
 
     $bgPicker = $('.bg-picker')
-    $bgPicker.css('background-color', @lc.backgroundColor)
-    LC.makeColorPicker $bgPicker, 'Background color', (c) =>
-      val = "rgba(#{c.r}, #{c.g}, #{c.b}, 1)"
-      $bgPicker.css('background-color', val);
-      @lc.setBackgroundColor(val);
+    $bgPicker.css('background-color', @lc.getColor('background'))
+    cp2 = LC.makeColorPicker $bgPicker, 'Background color', (c) =>
+      @lc.setColor('background', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)");
+    @lc.on 'backgroundColorChange', (color) ->
+      $bgPicker.css('background-color', color);
+
+    @lc.$canvas.mousedown ->
+      cp1.hide(); cp2.hide();
+    @lc.$canvas.on 'touchstart', ->
+      cp1.hide(); cp2.hide();
 
   initButtons: ->
     @$el.find('.clear-button').click (e) =>

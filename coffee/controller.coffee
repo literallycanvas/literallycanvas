@@ -5,42 +5,42 @@ class LC.LiterallyCanvas
 
   constructor: (@canvas, @opts) ->
     @$canvas = $(@canvas)
-    @backgroundColor = @opts.backgroundColor or 'rgb(230, 230, 230)'
+    @colors =
+      primary: @opts.primaryColor or '#000'
+      secondary: @opts.secondaryColor or '#fff'
+      background: @opts.backgroundColor or 'rgb(230, 230, 230)'
+    $(@canvas).css('background-color', @colors.background)
+
     @buffer = $('<canvas>').get(0)
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
-    $(@canvas).css('background-color', @backgroundColor)
+
     @shapes = []
     @undoStack = []
     @redoStack = []
+
     @isDragging = false
     @position = {x: 0, y: 0}
     @scale = 1.0
     @tool = undefined
-    @primaryColor = '#000'
-    @secondaryColor = '#fff'
+
     @repaint()
 
   trigger: (name, data) ->
-    @canvas.dispatchEvent new CustomEvent(name, {
+    @canvas.dispatchEvent new CustomEvent name,
       detail: data
-    })
 
   on: (name, fn) ->
     @canvas.addEventListener name, (e) ->
       fn e.detail
 
   clientCoordsToDrawingCoords: (x, y) ->
-    {
-      x: (x - @position.x) / @scale,
-      y: (y - @position.y) / @scale,
-    }
+    x: (x - @position.x) / @scale,
+    y: (y - @position.y) / @scale,
 
   drawingCoordsToClientCoords: (x, y) ->
-    {
-      x: x * @scale + @position.x,
-      y: y * @scale + @position.y
-    }
+    x: x * @scale + @position.x,
+    y: y * @scale + @position.y
 
   begin: (x, y) ->
     newPos = @clientCoordsToDrawingCoords(x, y)
@@ -56,10 +56,13 @@ class LC.LiterallyCanvas
     @tool.end newPos.x, newPos.y, this if @isDragging
     @isDragging = false
 
-  setBackgroundColor: (color) ->
-    @backgroundColor = color
-    $(@canvas).css('background-color', @backgroundColor)
+  setColor: (name, color) ->
+    @colors[name] = color
+    $(@canvas).css('background-color', @colors.background)
+    @trigger '#{name}ColorChange', @colors[name]
     @repaint()
+
+  getColor: (name) -> @colors[name]
 
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
@@ -94,7 +97,7 @@ class LC.LiterallyCanvas
       @buffer.height = @canvas.height
       @bufferCtx.clearRect(0, 0, @buffer.width, @buffer.height)
       if drawBackground
-        @bufferCtx.fillStyle = @backgroundColor
+        @bufferCtx.fillStyle = @colors.background
         @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
       @draw @shapes, @bufferCtx
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
