@@ -131,8 +131,16 @@
     left: 0;
     width: 100%;
     background-color: gainsboro; }
-  .literally .toolbar-row {
-    width: 100%; }
+    .literally .toolbar, .literally .toolbar * {
+      box-sizing: border-box; }
+  .literally .toolbar-row:first-child {
+    width: 100%;
+    height: 30px; }
+  .literally .toolbar-row-left, .literally .toolbar-row-right {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    height: 24px;
+    line-height: 24px; }
   .literally .toolbar-row-left {
     float: left;
     padding-left: 3px; }
@@ -142,14 +150,13 @@
     text-align: right;
     padding-right: 3px; }
   .literally .tools .button {
-    padding: 0;
     text-align: center;
-    line-height: 24px;
-    width: 24px;
-    height: 24px; }
+    width: 30px;
+    height: 24px;
+    padding: 0; }
     .literally .tools .button img {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       vertical-align: middle; }
   .literally .zoom-display {
     text-align: center;
@@ -160,25 +167,21 @@
     color: white;
     display: inline-block;
     line-height: 14px;
-    padding: 5px 5px 5px 5px;
-    margin: 2px 0 2px 0;
-    font-size: 12px; }
+    padding: 5px 5px 5px 5px; }
   .literally .tool-options-container {
     display: inline-block; }
-  .literally .button.color-square {
-    background-image: none;
-    width: 12px;
-    height: 14px;
-    margin-top: 0; }
-  .literally .button.color-square:hover {
-    background-image: none; }
+  .literally .color-square {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    display: inline-block; }
+    .literally .color-square:hover {
+      background-image: none; }
   .literally .button {
     display: inline-block;
-    padding: 5px 7px 5px 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     text-align: center;
-    margin: 2px 0 2px 0;
-    font-size: 12px;
-    line-height: 14px;
     text-decoration: none;
     text-shadow: 1px 1px 0 white;
     color: #333;
