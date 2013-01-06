@@ -57,11 +57,16 @@
       width: 30px;
       height: 24px;
       padding: 0;
+      position: relative;
 
-      img {
-        width: 20px;
-        height: 20px;
-        vertical-align: middle;
+      .tool-image-wrapper {
+        height: 24px;
+        padding-top: 3px;
+        img {
+          width: 18px;
+          height: 18px;
+          vertical-align: top;
+        }
       }
     }
   }
@@ -86,7 +91,8 @@
     width: 24px;
     height: 24px;
     border-radius: 5px;
-    display: inline-block;
+    float: left;
+    margin-right: 3px;
 
     &:hover {
       background-image: none;

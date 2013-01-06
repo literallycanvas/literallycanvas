@@ -153,11 +153,15 @@
     text-align: center;
     width: 30px;
     height: 24px;
-    padding: 0; }
-    .literally .tools .button img {
-      width: 20px;
-      height: 20px;
-      vertical-align: middle; }
+    padding: 0;
+    position: relative; }
+    .literally .tools .button .tool-image-wrapper {
+      height: 24px;
+      padding-top: 3px; }
+      .literally .tools .button .tool-image-wrapper img {
+        width: 18px;
+        height: 18px;
+        vertical-align: top; }
   .literally .zoom-display {
     text-align: center;
     width: 1.5em;
@@ -174,7 +178,8 @@
     width: 24px;
     height: 24px;
     border-radius: 5px;
-    display: inline-block; }
+    float: left;
+    margin-right: 3px; }
     .literally .color-square:hover {
       background-image: none; }
   .literally .button {
