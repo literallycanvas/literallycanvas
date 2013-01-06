@@ -149,19 +149,21 @@
     float: right;
     text-align: right;
     padding-right: 3px; }
-  .literally .tools .button {
-    text-align: center;
-    width: 30px;
-    height: 24px;
-    padding: 0;
-    position: relative; }
-    .literally .tools .button .tool-image-wrapper {
+  .literally .tools {
+    float: left; }
+    .literally .tools .button {
+      text-align: center;
+      width: 30px;
       height: 24px;
-      padding-top: 3px; }
-      .literally .tools .button .tool-image-wrapper img {
-        width: 18px;
-        height: 18px;
-        vertical-align: top; }
+      padding: 0;
+      position: relative; }
+      .literally .tools .button .tool-image-wrapper {
+        height: 24px;
+        padding-top: 3px; }
+        .literally .tools .button .tool-image-wrapper img {
+          width: 18px;
+          height: 18px;
+          vertical-align: top; }
   .literally .zoom-display {
     text-align: center;
     width: 1.5em;
