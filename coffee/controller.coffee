@@ -56,6 +56,11 @@ class LC.LiterallyCanvas
     @tool.end newPos.x, newPos.y, this if @isDragging
     @isDragging = false
 
+  setBackgroundColor: (color) ->
+    @backgroundColor = color
+    $(@canvas).css('background-color', @backgroundColor)
+    @repaint()
+
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
 
