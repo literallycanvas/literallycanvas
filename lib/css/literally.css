@@ -185,12 +185,13 @@
     white-space: nowrap;
     cursor: pointer;
     outline: none;
-    background-color: #ececec;
+    background-color: #f4f4f4;
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f4f4f4), to(#ececec));
     background-image: -moz-linear-gradient(#f4f4f4, #ececec);
     background-image: -ms-linear-gradient(#f4f4f4, #ececec);
     background-image: -o-linear-gradient(#f4f4f4, #ececec);
     background-image: linear-gradient(#f4f4f4, #ececec);
+    background-color: #ececec;
     -moz-background-clip: padding;
     /* for Firefox 3.6 */
     background-clip: padding-box;
@@ -205,9 +206,10 @@
     text-decoration: none;
     text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
     color: #fff;
-    background-color: #3c8dde;
+    background-color: #599bdc;
     background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
     background-image: -moz-linear-gradient(#599bdc, #3072b3);
+    background-image: -ms-linear-gradient(#599bdc, #3072b3);
     background-image: -o-linear-gradient(#599bdc, #3072b3);
     background-image: linear-gradient(#599bdc, #3072b3); }
   .literally .button:active,
@@ -224,12 +226,12 @@
   .literally .button.danger {
     color: white;
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
-    background-color: #F37873;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f37873), to(#cb0500));
-    background-image: -moz-linear-gradient(#dc5f59, #b33630);
-    background-image: -ms-linear-gradient(#dc5f59, #b33630);
-    background-image: -o-linear-gradient(#dc5f59, #b33630);
-    background-image: linear-gradient(#dc5f59, #b33630); }
+    background-color: #f37873;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f37873), to(#b33630));
+    background-image: -moz-linear-gradient(#f37873, #b33630);
+    background-image: -ms-linear-gradient(#f37873, #b33630);
+    background-image: -o-linear-gradient(#f37873, #b33630);
+    background-image: linear-gradient(#f37873, #b33630); }
   .literally .button.danger:hover,
   .literally .button.danger:focus,
   .literally .button.danger:active {

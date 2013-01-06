@@ -1,5 +1,16 @@
 /* toolbar structure */
 
+@mixin grad($a, $b) {
+    background: {
+      color: $a;
+      image: -webkit-gradient(linear, 0 0, 0 100%, from($a), to($b));
+      image: -moz-linear-gradient($a, $b);
+      image: -ms-linear-gradient($a, $b);
+      image: -o-linear-gradient($a, $b);
+      image: linear-gradient($a, $b);
+    }
+}
+
 .literally {
   .toolbar {
     position: absolute;
@@ -90,12 +101,8 @@
     cursor: pointer;
     outline: none;
 
+    @include grad(#f4f4f4, #ececec);
     background-color: #ececec;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f4f4f4), to(#ececec));
-    background-image: -moz-linear-gradient(#f4f4f4, #ececec);
-    background-image: -ms-linear-gradient(#f4f4f4, #ececec);
-    background-image: -o-linear-gradient(#f4f4f4, #ececec);
-    background-image: linear-gradient(#f4f4f4, #ececec);
     -moz-background-clip: padding; /* for Firefox 3.6 */
     background-clip: padding-box;
     border-radius: 5px;
@@ -111,21 +118,12 @@
     text-decoration: none;
     text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
     color: #fff;
-    background-color: #3c8dde;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
-    background-image: -moz-linear-gradient(#599bdc, #3072b3);
-    background-image: -o-linear-gradient(#599bdc, #3072b3);
-    background-image: linear-gradient(#599bdc, #3072b3);
+    @include grad(#599bdc, #3072b3);
   }
 
   .button:active,
   .button.active {
-    background-color: #3072b3;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3072b3), to(#599bdc));
-    background-image: -moz-linear-gradient(#3072b3, #599bdc);
-    background-image: -ms-linear-gradient(#3072b3, #599bdc);
-    background-image: -o-linear-gradient(#3072b3, #599bdc);
-    background-image: linear-gradient(#3072b3, #599bdc);
+    @include grad(#3072b3, #599bdc);
   }
 
   /* overrides extra padding on button elements in Firefox */
@@ -137,12 +135,7 @@
   .button.danger {
     color: white;
     text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
-    background-color: #F37873;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#F37873), to(#CB0500));
-    background-image: -moz-linear-gradient(#dc5f59, #b33630);
-    background-image: -ms-linear-gradient(#dc5f59, #b33630);
-    background-image: -o-linear-gradient(#dc5f59, #b33630);
-    background-image: linear-gradient(#dc5f59, #b33630);
+    @include grad(#f37873, #b33630);
   }
 
   .button.danger:hover,
@@ -151,24 +144,14 @@
     border-color: #b53f3a;
     border-bottom-color: #a0302a;
     color: #fff;
-    background-color: #dc5f59;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dc5f59), to(#b33630));
-    background-image: -moz-linear-gradient(#dc5f59, #b33630);
-    background-image: -ms-linear-gradient(#dc5f59, #b33630);
-    background-image: -o-linear-gradient(#dc5f59, #b33630);
-    background-image: linear-gradient(#dc5f59, #b33630);
+    @include grad(#dc5f59, #b33630);
   }
 
   .button.danger:active,
   .button.danger.active {
     border-color: #a0302a;
     border-bottom-color: #bf4843;
-    background-color: #b33630;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b33630), to(#dc5f59));
-    background-image: -moz-linear-gradient(#b33630, #dc5f59);
-    background-image: -ms-linear-gradient(#b33630, #dc5f59);
-    background-image: -o-linear-gradient(#b33630, #dc5f59);
-    background-image: linear-gradient(#b33630, #dc5f59);
+    @include grad(#b33630, #dc5f59);
   }
 
   /* did my own button groups */
