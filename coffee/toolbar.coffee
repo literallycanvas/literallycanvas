@@ -7,7 +7,7 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.toolbarHTML = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="button color-square stroke-picker">&nbsp;</div>
+      <div class="color-square stroke-picker">&nbsp;</div>
       <div class="tools button-group"></div>
       <div class="tool-options-container"></div>
     </div>
@@ -93,8 +93,12 @@ class LC.Toolbar
       t.$el = optsEl
       @$el.find('.tool-options-container').append(optsEl)
 
-      buttonEl = $("<div class='button tool-#{t.cssSuffix}'></div>")
-      buttonEl.html(t.buttonContents())
+      buttonEl = $("
+        <div class='button tool-#{t.cssSuffix}'>
+          <div class='tool-image-wrapper'></div>
+        </div>
+        ")
+      buttonEl.find('.tool-image-wrapper').html(t.buttonContents())
       @$el.find('.tools').append(buttonEl)
 
       buttonEl.click (e) =>

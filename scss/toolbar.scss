@@ -1,0 +1,191 @@
+/* toolbar structure */
+
+@mixin grad($a, $b) {
+    background: {
+      color: $a;
+      image: -webkit-gradient(linear, 0 0, 0 100%, from($a), to($b));
+      image: -moz-linear-gradient($a, $b);
+      image: -ms-linear-gradient($a, $b);
+      image: -o-linear-gradient($a, $b);
+      image: linear-gradient($a, $b);
+    }
+}
+
+.literally {
+  .toolbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(220, 220, 220);
+
+    &, * {
+      box-sizing: border-box;
+    }
+  }
+
+  .toolbar-row:first-child {
+    width: 100%;
+    height: 30px;
+  }
+
+  .toolbar-row-left, .toolbar-row-right {
+    margin-top: 3px;
+    margin-bottom: 3px;
+    height: 24px;
+    line-height: 24px;
+  }
+
+  .toolbar-row-left {
+    float: left;
+    padding-left: 3px;
+  }
+
+  .toolbar-row-right {
+    width: 13em;
+    float: right;
+    text-align: right;
+    padding-right: 3px;
+  }
+
+  /* action/tool buttons */
+
+  .tools {
+    float: left;
+
+    .button {
+      text-align: center;
+      width: 30px;
+      height: 24px;
+      padding: 0;
+      position: relative;
+
+      .tool-image-wrapper {
+        height: 24px;
+        padding-top: 3px;
+        img {
+          width: 18px;
+          height: 18px;
+          vertical-align: top;
+        }
+      }
+    }
+  }
+
+  .zoom-display {
+    text-align: center;
+    width: 1.5em;
+    border-radius: 5px;
+    background-color: #333;
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+    line-height: 14px;
+    padding: 5px 5px 5px 5px;
+  }
+
+  .tool-options-container {
+    display: inline-block;
+  }
+
+  .color-square {
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
+    float: left;
+    margin-right: 3px;
+
+    &:hover {
+      background-image: none;
+    }
+  }
+
+  /* buttons derived from
+   * https://github.com/necolas/css3-github-buttons/blob/master/gh-buttons.css
+   */
+
+  .button {
+    display: inline-block;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 #fff;
+    color: #333;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+
+    @include grad(#f4f4f4, #ececec);
+    background-color: #ececec;
+    -moz-background-clip: padding; /* for Firefox 3.6 */
+    background-clip: padding-box;
+    border-radius: 5px;
+    /* IE hacks */
+    zoom: 1;
+    *display: inline;
+  }
+
+  .button:hover,
+  .button:focus,
+  .button:active,
+  .button.active {
+    text-decoration: none;
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+    color: #fff;
+    @include grad(#599bdc, #3072b3);
+  }
+
+  .button:active,
+  .button.active {
+    @include grad(#3072b3, #599bdc);
+  }
+
+  /* overrides extra padding on button elements in Firefox */
+  .button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+  }
+
+  .button.danger {
+    color: white;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+    @include grad(#f37873, #b33630);
+  }
+
+  .button.danger:hover,
+  .button.danger:focus,
+  .button.danger:active {
+    border-color: #b53f3a;
+    border-bottom-color: #a0302a;
+    color: #fff;
+    @include grad(#dc5f59, #b33630);
+  }
+
+  .button.danger:active,
+  .button.danger.active {
+    border-color: #a0302a;
+    border-bottom-color: #bf4843;
+    @include grad(#b33630, #dc5f59);
+  }
+
+  /* did my own button groups */
+
+  .button-group {
+    display: inline-block;
+
+    .button {
+      border-radius: 0;
+      border-left: 1px solid #d4d4d4;
+
+      &:first-child {
+        border-radius: 5px 0px 0px 5px;
+        border-left: none;
+      }
+
+      &:last-child {
+        border-radius: 0px 5px 5px 0px;
+      }
+    }
+  }
+}

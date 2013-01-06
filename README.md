@@ -48,4 +48,5 @@ watch_js.sh   Simple watch script for people who don't have make (...)
 Developing
 ----------
 
-You'll need `coffee-script` and `uglify-js2` installed via `npm`.
+You'll need `coffee-script` and `uglify-js2` installed via `npm`, and `sass`
+via `gem`.
