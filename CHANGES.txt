@@ -1,5 +1,6 @@
 v0.2:
  * Speed improvements
+ * Line tool
  * Rectangle tool
  * Better iOS support (fix several bugs)
  * Toolbar style tweaks

@@ -26,35 +26,11 @@ class LC.Tool
   end: (x, y, lc) ->
 
 
-class LC.RectangleTool extends LC.Tool
+class LC.BrushWidthOptionTool extends LC.Tool
 
   constructor: (@opts) ->
     @strokeWidth = 5
 
-  title: 'Rectangle'
-  cssSuffix: 'rectangle'
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/rectangle.png'>"
-
-  begin: (x, y, lc) ->
-    @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.primaryColor)
-
-  continue: (x, y, lc) ->
-    @currentShape.width = x - @currentShape.x
-    @currentShape.height = y - @currentShape.y
-    lc.update(@currentShape)
-
-  end: (x, y, lc) ->
-    lc.saveShape(@currentShape)
-   
-
-class LC.Pencil extends LC.Tool
-
-  constructor: (@opts) ->
-    @strokeWidth = 5
-
-  title: "Pencil"
-  cssSuffix: "pencil"
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/pencil.png'>"
   optionsContents: ->
     $el = $("
       <span class='brush-width-min'>1 px</span>
@@ -75,6 +51,49 @@ class LC.Pencil extends LC.Tool
       @strokeWidth = parseInt($(e.currentTarget).val(), 10)
       $brushWidthVal.html("(#{@strokeWidth} px)")
     return $el
+
+
+class LC.RectangleTool extends LC.BrushWidthOptionTool
+
+  title: 'Rectangle'
+  cssSuffix: 'rectangle'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/rectangle.png'>"
+
+  begin: (x, y, lc) ->
+    @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.primaryColor)
+
+  continue: (x, y, lc) ->
+    @currentShape.width = x - @currentShape.x
+    @currentShape.height = y - @currentShape.y
+    lc.update(@currentShape)
+
+  end: (x, y, lc) ->
+    lc.saveShape(@currentShape)
+
+
+class LC.LineTool extends LC.BrushWidthOptionTool
+
+  title: 'Line'
+  cssSuffix: 'line'
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/line.png'>"
+
+  begin: (x, y, lc) ->
+    @currentShape = new LC.Line(x, y, @strokeWidth, lc.primaryColor)
+
+  continue: (x, y, lc) ->
+    @currentShape.x2 = x
+    @currentShape.y2 = y
+    lc.update(@currentShape)
+
+  end: (x, y, lc) ->
+    lc.saveShape(@currentShape)
+   
+
+class LC.Pencil extends LC.BrushWidthOptionTool
+
+  title: "Pencil"
+  cssSuffix: "pencil"
+  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/pencil.png'>"
 
   begin: (x, y, lc) ->
     @color = lc.primaryColor
