@@ -27,6 +27,7 @@ class LC.LiterallyCanvas
     @repaint()
 
   trigger: (name, data) ->
+    console.log 'trigger', name, data
     @canvas.dispatchEvent new CustomEvent name,
       detail: data
 
@@ -59,7 +60,7 @@ class LC.LiterallyCanvas
   setColor: (name, color) ->
     @colors[name] = color
     $(@canvas).css('background-color', @colors.background)
-    @trigger '#{name}ColorChange', @colors[name]
+    @trigger "#{name}ColorChange", @colors[name]
     @repaint()
 
   getColor: (name) -> @colors[name]

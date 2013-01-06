@@ -78,8 +78,6 @@ class LC.Toolbar
     $bgPicker.css('background-color', @lc.getColor('background'))
     cp2 = LC.makeColorPicker $bgPicker, 'Background color', (c) =>
       @lc.setColor('background', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)");
-    @lc.on 'backgroundColorChange', (color) ->
-      $bgPicker.css('background-color', color);
 
     @lc.$canvas.mousedown ->
       cp1.hide(); cp2.hide();
