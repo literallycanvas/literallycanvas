@@ -27,7 +27,6 @@ class LC.LiterallyCanvas
     @repaint()
 
   trigger: (name, data) ->
-    console.log 'trigger', name, data
     @canvas.dispatchEvent new CustomEvent name,
       detail: data
 
