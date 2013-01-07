@@ -1,15 +1,12 @@
 window.LC = window.LC ? {}
 
-LC.defaultStrokeColor = 'rgba(0, 0, 0, 0.9)'
-LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
-
 
 LC.toolbarHTML = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
       <div class="tools button-group"></div>
       &nbsp;&nbsp;&nbsp;&nbsp;Background:
-      <div class="color-square bg-picker">&nbsp;</div>
+      <div class="color-square background-picker">&nbsp;</div>
     </div>
 
     <div class="toolbar-row-right">
@@ -26,9 +23,11 @@ LC.toolbarHTML = '
     </div>
     <div class="clearfix"></div>
   </div>
+
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="color-square stroke-picker">&nbsp;</div>
+      <div class="color-square primary-picker">&nbsp;</div>
+      <div class="color-square secondary-picker">&nbsp;</div>
       <div class="tool-options-container"></div>
     </div>
     <div class="clearfix"></div>
@@ -66,23 +65,27 @@ class LC.Toolbar
     @initTools()
     @initZoom()
 
-  initColors: ->
-    $stroke = @$el.find('.stroke-picker')
-    $stroke.css('background-color', @lc.getColor('primary'))
-    cp1 = LC.makeColorPicker $stroke, 'Foreground color', (c) =>
-      @lc.setColor('primary', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)")
-    @lc.on 'primaryColorChange', (color) ->
-      $stroke.css('background-color', color)
+  _bindColorPicker: (name, title) ->
+    $el = @$el.find(".#{name}-picker")
+    $el.css('background-color', @lc.getColor(name))
+    @lc.on "#{name}ColorChange", (color) ->
+      $el.css('background-color', color)
+    $el
 
-    $bgPicker = $('.bg-picker')
-    $bgPicker.css('background-color', @lc.getColor('background'))
-    cp2 = LC.makeColorPicker $bgPicker, 'Background color', (c) =>
-      @lc.setColor('background', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)");
+    LC.makeColorPicker $el, "#{title} color", (c) =>
+      @lc.setColor(name, "rgba(#{c.r}, #{c.g}, #{c.b}, 1)")
+
+  initColors: ->
+    pickers = [
+      @_bindColorPicker('primary', 'Primary (stroke)')
+      @_bindColorPicker('secondary', 'Secondary (fill)')
+      @_bindColorPicker('background', 'Background')
+    ]
 
     @lc.$canvas.mousedown ->
-      cp1.hide(); cp2.hide();
+      _.each pickers, (p) -> p.hide()
     @lc.$canvas.on 'touchstart', ->
-      cp1.hide(); cp2.hide();
+      _.each pickers, (p) -> p.hide()
 
   initButtons: ->
     @$el.find('.clear-button').click (e) =>
