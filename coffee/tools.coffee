@@ -60,7 +60,8 @@ class LC.RectangleTool extends LC.BrushWidthOptionTool
   buttonContents: -> "<img src='#{@opts.imageURLPrefix}/rectangle.png'>"
 
   begin: (x, y, lc) ->
-    @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.getColor('primary'))
+    @currentShape = new LC.Rectangle(
+      x, y, @strokeWidth, lc.getColor('primary'), lc.getColor('secondary'))
 
   continue: (x, y, lc) ->
     @currentShape.width = x - @currentShape.x

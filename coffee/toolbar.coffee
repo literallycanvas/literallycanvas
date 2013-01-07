@@ -67,7 +67,6 @@ class LC.Toolbar
 
   _bindColorPicker: (name, title) ->
     $el = @$el.find(".#{name}-picker")
-    $el.css('background-image', "url(#{@opts.imageURLPrefix}/alpha.png)")
     $el.css('background-color', @lc.getColor(name))
     @lc.on "#{name}ColorChange", (color) ->
       $el.css('background-color', color)
@@ -77,6 +76,10 @@ class LC.Toolbar
       $el.css('background-position', "0% #{(1 - c.a) * 100}%")
 
   initColors: ->
+    @$el.find('.primary-picker, .secondary-picker, .background-picker')
+      .css('background-image', "url(#{@opts.imageURLPrefix}/alpha.png)")
+    @$el.find('.secondary-picker')
+      .css('background-position', "0% 100%")
     pickers = [
       @_bindColorPicker('primary', 'Primary (stroke)')
       @_bindColorPicker('secondary', 'Secondary (fill)')
