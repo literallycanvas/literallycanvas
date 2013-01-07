@@ -34,8 +34,8 @@ initLiterallyCanvas = (el, opts = {}) ->
     keyboardShortcuts: true
     sizeToContainer: true
     toolClasses: [
-        LC.Pencil, LC.Eraser, LC.LineTool, LC.RectangleTool, LC.Pan,
-        LC.EyeDropper]
+        LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget, LC.PanWidget,
+        LC.EyeDropperWidget]
   }, opts)
   $el = $(el)
   $el.addClass('literally')
