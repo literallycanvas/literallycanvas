@@ -10,13 +10,15 @@ class LC.Shape
 
 class LC.Rectangle extends LC.Shape
 
-  constructor: (@x, @y, @strokeWidth, @color) ->
+  constructor: (@x, @y, @strokeWidth, @strokeColor, @fillColor) ->
     @width = 0
     @height = 0
 
   draw: (ctx) ->
+    ctx.fillStyle = @fillColor
+    ctx.fillRect(@x, @y, @width, @height)
     ctx.lineWidth = @strokeWidth
-    ctx.strokeStyle = @color
+    ctx.strokeStyle = @strokeColor
     ctx.strokeRect(@x, @y, @width, @height)
 
 
