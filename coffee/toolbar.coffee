@@ -88,7 +88,7 @@ class LC.Toolbar
     @tools = (new ToolClass(@opts) for ToolClass in @opts.toolClasses)
     _.each @tools, (t) =>
       optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
-      optsEl.html(t.optionsContents())
+      optsEl.html(t.options())
       optsEl.hide()
       t.$el = optsEl
       @$el.find('.tool-options-container').append(optsEl)
@@ -98,7 +98,7 @@ class LC.Toolbar
           <div class='tool-image-wrapper'></div>
         </div>
         ")
-      buttonEl.find('.tool-image-wrapper').html(t.buttonContents())
+      buttonEl.find('.tool-image-wrapper').html(t.button())
       @$el.find('.tools').append(buttonEl)
 
       buttonEl.click (e) =>
@@ -116,6 +116,6 @@ class LC.Toolbar
   selectTool: (t) ->
     @$el.find(".tools .active").removeClass("active")
     @$el.find(".tools .tool-#{t.cssSuffix}").addClass("active")
-    @lc.tool = t
+    t.select(@lc)
     @$el.find('.tool-options').hide()
     t.$el.show() if t.$el
