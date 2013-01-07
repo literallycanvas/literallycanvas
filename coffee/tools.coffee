@@ -19,7 +19,7 @@ class LC.StrokeTool extends LC.Tool
 class LC.RectangleTool extends LC.StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.primaryColor)
+    @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.getColor('primary'))
 
   continue: (x, y, lc) ->
     @currentShape.width = x - @currentShape.x
@@ -33,7 +33,7 @@ class LC.RectangleTool extends LC.StrokeTool
 class LC.LineTool extends LC.StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new LC.Line(x, y, @strokeWidth, lc.primaryColor)
+    @currentShape = new LC.Line(x, y, @strokeWidth, lc.getColor('primary'))
 
   continue: (x, y, lc) ->
     @currentShape.x2 = x
@@ -47,7 +47,7 @@ class LC.LineTool extends LC.StrokeTool
 class LC.Pencil extends LC.StrokeTool
 
   begin: (x, y, lc) ->
-    @color = lc.primaryColor
+    @color = lc.getColor('primary')
     @currentShape = @makeShape()
     @currentShape.addPoint(@makePoint(x, y, lc))
 
@@ -86,11 +86,7 @@ class LC.EyeDropper extends LC.Tool
     
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)
-    if newColor
-      lc.primaryColor = newColor
-    else
-      lc.primaryColor = lc.backgroundColor
-    lc.trigger 'colorChange', lc.primaryColor
+    lc.setColor('primary', newColor or lc.getColor('background'))
 
   begin: (x, y, lc) ->
     @readColor(x, y, lc)

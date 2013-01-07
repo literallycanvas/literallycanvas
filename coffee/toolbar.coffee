@@ -7,9 +7,9 @@ LC.defaultFillColor = 'rgba(255, 255, 255, 0.9)'
 LC.toolbarHTML = '
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="color-square stroke-picker">&nbsp;</div>
       <div class="tools button-group"></div>
-      <div class="tool-options-container"></div>
+      &nbsp;&nbsp;&nbsp;&nbsp;Background:
+      <div class="color-square bg-picker">&nbsp;</div>
     </div>
 
     <div class="toolbar-row-right">
@@ -23,6 +23,13 @@ LC.toolbarHTML = '
         </div>
         <div class="zoom-display">1</div>
       </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="toolbar-row">
+    <div class="toolbar-row-left">
+      <div class="color-square stroke-picker">&nbsp;</div>
+      <div class="tool-options-container"></div>
     </div>
     <div class="clearfix"></div>
   </div>
@@ -61,18 +68,21 @@ class LC.Toolbar
 
   initColors: ->
     $stroke = @$el.find('.stroke-picker')
-    $stroke.css('background-color', LC.defaultStrokeColor)
-    cp = LC.makeColorPicker $stroke, 'Foreground color', (c) =>
-      val = "rgba(#{c.r}, #{c.g}, #{c.b}, 1)"
-      $stroke.css('background-color', val)
-      @lc.primaryColor = val
-    @lc.$canvas.mousedown ->
-      cp.hide()
-    @lc.$canvas.on 'touchstart', ->
-      cp.hide()
-
-    @lc.on 'colorChange', (color) ->
+    $stroke.css('background-color', @lc.getColor('primary'))
+    cp1 = LC.makeColorPicker $stroke, 'Foreground color', (c) =>
+      @lc.setColor('primary', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)")
+    @lc.on 'primaryColorChange', (color) ->
       $stroke.css('background-color', color)
+
+    $bgPicker = $('.bg-picker')
+    $bgPicker.css('background-color', @lc.getColor('background'))
+    cp2 = LC.makeColorPicker $bgPicker, 'Background color', (c) =>
+      @lc.setColor('background', "rgba(#{c.r}, #{c.g}, #{c.b}, 1)");
+
+    @lc.$canvas.mousedown ->
+      cp1.hide(); cp2.hide();
+    @lc.$canvas.on 'touchstart', ->
+      cp1.hide(); cp2.hide();
 
   initButtons: ->
     @$el.find('.clear-button').click (e) =>
