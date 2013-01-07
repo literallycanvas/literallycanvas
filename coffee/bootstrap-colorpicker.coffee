@@ -429,4 +429,22 @@ CPGlobal =
     parse: (execResult) ->
       [execResult[1] / 360, execResult[2] / 100, execResult[3] / 100, execResult[4]]
   ]
-  template: "<div class=\"colorpicker\">" + "<div class=\"colorpicker-saturation\"><i><b></b></i></div>" + "<div class=\"colorpicker-hue\"><i></i></div>" + "<div class=\"colorpicker-alpha\"><i></i></div>" + "<div class=\"colorpicker-color\"><div /></div>" + "</div>"
+
+  template: """
+    <div class="colorpicker">
+      <div class="colorpicker-saturation">
+        <i>
+          <b></b>
+        </i>
+      </div>
+      <div class="colorpicker-hue">
+        <i></i>
+      </div>
+      <div class="colorpicker-alpha">
+        <i></i>
+      </div>
+      <div class="colorpicker-color">
+        <div></div>
+      </div>
+    </div>"
+  """

@@ -26,8 +26,8 @@ LC.toolbarHTML = '
 
   <div class="toolbar-row">
     <div class="toolbar-row-left">
-      <div class="color-square primary-picker">&nbsp;</div>
-      <div class="color-square secondary-picker">&nbsp;</div>
+      <div class="color-square primary-picker"></div>
+      <div class="color-square secondary-picker"></div>
       <div class="tool-options-container"></div>
     </div>
     <div class="clearfix"></div>
@@ -37,7 +37,7 @@ LC.toolbarHTML = '
 
 LC.makeColorPicker = ($el, title, callback) ->
   $el.data('color', 'rgb(0, 0, 0)')
-  cp = $el.colorpicker(format: 'rgb').data('colorpicker')
+  cp = $el.colorpicker(format: 'rgba').data('colorpicker')
   cp.hide()
   $el.on 'changeColor', (e) ->
     callback(e.color.toRGB())
@@ -67,13 +67,14 @@ class LC.Toolbar
 
   _bindColorPicker: (name, title) ->
     $el = @$el.find(".#{name}-picker")
+    $el.css('background-image', "url(#{@opts.imageURLPrefix}/alpha.png)")
     $el.css('background-color', @lc.getColor(name))
     @lc.on "#{name}ColorChange", (color) ->
       $el.css('background-color', color)
-    $el
 
     LC.makeColorPicker $el, "#{title} color", (c) =>
-      @lc.setColor(name, "rgba(#{c.r}, #{c.g}, #{c.b}, 1)")
+      @lc.setColor(name, "rgba(#{c.r}, #{c.g}, #{c.b}, #{c.a})")
+      $el.css('background-position', "0% #{(1 - c.a) * 100}%")
 
   initColors: ->
     pickers = [
