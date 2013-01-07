@@ -1,21 +1,5 @@
 class LC.Tool
 
-  constructor: (@opts) ->
-
-  # text to be shown in a hypothetical tooltip
-  title: undefined
-
-  # suffix of the CSS elements that are generated for this class.
-  # specficially tool-{suffix} for the button, and tool-options-{suffix} for
-  # the options container.
-  cssSuffix: undefined
-
-  # function that returns the HTML of the tool button's contents
-  buttonContents: -> undefined
-
-  # function that returns the HTML of the tool options
-  optionsContents: -> undefined
-
   # called when the user starts dragging
   begin: (x, y, lc) ->
 
@@ -26,38 +10,13 @@ class LC.Tool
   end: (x, y, lc) ->
 
 
-class LC.BrushWidthOptionTool extends LC.Tool
+class LC.StrokeTool extends LC.Tool
 
-  constructor: (@opts) ->
+  constructor: () ->
     @strokeWidth = 5
 
-  optionsContents: ->
-    $el = $("
-      <span class='brush-width-min'>1 px</span>
-      <input type='range' min='1' max='50' step='1' value='#{@strokeWidth}'>
-      <span class='brush-width-max'>50 px</span>
-      <span class='brush-width-val'>(5 px)</span>
-    ")
 
-    $input = $el.filter('input')
-    if $input.size() == 0
-      $input = $el.find('input')
-
-    $brushWidthVal = $el.filter('.brush-width-val')
-    if $brushWidthVal.size() == 0
-      $brushWidthVal = $el.find('.brush-width-val')
-
-    $input.change (e) =>
-      @strokeWidth = parseInt($(e.currentTarget).val(), 10)
-      $brushWidthVal.html("(#{@strokeWidth} px)")
-    return $el
-
-
-class LC.RectangleTool extends LC.BrushWidthOptionTool
-
-  title: 'Rectangle'
-  cssSuffix: 'rectangle'
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/rectangle.png'>"
+class LC.RectangleTool extends LC.StrokeTool
 
   begin: (x, y, lc) ->
     @currentShape = new LC.Rectangle(x, y, @strokeWidth, lc.getColor('primary'))
@@ -71,11 +30,7 @@ class LC.RectangleTool extends LC.BrushWidthOptionTool
     lc.saveShape(@currentShape)
 
 
-class LC.LineTool extends LC.BrushWidthOptionTool
-
-  title: 'Line'
-  cssSuffix: 'line'
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/line.png'>"
+class LC.LineTool extends LC.StrokeTool
 
   begin: (x, y, lc) ->
     @currentShape = new LC.Line(x, y, @strokeWidth, lc.getColor('primary'))
@@ -89,11 +44,7 @@ class LC.LineTool extends LC.BrushWidthOptionTool
     lc.saveShape(@currentShape)
    
 
-class LC.Pencil extends LC.BrushWidthOptionTool
-
-  title: "Pencil"
-  cssSuffix: "pencil"
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/pencil.png'>"
+class LC.Pencil extends LC.StrokeTool
 
   begin: (x, y, lc) ->
     @color = lc.getColor('primary')
@@ -114,23 +65,14 @@ class LC.Pencil extends LC.BrushWidthOptionTool
 
 class LC.Eraser extends LC.Pencil
 
-  constructor: (@opts) ->
-    super
+  constructor: () ->
     @strokeWidth = 10
-
-  title: "Eraser"
-  cssSuffix: "eraser"
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/eraser.png'>"
 
   makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
   makeShape: -> new LC.EraseLinePathShape(this)
 
 
 class LC.Pan extends LC.Tool
-
-  title: "Pan"
-  cssSuffix: "pan"
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/pan.png'>"
 
   begin: (x, y, lc) ->
     @start = {x:x, y:y}
@@ -141,11 +83,7 @@ class LC.Pan extends LC.Tool
 
 
 class LC.EyeDropper extends LC.Tool
-
-  title: "Eyedropper"
-  cssSuffix: "eye-dropper"
-  buttonContents: -> "<img src='#{@opts.imageURLPrefix}/eyedropper.png'>"
-
+    
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)
     lc.setColor('primary', newColor or lc.getColor('background'))
