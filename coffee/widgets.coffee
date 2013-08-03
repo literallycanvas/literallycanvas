@@ -36,7 +36,7 @@ class LC.StrokeWidget extends LC.ToolWidget
   options: ->
     $el = $("
       <span class='brush-width-min'>1 px</span>
-      <input type='range' min='1' max='50' step='1' value='#{@strokeWidth}'>
+      <input type='range' min='1' max='50' step='1' value='#{@tool.strokeWidth}'>
       <span class='brush-width-max'>50 px</span>
       <span class='brush-width-val'>(5 px)</span>
     ")
