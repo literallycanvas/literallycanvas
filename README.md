@@ -12,8 +12,7 @@ Usage
 [Full documentation](http://literallycanvas.github.com)
 
 Literally Canvas depends on jQuery (tested on 1.8.2) and underscore.js (tested
-on 1.4.2). The "fat" version includes these dependencies. The "thin" version
-does not.
+on 1.4.2).
 
 Add the files under `lib/css` and `lib/img` to your project, as well as the
 appropriate file from `lib/js`. Then do this:
