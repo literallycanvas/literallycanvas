@@ -26,8 +26,9 @@ serve:
 	python -m SimpleHTTPServer 8000 .
 
 release: all
-	mkdir release
-	cp -r lib/* release/
-	cp README_release.txt release/README.txt
-	tar -cvzf release.tar.gz release
-	rm -rf release
+	-rm -rf literallycanvas
+	mkdir literallycanvas
+	cp -r lib/* literallycanvas/
+	cp README_release.txt literallycanvas/README.txt
+	tar -cvzf literallycanvas.tar.gz literallycanvas
+	rm -rf literallycanvas
