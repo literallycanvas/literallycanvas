@@ -1,3 +1,8 @@
+v0.2.1:
+ * Redo toolbar/CSS markup
+ * Drop fat version of build
+ * Allow changing background color
+
 v0.2:
  * Speed improvements
  * Line tool
