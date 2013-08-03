@@ -51,7 +51,7 @@ class LC.StrokeWidget extends LC.ToolWidget
 
     $input.change (e) =>
       @tool.strokeWidth = parseInt($(e.currentTarget).val(), 10)
-      $brushWidthVal.html("(#{@strokeWidth} px)")
+      $brushWidthVal.html("(#{@tool.strokeWidth} px)")
     return $el
 
 
