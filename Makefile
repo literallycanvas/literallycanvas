@@ -24,3 +24,10 @@ lib/js/literallycanvas.min.js: coffee
 
 serve:
 	python -m SimpleHTTPServer 8000 .
+
+release: all
+	mkdir release
+	cp -r lib/* release/
+	cp README_release.txt release/README.txt
+	tar -cvzf release.tar.gz release
+	rm -rf release
