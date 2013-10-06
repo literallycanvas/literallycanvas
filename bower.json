@@ -1,0 +1,26 @@
+{
+  "name": "literallycanvas",
+  "version": "0.2.1",
+  "homepage": "https://github.com/literallycanvas/literallycanvas",
+  "authors": [
+    "irskep",
+    "campaul"
+  ],
+  "description": "A canvas in your browser. Literally.",
+  "main": "lib/js/literallycanvas.min.js",
+  "keywords": [
+    "canvas",
+    "edit",
+    "sketch",
+    "draw",
+    "literally"
+  ],
+  "license": "BSD",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
