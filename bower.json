@@ -16,6 +16,10 @@
     "literally"
   ],
   "license": "BSD",
+  "dependencies": {
+    "underscore": "*",
+    "jquery": "*"
+  }
   "ignore": [
     "**/.*",
     "node_modules",
