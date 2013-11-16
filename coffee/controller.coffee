@@ -27,8 +27,7 @@ class LC.LiterallyCanvas
     @repaint()
 
   trigger: (name, data) ->
-    @canvas.dispatchEvent new CustomEvent name,
-      detail: data
+    @canvas.dispatchEvent(new CustomEvent(name, detail: data))
 
   on: (name, fn) ->
     @canvas.addEventListener name, (e) ->

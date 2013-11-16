@@ -2,6 +2,9 @@
 
 all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js
 
+livereload:
+	livereload . -p 33233
+
 clean:
 	rm -f gen/*.js
 	rm -f lib/js/literallycanvas.*.js
@@ -11,6 +14,9 @@ watch-js:
 
 watch-css:
 	sass --watch scss/literally.scss:lib/css/literally.css
+
+scss:
+	sass scss/literally.scss:lib/css/literally.css
 
 coffee: coffee/*.coffee
 	mkdir -p gen

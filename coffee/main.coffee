@@ -25,7 +25,7 @@ buttonIsDown = (e) ->
     return e.which > 0
 
 
-initLiterallyCanvas = (el, opts = {}) ->
+LC.init = (el, opts = {}) ->
   opts = _.extend({
     primaryColor: 'rgba(0, 0, 0, 1)'
     secondaryColor: 'rgba(0, 0, 0, 0)'
@@ -123,9 +123,7 @@ initLiterallyCanvas = (el, opts = {}) ->
 
 $.fn.literallycanvas = (opts = {}) ->
   @each (ix, el) =>
-    val = initLiterallyCanvas(el, opts)
-    el.literallycanvas = val[0]
-    el.literallycanvasToolbar = val[1]
+    [el.literallycanvas, el.literallycanvasToolbar] = LC.init(el, opts)
   this
 
 
