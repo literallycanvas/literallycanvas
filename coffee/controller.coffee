@@ -6,7 +6,7 @@ class LC.LiterallyCanvas
   constructor: (@canvas, @opts) ->
     @$canvas = $(@canvas)
 
-    LC.bindEvents(this, @canvas)
+    LC.bindEvents(this, @canvas, @opts.keyboardShortcuts)
 
     @colors =
       primary: @opts.primaryColor or '#000'
@@ -31,6 +31,11 @@ class LC.LiterallyCanvas
     @scale = 1.0
     @tool = undefined
 
+    @repaint()
+
+  updateSize: =>
+    @$canvas.attr('width', @$canvas.width())
+    @$canvas.attr('height', @$canvas.height())
     @repaint()
 
   trigger: (name, data) ->

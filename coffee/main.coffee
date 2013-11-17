@@ -27,23 +27,11 @@ LC.init = (el, opts = {}) ->
   resize = ->
     if opts.sizeToContainer
       lc.$canvas.css('height', "#{$el.height() - $tbEl.height()}px")
-    lc.$canvas.attr('width', lc.$canvas.width())
-    lc.$canvas.attr('height', lc.$canvas.height())
-    lc.repaint()
+    lc.updateSize()
 
   $el.resize(resize)
   $(window).resize(resize)
   resize()
-
-  if opts.keyboardShortcuts
-    $(document).keydown (e) ->
-      switch e.which
-        when 37 then lc.pan -10, 0
-        when 38 then lc.pan 0, -10
-        when 39 then lc.pan 10, 0
-        when 40 then lc.pan 0, 10
-
-      lc.repaint()
 
   [lc, tb]
 
