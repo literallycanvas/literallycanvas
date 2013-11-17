@@ -131,10 +131,10 @@ class LC.LiterallyCanvas
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
   draw: (shapes, ctx) ->
-    @transformed ->
-      _.each shapes, (s) =>
-        s.draw(ctx)
-    , ctx
+    drawShapes = ->
+      for shape in shapes
+        shape.draw(ctx)
+    @transformed(drawShapes, ctx)
 
   # Executes the given function after translating and scaling the context.
   # The context is restored to its original state before returning.

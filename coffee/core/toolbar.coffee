@@ -87,9 +87,11 @@ class LC.Toolbar
     ]
 
     @lc.$canvas.mousedown ->
-      _.each pickers, (p) -> p.hide()
+      for picker in pickers
+        picker.hide()
     @lc.$canvas.on 'touchstart', ->
-      _.each pickers, (p) -> p.hide()
+      for picker in pickers
+        picker.hide()
 
   initButtons: ->
     @$el.find('.clear-button').click (e) =>
@@ -103,7 +105,7 @@ class LC.Toolbar
 
   initTools: ->
     @tools = (new ToolClass(@opts) for ToolClass in @opts.toolClasses)
-    _.each @tools, (t) =>
+    for t in @tools
       optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
       optsEl.html(t.options())
       optsEl.hide()
