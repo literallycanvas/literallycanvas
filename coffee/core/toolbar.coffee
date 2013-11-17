@@ -104,20 +104,28 @@ class LC.Toolbar
       @lc.redo()
 
   initTools: ->
-    @tools = (new ToolClass(@opts) for ToolClass in @opts.toolClasses)
-    for t in @tools
-      optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
-      optsEl.html(t.options())
-      optsEl.hide()
-      t.$el = optsEl
-      @$el.find('.tool-options-container').append(optsEl)
+    @tools = []
+    for ToolClass in @opts.toolClasses
+      t = new ToolClass(@opts)
+      @tools.push(t)
+      @addTool(t)
 
-      buttonEl = $("<div class='button tool-#{t.cssSuffix}'><div class='tool-image-wrapper'></div></div>")
-      buttonEl.find('.tool-image-wrapper').html(t.button())
-      @$el.find('.tools').append(buttonEl)
+  addTool: (t) ->
+    optsEl = $("<div class='tool-options tool-options-#{t.cssSuffix}'></div>")
+    optsEl.html(t.options())
+    optsEl.hide()
+    t.$el = optsEl
+    @$el.find('.tool-options-container').append(optsEl)
 
-      buttonEl.click (e) =>
-        @selectTool(t)
+    buttonEl = $("<div class='button tool-#{t.cssSuffix}'>
+        <div class='tool-image-wrapper'></div></div>")
+      .appendTo(@$el.find('.tools'))
+      .find('.tool-image-wrapper')
+      .html(t.button())
+
+    buttonEl.click (e) =>
+      @selectTool(t)
+    null
 
   initZoom: ->
     @$el.find('.zoom-in-button').click (e) =>
