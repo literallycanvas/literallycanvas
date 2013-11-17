@@ -34,7 +34,6 @@ class LC.LiterallyCanvas
     if @opts.preserveCanvasContents
       backgroundImage = new Image()
       backgroundImage.src = @canvas.toDataURL()
-      console.log(backgroundImage.src)
       backgroundImage.onload = => @repaint()
       @saveShape(new LC.Image(0, 0, backgroundImage, true))
 
