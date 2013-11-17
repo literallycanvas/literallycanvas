@@ -206,17 +206,20 @@ class LC.LiterallyCanvas
     @repaint(true, true)
     @canvas
 
-  loadShapes: (shapeReprs) ->
+  getSnapshot: -> (shape.toJSON() for shape in @shapes)
+  getSnapshotJSON: -> JSON.stringify(@shapes)  # yep, that works
+
+  loadSnapshot: (snapshot) ->
     @shapes = []
     @repaint(true)
-    for shapeRepr in shapeReprs
+    for shapeRepr in snapshot
       if shapeRepr.className of LC
         shape = LC[shapeRepr.className].fromJSON(this, shapeRepr.data)
         if shape
           @execute(new LC.AddShapeAction(this, shape))
 
-  loadShapesJSON: (str) ->
-    @loadShapes(JSON.parse(str))
+  loadSnapshotJSON: (str) ->
+    @loadSnapshot(JSON.parse(str))
 
 
 # maybe add checks to these in the future to make sure you never double-undo or

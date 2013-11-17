@@ -68,14 +68,15 @@
         lc.saveShape(new LC.ImageShape(0, 0, backgroundImage));
 
         lc.on('saveShape', function() {
-          localStorage.setItem('drawing', JSON.stringify(lc.shapes));
-          console.log("Saved drawing is now " + localStorage.getItem('drawing'));
+          localStorage.setItem('drawing', lc.getSnapshotJSON());
+          console.log(
+            "Saved drawing is now " + localStorage.getItem('drawing'));
         });
 
         var drawing = localStorage.getItem('drawing');
         if (drawing) {
-          console.log("Loading stored drawing")
-          lc.loadShapesJSON(drawing)
+          console.log("Loading stored drawing");
+          lc.loadSnapshotJSON(drawing);
         }
       });
 
