@@ -11,7 +11,7 @@ class LC.LiterallyCanvas
     @colors =
       primary: @opts.primaryColor or '#000'
       secondary: @opts.secondaryColor or '#fff'
-      background: @opts.backgroundColor or 'rgb(230, 230, 230)'
+      background: @opts.backgroundColor or 'transparent'
     $(@canvas).css('background-color', @colors.background)
 
     @watermarkImage = @opts.watermarkImage

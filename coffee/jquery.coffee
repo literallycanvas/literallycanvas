@@ -12,9 +12,9 @@ LC._last = (array, n = null) ->
 
 
 LC.init = (el, opts = {}) ->
-  opts.primaryColor ?= 'rgba(0, 0, 0, 1)'
-  opts.secondaryColor ?= 'rgba(0, 0, 0, 0)'
-  opts.backgroundColor ?= 'rgb(230, 230, 230)'
+  opts.primaryColor ?= '#000'
+  opts.secondaryColor ?= '#fff'
+  opts.backgroundColor ?= 'transparent'
   opts.imageURLPrefix ?= 'lib/img'
   opts.keyboardShortcuts ?= true
   opts.preserveCanvasContents ?= false
