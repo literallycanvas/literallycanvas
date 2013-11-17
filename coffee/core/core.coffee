@@ -37,6 +37,9 @@ class LC.LiterallyCanvas
       backgroundImage.onload = => @repaint()
       @saveShape(new LC.ImageShape(0, 0, backgroundImage, true))
 
+    @loadSnapshotJSON(@opts.loadSnapshotJSON) if @opts.loadSnapshotJSON
+    @loadSnapshot(@opts.loadSnapshot) if @opts.loadSnapshot
+
     @repaint()
 
   updateSize: =>
@@ -210,7 +213,7 @@ class LC.LiterallyCanvas
   getSnapshotJSON: -> JSON.stringify(@shapes)  # yep, that works
 
   loadSnapshot: (snapshot) ->
-    @shapes = []
+    @shapes = (shape for shape in @shapes when shape.locked)
     @repaint(true)
     for shapeRepr in snapshot
       if shapeRepr.className of LC

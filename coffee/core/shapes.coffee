@@ -111,6 +111,7 @@ class LC.LinePathShape extends LC.Shape
     @sampleSize = @tailSize + 1
 
   jsonContent: ->
+    # TODO: make point storage more efficient
     {@order, @segmentSize, @tailSize, @sampleSize, @points}
 
   @fromJSON: (lc, data) ->

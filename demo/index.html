@@ -58,6 +58,7 @@
         $('.literally').literallycanvas({
           backgroundColor: 'transparent',
           imageURLPrefix: '/lib/img',
+          loadSnapshotJSON: localStorage.getItem('drawing'),
           preserveCanvasContents: true,
           watermarkImage: watermarkImage
         });
@@ -65,19 +66,17 @@
         var backgroundImage = new Image()
         backgroundImage.src = backgroundImageURL;
         backgroundImage.onload = function () {lc.repaint(true, false);}
-        lc.saveShape(new LC.ImageShape(0, 0, backgroundImage));
-
-        lc.on('saveShape', function() {
-          localStorage.setItem('drawing', lc.getSnapshotJSON());
-          console.log(
-            "Saved drawing is now " + localStorage.getItem('drawing'));
-        });
-
-        var drawing = localStorage.getItem('drawing');
-        if (drawing) {
-          console.log("Loading stored drawing");
-          lc.loadSnapshotJSON(drawing);
+        if (lc.shapes.length <= 1) {
+          console.log('add image');
+          lc.saveShape(new LC.ImageShape(0, 0, backgroundImage));
         }
+
+        var save = function() {
+          localStorage.setItem('drawing', lc.getSnapshotJSON());
+        };
+        lc.on('saveShape', save);
+        lc.on('undo', save);
+        lc.on('redo', save);
       });
 
       $("#open-image").click(function() {
