@@ -123,7 +123,11 @@ class LC.LiterallyCanvas
         @bufferCtx.fillStyle = @colors.background
         @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
       if @watermarkImage
-        @bufferCtx.drawImage(@watermarkImage, 0, 0)
+        @bufferCtx.drawImage(
+          @watermarkImage,
+          @canvas.width / 2 - @watermarkImage.width / 2,
+          @canvas.height / 2 - @watermarkImage.height / 2,
+        )
       @draw @shapes, @bufferCtx
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     if @canvas.width > 0 and @canvas.height > 0
