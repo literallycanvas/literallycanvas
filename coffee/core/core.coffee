@@ -99,7 +99,7 @@ class LC.LiterallyCanvas
     @scale = @scale + factor
     @scale = Math.max(@scale, 0.2)
     @scale = Math.min(@scale, 4.0)
-    @scale = Math.round(@scale*100)/100
+    @scale = Math.round(@scale * 100) / 100
 
     @position.x = LC.scalePositionScalar(
       @position.x, @canvas.width, oldScale, @scale)
@@ -191,7 +191,7 @@ class LC.LiterallyCanvas
     p = @drawingCoordsToClientCoords x, y
     pixel = @ctx.getImageData(p.x, p.y, 1, 1).data
     if pixel[3]
-      "rgb(" + pixel[0] + "," + pixel[1] + ","  + pixel[2] + ")"
+      "rgb(#{pixel[0]}, #{pixel[1]}, #{pixel[2]})"
     else
       null
 
