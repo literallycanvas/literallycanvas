@@ -43,7 +43,15 @@
         });
 
         // the only LC-specific thing we have to do
-        $('.literally').literallycanvas({imageURLPrefix: '/lib/img'});
+        $('.literally').literallycanvas({
+          imageURLPrefix: '/lib/img',
+        });
+        var backgroundImageURL = 'https://dl.dropboxusercontent.com/u/360865/Photos/26163_371929756319_650376319_4785977_7286010_n.jpg';
+        var lc = $('.literally').get(0).literallycanvas;
+        var backgroundImage = new Image()
+        backgroundImage.src = backgroundImageURL;
+        backgroundImage.onload = function () {lc.repaint(true, false);}
+        lc.saveShape(new LC.Image(0, 0, backgroundImage));
       });
     </script>
   </body>

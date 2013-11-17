@@ -34,8 +34,8 @@ LC.init = (el, opts = {}) ->
     keyboardShortcuts: true
     sizeToContainer: true
     toolClasses: [
-        LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget, LC.PanWidget,
-        LC.EyeDropperWidget]
+        LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
+        LC.PanWidget, LC.EyeDropperWidget]
   }, opts)
   $el = $(el)
   $el.addClass('literally')

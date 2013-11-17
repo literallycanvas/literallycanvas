@@ -8,6 +8,13 @@ class LC.Shape
     @draw(ctx)
 
 
+class LC.Image extends LC.Shape
+
+  # TODO: allow resizing/filling
+  constructor: (@x, @y, @image) ->
+  draw: (ctx) -> ctx.drawImage(@image, @x, @y);
+
+
 class LC.Rectangle extends LC.Shape
 
   constructor: (@x, @y, @strokeWidth, @strokeColor, @fillColor) ->
