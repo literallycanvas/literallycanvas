@@ -57,15 +57,20 @@ class LC.LiterallyCanvas
     newPos = @clientCoordsToDrawingCoords(x, y)
     @tool.begin newPos.x, newPos.y, this
     @isDragging = true
+    @trigger("drawingStart", {tool: @tool})
 
   continue: (x, y) ->
     newPos = @clientCoordsToDrawingCoords(x, y)
-    @tool.continue newPos.x, newPos.y, this if @isDragging
+    if @isDragging
+      @tool.continue newPos.x, newPos.y, this
+      @trigger("drawingContinue", {tool: @tool})
 
   end: (x, y) ->
     newPos = @clientCoordsToDrawingCoords(x, y)
-    @tool.end newPos.x, newPos.y, this if @isDragging
-    @isDragging = false
+    if @isDragging
+      @tool.end newPos.x, newPos.y, this
+      @isDragging = false
+      @trigger("drawingEnd", {tool: @tool})
 
   setColor: (name, color) ->
     @colors[name] = color
@@ -77,11 +82,13 @@ class LC.LiterallyCanvas
 
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
+    @trigger('saveShape', {shape: shape})
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
     @position.x = @position.x - x
     @position.y = @position.y - y
+    @trigger('pan', {x: @position.x, y: @position.y})
 
   zoom: (factor) ->
     oldScale = @scale
@@ -96,6 +103,7 @@ class LC.LiterallyCanvas
       @position.y, @canvas.height, oldScale, @scale)
 
     @repaint()
+    @trigger('zoom', {oldScale: oldScale, newScale: @scale})
 
   # Repaints the canvas.
   # If dirty is true then all saved shapes are completely redrawn,
@@ -116,6 +124,7 @@ class LC.LiterallyCanvas
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     if @canvas.width > 0 and @canvas.height > 0
       @ctx.drawImage @buffer, 0, 0
+    @trigger('repaint', null)
 
   # Redraws the back buffer to the screen in its current state
   # then draws the given shape translated and scaled on top of that.
@@ -149,6 +158,7 @@ class LC.LiterallyCanvas
     @execute(new LC.ClearAction(this))
     @shapes = []
     @repaint()
+    @trigger('clear', null)
 
   execute: (action) ->
     @undoStack.push(action)
@@ -160,12 +170,14 @@ class LC.LiterallyCanvas
     action = @undoStack.pop()
     action.undo()
     @redoStack.push(action)
+    @trigger('undo', {action})
 
   redo: ->
     return unless @redoStack.length
     action = @redoStack.pop()
     @undoStack.push(action)
     action.do()
+    @trigger('redo', {action})
 
   getPixel: (x, y) ->
     p = @drawingCoordsToClientCoords x, y
