@@ -1,7 +1,6 @@
 Full documentation can be found at literallycanvas.com.
 
-Literally Canvas depends on jQuery (tested on 1.8.2) and underscore.js (tested
-on 1.4.2).
+Literally Canvas depends on jQuery (tested on 1.8.2).
 
 Add the files under `css/` and `img/` to your project, as well as the
 appropriate file from `js/`. Then do this:
