@@ -11,8 +11,7 @@ Usage
 
 [Full documentation](http://literallycanvas.github.com)
 
-Literally Canvas depends on jQuery (tested on 1.8.2) and underscore.js (tested
-on 1.4.2).
+Literally Canvas depends on jQuery (tested on 1.8.2).
 
 Add the files under `lib/css` and `lib/img` to your project, as well as the
 appropriate file from `lib/js`. Then do this:
@@ -41,7 +40,6 @@ js/           Javascript dependencies and temporary Javascript files
 lib/          Things you need to use Literally Canvas on your page
 LICENSE       The license. Spoiler: it's BSD!
 README.md     You are here
-watch_js.sh   Simple watch script for people who don't have make (...)
 ```
 
 Developing

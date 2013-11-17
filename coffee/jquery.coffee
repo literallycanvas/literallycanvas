@@ -1,19 +1,29 @@
 window.LC = window.LC ? {}
 
 
+slice = Array.prototype.slice
+
+
+LC._last = (array, n = null) ->
+  if n
+    return slice.call(array, Math.max(array.length - n, 0))
+  else
+    return array[array.length - 1]
+
+
 LC.init = (el, opts = {}) ->
-  opts = _.extend({
-    primaryColor: 'rgba(0, 0, 0, 1)'
-    secondaryColor: 'rgba(0, 0, 0, 0)'
-    backgroundColor: 'rgb(230, 230, 230)'
-    imageURLPrefix: 'lib/img'
-    keyboardShortcuts: true
-    sizeToContainer: true
-    watermarkImageURL: null
-    toolClasses: [
+  opts.primaryColor = 'rgba(0, 0, 0, 1)' unless 'primaryColor' of opts
+  opts.secondaryColor = 'rgba(0, 0, 0, 0)' unless 'secondaryColor' of opts
+  opts.backgroundColor = 'rgb(230, 230, 230)' unless 'backgroundColor' of opts
+  opts.imageURLPrefix = 'lib/img' unless 'imageURLPrefix' of opts
+  opts.keyboardShortcuts = true unless 'keyboardShortcuts' of opts
+  opts.sizeToContainer = true unless 'sizeToContainer' of opts
+  opts.watermarkImageURL = null unless 'watermarkImageURL' of opts
+  unless 'toolClasses' of opts
+    opts.toolClasses = [
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
-        LC.PanWidget, LC.EyeDropperWidget]
-  }, opts)
+        LC.PanWidget, LC.EyeDropperWidget
+    ]
   $el = $(el)
   $el.addClass('literally')
   $tbEl = $('<div class="toolbar">')

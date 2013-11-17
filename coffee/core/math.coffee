@@ -6,20 +6,24 @@ LC.bspline = (points, order) ->
   return LC.bspline(dual(dual(refine(points))), order - 1)
 
 refine = (points) ->
-  points = [_.first(points)].concat(points).concat(_.last(points))
+  points = [points[0]].concat(points).concat(LC._last(points))
   refined = []
-  
-  _.each points, (point, index, points) ->
+
+  index = 0
+  for point in points
     refined[index * 2] = point
     refined[index * 2 + 1] = mid point, points[index + 1] if points[index + 1]
+    index += 1
 
   return refined
 
 dual = (points) ->
   dualed = []
 
-  _.each points, (point, index, points) ->
+  index = 0
+  for point in points
     dualed[index] = mid point, points[index + 1] if points[index + 1]
+    index += 1
 
   return dualed
 
@@ -33,10 +37,12 @@ LC.toPoly = (line) ->
   polyLeft = []
   polyRight = []
 
-  _.each line, (point, index) =>
+  index = 0
+  for point in line
     n = normals(point, slope(line, index))
     polyLeft = polyLeft.concat([n[0]])
     polyRight = [n[1]].concat(polyRight)
+    index += 1
 
   return polyLeft.concat(polyRight)
 

@@ -70,7 +70,7 @@ class LC.LinePathShape extends LC.Shape
 
   addPoint: (point) ->
     # Brush Variance Code
-    #distance = LC.len(LC.diff(_.last(@points), newPoint)) if @points.length
+    #distance = LC.len(LC.diff(LC._last(@points), newPoint)) if @points.length
     #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
     
     @points.push(point)
@@ -78,16 +78,16 @@ class LC.LinePathShape extends LC.Shape
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = LC.bspline(@points, @order)
     else
-      @tail = _.last(
-        LC.bspline(_.last(@points, @sampleSize), @order), @segmentSize * @tailSize
-      )
+      @tail = LC._last(
+        LC.bspline(LC._last(@points, @sampleSize), @order),
+                   @segmentSize * @tailSize)
 
       # Remove the last @tailSize - 1 segments from @smoothedPoints
       # then concat the tail. This is done because smoothed points
       # close to the end of the path will change as new points are
       # added.
-      @smoothedPoints = _.initial(
-        @smoothedPoints, @segmentSize * (@tailSize - 1)
+      @smoothedPoints = @smoothedPoints.slice(
+        0, @smoothedPoints.length - @segmentSize * (@tailSize - 1)
       ).concat(@tail)
 
   draw: (ctx, points = @smoothedPoints) ->
@@ -98,7 +98,7 @@ class LC.LinePathShape extends LC.Shape
     ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.moveTo(points[0].x, points[0].y)
-    _.each _.rest(points), (point) ->
+    for point in points.slice(1)
       ctx.lineTo(point.x, point.y)
     ctx.stroke()
 
