@@ -97,7 +97,7 @@ class LC.LiterallyCanvas
   zoom: (factor) ->
     oldScale = @scale
     @scale = @scale + factor
-    @scale = Math.max(@scale, 0.2)
+    @scale = Math.max(@scale, 0.6)
     @scale = Math.min(@scale, 4.0)
     @scale = Math.round(@scale * 100) / 100
 
