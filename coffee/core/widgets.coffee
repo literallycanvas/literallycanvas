@@ -26,7 +26,7 @@ class LC.ToolWidget extends LC.Widget
     @tool = @makeTool()
         
   select: (lc) ->
-    lc.tool = @tool
+    lc.setTool(@tool)
         
   makeTool: -> undefined
         

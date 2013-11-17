@@ -53,6 +53,10 @@ class LC.LiterallyCanvas
     x: x * @scale + @position.x,
     y: y * @scale + @position.y
 
+  setTool: (tool) ->
+    @tool = tool
+    @trigger('toolChange', {tool})
+
   begin: (x, y) ->
     newPos = @clientCoordsToDrawingCoords(x, y)
     @tool.begin newPos.x, newPos.y, this
