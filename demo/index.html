@@ -42,6 +42,11 @@
           }
         });
 
+        // you can preserve the canvas contents
+        var ctx = $('canvas').get(0).getContext('2d');
+        ctx.fillStyle = 'rgb(255,255,0)';
+        ctx.fillRect(0, 0, 300, 300);
+
         var watermarkImageURL = '/demo/watermark.png';
         var watermarkImage = new Image();
         watermarkImage.src = watermarkImageURL;
@@ -50,7 +55,9 @@
 
         // the only LC-specific thing we have to do
         $('.literally').literallycanvas({
+          backgroundColor: 'transparent',
           imageURLPrefix: '/lib/img',
+          preserveCanvasContents: true,
           watermarkImage: watermarkImage
         });
         var lc = $('.literally').get(0).literallycanvas;

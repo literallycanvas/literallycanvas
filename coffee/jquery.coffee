@@ -12,13 +12,14 @@ LC._last = (array, n = null) ->
 
 
 LC.init = (el, opts = {}) ->
-  opts.primaryColor = 'rgba(0, 0, 0, 1)' unless 'primaryColor' of opts
-  opts.secondaryColor = 'rgba(0, 0, 0, 0)' unless 'secondaryColor' of opts
-  opts.backgroundColor = 'rgb(230, 230, 230)' unless 'backgroundColor' of opts
-  opts.imageURLPrefix = 'lib/img' unless 'imageURLPrefix' of opts
-  opts.keyboardShortcuts = true unless 'keyboardShortcuts' of opts
-  opts.sizeToContainer = true unless 'sizeToContainer' of opts
-  opts.watermarkImageURL = null unless 'watermarkImageURL' of opts
+  opts.primaryColor ?= 'rgba(0, 0, 0, 1)'
+  opts.secondaryColor ?= 'rgba(0, 0, 0, 0)'
+  opts.backgroundColor ?= 'rgb(230, 230, 230)'
+  opts.imageURLPrefix ?= 'lib/img'
+  opts.keyboardShortcuts ?= true
+  opts.preserveCanvasContents ?= false
+  opts.sizeToContainer ?= true
+  opts.watermarkImageURL ?= null
   unless 'toolClasses' of opts
     opts.toolClasses = [
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,

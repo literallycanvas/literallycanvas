@@ -14,7 +14,7 @@ class LC.Shape
 class LC.Image extends LC.Shape
 
   # TODO: allow resizing/filling
-  constructor: (@x, @y, @image) ->
+  constructor: (@x, @y, @image, @locked = false) ->
   draw: (ctx) -> ctx.drawImage(@image, @x, @y);
 
 

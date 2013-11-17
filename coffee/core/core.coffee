@@ -31,6 +31,13 @@ class LC.LiterallyCanvas
     @scale = 1.0
     @tool = undefined
 
+    if @opts.preserveCanvasContents
+      backgroundImage = new Image()
+      backgroundImage.src = @canvas.toDataURL()
+      console.log(backgroundImage.src)
+      backgroundImage.onload = => @repaint()
+      @saveShape(new LC.Image(0, 0, backgroundImage, true))
+
     @repaint()
 
   updateSize: =>
@@ -163,8 +170,9 @@ class LC.LiterallyCanvas
     ctx.restore()
 
   clear: ->
-    @execute(new LC.ClearAction(this))
-    @shapes = []
+    oldShapes = @shapes
+    newShapes = (s for s in @shapes when s.locked)
+    @execute(new LC.ClearAction(this, oldShapes, newShapes))
     @repaint()
     @trigger('clear', null)
 
@@ -204,11 +212,10 @@ class LC.LiterallyCanvas
 # double-redo
 class LC.ClearAction
 
-  constructor: (@lc) ->
-    @oldShapes = @lc.shapes
+  constructor: (@lc, @oldShapes, @newShapes) ->
 
   do: ->
-    @lc.shapes = []
+    @lc.shapes = @newShapes
     @lc.repaint()
 
   undo: ->
