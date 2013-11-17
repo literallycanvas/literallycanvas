@@ -50,3 +50,15 @@ release: all
 	cp README_release.txt literallycanvas/README.txt
 	tar -cvzf literallycanvas.tar.gz literallycanvas
 	rm -rf literallycanvas
+
+ignore-js:
+	git update-index --assume-unchanged lib/js/literallycanvas.js
+	git update-index --assume-unchanged lib/js/literallycanvas.min.js
+	git update-index --assume-unchanged lib/js/literallycanvas.jquery.js
+	git update-index --assume-unchanged lib/js/literallycanvas.jquery.min.js
+
+no-ignore-js:
+	git update-index --no-assume-unchanged lib/js/literallycanvas.js
+	git update-index --no-assume-unchanged lib/js/literallycanvas.min.js
+	git update-index --no-assume-unchanged lib/js/literallycanvas.jquery.js
+	git update-index --no-assume-unchanged lib/js/literallycanvas.jquery.min.js
