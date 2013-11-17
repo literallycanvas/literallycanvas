@@ -3,7 +3,7 @@ window.LC = window.LC ? {}
 
 class LC.Shape
 
-  type: null
+  className: null
 
   # Redraw the entire shape
   draw: (ctx) ->
@@ -12,14 +12,14 @@ class LC.Shape
   update: (ctx) ->
     @draw(ctx)
 
-  toJSON: -> {type: @type, data: @jsonContent()}
+  toJSON: -> {className: @className, data: @jsonContent()}
   jsonContent: -> raise "not implemented"
   @fromJSON: (lc, data) -> raise "not implemented"
 
 
-class LC.Image extends LC.Shape
+class LC.ImageShape extends LC.Shape
 
-  type: 'image'
+  className: 'ImageShape'
 
   # TODO: allow resizing/filling
   constructor: (@x, @y, @image, @locked = false) ->
@@ -29,14 +29,14 @@ class LC.Image extends LC.Shape
   @fromJSON: (lc, data) ->
     img = new Image()
     img.src = data.imageSrc
-    img.onload = ->
-      lc.repaint(true)
-    new LC.Image(data.x, data.y, img, data.locked)
+    img.onload = -> lc.repaint(true)
+    i = new LC.ImageShape(data.x, data.y, img, data.locked)
+    i
 
 
 class LC.Rectangle extends LC.Shape
 
-  type: 'rectangle'
+  className: 'Rectangle'
 
   constructor: (@x, @y, @strokeWidth, @strokeColor, @fillColor) ->
     @width = 0
@@ -62,7 +62,7 @@ class LC.Rectangle extends LC.Shape
 
 class LC.Line extends LC.Shape
 
-  type: 'line'
+  className: 'Line'
 
   constructor: (@x1, @y1, @strokeWidth, @color) ->
     @x2 = @x1
@@ -84,11 +84,12 @@ class LC.Line extends LC.Shape
     shape = new LC.Line(data.x1, data.ly1, data.strokeWidth, data.color)
     shape.x2 = data.x2
     shape.y2 = data.y2
+    shape
 
 
 class LC.LinePathShape extends LC.Shape
 
-  type: 'linePath'
+  className: 'LinePathShape'
 
   constructor: ->
     @points = []
@@ -118,8 +119,9 @@ class LC.LinePathShape extends LC.Shape
     shape.segmentSize = data.segmentSize
     shape.tailSize = data.tailSize
     shape.sampleSize = data.sampleSize
-    shape.points = (
-      new LC.Point.fromJSON(lc, pointData) for pointData in data.points)
+    for pointData in data.points
+      shape.addPoint(new LC.Point.fromJSON(lc, pointData))
+    shape
 
   addPoint: (point) ->
     # Brush Variance Code
@@ -175,7 +177,7 @@ class LC.LinePathShape extends LC.Shape
 
 class LC.EraseLinePathShape extends LC.LinePathShape
 
-  type: 'eraseLinePath'
+  className: 'EraseLinePathShape'
 
   draw: (ctx) ->
     ctx.save()
@@ -192,7 +194,7 @@ class LC.EraseLinePathShape extends LC.LinePathShape
 
 class LC.Point
 
-  type: 'point'
+  className: 'Point'
 
   constructor: (@x, @y, @size, @color) ->
   lastPoint: -> this
