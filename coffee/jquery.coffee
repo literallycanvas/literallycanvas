@@ -24,6 +24,11 @@ LC.init = (el, opts = {}) ->
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
         LC.PanWidget, LC.EyeDropperWidget
     ]
+  if opts.watermarkImage and LC.EyeDropperWidget in opts.toolClasses
+    console.log "Can't use eyedropper if images are present (yet)"
+    opts.toolClasses = (
+      cls for cls in opts.toolClasses when cls isnt LC.EyeDropperWidget)
+
   $el = $(el)
   $el.addClass('literally')
   $tbEl = $('<div class="toolbar">')
