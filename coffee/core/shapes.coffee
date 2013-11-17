@@ -3,6 +3,8 @@ window.LC = window.LC ? {}
 
 class LC.Shape
 
+  type: null
+
   # Redraw the entire shape
   draw: (ctx) ->
 
@@ -10,15 +12,31 @@ class LC.Shape
   update: (ctx) ->
     @draw(ctx)
 
+  toJSON: -> {type: @type, data: @jsonContent()}
+  jsonContent: -> raise "not implemented"
+  @fromJSON: (lc, data) -> raise "not implemented"
+
 
 class LC.Image extends LC.Shape
+
+  type: 'image'
 
   # TODO: allow resizing/filling
   constructor: (@x, @y, @image, @locked = false) ->
   draw: (ctx) -> ctx.drawImage(@image, @x, @y);
+  jsonContent: ->
+    {@x, @y, imageSrc: @image.src, @locked}
+  @fromJSON: (lc, data) ->
+    img = new Image()
+    img.src = data.imageSrc
+    img.onload = ->
+      lc.repaint(true)
+    new LC.Image(data.x, data.y, img, data.locked)
 
 
 class LC.Rectangle extends LC.Shape
+
+  type: 'rectangle'
 
   constructor: (@x, @y, @strokeWidth, @strokeColor, @fillColor) ->
     @width = 0
@@ -31,8 +49,20 @@ class LC.Rectangle extends LC.Shape
     ctx.strokeStyle = @strokeColor
     ctx.strokeRect(@x, @y, @width, @height)
 
+  jsonContent: ->
+    {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
+
+  @fromJSON: (lc, data) ->
+    shape = new LC.Rectangle(
+      data.x, data.y, data.strokeWidth, data.strokeColor, data.fillColor)
+    shape.width = data.width
+    shape.height = data.height
+    shape
+
 
 class LC.Line extends LC.Shape
+
+  type: 'line'
 
   constructor: (@x1, @y1, @strokeWidth, @color) ->
     @x2 = @x1
@@ -47,8 +77,19 @@ class LC.Line extends LC.Shape
     ctx.lineTo(@x2, @y2)
     ctx.stroke()
 
+  jsonContent: ->
+    {@x1, @y1, @x2, @y2, @strokeWidth, @color}
+
+  @fromJSON: (lc, data) ->
+    shape = new LC.Line(data.x1, data.ly1, data.strokeWidth, data.color)
+    shape.x2 = data.x2
+    shape.y2 = data.y2
+
 
 class LC.LinePathShape extends LC.Shape
+
+  type: 'linePath'
+
   constructor: ->
     @points = []
 
@@ -67,6 +108,18 @@ class LC.LinePathShape extends LC.Shape
     
     # The number of points used to calculate the bspline to the newest point
     @sampleSize = @tailSize + 1
+
+  jsonContent: ->
+    {@order, @segmentSize, @tailSize, @sampleSize, @points}
+
+  @fromJSON: (lc, data) ->
+    shape = new LC.LinePathShape()
+    shape.order = data.order
+    shape.segmentSize = data.segmentSize
+    shape.tailSize = data.tailSize
+    shape.sampleSize = data.sampleSize
+    shape.points = (
+      new LC.Point.fromJSON(lc, pointData) for pointData in data.points)
 
   addPoint: (point) ->
     # Brush Variance Code
@@ -122,6 +175,8 @@ class LC.LinePathShape extends LC.Shape
 
 class LC.EraseLinePathShape extends LC.LinePathShape
 
+  type: 'eraseLinePath'
+
   draw: (ctx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
@@ -136,6 +191,13 @@ class LC.EraseLinePathShape extends LC.LinePathShape
 
 
 class LC.Point
+
+  type: 'point'
+
   constructor: (@x, @y, @size, @color) ->
   lastPoint: -> this
   draw: (ctx) -> console.log 'draw point', @x, @y, @size, @color
+
+  jsonContent: -> {@x, @y, @size, @color}
+  @fromJSON: (lc, data) ->
+    new LC.Point(data.x, data.y, data.size, data.color)
