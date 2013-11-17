@@ -19,7 +19,7 @@ LC.init = (el, opts = {}) ->
   opts.keyboardShortcuts ?= true
   opts.preserveCanvasContents ?= false
   opts.sizeToContainer ?= true
-  opts.watermarkImageURL ?= null
+  opts.watermarkImage ?= null
   unless 'toolClasses' of opts
     opts.toolClasses = [
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,

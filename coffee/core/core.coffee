@@ -15,7 +15,7 @@ class LC.LiterallyCanvas
     $(@canvas).css('background-color', @colors.background)
 
     @watermarkImage = @opts.watermarkImage
-    if @watermarkImgae and not @watermarkImage.complete
+    if @watermarkImage and not @watermarkImage.complete
       @watermarkImage.onload = => @repaint(true, false)
 
     @buffer = $('<canvas>').get(0)
