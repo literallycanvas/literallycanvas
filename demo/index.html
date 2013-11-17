@@ -28,6 +28,7 @@
   <body>
     <div class="fs-container">
       <div class="literally"><canvas></canvas></div>
+      <a href="javascript:void(0);" id="open-image">Open image</a>
     </div>
 
     <script src="/demo/jquery-1.8.2.js"></script>
@@ -65,6 +66,10 @@
         backgroundImage.src = backgroundImageURL;
         backgroundImage.onload = function () {lc.repaint(true, false);}
         lc.saveShape(new LC.Image(0, 0, backgroundImage));
+      });
+
+      $("#open-image").click(function() {
+        window.open($('.literally').canvasForExport().toDataURL());
       });
     </script>
   </body>
