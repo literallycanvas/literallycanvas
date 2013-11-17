@@ -1,1 +1,5 @@
 .sass-cache
+lib/js/literallycanvas.js
+lib/js/literallycanvas.min.js
+lib/js/literallycanvas.jquery.js
+lib/js/literallycanvas.jquery.min.js

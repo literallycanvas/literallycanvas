@@ -1,6 +1,6 @@
 .PHONY: coffee clean all update-gh-pages
 
-all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js scss
+all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js lib/js/literallycanvas.jquery.js lib/js/literallycanvas.jquery.min.js scss
 
 livereload:
 	livereload . -p 33233
@@ -18,15 +18,27 @@ watch-css:
 scss:
 	sass scss/literally.scss:lib/css/literally.css
 
-coffee: coffee/*.coffee
+corecoffee: coffee/core/*.coffee
+	mkdir -p gen/core
+	coffee -o gen/core -c coffee/core
+
+jquerycoffee: coffee/jquery.coffee
 	mkdir -p gen
-	coffee -o gen -c coffee
+	coffee -o gen -c coffee/jquery.coffee
 
-lib/js/literallycanvas.js: coffee
-	uglifyjs gen/*.js -o lib/js/literallycanvas.js --beautify
+lib/js/literallycanvas.jquery.js: jquerycoffee corecoffee
+	uglifyjs gen/core/*.js gen/jquery.js \
+		-o lib/js/literallycanvas.jquery.js --beautify
 
-lib/js/literallycanvas.min.js: coffee
-	uglifyjs gen/*.js -o lib/js/literallycanvas.min.js --compress
+lib/js/literallycanvas.jquery.min.js: jquerycoffee corecoffee
+	uglifyjs gen/core/*.js gen/jquery.js \
+		-o lib/js/literallycanvas.jquery.min.js --compress
+
+lib/js/literallycanvas.js: corecoffee
+	uglifyjs gen/core/*.js -o lib/js/literallycanvas.js --beautify
+
+lib/js/literallycanvas.min.js: corecoffee
+	uglifyjs gen/core/*.js -o lib/js/literallycanvas.min.js --compress
 
 serve:
 	python -m SimpleHTTPServer 8000 .
