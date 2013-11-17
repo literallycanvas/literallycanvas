@@ -5,6 +5,9 @@ class LC.LiterallyCanvas
 
   constructor: (@canvas, @opts) ->
     @$canvas = $(@canvas)
+
+    LC.bindEvents(this, @canvas)
+
     @colors =
       primary: @opts.primaryColor or '#000'
       secondary: @opts.secondaryColor or '#fff'

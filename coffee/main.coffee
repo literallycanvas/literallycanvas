@@ -1,30 +1,6 @@
 window.LC = window.LC ? {}
 
 
-coordsForTouchEvent = ($el, e) ->
-  t = e.originalEvent.changedTouches[0]
-  p = $el.offset()
-  return [t.clientX - p.left, t.clientY - p.top]
-
-
-position = (e) ->
-  if e.offsetX?
-    {left: e.offsetX, top: e.offsetY}
-  else
-    p = $(e.target).offset()
-    {
-      left: e.pageX - p.left,
-      top: e.pageY - p.top,
-    }
-
-
-buttonIsDown = (e) ->
-  if e.buttons?
-    return e.buttons == 1
-  else
-    return e.which > 0
-
-
 LC.init = (el, opts = {}) ->
   opts = _.extend({
     primaryColor: 'rgba(0, 0, 0, 1)'
@@ -44,70 +20,20 @@ LC.init = (el, opts = {}) ->
 
   $el.append($tbEl)
 
-  $c = $el.find('canvas')
-
-  lc = new LC.LiterallyCanvas($c.get(0), opts)
+  lc = new LC.LiterallyCanvas($el.find('canvas').get(0), opts)
   tb = new LC.Toolbar(lc, $tbEl, opts)
   tb.selectTool(tb.tools[0])
 
   resize = ->
     if opts.sizeToContainer
-      $c.css('height', "#{$el.height() - $tbEl.height()}px")
-    $c.attr('width', $c.width())
-    $c.attr('height', $c.height())
+      lc.$canvas.css('height', "#{$el.height() - $tbEl.height()}px")
+    lc.$canvas.attr('width', lc.$canvas.width())
+    lc.$canvas.attr('height', lc.$canvas.height())
     lc.repaint()
 
   $el.resize(resize)
   $(window).resize(resize)
   resize()
-
-  $c.mousedown (e) =>
-    down = true
-    e.originalEvent.preventDefault();
-    document.onselectstart = -> false # disable selection while dragging
-    p = position(e)
-    lc.begin(p.left, p.top)
-
-  $c.mousemove (e) =>
-    e.originalEvent.preventDefault()
-    p = position(e)
-    lc.continue(p.left, p.top)
-
-  $c.mouseup (e) =>
-    e.originalEvent.preventDefault()
-    document.onselectstart = -> true # enable selection while dragging
-    p = position(e)
-    lc.end(p.left, p.top)
-
-  $c.mouseenter (e) =>
-    p = position(e)
-    if buttonIsDown(e)
-      lc.begin(p.left, p.top)
-
-  $c.mouseout (e) =>
-    p = position(e)
-    lc.end(p.left, p.top)
-
-  $c.bind 'touchstart', (e) ->
-    e.preventDefault()
-    if e.originalEvent.touches.length == 1
-      lc.begin(coordsForTouchEvent($c, e)...)
-    else
-      lc.continue(coordsForTouchEvent($c, e)...)
-
-  $c.bind 'touchmove', (e) ->
-    e.preventDefault()
-    lc.continue(coordsForTouchEvent($c, e)...)
-
-  $c.bind 'touchend', (e) ->
-    e.preventDefault()
-    return unless e.originalEvent.touches.length == 0
-    lc.end(coordsForTouchEvent($c, e)...)
-
-  $c.bind 'touchcancel', (e) ->
-    e.preventDefault()
-    return unless e.originalEvent.touches.length == 0
-    lc.end(coordsForTouchEvent($c, e)...)
 
   if opts.keyboardShortcuts
     $(document).keydown (e) ->
