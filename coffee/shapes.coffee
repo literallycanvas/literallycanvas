@@ -1,3 +1,6 @@
+window.LC = window.LC ? {}
+
+
 class LC.Shape
 
   # Redraw the entire shape

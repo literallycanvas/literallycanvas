@@ -33,6 +33,7 @@ LC.init = (el, opts = {}) ->
     imageURLPrefix: 'lib/img'
     keyboardShortcuts: true
     sizeToContainer: true
+    watermarkImageURL: null
     toolClasses: [
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
         LC.PanWidget, LC.EyeDropperWidget]

@@ -11,6 +11,10 @@ class LC.LiterallyCanvas
       background: @opts.backgroundColor or 'rgb(230, 230, 230)'
     $(@canvas).css('background-color', @colors.background)
 
+    @watermarkImage = @opts.watermarkImage
+    unless @watermarkImage.complete
+      @watermarkImage.onload = => @repaint(true, false)
+
     @buffer = $('<canvas>').get(0)
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
@@ -98,6 +102,8 @@ class LC.LiterallyCanvas
       if drawBackground
         @bufferCtx.fillStyle = @colors.background
         @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
+      if @watermarkImage
+        @bufferCtx.drawImage(@watermarkImage, 0, 0)
       @draw @shapes, @bufferCtx
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     if @canvas.width > 0 and @canvas.height > 0

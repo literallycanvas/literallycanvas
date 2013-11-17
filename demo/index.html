@@ -42,11 +42,17 @@
           }
         });
 
+        var watermarkImageURL = 'https://dl.dropboxusercontent.com/u/360865/Photos/26163_371929756319_650376319_4785977_7286010_n.jpg';
+        var watermarkImage = new Image();
+        watermarkImage.src = watermarkImageURL;
+
+        var backgroundImageURL = 'https://dl.dropboxusercontent.com/u/360865/Photos/boy-lightskin-greenshirt-bluepants-redswoop.png';
+
         // the only LC-specific thing we have to do
         $('.literally').literallycanvas({
           imageURLPrefix: '/lib/img',
+          watermarkImage: watermarkImage
         });
-        var backgroundImageURL = 'https://dl.dropboxusercontent.com/u/360865/Photos/26163_371929756319_650376319_4785977_7286010_n.jpg';
         var lc = $('.literally').get(0).literallycanvas;
         var backgroundImage = new Image()
         backgroundImage.src = backgroundImageURL;
