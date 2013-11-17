@@ -23,10 +23,10 @@ coffee: coffee/*.coffee
 	coffee -o gen -c coffee
 
 lib/js/literallycanvas.js: coffee
-	uglifyjs2 gen/*.js -o lib/js/literallycanvas.js --beautify
+	uglifyjs gen/*.js -o lib/js/literallycanvas.js --beautify
 
 lib/js/literallycanvas.min.js: coffee
-	uglifyjs2 gen/*.js -o lib/js/literallycanvas.min.js --compress
+	uglifyjs gen/*.js -o lib/js/literallycanvas.min.js --compress
 
 serve:
 	python -m SimpleHTTPServer 8000 .

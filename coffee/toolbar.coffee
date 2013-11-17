@@ -110,11 +110,7 @@ class LC.Toolbar
       t.$el = optsEl
       @$el.find('.tool-options-container').append(optsEl)
 
-      buttonEl = $("
-        <div class='button tool-#{t.cssSuffix}'>
-          <div class='tool-image-wrapper'></div>
-        </div>
-        ")
+      buttonEl = $("<div class='button tool-#{t.cssSuffix}'><div class='tool-image-wrapper'></div></div>")
       buttonEl.find('.tool-image-wrapper').html(t.button())
       @$el.find('.tools').append(buttonEl)
 
