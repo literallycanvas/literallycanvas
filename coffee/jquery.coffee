@@ -35,6 +35,8 @@ LC.init = (el, opts = {}) ->
 
   $el.append($tbEl)
 
+  unless $el.find('canvas').length
+    $el.append('<canvas>')
   lc = new LC.LiterallyCanvas($el.find('canvas').get(0), opts)
   tb = new LC.Toolbar(lc, $tbEl, opts)
   tb.selectTool(tb.tools[0])

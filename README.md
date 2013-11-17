@@ -28,6 +28,9 @@ appropriate file from `lib/js`. Then do this:
 $('.literally').literallycanvas();
 ```
 
+(You can actually leave out the `<canvas>` tag, but it's classier to write it
+in.)
+
 For options and other information, see the [full
 documentation](http://literallycanvas.github.com).
 
