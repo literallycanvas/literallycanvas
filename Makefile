@@ -1,6 +1,6 @@
 .PHONY: coffee clean all update-gh-pages
 
-all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js
+all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js scss
 
 livereload:
 	livereload . -p 33233

@@ -48,4 +48,7 @@ Developing
 ----------
 
 You'll need `coffee-script` and `uglify-js2` installed via `npm`, and `sass`
-via `gem`.
+via `gem`. Build with `make`.
+
+If you `pip install livereload`, you can `make livereload` and open
+`http://localhost:33233/demo` in your browser to get a live-updated demo.
