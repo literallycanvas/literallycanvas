@@ -35,7 +35,10 @@ class LC.LiterallyCanvas
       backgroundImage = new Image()
       backgroundImage.src = @canvas.toDataURL()
       backgroundImage.onload = => @repaint()
-      @saveShape(new LC.Image(0, 0, backgroundImage, true))
+      @saveShape(new LC.ImageShape(0, 0, backgroundImage, true))
+
+    @loadSnapshotJSON(@opts.loadSnapshotJSON) if @opts.loadSnapshotJSON
+    @loadSnapshot(@opts.loadSnapshot) if @opts.loadSnapshot
 
     @repaint()
 
@@ -205,6 +208,21 @@ class LC.LiterallyCanvas
   canvasForExport: ->
     @repaint(true, true)
     @canvas
+
+  getSnapshot: -> (shape.toJSON() for shape in @shapes)
+  getSnapshotJSON: -> JSON.stringify(@shapes)  # yep, that works
+
+  loadSnapshot: (snapshot) ->
+    @shapes = (shape for shape in @shapes when shape.locked)
+    @repaint(true)
+    for shapeRepr in snapshot
+      if shapeRepr.className of LC
+        shape = LC[shapeRepr.className].fromJSON(this, shapeRepr.data)
+        if shape
+          @execute(new LC.AddShapeAction(this, shape))
+
+  loadSnapshotJSON: (str) ->
+    @loadSnapshot(JSON.parse(str))
 
 
 # maybe add checks to these in the future to make sure you never double-undo or
