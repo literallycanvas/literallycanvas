@@ -48,6 +48,7 @@ release: all
 	mkdir literallycanvas
 	cp -r lib/* literallycanvas/
 	cp README_release.txt literallycanvas/README.txt
+	cp bower.json literallycanvas/bower.json
 
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
