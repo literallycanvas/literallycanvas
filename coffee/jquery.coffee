@@ -17,8 +17,6 @@ LC.init = (el, opts = {}) ->
   opts.backgroundColor ?= 'transparent'
   opts.imageURLPrefix ?= 'lib/img'
   opts.keyboardShortcuts ?= true
-  opts.loadSnapshot ?= null
-  opts.loadSnapshotJSON ?= null
   opts.preserveCanvasContents ?= false
   opts.sizeToContainer ?= true
   opts.watermarkImage ?= null

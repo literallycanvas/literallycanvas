@@ -37,9 +37,6 @@ class LC.LiterallyCanvas
       backgroundImage.onload = => @repaint()
       @saveShape(new LC.ImageShape(0, 0, backgroundImage, true))
 
-    @loadSnapshotJSON(@opts.loadSnapshotJSON) if @opts.loadSnapshotJSON
-    @loadSnapshot(@opts.loadSnapshot) if @opts.loadSnapshot
-
     @repaint()
 
   updateSize: =>
@@ -224,9 +221,11 @@ class LC.LiterallyCanvas
         shape = LC[shapeRepr.className].fromJSON(this, shapeRepr.data)
         if shape
           @execute(new LC.AddShapeAction(this, shape))
+    @repaint(true)
 
   loadSnapshotJSON: (str) ->
     @loadSnapshot(JSON.parse(str))
+    @repaint(true)
 
 
 # maybe add checks to these in the future to make sure you never double-undo or
