@@ -49,6 +49,9 @@ LC.init = (el, opts = {}) ->
   $(window).resize(resize)
   resize()
 
+  if 'onInit' of opts
+    opts.onInit(lc)
+
   [lc, tb]
 
 
@@ -56,7 +59,3 @@ $.fn.literallycanvas = (opts = {}) ->
   @each (ix, el) =>
     [el.literallycanvas, el.literallycanvasToolbar] = LC.init(el, opts)
   this
-
-
-$.fn.canvasForExport = ->
-  @get(0).literallycanvas.canvasForExport()
