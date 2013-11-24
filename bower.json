@@ -1,13 +1,13 @@
 {
   "name": "literallycanvas",
-  "version": "0.3",
-  "homepage": "https://github.com/literallycanvas/literallycanvas",
+  "version": "0.3-rc1",
+  "homepage": "http://literallycanvas.com",
   "authors": [
     "irskep",
     "campaul"
   ],
   "description": "A canvas in your browser. Literally.",
-  "main": "lib/js/literallycanvas.min.js",
+  "main": "js/literallycanvas.min.js",
   "keywords": [
     "canvas",
     "edit",
