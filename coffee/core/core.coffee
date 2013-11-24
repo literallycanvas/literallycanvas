@@ -95,6 +95,8 @@ class LC.LiterallyCanvas
     @trigger('shapeSave', {shape: shape})
     @trigger('drawingChange', {shape: shape})
 
+  numShapes: -> @shapes.length
+
   pan: (x, y) ->
     # Subtract because we are moving the viewport
     @position.x = @position.x - x
