@@ -652,9 +652,7 @@
             this.execute(new LC.ClearAction(this, oldShapes, newShapes));
             this.repaint();
             this.trigger("clear", null);
-            return this.trigger("drawingChange", {
-                shape: shape
-            });
+            return this.trigger("drawingChange", {});
         };
         LiterallyCanvas.prototype.execute = function(action) {
             this.undoStack.push(action);
@@ -670,9 +668,7 @@
             this.trigger("undo", {
                 action: action
             });
-            return this.trigger("drawingChange", {
-                shape: shape
-            });
+            return this.trigger("drawingChange", {});
         };
         LiterallyCanvas.prototype.redo = function() {
             var action;
@@ -683,9 +679,7 @@
             this.trigger("redo", {
                 action: action
             });
-            return this.trigger("drawingChange", {
-                shape: shape
-            });
+            return this.trigger("drawingChange", {});
         };
         LiterallyCanvas.prototype.getPixel = function(x, y) {
             var p, pixel;
