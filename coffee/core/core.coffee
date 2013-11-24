@@ -96,7 +96,7 @@ class LC.LiterallyCanvas
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
     @trigger('saveShape', {shape: shape})
-    @trigger('drawingChanged', {shape: shape})
+    @trigger('drawingChange', {shape: shape})
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
@@ -178,7 +178,7 @@ class LC.LiterallyCanvas
     @execute(new LC.ClearAction(this, oldShapes, newShapes))
     @repaint()
     @trigger('clear', null)
-    @trigger('drawingChanged', {shape: shape})
+    @trigger('drawingChange', {shape: shape})
 
   execute: (action) ->
     @undoStack.push(action)
@@ -191,7 +191,7 @@ class LC.LiterallyCanvas
     action.undo()
     @redoStack.push(action)
     @trigger('undo', {action})
-    @trigger('drawingChanged', {shape: shape})
+    @trigger('drawingChange', {shape: shape})
 
   redo: ->
     return unless @redoStack.length
@@ -199,7 +199,7 @@ class LC.LiterallyCanvas
     @undoStack.push(action)
     action.do()
     @trigger('redo', {action})
-    @trigger('drawingChanged', {shape: shape})
+    @trigger('drawingChange', {shape: shape})
 
   getPixel: (x, y) ->
     p = @drawingCoordsToClientCoords x, y
