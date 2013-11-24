@@ -48,7 +48,9 @@ release: all
 	mkdir literallycanvas
 	cp -r lib/* literallycanvas/
 	cp README_release.txt literallycanvas/README.txt
-	cp bower.json literallycanvas/bower.json
+	cp bower_release.json literallycanvas/bower.json
+	# then you probably want to run
+	# ghp-import -p -r lc -m "v0.3rc1" -b release literallycanvas
 
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
