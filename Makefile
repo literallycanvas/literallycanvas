@@ -50,8 +50,8 @@ release: all
 	cp README_release.txt literallycanvas/README.txt
 	cp bower_release.json literallycanvas/bower.json
 	# then you probably want to run
-	ghp-import -p -r lc release literallycanvas
-	ghp-import -p -r lc-bower release literallycanvas
+	ghp-import -p -r lc -b release literallycanvas
+	ghp-import -p -r lc-bower -b master literallycanvas
 
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
