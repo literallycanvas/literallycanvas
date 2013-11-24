@@ -92,7 +92,7 @@ class LC.LiterallyCanvas
 
   saveShape: (shape) ->
     @execute(new LC.AddShapeAction(this, shape))
-    @trigger('saveShape', {shape: shape})
+    @trigger('shapeSave', {shape: shape})
     @trigger('drawingChange', {shape: shape})
 
   pan: (x, y) ->
