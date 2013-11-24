@@ -48,8 +48,6 @@ release: all
 	mkdir literallycanvas
 	cp -r lib/* literallycanvas/
 	cp README_release.txt literallycanvas/README.txt
-	tar -cvzf literallycanvas.tar.gz literallycanvas
-	rm -rf literallycanvas
 
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
