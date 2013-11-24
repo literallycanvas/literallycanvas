@@ -88,38 +88,24 @@ class LC.LinePathShape extends LC.Shape
 
   className: 'LinePathShape'
 
-  constructor: ->
-    @points = []
-
-    # Order of the bspline applied to the curve
-    # Higher values make the curve smoother but are more expensive
-    @order = 3
-    
+  constructor: (@points = [], @order = 3, @tailSize = 3)->
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
-    
-    # The number of segments to use as the tail
-    # In other words, when a point is added, how many points do you need to go
-    # back before the slope of the old smoothed curve is the same as the slope
-    # of the new smoothed curve.
-    @tailSize = 3
-    
+
     # The number of points used to calculate the bspline to the newest point
     @sampleSize = @tailSize + 1
 
+    for point in @points
+      @addPoint(point)
+
   jsonContent: ->
     # TODO: make point storage more efficient
-    {@order, @segmentSize, @tailSize, @sampleSize, @points}
+    {@order, @tailSize, @points}
 
   @fromJSON: (lc, data) ->
-    shape = new LC.LinePathShape()
-    shape.order = data.order
-    shape.segmentSize = data.segmentSize
-    shape.tailSize = data.tailSize
-    shape.sampleSize = data.sampleSize
-    for pointData in data.points
-      shape.addPoint(new LC.Point.fromJSON(lc, pointData))
-    shape
+    points = (new LC.Point.fromJSON(lc, pointData) \
+              for pointData in data.points)
+    new LC.LinePathShape(points, data.order, data.tailSize)
 
   addPoint: (point) ->
     # Brush Variance Code
