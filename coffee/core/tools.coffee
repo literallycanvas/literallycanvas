@@ -34,7 +34,8 @@ class LC.RectangleTool extends LC.StrokeTool
 class LC.LineTool extends LC.StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new LC.Line(x, y, @strokeWidth, lc.getColor('primary'))
+    @currentShape = new LC.Line(
+      x, y, x, y, @strokeWidth, lc.getColor('primary'))
 
   continue: (x, y, lc) ->
     @currentShape.x2 = x

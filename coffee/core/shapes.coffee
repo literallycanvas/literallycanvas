@@ -64,9 +64,7 @@ class LC.Line extends LC.Shape
 
   className: 'Line'
 
-  constructor: (@x1, @y1, @strokeWidth, @color) ->
-    @x2 = @x1
-    @y2 = @y1
+  constructor: (@x1, @y1, @x2, @y2, @strokeWidth, @color) ->
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
@@ -81,9 +79,8 @@ class LC.Line extends LC.Shape
     {@x1, @y1, @x2, @y2, @strokeWidth, @color}
 
   @fromJSON: (lc, data) ->
-    shape = new LC.Line(data.x1, data.ly1, data.strokeWidth, data.color)
-    shape.x2 = data.x2
-    shape.y2 = data.y2
+    shape = new LC.Line(
+      data.x1, data.y1, data.x2, data.y2, data.strokeWidth, data.color)
     shape
 
 
