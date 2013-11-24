@@ -88,14 +88,15 @@ class LC.LinePathShape extends LC.Shape
 
   className: 'LinePathShape'
 
-  constructor: (@points = [], @order = 3, @tailSize = 3)->
+  constructor: (_points = [], @order = 3, @tailSize = 3)->
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
 
     # The number of points used to calculate the bspline to the newest point
     @sampleSize = @tailSize + 1
 
-    for point in @points
+    @points = []
+    for point in _points
       @addPoint(point)
 
   jsonContent: ->
