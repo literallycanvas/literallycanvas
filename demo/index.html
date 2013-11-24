@@ -58,25 +58,23 @@
         $('.literally').literallycanvas({
           backgroundColor: 'transparent',
           imageURLPrefix: '/lib/img',
-          loadSnapshotJSON: localStorage.getItem('drawing'),
           preserveCanvasContents: true,
-          watermarkImage: watermarkImage
-        });
-        var lc = $('.literally').get(0).literallycanvas;
-        var backgroundImage = new Image()
-        backgroundImage.src = backgroundImageURL;
-        backgroundImage.onload = function () {lc.repaint(true, false);}
-        if (lc.shapes.length <= 1) {
-          console.log('add image');
-          lc.saveShape(new LC.ImageShape(0, 0, backgroundImage));
-        }
+          watermarkImage: watermarkImage,
+          onInit: function(lc) {
+            lc.loadSnapshotJSON(localStorage.getItem('drawing'));
 
-        var save = function() {
-          localStorage.setItem('drawing', lc.getSnapshotJSON());
-        };
-        lc.on('saveShape', save);
-        lc.on('undo', save);
-        lc.on('redo', save);
+            var backgroundImage = new Image()
+            backgroundImage.src = backgroundImageURL;
+            backgroundImage.onload = function () {lc.repaint(true, false);}
+            if (lc.numShapes() == 0) {
+              lc.saveShape(new LC.ImageShape(0, 0, backgroundImage));
+            }
+
+            lc.on('drawingChange', function() {
+              localStorage.setItem('drawing', lc.getSnapshotJSON());
+            });
+          }
+        });
       });
 
       $("#open-image").click(function() {
