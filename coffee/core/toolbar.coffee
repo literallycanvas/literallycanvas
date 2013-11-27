@@ -68,7 +68,8 @@ class LC.Toolbar
   _bindColorPicker: (name, title) ->
     $el = @$el.find(".#{name}-picker")
     $el.css('background-color', @lc.getColor(name))
-    @lc.on "#{name}ColorChange", (color) ->
+    $el.css('background-position', "0% 0%")
+    @lc.on "#{name}ColorChange", (color) =>
       $el.css('background-color', color)
 
     LC.makeColorPicker $el, "#{title} color", (c) =>
