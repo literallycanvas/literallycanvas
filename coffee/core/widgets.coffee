@@ -1,7 +1,7 @@
 class LC.Widget
-    
+
   constructor: (@opts) ->
-    
+
   # text to be shown in a hypothetical tooltip
   title: undefined
 
@@ -15,24 +15,24 @@ class LC.Widget
 
   # function that returns the HTML of the tool options
   options: -> undefined
-    
+
   # called when the widget is selected
   select: (lc) ->
-        
+
 
 class LC.ToolWidget extends LC.Widget
-    
+
   constructor: (@opts) ->
     @tool = @makeTool()
-        
+
   select: (lc) ->
     lc.setTool(@tool)
-        
+
   makeTool: -> undefined
-        
+
 
 class LC.StrokeWidget extends LC.ToolWidget
-    
+
   options: ->
     $el = $("<span class='brush-width-min'>1 px</span><input type='range' min='1' max='50' step='1' value='#{@tool.strokeWidth}'><span class='brush-width-max'>50 px</span><span class='brush-width-val'>(5 px)</span>")
 
@@ -64,7 +64,7 @@ class LC.LineWidget extends LC.StrokeWidget
   cssSuffix: 'line'
   button: -> "<img src='#{@opts.imageURLPrefix}/line.png'>"
   makeTool: -> new LC.LineTool()
-   
+
 
 class LC.PencilWidget extends LC.StrokeWidget
 
