@@ -22,6 +22,7 @@ class LC.LiterallyCanvas
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
 
+    @backgroundShapes = []
     @shapes = []
     @undoStack = []
     @redoStack = []
@@ -35,7 +36,9 @@ class LC.LiterallyCanvas
       backgroundImage = new Image()
       backgroundImage.src = @canvas.toDataURL()
       backgroundImage.onload = => @repaint()
-      @saveShape(new LC.ImageShape(0, 0, backgroundImage, true))
+      @backgroundShapes.push(new LC.ImageShape(0, 0, backgroundImage))
+
+    @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
     @repaint()
 
@@ -124,6 +127,7 @@ class LC.LiterallyCanvas
   # If drawBackground is true, the background is rendered as a solid
   # color, otherwise it is left transparent.
   repaint: (dirty = true, drawBackground = false) ->
+    retryCallback = => @repaint(true)
     if dirty
       @buffer.width = @canvas.width
       @buffer.height = @canvas.height
@@ -137,7 +141,8 @@ class LC.LiterallyCanvas
           @canvas.width / 2 - @watermarkImage.width / 2,
           @canvas.height / 2 - @watermarkImage.height / 2,
         )
-      @draw @shapes, @bufferCtx
+      @draw(@backgroundShapes, @bufferCtx, retryCallback)
+      @draw(@shapes, @bufferCtx, retryCallback)
     @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
     if @canvas.width > 0 and @canvas.height > 0
       @ctx.drawImage @buffer, 0, 0
@@ -149,17 +154,18 @@ class LC.LiterallyCanvas
   # without doing a full repaint.
   # The context is restored to its original state before returning.
   update: (shape) ->
-    @repaint false
+    @repaint(false)
     @transformed =>
       shape.update(@ctx)
     , @ctx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
-  draw: (shapes, ctx) ->
-    drawShapes = ->
+  draw: (shapes, ctx, retryCallback) ->
+    return unless shapes.length
+    drawShapes = =>
       for shape in shapes
-        shape.draw(ctx)
+        shape.draw(ctx, retryCallback)
     @transformed(drawShapes, ctx)
 
   # Executes the given function after translating and scaling the context.
@@ -173,7 +179,7 @@ class LC.LiterallyCanvas
 
   clear: ->
     oldShapes = @shapes
-    newShapes = (s for s in @shapes when s.locked)
+    newShapes = []
     @execute(new LC.ClearAction(this, oldShapes, newShapes))
     @repaint()
     @trigger('clear', null)
@@ -216,7 +222,7 @@ class LC.LiterallyCanvas
   getSnapshotJSON: -> JSON.stringify(@shapes)  # yep, that works
 
   loadSnapshot: (snapshot) ->
-    @shapes = (shape for shape in @shapes when shape.locked)
+    @shapes = []
     @repaint(true)
     for shapeRepr in snapshot
       if shapeRepr.className of LC
