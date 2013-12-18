@@ -30,7 +30,6 @@ class LC.ToolWidget extends LC.Widget
 
   makeTool: -> undefined
 
-
 class LC.StrokeWidget extends LC.ToolWidget
 
   options: ->
@@ -96,3 +95,11 @@ class LC.EyeDropperWidget extends LC.ToolWidget
   cssSuffix: "eye-dropper"
   button: -> "<img src='#{@opts.imageURLPrefix}/eyedropper.png'>"
   makeTool: -> new LC.EyeDropper()
+
+
+class LC.TextWidget extends LC.ToolWidget
+	
+  title: "Text"
+  cssSuffix: "text"
+  button: -> "<img src='#{@opts.imageURLPrefix}/text.png'>"
+  makeTool: -> new LC.TextTool()

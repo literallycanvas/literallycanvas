@@ -94,3 +94,16 @@ class LC.EyeDropper extends LC.Tool
 
   continue: (x, y, lc) ->
     @readColor(x, y, lc)
+
+class LC.TextTool extends LC.Tool
+	begin:(x, y, lc) ->
+    @currentShape = new LC.TextShape(x, y, "Text!")
+  continue:(x, y, lc) ->
+    @currentShape.x = x
+    @currentShape.y = y
+    lc.update(@currentShape)
+  end:(x, y, lc) ->
+    lc.saveShape(@currentShape)
+  
+
+
