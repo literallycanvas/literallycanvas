@@ -194,7 +194,6 @@ class LC.TextShape extends LC.Shape
 
   className: 'TextShape'
 
-  # TODO: allow resizing/filling
   constructor: (@x, @y, @text, @color, @locked = false) ->
   draw: (ctx) -> 
     ctx.font  = "bold 18px sans-serif"

@@ -30,6 +30,7 @@ class LC.ToolWidget extends LC.Widget
 
   makeTool: -> undefined
 
+
 class LC.StrokeWidget extends LC.ToolWidget
 
   options: ->
