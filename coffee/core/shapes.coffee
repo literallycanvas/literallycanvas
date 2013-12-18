@@ -195,8 +195,10 @@ class LC.TextShape extends LC.Shape
   className: 'TextShape'
 
   # TODO: allow resizing/filling
-  constructor: (@x, @y, @text, @locked = false) ->
-  draw: (ctx) -> ctx.fillText(@text, @x, @y);
+  constructor: (@x, @y, @text, @color, @locked = false) ->
+  draw: (ctx) -> 
+    ctx.fillStyle = @color
+    ctx.fillText(@text, @x, @y);
   jsonContent: ->
     {@x, @y, text: @text, @locked}
   fromJSON: (lc, data) ->
