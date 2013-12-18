@@ -104,8 +104,8 @@ class LC.TextWidget extends LC.ToolWidget
   cssSuffix: "text"
   button: -> "<img src='#{@opts.imageURLPrefix}/text.png'>"
   select: (lc) ->
-    @text = prompt("Please enter your text:")
     lc.setTool(@tool)
+    @text = prompt("Please enter your text:")
     @tool.setText(@text)
   makeTool: -> 
     new LC.TextTool()
