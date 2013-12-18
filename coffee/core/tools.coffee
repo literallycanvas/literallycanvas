@@ -101,7 +101,8 @@ class LC.TextTool extends LC.Tool
     @text = text
 
   begin:(x, y, lc) ->
-    @currentShape = new LC.TextShape(x, y, @text)
+    @color = lc.getColor('primary')
+    @currentShape = new LC.TextShape(x, y, @text, @color)
 
   continue:(x, y, lc) ->
     @currentShape.x = x
