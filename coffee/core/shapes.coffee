@@ -197,6 +197,7 @@ class LC.TextShape extends LC.Shape
   # TODO: allow resizing/filling
   constructor: (@x, @y, @text, @color, @locked = false) ->
   draw: (ctx) -> 
+    ctx.font  = "bold 18px sans-serif"
     ctx.fillStyle = @color
     ctx.fillText(@text, @x, @y);
   jsonContent: ->
