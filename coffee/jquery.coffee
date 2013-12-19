@@ -44,7 +44,7 @@ LC.init = (el, opts = {}) ->
     lc.updateSize()
 
   $el.resize(resize)
-  $(window).resize(resize)
+  $(window).bind('orientationchange resize', resize)
   resize()
 
   if 'onInit' of opts
