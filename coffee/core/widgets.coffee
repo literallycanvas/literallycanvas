@@ -96,3 +96,16 @@ class LC.EyeDropperWidget extends LC.ToolWidget
   cssSuffix: "eye-dropper"
   button: -> "<img src='#{@opts.imageURLPrefix}/eyedropper.png'>"
   makeTool: -> new LC.EyeDropper()
+
+
+class LC.TextWidget extends LC.ToolWidget
+
+  title: "Text"
+  cssSuffix: "text"
+  button: -> "<img src='#{@opts.imageURLPrefix}/text.png'>"
+  select: (lc) ->
+    lc.setTool(@tool)
+    @text = prompt("Please enter your text:")
+    @tool.setText(@text)
+  makeTool: -> 
+    new LC.TextTool()

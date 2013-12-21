@@ -24,7 +24,7 @@ LC.init = (el, opts = {}) ->
   unless 'toolClasses' of opts
     opts.toolClasses = [
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
-        LC.PanWidget, LC.EyeDropperWidget
+        LC.PanWidget, LC.EyeDropperWidget, LC.TextWidget
     ]
 
   $el = $(el)

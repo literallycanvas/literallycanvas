@@ -192,3 +192,20 @@ class LC.Point
   jsonContent: -> {@x, @y, @size, @color}
   @fromJSON: (lc, data) ->
     new LC.Point(data.x, data.y, data.size, data.color)
+
+
+class LC.TextShape extends LC.Shape
+
+  className: 'TextShape'
+
+  constructor: (@x, @y, @text, @color, @locked = false) ->
+  draw: (ctx) -> 
+    ctx.font  = "bold 18px sans-serif"
+    ctx.fillStyle = @color
+    ctx.fillText(@text, @x, @y);
+  jsonContent: ->
+    {@x, @y, text: @text, @locked}
+  fromJSON: (lc, data) ->
+    t = new LC.TextShape(data.x, data.y, data.text, data.locked)
+    t
+
