@@ -53,6 +53,8 @@
         watermarkImage.src = watermarkImageURL;
 
         var backgroundImageURL = '/demo/bear.png';
+        var backgroundImage = new Image()
+        backgroundImage.src = backgroundImageURL;
 
         // the only LC-specific thing we have to do
         $('.literally').literallycanvas({
@@ -60,15 +62,9 @@
           imageURLPrefix: '/lib/img',
           preserveCanvasContents: true,
           watermarkImage: watermarkImage,
+          backgroundShapes: [new LC.ImageShape(0, 0, backgroundImage)],
           onInit: function(lc) {
             lc.loadSnapshotJSON(localStorage.getItem('drawing'));
-
-            var backgroundImage = new Image()
-            backgroundImage.src = backgroundImageURL;
-            backgroundImage.onload = function () {lc.repaint(true, false);}
-            if (lc.numShapes() == 0) {
-              lc.saveShape(new LC.ImageShape(0, 0, backgroundImage));
-            }
 
             lc.on('drawingChange', function() {
               localStorage.setItem('drawing', lc.getSnapshotJSON());

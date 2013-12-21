@@ -22,15 +22,18 @@ class LC.ImageShape extends LC.Shape
   className: 'ImageShape'
 
   # TODO: allow resizing/filling
-  constructor: (@x, @y, @image, @locked = false) ->
-  draw: (ctx) -> ctx.drawImage(@image, @x, @y);
+  constructor: (@x, @y, @image) ->
+  draw: (ctx, retryCallback) ->
+    if @image.width
+      ctx.drawImage(@image, @x, @y)
+    else
+      @image.onload = retryCallback
   jsonContent: ->
-    {@x, @y, imageSrc: @image.src, @locked}
+    {@x, @y, imageSrc: @image.src}
   @fromJSON: (lc, data) ->
     img = new Image()
     img.src = data.imageSrc
-    img.onload = -> lc.repaint(true)
-    i = new LC.ImageShape(data.x, data.y, img, data.locked)
+    i = new LC.ImageShape(data.x, data.y, img)
     i
 
 
@@ -130,7 +133,8 @@ class LC.LinePathShape extends LC.Shape
         0, @smoothedPoints.length - @segmentSize * (@tailSize - 1)
       ).concat(@tail)
 
-  draw: (ctx, points = @smoothedPoints) ->
+  draw: (ctx) ->
+    points = @smoothedPoints
     return unless points.length
     
     ctx.strokeStyle = points[0].color

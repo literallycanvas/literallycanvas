@@ -1,7 +1,8 @@
 coordsForTouchEvent = ($el, e) ->
-  t = e.originalEvent.changedTouches[0]
+  tx = e.originalEvent.changedTouches[0].pageX
+  ty = e.originalEvent.changedTouches[0].pageY
   p = $el.offset()
-  return [t.clientX - p.left, t.clientY - p.top]
+  return [tx - p.left, ty - p.top]
 
 
 position = (e) ->
