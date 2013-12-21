@@ -180,6 +180,12 @@ class LC.EraseLinePathShape extends LC.LinePathShape
     super(ctx)
     ctx.restore()
 
+  # same as LinePathShape
+  @fromJSON: (lc, data) ->
+    points = (new LC.Point.fromJSON(lc, pointData) \
+              for pointData in data.points)
+    new LC.EraseLinePathShape(points, data.order, data.tailSize)
+
 
 class LC.Point
 
