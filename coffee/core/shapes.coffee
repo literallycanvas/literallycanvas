@@ -201,7 +201,5 @@ class LC.TextShape extends LC.Shape
     ctx.fillText(@text, @x, @y);
   jsonContent: ->
     {@x, @y, text: @text}
-  fromJSON: (lc, data) ->
-    t = new LC.TextShape(data.x, data.y, data.text)
-    t
-
+  @fromJSON: (lc, data) ->
+    new LC.TextShape(data.x, data.y, data.text)

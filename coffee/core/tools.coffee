@@ -12,8 +12,7 @@ class LC.Tool
 
 class LC.StrokeTool extends LC.Tool
 
-  constructor: () ->
-    @strokeWidth = 5
+  constructor: -> @strokeWidth = 5
 
 
 class LC.RectangleTool extends LC.StrokeTool
@@ -96,6 +95,8 @@ class LC.EyeDropper extends LC.Tool
     @readColor(x, y, lc)
 
 class LC.TextTool extends LC.Tool
+
+  constructor: (@text = '') ->
 
   setText:(text) ->
     @text = text

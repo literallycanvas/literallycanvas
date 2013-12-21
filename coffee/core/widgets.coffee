@@ -105,7 +105,25 @@ class LC.TextWidget extends LC.ToolWidget
   button: -> "<img src='#{@opts.imageURLPrefix}/text.png'>"
   select: (lc) ->
     lc.setTool(@tool)
-    @text = prompt("Please enter your text:")
-    @tool.setText(@text)
+    # not sure why we need to defer this, but I don't get paid enough to work
+    # on this to find out why.
+    setTimeout((=>
+      @$input.focus()
+      @$input.select()
+    ), 0)
   makeTool: -> 
     new LC.TextTool()
+
+  options: ->
+    $el = $(
+      "<input type='text' placeholder='Enter text here'
+        value='#{@tool.text}'>
+       <span class='instructions'>Click and hold to place text.</span>")
+
+    @$input = $el.filter('input')
+    if @$input.size() == 0
+      @$input = $el.find('input')
+
+    @$input.change (e) => @tool.text = @$input.val()
+    @$input.keyup (e) => @tool.text = @$input.val()
+    return $el
