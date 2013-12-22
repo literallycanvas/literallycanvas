@@ -102,8 +102,13 @@ class LC.TextWidget extends LC.ToolWidget
 
   title: "Text"
   cssSuffix: "text"
+
+  constructor: (args...) ->
+    super(args...)
+
   button: -> "<img src='#{@opts.imageURLPrefix}/text.png'>"
   select: (lc) ->
+    @updateToolStyle()
     lc.setTool(@tool)
     # not sure why we need to defer this, but I don't get paid enough to work
     # on this to find out why.
@@ -115,15 +120,37 @@ class LC.TextWidget extends LC.ToolWidget
     new LC.TextTool()
 
   options: ->
-    $el = $(
-      "<input type='text' placeholder='Enter text here'
+    @$el = $(
+      "<input type='text' id='text' placeholder='Enter text here'
         value='#{@tool.text}'>
+       <input type='text' id='font-size' value='18'>
+       <label for='italic'><input type='checkbox' id='italic'>italic</label>
+       <label for='bold'><input type='checkbox' id='bold'>bold</label>
        <span class='instructions'>Click and hold to place text.</span>")
 
-    @$input = $el.filter('input')
+    @$input = @$el.filter('input#text')
     if @$input.size() == 0
-      @$input = $el.find('input')
+      @$input = @$el.find('input#text')
 
     @$input.change (e) => @tool.text = @$input.val()
     @$input.keyup (e) => @tool.text = @$input.val()
-    return $el
+
+    $fontSize = @$el.find('input#font-size')
+
+    @$el.find('input#italic').change (e) => @updateToolStyle()
+    @$el.find('input#bold').change (e) => @updateToolStyle()
+    $fontSize.change (e) => @updateToolStyle()
+    $fontSize.keyup (e) => @updateToolStyle()
+
+    @$el
+
+  updateToolStyle: ->
+    items = []
+    if @$el.find('input#italic').is(':checked')
+      items.push('italic')
+    if @$el.find('input#bold').is(':checked')
+      items.push('bold')
+    $fontSize = @$el.find('input#font-size')
+    items.push("#{parseInt($fontSize.val(), 10)}px")
+    items.push('sans-serif')
+    @tool.font = items.join(' ')

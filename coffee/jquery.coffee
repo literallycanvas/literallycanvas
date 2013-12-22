@@ -23,8 +23,10 @@ LC.init = (el, opts = {}) ->
   opts.watermarkImage ?= null
   unless 'toolClasses' of opts
     opts.toolClasses = [
+        LC.TextWidget,
         LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
-        LC.TextWidget, LC.PanWidget, LC.EyeDropperWidget,
+        #LC.TextWidget, LC.PanWidget, LC.EyeDropperWidget,
+        LC.PanWidget, LC.EyeDropperWidget,
     ]
 
   $el = $(el)

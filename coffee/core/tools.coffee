@@ -96,14 +96,14 @@ class LC.EyeDropper extends LC.Tool
 
 class LC.TextTool extends LC.Tool
 
-  constructor: (@text = '') ->
+  constructor: (@text = '', @font = 'bold 18px sans-serif') ->
 
   setText:(text) ->
     @text = text
 
   begin:(x, y, lc) ->
     @color = lc.getColor('primary')
-    @currentShape = new LC.TextShape(x, y, @text, @color)
+    @currentShape = new LC.TextShape(x, y, @text, @color, @font)
 
   continue:(x, y, lc) ->
     @currentShape.x = x
