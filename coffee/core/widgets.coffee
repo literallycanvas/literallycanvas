@@ -99,6 +99,7 @@ class LC.EyeDropperWidget extends LC.ToolWidget
 
 
 class LC.TextWidget extends LC.ToolWidget
+  # this class is a mess. if you want clean code, write your own damn GUI.
 
   getFamilies: -> [
     {name: 'Sans-serif', value: '"Helvetica Neue",Helvetica,Arial,sans-serif'},
