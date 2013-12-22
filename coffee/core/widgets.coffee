@@ -100,6 +100,16 @@ class LC.EyeDropperWidget extends LC.ToolWidget
 
 class LC.TextWidget extends LC.ToolWidget
 
+  getFamilies: -> [
+    {name: 'Sans-serif', value: '"Helvetica Neue",Helvetica,Arial,sans-serif'},
+    {name: 'Serif', value: (
+      'Garamond,Baskerville,"Baskerville Old Face",'
+      '"Hoefler Text","Times New Roman",serif')}
+    {name: 'Typewriter', value: (
+      '"Courier New",Courier,"Lucida Sans Typewriter",'
+      '"Lucida Typewriter",monospace')},
+  ]
+
   title: "Text"
   cssSuffix: "text"
 
@@ -108,7 +118,7 @@ class LC.TextWidget extends LC.ToolWidget
 
   button: -> "<img src='#{@opts.imageURLPrefix}/text.png'>"
   select: (lc) ->
-    @updateToolStyle()
+    @updateTool()
     lc.setTool(@tool)
     # not sure why we need to defer this, but I don't get paid enough to work
     # on this to find out why.
@@ -120,37 +130,49 @@ class LC.TextWidget extends LC.ToolWidget
     new LC.TextTool()
 
   options: ->
+    familyOptions = []
+    i = 0
+    for family in @getFamilies()
+      familyOptions.push "<option value=#{i}>#{family.name}</option>"
+      i += 1
+
     @$el = $(
-      "<input type='text' id='text' placeholder='Enter text here'
+      "<div>
+       <input type='text' id='text' placeholder='Enter text here'
         value='#{@tool.text}'>
        <input type='text' id='font-size' value='18'>
+       <select id='family'>#{familyOptions.join('')}</select>
        <label for='italic'><input type='checkbox' id='italic'>italic</label>
        <label for='bold'><input type='checkbox' id='bold'>bold</label>
-       <span class='instructions'>Click and hold to place text.</span>")
+       <span class='instructions'>Click and hold to place text.</span>
+       </div>")
 
-    @$input = @$el.filter('input#text')
-    if @$input.size() == 0
-      @$input = @$el.find('input#text')
-
-    @$input.change (e) => @tool.text = @$input.val()
-    @$input.keyup (e) => @tool.text = @$input.val()
-
+    @$input = @$el.find('input#text')
     $fontSize = @$el.find('input#font-size')
 
-    @$el.find('input#italic').change (e) => @updateToolStyle()
-    @$el.find('input#bold').change (e) => @updateToolStyle()
-    $fontSize.change (e) => @updateToolStyle()
-    $fontSize.keyup (e) => @updateToolStyle()
+    @$input.change => @updateTool()
+    @$input.keyup => @updateTool()
+    $fontSize.change => @updateTool()
+    $fontSize.keyup => @updateTool()
+    @$el.find('input#italic').change => @updateTool()
+    @$el.find('input#bold').change => @updateTool()
+    @$el.find('#family').change =>
+      @updateTool()
+      @$input.focus()
+      @$input.select()
 
     @$el
 
-  updateToolStyle: ->
+  updateTool: ->
     items = []
     if @$el.find('input#italic').is(':checked')
       items.push('italic')
     if @$el.find('input#bold').is(':checked')
       items.push('bold')
-    $fontSize = @$el.find('input#font-size')
-    items.push("#{parseInt($fontSize.val(), 10)}px")
-    items.push('sans-serif')
+    items.push("#{parseInt(@$el.find('input#font-size').val(), 10)}px")
+
+    familyIndex = parseInt(@$el.find('select#family').val(), 10)
+    items.push(@getFamilies()[familyIndex].value)
+
     @tool.font = items.join(' ')
+    @tool.text = @$el.find('input#text').val()
