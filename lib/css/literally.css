@@ -278,3 +278,10 @@
         border-left: none; }
       .literally .button-group .button:last-child {
         border-radius: 0px 5px 5px 0px; }
+
+.tool-options-text {
+  font-size: 12px; }
+  .tool-options-text .instructions {
+    margin-left: 2em; }
+  .tool-options-text #font-size {
+    width: 30px; }

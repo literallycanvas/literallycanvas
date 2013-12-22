@@ -15,7 +15,7 @@ watch-js:
 watch-css:
 	sass --watch scss/literally.scss:lib/css/literally.css
 
-scss:
+scss: scss/*.scss
 	sass scss/literally.scss:lib/css/literally.css
 
 corecoffee: coffee/core/*.coffee

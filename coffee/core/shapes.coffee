@@ -204,12 +204,11 @@ class LC.TextShape extends LC.Shape
 
   className: 'TextShape'
 
-  constructor: (@x, @y, @text, @color) ->
+  constructor: (@x, @y, @text, @color, @font = '18px sans-serif;') ->
   draw: (ctx) -> 
-    ctx.font  = "bold 18px sans-serif"
+    ctx.font  = @font
     ctx.fillStyle = @color
-    ctx.fillText(@text, @x, @y);
-  jsonContent: ->
-    {@x, @y, text: @text}
+    ctx.fillText(@text, @x, @y)
+  jsonContent: -> {@x, @y, @text, @color, @font}
   @fromJSON: (lc, data) ->
-    new LC.TextShape(data.x, data.y, data.text)
+    new LC.TextShape(data.x, data.y, data.text, data.color, data.font)
