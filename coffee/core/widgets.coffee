@@ -152,14 +152,19 @@ class LC.TextWidget extends LC.ToolWidget
 
     @$input.change => @updateTool()
     @$input.keyup => @updateTool()
-    $fontSize.change => @updateTool()
+    $fontSize.change =>
+      @updateTool()
+      @$input.focus()
     $fontSize.keyup => @updateTool()
-    @$el.find('input#italic').change => @updateTool()
-    @$el.find('input#bold').change => @updateTool()
+    @$el.find('input#italic').change =>
+      @updateTool()
+      @$input.focus()
+    @$el.find('input#bold').change =>
+      @updateTool()
+      @$input.focus()
     @$el.find('#family').change =>
       @updateTool()
       @$input.focus()
-      @$input.select()
 
     @$el
 
