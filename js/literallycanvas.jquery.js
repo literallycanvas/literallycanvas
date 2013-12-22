@@ -460,6 +460,7 @@
             this.buffer = $("<canvas>").get(0);
             this.ctx = this.canvas.getContext("2d");
             this.bufferCtx = this.buffer.getContext("2d");
+            this.backgroundShapes = [];
             this.shapes = [];
             this.undoStack = [];
             this.redoStack = [];
@@ -476,8 +477,9 @@
                 backgroundImage.onload = function() {
                     return _this.repaint();
                 };
-                this.saveShape(new LC.ImageShape(0, 0, backgroundImage, true));
+                this.backgroundShapes.push(new LC.ImageShape(0, 0, backgroundImage));
             }
+            this.backgroundShapes = this.backgroundShapes.concat(this.opts.backgroundShapes || []);
             this.repaint();
         }
         LiterallyCanvas.prototype.updateSize = function() {
@@ -588,8 +590,12 @@
             });
         };
         LiterallyCanvas.prototype.repaint = function(dirty, drawBackground) {
+            var retryCallback, _this = this;
             if (dirty == null) dirty = true;
             if (drawBackground == null) drawBackground = false;
+            retryCallback = function() {
+                return _this.repaint(true);
+            };
             if (dirty) {
                 this.buffer.width = this.canvas.width;
                 this.buffer.height = this.canvas.height;
@@ -601,7 +607,8 @@
                 if (this.watermarkImage) {
                     this.bufferCtx.drawImage(this.watermarkImage, this.canvas.width / 2 - this.watermarkImage.width / 2, this.canvas.height / 2 - this.watermarkImage.height / 2);
                 }
-                this.draw(this.shapes, this.bufferCtx);
+                this.draw(this.backgroundShapes, this.bufferCtx, retryCallback);
+                this.draw(this.shapes, this.bufferCtx, retryCallback);
             }
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             if (this.canvas.width > 0 && this.canvas.height > 0) {
@@ -616,14 +623,15 @@
                 return shape.update(_this.ctx);
             }, this.ctx);
         };
-        LiterallyCanvas.prototype.draw = function(shapes, ctx) {
-            var drawShapes;
+        LiterallyCanvas.prototype.draw = function(shapes, ctx, retryCallback) {
+            var drawShapes, _this = this;
+            if (!shapes.length) return;
             drawShapes = function() {
                 var shape, _i, _len, _results;
                 _results = [];
                 for (_i = 0, _len = shapes.length; _i < _len; _i++) {
                     shape = shapes[_i];
-                    _results.push(shape.draw(ctx));
+                    _results.push(shape.draw(ctx, retryCallback));
                 }
                 return _results;
             };
@@ -637,18 +645,9 @@
             return ctx.restore();
         };
         LiterallyCanvas.prototype.clear = function() {
-            var newShapes, oldShapes, s;
+            var newShapes, oldShapes;
             oldShapes = this.shapes;
-            newShapes = function() {
-                var _i, _len, _ref2, _results;
-                _ref2 = this.shapes;
-                _results = [];
-                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                    s = _ref2[_i];
-                    if (s.locked) _results.push(s);
-                }
-                return _results;
-            }.call(this);
+            newShapes = [];
             this.execute(new LC.ClearAction(this, oldShapes, newShapes));
             this.repaint();
             this.trigger("clear", null);
@@ -710,16 +709,7 @@
         };
         LiterallyCanvas.prototype.loadSnapshot = function(snapshot) {
             var shape, shapeRepr, _i, _len;
-            this.shapes = function() {
-                var _i, _len, _ref2, _results;
-                _ref2 = this.shapes;
-                _results = [];
-                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                    shape = _ref2[_i];
-                    if (shape.locked) _results.push(shape);
-                }
-                return _results;
-            }.call(this);
+            this.shapes = [];
             this.repaint(true);
             for (_i = 0, _len = snapshot.length; _i < _len; _i++) {
                 shapeRepr = snapshot[_i];
@@ -773,10 +763,11 @@
 (function() {
     var buttonIsDown, coordsForTouchEvent, position;
     coordsForTouchEvent = function($el, e) {
-        var p, t;
-        t = e.originalEvent.changedTouches[0];
+        var p, tx, ty;
+        tx = e.originalEvent.changedTouches[0].pageX;
+        ty = e.originalEvent.changedTouches[0].pageY;
         p = $el.offset();
-        return [ t.clientX - p.left, t.clientY - p.top ];
+        return [ tx - p.left, ty - p.top ];
     };
     position = function(e) {
         var p;
@@ -1029,31 +1020,30 @@
     LC.ImageShape = function(_super) {
         __extends(ImageShape, _super);
         ImageShape.prototype.className = "ImageShape";
-        function ImageShape(x, y, image, locked) {
+        function ImageShape(x, y, image) {
             this.x = x;
             this.y = y;
             this.image = image;
-            this.locked = locked != null ? locked : false;
         }
-        ImageShape.prototype.draw = function(ctx) {
-            return ctx.drawImage(this.image, this.x, this.y);
+        ImageShape.prototype.draw = function(ctx, retryCallback) {
+            if (this.image.width) {
+                return ctx.drawImage(this.image, this.x, this.y);
+            } else {
+                return this.image.onload = retryCallback;
+            }
         };
         ImageShape.prototype.jsonContent = function() {
             return {
                 x: this.x,
                 y: this.y,
-                imageSrc: this.image.src,
-                locked: this.locked
+                imageSrc: this.image.src
             };
         };
         ImageShape.fromJSON = function(lc, data) {
             var i, img;
             img = new Image();
             img.src = data.imageSrc;
-            img.onload = function() {
-                return lc.repaint(true);
-            };
-            i = new LC.ImageShape(data.x, data.y, img, data.locked);
+            i = new LC.ImageShape(data.x, data.y, img);
             return i;
         };
         return ImageShape;
@@ -1180,9 +1170,9 @@
                 return this.smoothedPoints = this.smoothedPoints.slice(0, this.smoothedPoints.length - this.segmentSize * (this.tailSize - 1)).concat(this.tail);
             }
         };
-        LinePathShape.prototype.draw = function(ctx, points) {
-            var point, _i, _len, _ref2;
-            if (points == null) points = this.smoothedPoints;
+        LinePathShape.prototype.draw = function(ctx) {
+            var point, points, _i, _len, _ref2;
+            points = this.smoothedPoints;
             if (!points.length) return;
             ctx.strokeStyle = points[0].color;
             ctx.lineWidth = points[0].size;
@@ -1216,6 +1206,20 @@
             EraseLinePathShape.__super__.update.call(this, ctx);
             return ctx.restore();
         };
+        EraseLinePathShape.fromJSON = function(lc, data) {
+            var pointData, points;
+            points = function() {
+                var _i, _len, _ref2, _results;
+                _ref2 = data.points;
+                _results = [];
+                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+                    pointData = _ref2[_i];
+                    _results.push(new LC.Point.fromJSON(lc, pointData));
+                }
+                return _results;
+            }();
+            return new LC.EraseLinePathShape(points, data.order, data.tailSize);
+        };
         return EraseLinePathShape;
     }(LC.LinePathShape);
     LC.Point = function() {
@@ -1245,6 +1249,32 @@
         };
         return Point;
     }();
+    LC.TextShape = function(_super) {
+        __extends(TextShape, _super);
+        TextShape.prototype.className = "TextShape";
+        function TextShape(x, y, text, color) {
+            this.x = x;
+            this.y = y;
+            this.text = text;
+            this.color = color;
+        }
+        TextShape.prototype.draw = function(ctx) {
+            ctx.font = "bold 18px sans-serif";
+            ctx.fillStyle = this.color;
+            return ctx.fillText(this.text, this.x, this.y);
+        };
+        TextShape.prototype.jsonContent = function() {
+            return {
+                x: this.x,
+                y: this.y,
+                text: this.text
+            };
+        };
+        TextShape.fromJSON = function(lc, data) {
+            return new LC.TextShape(data.x, data.y, data.text);
+        };
+        return TextShape;
+    }(LC.Shape);
 }).call(this);
 
 (function() {
@@ -1294,6 +1324,7 @@
             var $el, _this = this;
             $el = this.$el.find("." + name + "-picker");
             $el.css("background-color", this.lc.getColor(name));
+            $el.css("background-position", "0% 0%");
             this.lc.on("" + name + "ColorChange", function(color) {
                 return $el.css("background-color", color);
             });
@@ -1523,6 +1554,28 @@
         };
         return EyeDropper;
     }(LC.Tool);
+    LC.TextTool = function(_super) {
+        __extends(TextTool, _super);
+        function TextTool(text) {
+            this.text = text != null ? text : "";
+        }
+        TextTool.prototype.setText = function(text) {
+            return this.text = text;
+        };
+        TextTool.prototype.begin = function(x, y, lc) {
+            this.color = lc.getColor("primary");
+            return this.currentShape = new LC.TextShape(x, y, this.text, this.color);
+        };
+        TextTool.prototype["continue"] = function(x, y, lc) {
+            this.currentShape.x = x;
+            this.currentShape.y = y;
+            return lc.update(this.currentShape);
+        };
+        TextTool.prototype.end = function(x, y, lc) {
+            return lc.saveShape(this.currentShape);
+        };
+        return TextTool;
+    }(LC.Tool);
 }).call(this);
 
 (function() {
@@ -1679,6 +1732,42 @@
         };
         return EyeDropperWidget;
     }(LC.ToolWidget);
+    LC.TextWidget = function(_super) {
+        __extends(TextWidget, _super);
+        function TextWidget() {
+            TextWidget.__super__.constructor.apply(this, arguments);
+        }
+        TextWidget.prototype.title = "Text";
+        TextWidget.prototype.cssSuffix = "text";
+        TextWidget.prototype.button = function() {
+            return "<img src='" + this.opts.imageURLPrefix + "/text.png'>";
+        };
+        TextWidget.prototype.select = function(lc) {
+            var _this = this;
+            lc.setTool(this.tool);
+            return setTimeout(function() {
+                _this.$input.focus();
+                return _this.$input.select();
+            }, 0);
+        };
+        TextWidget.prototype.makeTool = function() {
+            return new LC.TextTool();
+        };
+        TextWidget.prototype.options = function() {
+            var $el, _this = this;
+            $el = $("<input type='text' placeholder='Enter text here'        value='" + this.tool.text + "'>       <span class='instructions'>Click and hold to place text.</span>");
+            this.$input = $el.filter("input");
+            if (this.$input.size() === 0) this.$input = $el.find("input");
+            this.$input.change(function(e) {
+                return _this.tool.text = _this.$input.val();
+            });
+            this.$input.keyup(function(e) {
+                return _this.tool.text = _this.$input.val();
+            });
+            return $el;
+        };
+        return TextWidget;
+    }(LC.ToolWidget);
 }).call(this);
 
 (function() {
@@ -1703,9 +1792,10 @@
         if (opts.keyboardShortcuts == null) opts.keyboardShortcuts = true;
         if (opts.preserveCanvasContents == null) opts.preserveCanvasContents = false;
         if (opts.sizeToContainer == null) opts.sizeToContainer = true;
+        if (opts.backgroundShapes == null) opts.backgroundShapes = [];
         if (opts.watermarkImage == null) opts.watermarkImage = null;
         if (!("toolClasses" in opts)) {
-            opts.toolClasses = [ LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget, LC.PanWidget, LC.EyeDropperWidget ];
+            opts.toolClasses = [ LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget, LC.TextWidget, LC.PanWidget, LC.EyeDropperWidget ];
         }
         $el = $(el);
         $el.addClass("literally");
@@ -1722,7 +1812,7 @@
             return lc.updateSize();
         };
         $el.resize(resize);
-        $(window).resize(resize);
+        $(window).bind("orientationchange resize", resize);
         resize();
         if ("onInit" in opts) opts.onInit(lc);
         return [ lc, tb ];
