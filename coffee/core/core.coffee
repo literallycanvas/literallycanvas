@@ -209,8 +209,8 @@ class LC.LiterallyCanvas
     @trigger('redo', {action})
     @trigger('drawingChange', {})
 
-  canUndo: -> !!@undoStack
-  canRedo: -> !!@redoStack
+  canUndo: -> !!@undoStack.length
+  canRedo: -> !!@redoStack.length
 
   getPixel: (x, y) ->
     p = @drawingCoordsToClientCoords x, y
