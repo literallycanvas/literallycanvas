@@ -6,7 +6,7 @@ LC.bspline = (points, order) ->
   return LC.bspline(dual(dual(refine(points))), order - 1)
 
 refine = (points) ->
-  points = [points[0]].concat(points).concat(LC._last(points))
+  points = [points[0]].concat(points).concat(LC.util.last(points))
   refined = []
 
   index = 0
