@@ -218,13 +218,20 @@ class LC.LiterallyCanvas
     @repaint(true, true)
     @canvas
 
-  getSnapshot: -> (shape.toJSON() for shape in @shapes)
-  getSnapshotJSON: -> JSON.stringify(@shapes)  # yep, that works
+  getSnapshot: -> {shapes: (shape.toJSON() for shape in @shapes), @colors}
+  getSnapshotJSON: -> JSON.stringify(@getSnapshot())
 
   loadSnapshot: (snapshot) ->
+    return unless snapshot
+    unless 'shapes' of snapshot
+      # support v0.3-rc1 through v0.3-rc3 because I am a nice guy
+      snapshot = {shapes: snapshot, @colors}
+
+    for k in ['primary', 'secondary', 'background']
+      @setColor(k, snapshot.colors[k])
+
     @shapes = []
-    @repaint(true)
-    for shapeRepr in snapshot
+    for shapeRepr in snapshot.shapes
       if shapeRepr.className of LC
         shape = LC[shapeRepr.className].fromJSON(this, shapeRepr.data)
         if shape
