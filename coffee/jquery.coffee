@@ -1,16 +1,6 @@
 window.LC = window.LC ? {}
 
 
-slice = Array.prototype.slice
-
-
-LC._last = (array, n = null) ->
-  if n
-    return slice.call(array, Math.max(array.length - n, 0))
-  else
-    return array[array.length - 1]
-
-
 LC.init = (el, opts = {}) ->
   opts.primaryColor ?= '#000'
   opts.secondaryColor ?= '#fff'

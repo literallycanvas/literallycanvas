@@ -113,16 +113,16 @@ class LC.LinePathShape extends LC.Shape
 
   addPoint: (point) ->
     # Brush Variance Code
-    #distance = LC.len(LC.diff(LC._last(@points), newPoint)) if @points.length
+    #distance = LC.len(LC.diff(LC.util.last(@points), newPoint)) if @points.length
     #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
-    
+
     @points.push(point)
-    
+
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = LC.bspline(@points, @order)
     else
-      @tail = LC._last(
-        LC.bspline(LC._last(@points, @sampleSize), @order),
+      @tail = LC.util.last(
+        LC.bspline(LC.util.last(@points, @sampleSize), @order),
                    @segmentSize * @tailSize)
 
       # Remove the last @tailSize - 1 segments from @smoothedPoints
@@ -136,7 +136,7 @@ class LC.LinePathShape extends LC.Shape
   draw: (ctx) ->
     points = @smoothedPoints
     return unless points.length
-    
+
     ctx.strokeStyle = points[0].color
     ctx.lineWidth = points[0].size
     ctx.lineCap = 'round'
