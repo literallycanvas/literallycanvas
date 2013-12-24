@@ -40,6 +40,9 @@ class LC.LiterallyCanvas
 
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
+    if @opts.sizeToContainer
+      LC.util.sizeToContainer(@canvas, => @repaint())
+
     @repaint()
 
   updateSize: =>
@@ -206,6 +209,9 @@ class LC.LiterallyCanvas
     @trigger('redo', {action})
     @trigger('drawingChange', {})
 
+  canUndo: -> !!@undoStack
+  canRedo: -> !!@redoStack
+
   getPixel: (x, y) ->
     p = @drawingCoordsToClientCoords x, y
     pixel = @ctx.getImageData(p.x, p.y, 1, 1).data
@@ -217,6 +223,10 @@ class LC.LiterallyCanvas
   canvasForExport: ->
     @repaint(true, true)
     @canvas
+
+  canvasWithBackground: (backgroundImageOrCanvas) ->
+    @repaint(true, true)
+    LC.util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
   getSnapshot: -> {shapes: (shape.toJSON() for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())

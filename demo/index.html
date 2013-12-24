@@ -21,13 +21,21 @@
       .literally {
         width: 100%;
         height: 100%;
+        position: relative;
+      }
+
+      .literally img.background, .literally > canvas {
+        position: absolute;
       }
     </style>
   </head>
 
   <body>
     <div class="fs-container">
-      <div class="literally"><canvas></canvas></div>
+      <div class="literally">
+        <img src="demo/bear.png" class="background">
+        <canvas></canvas>
+      </div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
     </div>
 
@@ -52,26 +60,22 @@
         var watermarkImage = new Image();
         watermarkImage.src = watermarkImageURL;
 
-        var backgroundImageURL = '/demo/bear.png';
-        var backgroundImage = new Image()
-        backgroundImage.src = backgroundImageURL;
-
         // the only LC-specific thing we have to do
         $('.literally').literallycanvas({
           backgroundColor: 'transparent',
           imageURLPrefix: '/lib/img',
-          preserveCanvasContents: true,
+          // preserveCanvasContents: true,
           watermarkImage: watermarkImage,
-          backgroundShapes: [new LC.ImageShape(0, 0, backgroundImage)],
           onInit: function(lc) {
-            lc.loadSnapshotJSON(localStorage.getItem('drawing'));
+            // lc.loadSnapshotJSON(localStorage.getItem('drawing'));
 
             lc.on('drawingChange', function() {
               localStorage.setItem('drawing', lc.getSnapshotJSON());
             });
 
             $("#open-image").click(function() {
-              window.open(lc.canvasForExport().toDataURL());
+              window.open(lc.canvasWithBackground(
+                  $('.literally .background').get(0)).toDataURL());
             });
           }
         });

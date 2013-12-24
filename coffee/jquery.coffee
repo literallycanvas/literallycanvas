@@ -29,15 +29,6 @@ LC.init = (el, opts = {}) ->
   tb = new LC.Toolbar(lc, $tbEl, opts)
   tb.selectTool(tb.tools[0])
 
-  resize = ->
-    if opts.sizeToContainer
-      lc.$canvas.css('height', "#{$el.height() - $tbEl.height()}px")
-    lc.updateSize()
-
-  $el.resize(resize)
-  $(window).bind('orientationchange resize', resize)
-  resize()
-
   if 'onInit' of opts
     opts.onInit(lc)
 
