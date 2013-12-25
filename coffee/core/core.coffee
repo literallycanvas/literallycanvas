@@ -9,10 +9,11 @@ class LC.LiterallyCanvas
     LC.bindEvents(this, @canvas, @opts.keyboardShortcuts)
 
     @colors =
-      primary: @opts.primaryColor or '#000'
-      secondary: @opts.secondaryColor or '#fff'
-      background: @opts.backgroundColor or 'transparent'
-    $(@canvas).css('background-color', @colors.background)
+      primary: @opts.primaryColor or {'r': 0, 'g': 0, 'b': 0, 'a': 1}
+      secondary: @opts.secondaryColor or {'r': 255, 'g': 255, 'b': 255, 'a': 1}
+      background: @opts.backgroundColor or {'r': 0, 'g': 0, 'b': 0, 'a': 0}
+    console.log(@opts.backgroundColor)
+    $(@canvas).css('background-color', LC.formatColor(@colors.background))
 
     @watermarkImage = @opts.watermarkImage
     if @watermarkImage and not @watermarkImage.complete
@@ -90,7 +91,7 @@ class LC.LiterallyCanvas
 
   setColor: (name, color) ->
     @colors[name] = color
-    $(@canvas).css('background-color', @colors.background)
+    $(@canvas).css('background-color', LC.formatColor(@colors.background))
     @trigger "#{name}ColorChange", @colors[name]
     @repaint()
 
@@ -136,7 +137,7 @@ class LC.LiterallyCanvas
       @buffer.height = @canvas.height
       @bufferCtx.clearRect(0, 0, @buffer.width, @buffer.height)
       if drawBackground
-        @bufferCtx.fillStyle = @colors.background
+        @bufferCtx.fillStyle = LC.formatColor(@colors.background)
         @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
       if @watermarkImage
         @bufferCtx.drawImage(
@@ -280,3 +281,8 @@ class LC.AddShapeAction
   undo: ->
     @lc.shapes.pop(@ix)
     @lc.repaint()
+
+
+# TODO: move this to file with Color class once it exists
+LC.formatColor = (color) ->
+  return "rgba(#{color.r}, #{color.g}, #{color.b}, #{color.a})"

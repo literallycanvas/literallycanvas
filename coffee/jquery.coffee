@@ -2,9 +2,9 @@ window.LC = window.LC ? {}
 
 
 LC.init = (el, opts = {}) ->
-  opts.primaryColor ?= '#000'
-  opts.secondaryColor ?= '#fff'
-  opts.backgroundColor ?= 'transparent'
+  opts.primaryColor ?= {'r': 0, 'g': 0, 'b': 0, 'a': 1}
+  opts.secondaryColor ?= {'r': 255, 'g': 255, 'b': 255, 'a': 1}
+  opts.backgroundColor ?= {'r': 255, 'g': 255, 'b': 255, 'a': 0}
   opts.imageURLPrefix ?= 'lib/img'
   opts.keyboardShortcuts ?= true
   opts.preserveCanvasContents ?= false

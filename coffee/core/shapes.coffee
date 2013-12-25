@@ -46,10 +46,10 @@ class LC.Rectangle extends LC.Shape
     @height = 0
 
   draw: (ctx) ->
-    ctx.fillStyle = @fillColor
+    ctx.fillStyle = LC.formatColor(@fillColor)
     ctx.fillRect(@x, @y, @width, @height)
     ctx.lineWidth = @strokeWidth
-    ctx.strokeStyle = @strokeColor
+    ctx.strokeStyle = LC.formatColor(@strokeColor)
     ctx.strokeRect(@x, @y, @width, @height)
 
   jsonContent: ->
@@ -71,7 +71,7 @@ class LC.Line extends LC.Shape
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
-    ctx.strokeStyle = @color
+    ctx.strokeStyle = LC.formatColor(@color)
     ctx.lineCap = 'round'
     ctx.beginPath()
     ctx.moveTo(@x1, @y1)
@@ -91,7 +91,7 @@ class LC.LinePathShape extends LC.Shape
 
   className: 'LinePathShape'
 
-  constructor: (_points = [], @order = 3, @tailSize = 3)->
+  constructor: (_points = [], @brush = new LC.CircleBrush, @order = 3, @tailSize = 3)->
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
 
@@ -109,7 +109,7 @@ class LC.LinePathShape extends LC.Shape
   @fromJSON: (lc, data) ->
     points = (new LC.Point.fromJSON(lc, pointData) \
               for pointData in data.points)
-    new LC.LinePathShape(points, data.order, data.tailSize)
+    new LC.LinePathShape(points, new LC.CircleBrush, data.order, data.tailSize)
 
   addPoint: (point) ->
     # Brush Variance Code
@@ -137,32 +137,12 @@ class LC.LinePathShape extends LC.Shape
     points = @smoothedPoints
     return unless points.length
 
-    ctx.strokeStyle = points[0].color
-    ctx.lineWidth = points[0].size
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.moveTo(points[0].x, points[0].y)
-    for point in points.slice(1)
-      ctx.lineTo(point.x, point.y)
-    ctx.stroke()
+    # TODO: this is a hack, fix it
+    distributedPoints = LC.distribute(LC.filter(LC.fill(points)), 10)
 
-    # Polygonal Line Code
-    #poly = LC.toPoly(@smoothedPoints)
+    for point in distributedPoints then do (point) =>
+      @brush.draw(ctx, point)
 
-    #_.each [fp, lp], (p) ->
-    #  ctx.beginPath()
-    #  ctx.fillStyle = p.color
-    #  ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2)
-    #  ctx.fill()
-    #  ctx.closePath()
-
-    #ctx.beginPath(poly[0].x, poly[0].y)
-    #ctx.fillStyle = poly[0].color
-    #_.each poly, (point) ->
-    #  ctx.lineTo(point.x, point.y)
-    #ctx.closePath()
-    #ctx.fill()
-    
 
 class LC.EraseLinePathShape extends LC.LinePathShape
 
@@ -205,10 +185,37 @@ class LC.TextShape extends LC.Shape
   className: 'TextShape'
 
   constructor: (@x, @y, @text, @color, @font = '18px sans-serif;') ->
-  draw: (ctx) -> 
+  draw: (ctx) ->
     ctx.font  = @font
-    ctx.fillStyle = @color
+    ctx.fillStyle = LC.formatColor(@color)
     ctx.fillText(@text, @x, @y)
   jsonContent: -> {@x, @y, @text, @color, @font}
   @fromJSON: (lc, data) ->
     new LC.TextShape(data.x, data.y, data.text, data.color, data.font)
+
+
+class LC.Brush
+
+  draw: (ctx, x, y, size) ->
+
+
+class LC.CircleBrush
+
+  draw: (ctx, point) ->
+    # When dragging, a point will be painted once for every pixel it is wide,
+    # so we divide the alpha by the size of the point (and constant) to
+    # compensate.
+    # TODO: fix magic number constant
+    # TODO: fix if statement for full opacity
+    if point.color.a != 1
+      alpha = point.color.a / (point.size / 2)
+
+    ctx.beginPath()
+    ctx.fillStyle = LC.formatColor({
+        'r': point.color.r,
+        'g': point.color.g,
+        'b': point.color.b,
+        'a': alpha
+    })
+    ctx.arc(point.x, point.y, point.size / 2, 0, 2 * Math.PI, false)
+    ctx.fill()

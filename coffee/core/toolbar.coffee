@@ -67,13 +67,19 @@ class LC.Toolbar
 
   _bindColorPicker: (name, title) ->
     $el = @$el.find(".#{name}-picker")
-    $el.css('background-color', @lc.getColor(name))
+    $el.css('background-color', LC.formatColor(@lc.getColor(name)))
     $el.css('background-position', "0% 0%")
     @lc.on "#{name}ColorChange", (color) =>
-      $el.css('background-color', color)
+      $el.css('background-color', LC.formatColor(color))
 
     LC.makeColorPicker $el, "#{title} color", (c) =>
-      @lc.setColor(name, "rgba(#{c.r}, #{c.g}, #{c.b}, #{c.a})")
+      # TODO: replace this with our own color class
+      @lc.setColor(name, {
+        'r': c.r,
+        'g': c.g,
+        'b': c.b,
+        'a': c.a,
+      })
       $el.css('background-position', "0% #{(1 - c.a) * 100}%")
 
   initColors: ->
