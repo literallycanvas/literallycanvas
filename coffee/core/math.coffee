@@ -79,3 +79,56 @@ LC.scalePositionScalar = (val, viewportSize, oldScale, newScale) ->
   oldSize = viewportSize * oldScale
   newSize = viewportSize * newScale
   return val + (oldSize - newSize) / 2
+
+LC.filter = (points) ->
+  newPoints = [points[0]]
+  i = 1
+  last = 0
+
+  while i < points.length
+    a = points[last]
+    b = points[i]
+
+    # TODO: fix magic number constant
+    if LC.len(LC.diff(a, b)) > 0.75
+      newPoints.push(b)
+      last = i
+
+    i++
+
+  return newPoints
+
+LC.fill = (points) ->
+  newPoints = [points[0]]
+  i = 1
+
+  while i < points.length
+    a = points[i - 1]
+    b = points[i]
+
+    newPoints = newPoints.concat(LC.between(a, b).slice(1))
+    i++
+
+  return newPoints
+
+LC.between = (a, b) ->
+  # TODO: fix magic number constant
+  if LC.len(LC.diff(a, b)) < 0.55
+    return [a, b]
+  else
+    m = mid(a, b)
+    return LC.between(a, m).concat(LC.between(m, b).slice(1))
+
+LC.distribute = (points, iterations) ->
+  newPoints = [points[0]]
+
+  for point, i in points.slice(1, -1) then do (point, i) =>
+    m = mid(points[i], points[i + 2])
+    newPoints.push(m)
+
+  newPoints.push(points[points.length - 1])
+
+  if iterations > 0
+    return LC.distribute(newPoints, iterations - 1)
+  else
+    return newPoints

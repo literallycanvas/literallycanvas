@@ -69,7 +69,7 @@ class LC.Eraser extends LC.Pencil
   constructor: () ->
     @strokeWidth = 10
 
-  makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
+  makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, {'r': 0, 'g': 0, 'b': 0, 'a': 1})
   makeShape: -> new LC.EraseLinePathShape(this)
 
 
