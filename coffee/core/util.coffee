@@ -14,6 +14,7 @@ LC.util =
     $canvas = $(canvas)
     $container = $canvas.parent()
     resize = =>
+      canvas.style.width = "#{$container.width()}px"
       canvas.style.height = "#{$container.height()}px"
       canvas.setAttribute('width', $canvas.width())
       canvas.setAttribute('height', $canvas.height())
