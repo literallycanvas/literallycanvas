@@ -219,6 +219,9 @@ class LC.LiterallyCanvas
       "rgb(#{pixel[0]}, #{pixel[1]}, #{pixel[2]})"
     else
       null
+      
+  canvasForDraw: ->
+    @canvas
 
   canvasForExport: ->
     @repaint(true, true)
