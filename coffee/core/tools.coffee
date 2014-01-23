@@ -81,6 +81,9 @@ class LC.Pan extends LC.Tool
     lc.pan @start.x - x, @start.y - y
     lc.repaint()
 
+  end: (x, y, lc) ->
+    lc.repaint()
+
 
 class LC.EyeDropper extends LC.Tool
     
