@@ -131,6 +131,8 @@ class LC.TextWidget extends LC.ToolWidget
     new LC.TextTool()
 
   options: ->
+    return @$el if @$el
+
     familyOptions = []
     i = 0
     for family in @getFamilies()

@@ -4,21 +4,19 @@ window.LC = window.LC ? {}
 class LC.LiterallyCanvas
 
   constructor: (@canvas, @opts) ->
-    @$canvas = $(@canvas)
-
     LC.bindEvents(this, @canvas, @opts.keyboardShortcuts)
 
     @colors =
       primary: @opts.primaryColor or '#000'
       secondary: @opts.secondaryColor or '#fff'
       background: @opts.backgroundColor or 'transparent'
-    $(@canvas).css('background-color', @colors.background)
+    @canvas.style.backgroundColor = @colors.background
 
     @watermarkImage = @opts.watermarkImage
     if @watermarkImage and not @watermarkImage.complete
       @watermarkImage.onload = => @repaint(true, false)
 
-    @buffer = $('<canvas>').get(0)
+    @buffer = document.createElement('canvas')
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
 
@@ -46,8 +44,8 @@ class LC.LiterallyCanvas
     @repaint()
 
   updateSize: =>
-    @$canvas.attr('width', @$canvas.width())
-    @$canvas.attr('height', @$canvas.height())
+    @canvas.setAttribute('width', @canvas.clientWidth)
+    @canvas.setAttribute('height', @canvas.clientHeight)
     @repaint()
 
   trigger: (name, data) ->
@@ -90,7 +88,7 @@ class LC.LiterallyCanvas
 
   setColor: (name, color) ->
     @colors[name] = color
-    $(@canvas).css('background-color', @colors.background)
+    @canvas.style.backgroundColor = @colors.background
     @trigger "#{name}ColorChange", @colors[name]
     @repaint()
 

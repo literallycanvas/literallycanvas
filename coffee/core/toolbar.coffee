@@ -87,22 +87,14 @@ class LC.Toolbar
       @_bindColorPicker('background', 'Background')
     ]
 
-    @lc.$canvas.mousedown ->
-      for picker in pickers
-        picker.hide()
-    @lc.$canvas.on 'touchstart', ->
+    @lc.on 'drawStart', ->
       for picker in pickers
         picker.hide()
 
   initButtons: ->
-    @$el.find('.clear-button').click (e) =>
-      @lc.clear()
-
-    @$el.find('.undo-button').click (e) =>
-      @lc.undo()
-
-    @$el.find('.redo-button').click (e) =>
-      @lc.redo()
+    @$el.find('.clear-button').click (e) => @lc.clear()
+    @$el.find('.undo-button').click (e) => @lc.undo()
+    @$el.find('.redo-button').click (e) => @lc.redo()
 
   initTools: ->
     @tools = []
