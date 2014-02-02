@@ -1,3 +1,14 @@
+v0.3:
+ * LiterallyCanvas.canvasWithBackground() renders the current drawing over a
+   background image
+ * Save/load to/from JSON
+ * Text tool
+ * New events
+ * preserveCanvasContents option
+ * Image shape (no corresponding tool yet)
+ * Split code into jQuery plugin and core code
+ * Remove Underscore dependency
+
 v0.2.1:
  * Redo toolbar/CSS markup
  * Drop fat version of build
