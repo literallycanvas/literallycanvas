@@ -3,7 +3,9 @@
     size = 200;
     positionForEvent = function(e) {
         if (typeof e.pageX === "undefined") {
-            if (typeof e.originalEvent === "undefined") return null;
+            if (typeof e.originalEvent === "undefined") {
+                return null;
+            }
             return e.originalEvent.changedTouches[0];
         } else {
             return e;
@@ -102,7 +104,9 @@
                 S /= 2 - L;
             }
             L /= 2;
-            if (S > 1) S = 1;
+            if (S > 1) {
+                S = 1;
+            }
             return {
                 h: H,
                 s: S,
@@ -204,13 +208,17 @@
             });
         };
         Colorpicker.prototype.previewColor = function() {
+            var e;
             try {
                 this.preview.backgroundColor = this.format.call(this);
-            } catch (e) {
+            } catch (_error) {
+                e = _error;
                 this.preview.backgroundColor = this.color.toHex();
             }
             this.base.backgroundColor = this.color.toHex(this.color.value.h, 1, 1, 1);
-            if (this.alpha) return this.alpha.backgroundColor = this.color.toHex();
+            if (this.alpha) {
+                return this.alpha.backgroundColor = this.color.toHex();
+            }
         };
         Colorpicker.prototype.pointer = null;
         Colorpicker.prototype.slider = null;
@@ -293,7 +301,9 @@
             if (!data) {
                 $this.data("colorpicker", data = new Colorpicker(this, $.extend({}, $.fn.colorpicker.defaults, options)));
             }
-            if (typeof option === "string") return data[option]();
+            if (typeof option === "string") {
+                return data[option]();
+            }
         });
     };
     $.fn.colorpicker.defaults = {};
@@ -369,7 +379,9 @@
             if (h < 0) {
                 h += 1;
             } else {
-                if (h > 1) h -= 1;
+                if (h > 1) {
+                    h -= 1;
+                }
             }
             if (h * 6 < 1) {
                 return p + (q - p) * h * 6;
@@ -383,7 +395,9 @@
         },
         HSLtoRGB: function(h, s, l, a) {
             var b, g, p, q, r, tb, tg, tr;
-            if (s < 0) s = 0;
+            if (s < 0) {
+                s = 0;
+            }
             q = void 0;
             if (l <= .5) {
                 q = l * (1 + s);
@@ -443,21 +457,20 @@
             this.canvas = canvas;
             this.opts = opts;
             this.updateSize = __bind(this.updateSize, this);
-            this.$canvas = $(this.canvas);
             LC.bindEvents(this, this.canvas, this.opts.keyboardShortcuts);
             this.colors = {
                 primary: this.opts.primaryColor || "#000",
                 secondary: this.opts.secondaryColor || "#fff",
                 background: this.opts.backgroundColor || "transparent"
             };
-            $(this.canvas).css("background-color", this.colors.background);
+            this.canvas.style.backgroundColor = this.colors.background;
             this.watermarkImage = this.opts.watermarkImage;
             if (this.watermarkImage && !this.watermarkImage.complete) {
                 this.watermarkImage.onload = function() {
                     return _this.repaint(true, false);
                 };
             }
-            this.buffer = $("<canvas>").get(0);
+            this.buffer = document.createElement("canvas");
             this.ctx = this.canvas.getContext("2d");
             this.bufferCtx = this.buffer.getContext("2d");
             this.backgroundShapes = [];
@@ -480,11 +493,16 @@
                 this.backgroundShapes.push(new LC.ImageShape(0, 0, backgroundImage));
             }
             this.backgroundShapes = this.backgroundShapes.concat(this.opts.backgroundShapes || []);
+            if (this.opts.sizeToContainer) {
+                LC.util.sizeToContainer(this.canvas, function() {
+                    return _this.repaint();
+                });
+            }
             this.repaint();
         }
         LiterallyCanvas.prototype.updateSize = function() {
-            this.$canvas.attr("width", this.$canvas.width());
-            this.$canvas.attr("height", this.$canvas.height());
+            this.canvas.setAttribute("width", this.canvas.clientWidth);
+            this.canvas.setAttribute("height", this.canvas.clientHeight);
             return this.repaint();
         };
         LiterallyCanvas.prototype.trigger = function(name, data) {
@@ -547,7 +565,7 @@
         };
         LiterallyCanvas.prototype.setColor = function(name, color) {
             this.colors[name] = color;
-            $(this.canvas).css("background-color", this.colors.background);
+            this.canvas.style.backgroundColor = this.colors.background;
             this.trigger("" + name + "ColorChange", this.colors[name]);
             return this.repaint();
         };
@@ -591,8 +609,12 @@
         };
         LiterallyCanvas.prototype.repaint = function(dirty, drawBackground) {
             var retryCallback, _this = this;
-            if (dirty == null) dirty = true;
-            if (drawBackground == null) drawBackground = false;
+            if (dirty == null) {
+                dirty = true;
+            }
+            if (drawBackground == null) {
+                drawBackground = false;
+            }
             retryCallback = function() {
                 return _this.repaint(true);
             };
@@ -625,7 +647,9 @@
         };
         LiterallyCanvas.prototype.draw = function(shapes, ctx, retryCallback) {
             var drawShapes, _this = this;
-            if (!shapes.length) return;
+            if (!shapes.length) {
+                return;
+            }
             drawShapes = function() {
                 var shape, _i, _len, _results;
                 _results = [];
@@ -660,7 +684,9 @@
         };
         LiterallyCanvas.prototype.undo = function() {
             var action;
-            if (!this.undoStack.length) return;
+            if (!this.undoStack.length) {
+                return;
+            }
             action = this.undoStack.pop();
             action.undo();
             this.redoStack.push(action);
@@ -671,7 +697,9 @@
         };
         LiterallyCanvas.prototype.redo = function() {
             var action;
-            if (!this.redoStack.length) return;
+            if (!this.redoStack.length) {
+                return;
+            }
             action = this.redoStack.pop();
             this.undoStack.push(action);
             action["do"]();
@@ -679,6 +707,12 @@
                 action: action
             });
             return this.trigger("drawingChange", {});
+        };
+        LiterallyCanvas.prototype.canUndo = function() {
+            return !!this.undoStack.length;
+        };
+        LiterallyCanvas.prototype.canRedo = function() {
+            return !!this.redoStack.length;
         };
         LiterallyCanvas.prototype.getPixel = function(x, y) {
             var p, pixel;
@@ -694,28 +728,54 @@
             this.repaint(true, true);
             return this.canvas;
         };
+        LiterallyCanvas.prototype.canvasWithBackground = function(backgroundImageOrCanvas) {
+            this.repaint(true, true);
+            return LC.util.combineCanvases(backgroundImageOrCanvas, this.canvasForExport());
+        };
         LiterallyCanvas.prototype.getSnapshot = function() {
-            var shape, _i, _len, _ref2, _results;
-            _ref2 = this.shapes;
-            _results = [];
-            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                shape = _ref2[_i];
-                _results.push(shape.toJSON());
-            }
-            return _results;
+            var shape;
+            return {
+                shapes: function() {
+                    var _i, _len, _ref1, _results;
+                    _ref1 = this.shapes;
+                    _results = [];
+                    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                        shape = _ref1[_i];
+                        _results.push(shape.toJSON());
+                    }
+                    return _results;
+                }.call(this),
+                colors: this.colors
+            };
         };
         LiterallyCanvas.prototype.getSnapshotJSON = function() {
-            return JSON.stringify(this.shapes);
+            return JSON.stringify(this.getSnapshot());
         };
         LiterallyCanvas.prototype.loadSnapshot = function(snapshot) {
-            var shape, shapeRepr, _i, _len;
+            var k, shape, shapeRepr, _i, _j, _len, _len1, _ref1, _ref2;
+            if (!snapshot) {
+                return;
+            }
+            if (!("shapes" in snapshot)) {
+                snapshot = {
+                    shapes: snapshot,
+                    colors: this.colors
+                };
+            }
+            _ref1 = [ "primary", "secondary", "background" ];
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                k = _ref1[_i];
+                this.setColor(k, snapshot.colors[k]);
+            }
             this.shapes = [];
-            this.repaint(true);
-            for (_i = 0, _len = snapshot.length; _i < _len; _i++) {
-                shapeRepr = snapshot[_i];
+            _ref2 = snapshot.shapes;
+            for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+                shapeRepr = _ref2[_j];
                 if (shapeRepr.className in LC) {
                     shape = LC[shapeRepr.className].fromJSON(this, shapeRepr.data);
-                    if (shape) this.execute(new LC.AddShapeAction(this, shape));
+                    if (shape) {
+                        this.execute(new LC.AddShapeAction(this, shape));
+                    }
                 }
             }
             return this.repaint(true);
@@ -793,7 +853,9 @@
     };
     LC.bindEvents = function(lc, canvas, panWithKeyboard) {
         var $c, _this = this;
-        if (panWithKeyboard == null) panWithKeyboard = false;
+        if (panWithKeyboard == null) {
+            panWithKeyboard = false;
+        }
         $c = $(canvas);
         $c.mousedown(function(e) {
             var down, p;
@@ -823,7 +885,9 @@
         $c.mouseenter(function(e) {
             var p;
             p = position(e);
-            if (buttonIsDown(e)) return lc.begin(p.left, p.top);
+            if (buttonIsDown(e)) {
+                return lc.begin(p.left, p.top);
+            }
         });
         $c.mouseout(function(e) {
             var p;
@@ -844,12 +908,16 @@
         });
         $c.bind("touchend", function(e) {
             e.preventDefault();
-            if (e.originalEvent.touches.length !== 0) return;
+            if (e.originalEvent.touches.length !== 0) {
+                return;
+            }
             return lc.end.apply(lc, coordsForTouchEvent($c, e));
         });
         $c.bind("touchcancel", function(e) {
             e.preventDefault();
-            if (e.originalEvent.touches.length !== 0) return;
+            if (e.originalEvent.touches.length !== 0) {
+                return;
+            }
             return lc.end.apply(lc, coordsForTouchEvent($c, e));
         });
         if (panWithKeyboard) {
@@ -880,12 +948,14 @@
     var dual, mid, normals, refine, slope, unit, _ref;
     window.LC = (_ref = window.LC) != null ? _ref : {};
     LC.bspline = function(points, order) {
-        if (!order) return points;
+        if (!order) {
+            return points;
+        }
         return LC.bspline(dual(dual(refine(points))), order - 1);
     };
     refine = function(points) {
         var index, point, refined, _i, _len;
-        points = [ points[0] ].concat(points).concat(LC._last(points));
+        points = [ points[0] ].concat(points).concat(LC.util.last(points));
         refined = [];
         index = 0;
         for (_i = 0, _len = points.length; _i < _len; _i++) {
@@ -904,7 +974,9 @@
         index = 0;
         for (_i = 0, _len = points.length; _i < _len; _i++) {
             point = points[_i];
-            if (points[index + 1]) dualed[index] = mid(point, points[index + 1]);
+            if (points[index + 1]) {
+                dualed[index] = mid(point, points[index + 1]);
+            }
             index += 1;
         }
         return dualed;
@@ -983,7 +1055,7 @@
 }).call(this);
 
 (function() {
-    var _ref, __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    var _ref, _ref1, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
         for (var key in parent) {
             if (__hasProp.call(parent, key)) child[key] = parent[key];
         }
@@ -1129,7 +1201,9 @@
         LinePathShape.prototype.className = "LinePathShape";
         function LinePathShape(_points, order, tailSize) {
             var point, _i, _len;
-            if (_points == null) _points = [];
+            if (_points == null) {
+                _points = [];
+            }
             this.order = order != null ? order : 3;
             this.tailSize = tailSize != null ? tailSize : 3;
             this.segmentSize = Math.pow(2, this.order);
@@ -1150,11 +1224,11 @@
         LinePathShape.fromJSON = function(lc, data) {
             var pointData, points;
             points = function() {
-                var _i, _len, _ref2, _results;
-                _ref2 = data.points;
+                var _i, _len, _ref1, _results;
+                _ref1 = data.points;
                 _results = [];
-                for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                    pointData = _ref2[_i];
+                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                    pointData = _ref1[_i];
                     _results.push(new LC.Point.fromJSON(lc, pointData));
                 }
                 return _results;
@@ -1166,22 +1240,24 @@
             if (!this.smoothedPoints || this.points.length < this.sampleSize) {
                 return this.smoothedPoints = LC.bspline(this.points, this.order);
             } else {
-                this.tail = LC._last(LC.bspline(LC._last(this.points, this.sampleSize), this.order), this.segmentSize * this.tailSize);
+                this.tail = LC.util.last(LC.bspline(LC.util.last(this.points, this.sampleSize), this.order), this.segmentSize * this.tailSize);
                 return this.smoothedPoints = this.smoothedPoints.slice(0, this.smoothedPoints.length - this.segmentSize * (this.tailSize - 1)).concat(this.tail);
             }
         };
         LinePathShape.prototype.draw = function(ctx) {
-            var point, points, _i, _len, _ref2;
+            var point, points, _i, _len, _ref1;
             points = this.smoothedPoints;
-            if (!points.length) return;
+            if (!points.length) {
+                return;
+            }
             ctx.strokeStyle = points[0].color;
             ctx.lineWidth = points[0].size;
             ctx.lineCap = "round";
             ctx.beginPath();
             ctx.moveTo(points[0].x, points[0].y);
-            _ref2 = points.slice(1);
-            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                point = _ref2[_i];
+            _ref1 = points.slice(1);
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                point = _ref1[_i];
                 ctx.lineTo(point.x, point.y);
             }
             return ctx.stroke();
@@ -1191,7 +1267,8 @@
     LC.EraseLinePathShape = function(_super) {
         __extends(EraseLinePathShape, _super);
         function EraseLinePathShape() {
-            EraseLinePathShape.__super__.constructor.apply(this, arguments);
+            _ref1 = EraseLinePathShape.__super__.constructor.apply(this, arguments);
+            return _ref1;
         }
         EraseLinePathShape.prototype.className = "EraseLinePathShape";
         EraseLinePathShape.prototype.draw = function(ctx) {
@@ -1252,14 +1329,15 @@
     LC.TextShape = function(_super) {
         __extends(TextShape, _super);
         TextShape.prototype.className = "TextShape";
-        function TextShape(x, y, text, color) {
+        function TextShape(x, y, text, color, font) {
             this.x = x;
             this.y = y;
             this.text = text;
             this.color = color;
+            this.font = font != null ? font : "18px sans-serif;";
         }
         TextShape.prototype.draw = function(ctx) {
-            ctx.font = "bold 18px sans-serif";
+            ctx.font = this.font;
             ctx.fillStyle = this.color;
             return ctx.fillText(this.text, this.x, this.y);
         };
@@ -1267,11 +1345,13 @@
             return {
                 x: this.x,
                 y: this.y,
-                text: this.text
+                text: this.text,
+                color: this.color,
+                font: this.font
             };
         };
         TextShape.fromJSON = function(lc, data) {
-            return new LC.TextShape(data.x, data.y, data.text);
+            return new LC.TextShape(data.x, data.y, data.text, data.color, data.font);
         };
         return TextShape;
     }(LC.Shape);
@@ -1338,16 +1418,7 @@
             this.$el.find(".primary-picker, .secondary-picker, .background-picker").css("background-image", "url(" + this.opts.imageURLPrefix + "/alpha.png)");
             this.$el.find(".secondary-picker").css("background-position", "0% 100%");
             pickers = [ this._bindColorPicker("primary", "Primary (stroke)"), this._bindColorPicker("secondary", "Secondary (fill)"), this._bindColorPicker("background", "Background") ];
-            this.lc.$canvas.mousedown(function() {
-                var picker, _i, _len, _results;
-                _results = [];
-                for (_i = 0, _len = pickers.length; _i < _len; _i++) {
-                    picker = pickers[_i];
-                    _results.push(picker.hide());
-                }
-                return _results;
-            });
-            return this.lc.$canvas.on("touchstart", function() {
+            return this.lc.on("drawStart", function() {
                 var picker, _i, _len, _results;
                 _results = [];
                 for (_i = 0, _len = pickers.length; _i < _len; _i++) {
@@ -1370,12 +1441,12 @@
             });
         };
         Toolbar.prototype.initTools = function() {
-            var ToolClass, t, _i, _len, _ref2, _results;
+            var ToolClass, t, _i, _len, _ref1, _results;
             this.tools = [];
-            _ref2 = this.opts.toolClasses;
+            _ref1 = this.opts.toolClasses;
             _results = [];
-            for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-                ToolClass = _ref2[_i];
+            for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                ToolClass = _ref1[_i];
                 t = new ToolClass(this.opts);
                 this.tools.push(t);
                 _results.push(this.addTool(t));
@@ -1411,14 +1482,16 @@
             this.$el.find(".tools .tool-" + t.cssSuffix).addClass("active");
             t.select(this.lc);
             this.$el.find(".tool-options").hide();
-            if (t.$el) return t.$el.show();
+            if (t.$el) {
+                return t.$el.show();
+            }
         };
         return Toolbar;
     }();
 }).call(this);
 
 (function() {
-    var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    var _ref, _ref1, _ref2, _ref3, _ref4, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
         for (var key in parent) {
             if (__hasProp.call(parent, key)) child[key] = parent[key];
         }
@@ -1447,7 +1520,8 @@
     LC.RectangleTool = function(_super) {
         __extends(RectangleTool, _super);
         function RectangleTool() {
-            RectangleTool.__super__.constructor.apply(this, arguments);
+            _ref = RectangleTool.__super__.constructor.apply(this, arguments);
+            return _ref;
         }
         RectangleTool.prototype.begin = function(x, y, lc) {
             return this.currentShape = new LC.Rectangle(x, y, this.strokeWidth, lc.getColor("primary"), lc.getColor("secondary"));
@@ -1465,7 +1539,8 @@
     LC.LineTool = function(_super) {
         __extends(LineTool, _super);
         function LineTool() {
-            LineTool.__super__.constructor.apply(this, arguments);
+            _ref1 = LineTool.__super__.constructor.apply(this, arguments);
+            return _ref1;
         }
         LineTool.prototype.begin = function(x, y, lc) {
             return this.currentShape = new LC.Line(x, y, x, y, this.strokeWidth, lc.getColor("primary"));
@@ -1483,7 +1558,8 @@
     LC.Pencil = function(_super) {
         __extends(Pencil, _super);
         function Pencil() {
-            Pencil.__super__.constructor.apply(this, arguments);
+            _ref2 = Pencil.__super__.constructor.apply(this, arguments);
+            return _ref2;
         }
         Pencil.prototype.begin = function(x, y, lc) {
             this.color = lc.getColor("primary");
@@ -1522,7 +1598,8 @@
     LC.Pan = function(_super) {
         __extends(Pan, _super);
         function Pan() {
-            Pan.__super__.constructor.apply(this, arguments);
+            _ref3 = Pan.__super__.constructor.apply(this, arguments);
+            return _ref3;
         }
         Pan.prototype.begin = function(x, y, lc) {
             return this.start = {
@@ -1534,12 +1611,16 @@
             lc.pan(this.start.x - x, this.start.y - y);
             return lc.repaint();
         };
+        Pan.prototype.end = function(x, y, lc) {
+            return lc.repaint();
+        };
         return Pan;
     }(LC.Tool);
     LC.EyeDropper = function(_super) {
         __extends(EyeDropper, _super);
         function EyeDropper() {
-            EyeDropper.__super__.constructor.apply(this, arguments);
+            _ref4 = EyeDropper.__super__.constructor.apply(this, arguments);
+            return _ref4;
         }
         EyeDropper.prototype.readColor = function(x, y, lc) {
             var newColor;
@@ -1556,15 +1637,16 @@
     }(LC.Tool);
     LC.TextTool = function(_super) {
         __extends(TextTool, _super);
-        function TextTool(text) {
+        function TextTool(text, font) {
             this.text = text != null ? text : "";
+            this.font = font != null ? font : "bold 18px sans-serif";
         }
         TextTool.prototype.setText = function(text) {
             return this.text = text;
         };
         TextTool.prototype.begin = function(x, y, lc) {
             this.color = lc.getColor("primary");
-            return this.currentShape = new LC.TextShape(x, y, this.text, this.color);
+            return this.currentShape = new LC.TextShape(x, y, this.text, this.color, this.font);
         };
         TextTool.prototype["continue"] = function(x, y, lc) {
             this.currentShape.x = x;
@@ -1579,7 +1661,53 @@
 }).call(this);
 
 (function() {
-    var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    var slice, _ref;
+    window.LC = (_ref = window.LC) != null ? _ref : {};
+    slice = Array.prototype.slice;
+    LC.util = {
+        last: function(array, n) {
+            if (n == null) {
+                n = null;
+            }
+            if (n) {
+                return slice.call(array, Math.max(array.length - n, 0));
+            } else {
+                return array[array.length - 1];
+            }
+        },
+        sizeToContainer: function(canvas, callback) {
+            var $canvas, $container, resize, _this = this;
+            if (callback == null) {
+                callback = function() {};
+            }
+            $canvas = $(canvas);
+            $container = $canvas.parent();
+            resize = function() {
+                canvas.style.width = "" + $container.width() + "px";
+                canvas.style.height = "" + $container.height() + "px";
+                canvas.setAttribute("width", $canvas.width());
+                canvas.setAttribute("height", $canvas.height());
+                return callback();
+            };
+            $container.resize(resize);
+            $(window).bind("orientationchange resize", resize);
+            return resize();
+        },
+        combineCanvases: function(a, b) {
+            var c, ctx;
+            c = $("<canvas>").get(0);
+            c.width = Math.max(a.width, b.width);
+            c.height = Math.max(a.height, b.height);
+            ctx = c.getContext("2d");
+            ctx.drawImage(a, 0, 0);
+            ctx.drawImage(b, 0, 0);
+            return c;
+        }
+    };
+}).call(this);
+
+(function() {
+    var _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, __hasProp = {}.hasOwnProperty, __extends = function(child, parent) {
         for (var key in parent) {
             if (__hasProp.call(parent, key)) child[key] = parent[key];
         }
@@ -1590,7 +1718,7 @@
         child.prototype = new ctor();
         child.__super__ = parent.prototype;
         return child;
-    };
+    }, __slice = [].slice;
     LC.Widget = function() {
         function Widget(opts) {
             this.opts = opts;
@@ -1598,10 +1726,10 @@
         Widget.prototype.title = void 0;
         Widget.prototype.cssSuffix = void 0;
         Widget.prototype.button = function() {
-            return;
+            return void 0;
         };
         Widget.prototype.options = function() {
-            return;
+            return void 0;
         };
         Widget.prototype.select = function(lc) {};
         return Widget;
@@ -1616,20 +1744,23 @@
             return lc.setTool(this.tool);
         };
         ToolWidget.prototype.makeTool = function() {
-            return;
+            return void 0;
         };
         return ToolWidget;
     }(LC.Widget);
     LC.StrokeWidget = function(_super) {
         __extends(StrokeWidget, _super);
         function StrokeWidget() {
-            StrokeWidget.__super__.constructor.apply(this, arguments);
+            _ref = StrokeWidget.__super__.constructor.apply(this, arguments);
+            return _ref;
         }
         StrokeWidget.prototype.options = function() {
             var $brushWidthVal, $el, $input, _this = this;
             $el = $("<span class='brush-width-min'>1 px</span><input type='range' min='1' max='50' step='1' value='" + this.tool.strokeWidth + "'><span class='brush-width-max'>50 px</span><span class='brush-width-val'>(5 px)</span>");
             $input = $el.filter("input");
-            if ($input.size() === 0) $input = $el.find("input");
+            if ($input.size() === 0) {
+                $input = $el.find("input");
+            }
             $brushWidthVal = $el.filter(".brush-width-val");
             if ($brushWidthVal.size() === 0) {
                 $brushWidthVal = $el.find(".brush-width-val");
@@ -1645,7 +1776,8 @@
     LC.RectangleWidget = function(_super) {
         __extends(RectangleWidget, _super);
         function RectangleWidget() {
-            RectangleWidget.__super__.constructor.apply(this, arguments);
+            _ref1 = RectangleWidget.__super__.constructor.apply(this, arguments);
+            return _ref1;
         }
         RectangleWidget.prototype.title = "Rectangle";
         RectangleWidget.prototype.cssSuffix = "rectangle";
@@ -1660,7 +1792,8 @@
     LC.LineWidget = function(_super) {
         __extends(LineWidget, _super);
         function LineWidget() {
-            LineWidget.__super__.constructor.apply(this, arguments);
+            _ref2 = LineWidget.__super__.constructor.apply(this, arguments);
+            return _ref2;
         }
         LineWidget.prototype.title = "Line";
         LineWidget.prototype.cssSuffix = "line";
@@ -1675,7 +1808,8 @@
     LC.PencilWidget = function(_super) {
         __extends(PencilWidget, _super);
         function PencilWidget() {
-            PencilWidget.__super__.constructor.apply(this, arguments);
+            _ref3 = PencilWidget.__super__.constructor.apply(this, arguments);
+            return _ref3;
         }
         PencilWidget.prototype.title = "Pencil";
         PencilWidget.prototype.cssSuffix = "pencil";
@@ -1690,7 +1824,8 @@
     LC.EraserWidget = function(_super) {
         __extends(EraserWidget, _super);
         function EraserWidget() {
-            EraserWidget.__super__.constructor.apply(this, arguments);
+            _ref4 = EraserWidget.__super__.constructor.apply(this, arguments);
+            return _ref4;
         }
         EraserWidget.prototype.title = "Eraser";
         EraserWidget.prototype.cssSuffix = "eraser";
@@ -1705,7 +1840,8 @@
     LC.PanWidget = function(_super) {
         __extends(PanWidget, _super);
         function PanWidget() {
-            PanWidget.__super__.constructor.apply(this, arguments);
+            _ref5 = PanWidget.__super__.constructor.apply(this, arguments);
+            return _ref5;
         }
         PanWidget.prototype.title = "Pan";
         PanWidget.prototype.cssSuffix = "pan";
@@ -1720,7 +1856,8 @@
     LC.EyeDropperWidget = function(_super) {
         __extends(EyeDropperWidget, _super);
         function EyeDropperWidget() {
-            EyeDropperWidget.__super__.constructor.apply(this, arguments);
+            _ref6 = EyeDropperWidget.__super__.constructor.apply(this, arguments);
+            return _ref6;
         }
         EyeDropperWidget.prototype.title = "Eyedropper";
         EyeDropperWidget.prototype.cssSuffix = "eye-dropper";
@@ -1734,16 +1871,31 @@
     }(LC.ToolWidget);
     LC.TextWidget = function(_super) {
         __extends(TextWidget, _super);
-        function TextWidget() {
-            TextWidget.__super__.constructor.apply(this, arguments);
-        }
+        TextWidget.prototype.getFamilies = function() {
+            return [ {
+                name: "Sans-serif",
+                value: '"Helvetica Neue",Helvetica,Arial,sans-serif'
+            }, {
+                name: "Serif",
+                value: ('Garamond,Baskerville,"Baskerville Old Face",', '"Hoefler Text","Times New Roman",serif')
+            }, {
+                name: "Typewriter",
+                value: ('"Courier New",Courier,"Lucida Sans Typewriter",', '"Lucida Typewriter",monospace')
+            } ];
+        };
         TextWidget.prototype.title = "Text";
         TextWidget.prototype.cssSuffix = "text";
+        function TextWidget() {
+            var args;
+            args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+            TextWidget.__super__.constructor.apply(this, args);
+        }
         TextWidget.prototype.button = function() {
             return "<img src='" + this.opts.imageURLPrefix + "/text.png'>";
         };
         TextWidget.prototype.select = function(lc) {
             var _this = this;
+            this.updateTool();
             lc.setTool(this.tool);
             return setTimeout(function() {
                 _this.$input.focus();
@@ -1754,46 +1906,92 @@
             return new LC.TextTool();
         };
         TextWidget.prototype.options = function() {
-            var $el, _this = this;
-            $el = $("<input type='text' placeholder='Enter text here'        value='" + this.tool.text + "'>       <span class='instructions'>Click and hold to place text.</span>");
-            this.$input = $el.filter("input");
-            if (this.$input.size() === 0) this.$input = $el.find("input");
-            this.$input.change(function(e) {
-                return _this.tool.text = _this.$input.val();
+            var $fontSize, family, familyOptions, i, updateAndFocus, _i, _len, _ref7, _this = this;
+            if (this.$el) {
+                return this.$el;
+            }
+            familyOptions = [];
+            i = 0;
+            _ref7 = this.getFamilies();
+            for (_i = 0, _len = _ref7.length; _i < _len; _i++) {
+                family = _ref7[_i];
+                familyOptions.push("<option value=" + i + ">" + family.name + "</option>");
+                i += 1;
+            }
+            this.$el = $("<div>       <input type='text' id='text' placeholder='Enter text here'        value='" + this.tool.text + "'>       <input type='text' id='font-size' value='18'>       <select id='family'>" + familyOptions.join("") + "</select>       <label for='italic'><input type='checkbox' id='italic'>italic</label>       <label for='bold'><input type='checkbox' id='bold'>bold</label>       <span class='instructions'>Click and hold to place text.</span>       </div>");
+            this.$input = this.$el.find("input#text");
+            $fontSize = this.$el.find("input#font-size");
+            updateAndFocus = function() {
+                _this.updateTool();
+                return _this.$input.focus();
+            };
+            this.$input.keyup(function() {
+                return _this.updateTool();
             });
-            this.$input.keyup(function(e) {
-                return _this.tool.text = _this.$input.val();
+            $fontSize.keyup(function() {
+                return _this.updateTool();
             });
-            return $el;
+            this.$input.change(updateAndFocus);
+            $fontSize.change(updateAndFocus);
+            this.$el.find("input#italic").change(updateAndFocus);
+            this.$el.find("input#bold").change(updateAndFocus);
+            this.$el.find("#family").change(updateAndFocus);
+            return this.$el;
+        };
+        TextWidget.prototype.updateTool = function() {
+            var familyIndex, items;
+            items = [];
+            if (this.$el.find("input#italic").is(":checked")) {
+                items.push("italic");
+            }
+            if (this.$el.find("input#bold").is(":checked")) {
+                items.push("bold");
+            }
+            items.push("" + parseInt(this.$el.find("input#font-size").val(), 10) + "px");
+            familyIndex = parseInt(this.$el.find("select#family").val(), 10);
+            items.push(this.getFamilies()[familyIndex].value);
+            this.tool.font = items.join(" ");
+            return this.tool.text = this.$el.find("input#text").val();
         };
         return TextWidget;
     }(LC.ToolWidget);
 }).call(this);
 
 (function() {
-    var slice, _ref;
+    var _ref;
     window.LC = (_ref = window.LC) != null ? _ref : {};
-    slice = Array.prototype.slice;
-    LC._last = function(array, n) {
-        if (n == null) n = null;
-        if (n) {
-            return slice.call(array, Math.max(array.length - n, 0));
-        } else {
-            return array[array.length - 1];
-        }
-    };
     LC.init = function(el, opts) {
-        var $el, $tbEl, lc, resize, tb;
-        if (opts == null) opts = {};
-        if (opts.primaryColor == null) opts.primaryColor = "#000";
-        if (opts.secondaryColor == null) opts.secondaryColor = "#fff";
-        if (opts.backgroundColor == null) opts.backgroundColor = "transparent";
-        if (opts.imageURLPrefix == null) opts.imageURLPrefix = "lib/img";
-        if (opts.keyboardShortcuts == null) opts.keyboardShortcuts = true;
-        if (opts.preserveCanvasContents == null) opts.preserveCanvasContents = false;
-        if (opts.sizeToContainer == null) opts.sizeToContainer = true;
-        if (opts.backgroundShapes == null) opts.backgroundShapes = [];
-        if (opts.watermarkImage == null) opts.watermarkImage = null;
+        var $el, $tbEl, lc, tb;
+        if (opts == null) {
+            opts = {};
+        }
+        if (opts.primaryColor == null) {
+            opts.primaryColor = "#000";
+        }
+        if (opts.secondaryColor == null) {
+            opts.secondaryColor = "#fff";
+        }
+        if (opts.backgroundColor == null) {
+            opts.backgroundColor = "transparent";
+        }
+        if (opts.imageURLPrefix == null) {
+            opts.imageURLPrefix = "lib/img";
+        }
+        if (opts.keyboardShortcuts == null) {
+            opts.keyboardShortcuts = true;
+        }
+        if (opts.preserveCanvasContents == null) {
+            opts.preserveCanvasContents = false;
+        }
+        if (opts.sizeToContainer == null) {
+            opts.sizeToContainer = true;
+        }
+        if (opts.backgroundShapes == null) {
+            opts.backgroundShapes = [];
+        }
+        if (opts.watermarkImage == null) {
+            opts.watermarkImage = null;
+        }
         if (!("toolClasses" in opts)) {
             opts.toolClasses = [ LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget, LC.TextWidget, LC.PanWidget, LC.EyeDropperWidget ];
         }
@@ -1801,29 +1999,26 @@
         $el.addClass("literally");
         $tbEl = $('<div class="toolbar">');
         $el.append($tbEl);
-        if (!$el.find("canvas").length) $el.append("<canvas>");
+        if (!$el.find("canvas").length) {
+            $el.append("<canvas>");
+        }
         lc = new LC.LiterallyCanvas($el.find("canvas").get(0), opts);
         tb = new LC.Toolbar(lc, $tbEl, opts);
         tb.selectTool(tb.tools[0]);
-        resize = function() {
-            if (opts.sizeToContainer) {
-                lc.$canvas.css("height", "" + ($el.height() - $tbEl.height()) + "px");
-            }
-            return lc.updateSize();
-        };
-        $el.resize(resize);
-        $(window).bind("orientationchange resize", resize);
-        resize();
-        if ("onInit" in opts) opts.onInit(lc);
+        if ("onInit" in opts) {
+            opts.onInit(lc);
+        }
         return [ lc, tb ];
     };
     $.fn.literallycanvas = function(opts) {
         var _this = this;
-        if (opts == null) opts = {};
+        if (opts == null) {
+            opts = {};
+        }
         this.each(function(ix, el) {
-            var _ref2;
-            return _ref2 = LC.init(el, opts), el.literallycanvas = _ref2[0], el.literallycanvasToolbar = _ref2[1], 
-            _ref2;
+            var _ref1;
+            return _ref1 = LC.init(el, opts), el.literallycanvas = _ref1[0], el.literallycanvasToolbar = _ref1[1], 
+            _ref1;
         });
         return this;
     };
