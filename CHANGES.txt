@@ -8,6 +8,7 @@ v0.3:
  * Image shape (no corresponding tool yet)
  * Split code into jQuery plugin and core code
  * Remove Underscore dependency
+ * Support IE Mobile (probably)
 
 v0.2.1:
  * Redo toolbar/CSS markup

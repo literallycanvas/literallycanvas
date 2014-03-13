@@ -231,9 +231,6 @@ class LC.LiterallyCanvas
 
   loadSnapshot: (snapshot) ->
     return unless snapshot
-    unless 'shapes' of snapshot
-      # support v0.3-rc1 through v0.3-rc3 because I am a nice guy
-      snapshot = {shapes: snapshot, @colors}
 
     for k in ['primary', 'secondary', 'background']
       @setColor(k, snapshot.colors[k])
