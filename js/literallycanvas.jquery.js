@@ -756,12 +756,6 @@
             if (!snapshot) {
                 return;
             }
-            if (!("shapes" in snapshot)) {
-                snapshot = {
-                    shapes: snapshot,
-                    colors: this.colors
-                };
-            }
             _ref1 = [ "primary", "secondary", "background" ];
             for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                 k = _ref1[_i];
