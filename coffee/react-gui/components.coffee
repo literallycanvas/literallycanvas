@@ -85,7 +85,7 @@ LC.React.Mixins =
 
 LC.React.Picker = React.createClass
   displayName: 'Picker'
-  getInitialState: -> {selectedToolIndex: 0}
+  getInitialState: -> {selectedToolIndex: 4}
   render: ->
     {div} = React.DOM
     {toolButtons, lc, root, imageURLPrefix} = @props
@@ -210,9 +210,115 @@ LC.React.Options = React.createClass
 LC.React.OptionsStyles =
   'font': React.createClass
     displayName: 'FontOptions'
+    getText: -> @props.lc.tool?.text
+    getInitialState: -> {
+      text: @getText()
+      fontSize: 18
+      isItalic: false
+      isBold: false
+      fontFamilyIndex: 0
+    }
+
+    getFamilies: -> [
+      {name: 'Sans-serif', value: '"Helvetica Neue",Helvetica,Arial,sans-serif'},
+      {name: 'Serif', value: (
+        'Garamond,Baskerville,"Baskerville Old Face",'
+        '"Hoefler Text","Times New Roman",serif')}
+      {name: 'Typewriter', value: (
+        '"Courier New",Courier,"Lucida Sans Typewriter",'
+        '"Lucida Typewriter",monospace')},
+    ]
+
+    updateTool: ->
+      items = []
+      items.push('italic') if @state.isItalic
+      items.push('bold') if @state.isBold
+      items.push("#{@state.fontSize}px")
+      items.push(@getFamilies()[@state.fontFamilyIndex].value)
+      @props.lc.tool.font = items.join(' ')
+      console.log @props.lc.tool.font
+
+    handleText: (event) ->
+      @props.lc.tool.text = event.target.value
+      @setState {text: @getText()}
+
+    handleFontSize: (event) ->
+      @setState {fontSize: parseInt(event.target.value, 10)}
+      @updateTool()
+
+    handleFontFamily: (event) ->
+      console.log event.target.value
+      @setState {fontFamilyIndex: event.target.value}
+      console.log @state.fontFamilyIndex, '!'
+      @updateTool()
+
+    handleItalic: (event) ->
+      @setState {isItalic: !@state.isItalic}
+      @updateTool()
+
+    handleBold: (event) ->
+      @setState {isItalic: !@state.isBold}
+      @updateTool()
+
     render: ->
-      {div, input} = React.DOM
-      div()
+      {div, input, select, option, br, label, span} = React.DOM
+
+      (div {className: 'lc-font'},
+        (input \
+          {
+            type: 'text'
+            key: 'text-value'
+            placeholder: 'Enter text here'
+            value: @state.text
+            onChange: @handleText
+          }
+        )
+        (span {className: 'instructions'}, "Click and hold to place text.")
+
+        (br())
+
+        "Size: "
+        (input \
+          {
+            type: 'text'
+            key: 'font-size'
+            value: @state.fontSize
+            onChange: @handleFontSize
+          }
+        )
+        (select \
+          {
+            key: 'font-family',
+            value: @state.fontFamilyIndex,
+            onChange: @handleFontFamily
+          },
+          @getFamilies().map((family, ix) => (option {value: ix}, family.name))
+        )
+        (label {for: 'italic'},
+          (input \
+            {
+              type: 'checkbox',
+              id: 'italic',
+              key: 'italic',
+              checked: @state.isItalic,
+              onChange: @handleItalic
+            },
+            "italic"
+          )
+        )
+        (label {for: 'bold'},
+          (input \
+            {
+              type: 'checkbox',
+              id: 'bold',
+              key: 'bold',
+              checked: @state.isBold,
+              onChange: @handleBold,
+            },
+            "bold"
+          )
+        )
+      )
 
   'stroke-width': React.createClass
     displayName: 'StrokeWidths'
