@@ -7,7 +7,8 @@ createToolComponent = ({displayName, getTool, imageName}) ->
   React.createClass
     displayName: displayName,
     componentWillMount: ->
-      if @props.isSelected and not @props.lc.tool
+      if @props.isSelected
+        # prevent race condition with options, tools getting set
         @props.lc.setTool(tool)
     render: ->
       {div, img} = React.DOM
