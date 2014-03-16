@@ -141,3 +141,47 @@
   left: 60px;
   height: 60px;
   background-color: purple; }
+
+.literally .lc-picker {
+  border-right: 1px solid black; }
+  .literally .lc-picker .toolbar-button {
+    height: 30px;
+    line-height: 30px;
+    padding: 0;
+    cursor: pointer;
+    text-align: center; }
+    .literally .lc-picker .toolbar-button:hover {
+      background-color: rgba(0, 0, 0, 0.1); }
+    .literally .lc-picker .toolbar-button.selected {
+      cursor: default;
+      background-color: rgba(0, 0, 0, 0.2); }
+    .literally .lc-picker .toolbar-button.disabled {
+      opacity: 0.5;
+      cursor: default; }
+      .literally .lc-picker .toolbar-button.disabled:hover {
+        background-color: transparent; }
+  .literally .lc-picker .thin-button {
+    width: 30px;
+    height: 30px;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    cursor: pointer;
+    float: left;
+    position: relative; }
+    .literally .lc-picker .thin-button:nth-child(2n) {
+      border-right: none;
+      width: 29px; }
+  .literally .lc-picker .fat-button {
+    clear: both;
+    width: 100%;
+    border-bottom: 1px solid black; }
+  .literally .lc-picker .widget img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto; }
+
+.literally .lc-options {
+  border-top: 1px solid black; }

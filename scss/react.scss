@@ -1,4 +1,27 @@
+$basicBorder: 1px solid black;
+
+@mixin hover-selected-and-disabled {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
 $pickerWidth: 60px;
+$pickerButtonSize: 30px;
 $optionsHeight: 60px;
 
 .literally {
@@ -25,4 +48,51 @@ $optionsHeight: 60px;
     right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
     background-color: purple;
   }
+}
+
+.literally .lc-picker {
+  border-right: $basicBorder;
+
+  .toolbar-button {
+    height: $pickerButtonSize;
+    line-height: $pickerButtonSize;
+    padding: 0;
+    cursor: pointer;
+    text-align: center;
+
+    @include hover-selected-and-disabled;
+  }
+
+  .thin-button {
+    width: $pickerWidth / 2;
+    height: $pickerButtonSize;
+    border-bottom: $basicBorder;
+    border-right: $basicBorder;
+    cursor: pointer;
+    float: left;
+    position: relative;
+
+    &:nth-child(2n) {
+      border-right: none;
+      width: $pickerWidth / 2 - 1px;
+    }
+  }
+
+  .fat-button {
+    clear: both;
+    width: 100%;
+    border-bottom: $basicBorder;
+  }
+
+  .widget {
+    img {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      margin: auto;
+    }
+  }
+}
+
+.literally .lc-options {
+  border-top: $basicBorder;
 }
