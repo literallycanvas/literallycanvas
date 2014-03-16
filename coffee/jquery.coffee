@@ -11,8 +11,8 @@ LC.init = (el, opts = {}) ->
   opts.sizeToContainer ?= true
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
-  unless 'toolClasses' of opts
-    opts.toolClasses = [
+  unless 'tools' of opts
+    opts.tools = [
       'Pencil',
       'Eraser',
       'Line',
@@ -28,8 +28,7 @@ LC.init = (el, opts = {}) ->
   unless $el.find('canvas').length
     $el.append('<canvas>')
   lc = new LC.LiterallyCanvas($el.find('canvas').get(0), opts)
-  # (new opts.toolClasses[0]()).select(lc)
-  LC.React.init(el, lc, opts.toolClasses, opts.imageURLPrefix)
+  LC.React.init(el, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)
