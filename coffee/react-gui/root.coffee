@@ -47,7 +47,8 @@ Picker = React.createClass
       ),
       if toolButtons.length % 2 != 0
         (div {className: 'toolbar-button thin-button disabled'})
-      UndoRedo({lc, root, imageURLPrefix})
+      UndoRedo({lc, imageURLPrefix}),
+      ClearButton({lc})
     )
 
 
@@ -107,6 +108,29 @@ RedoButton = React.createClass
     (div {
       className, onClick,
       dangerouslySetInnerHTML: {__html: "&rarr;"}})
+
+
+ClearButton = React.createClass
+  displayName: 'ClearButton'
+  getInitialState: -> {isEnabled: @props.lc.canUndo()}
+  componentDidMount: ->
+    @subscriber = => @setState {isEnabled: @props.lc.canUndo()}
+    @props.lc.on 'drawingChange', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('drawingChange', @subscriber)
+
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+
+    className = React.addons.classSet
+      'lc-clear': true
+      'toolbar-button': true
+      'fat-button': true
+      'disabled': not @state.isEnabled
+    onClick = if lc.canUndo() then (=> lc.clear()) else ->
+
+    (div {className, onClick}, 'Clear')
 
 
 Options = React.createClass

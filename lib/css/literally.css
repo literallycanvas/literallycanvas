@@ -129,7 +129,7 @@
   left: 0;
   bottom: 0;
   width: 60px;
-  background-color: teal; }
+  background-color: #ddd; }
 .literally canvas {
   top: 0;
   right: 0;
@@ -140,7 +140,7 @@
   bottom: 0;
   left: 60px;
   height: 60px;
-  background-color: purple; }
+  background-color: #ddd; }
 
 .literally .lc-picker {
   border-right: 1px solid black; }

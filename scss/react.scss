@@ -37,7 +37,7 @@ $optionsHeight: 60px;
 
   .lc-picker {
     top: 0; left: 0; bottom: 0; width: $pickerWidth;
-    background-color: teal;
+    background-color: #ddd;
   }
 
   canvas {
@@ -46,7 +46,7 @@ $optionsHeight: 60px;
 
   .lc-options {
     right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
-    background-color: purple;
+    background-color: #ddd;
   }
 }
 
