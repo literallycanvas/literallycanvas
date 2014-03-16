@@ -105,9 +105,19 @@ LC.React.UndoRedo = React.createClass
 
 LC.React.UndoButton = React.createClass
   displayName: 'UndoButton'
-  getInitialState: -> {isEnabled: @props.lc.canUndo()}
+
+  # We do this a lot, even though it reads as a React no-no.
+  # The reason is that '@props.lc' is a monolithic state bucket for
+  # Literally Canvas, and does not offer opportunities for encapsulation.
+  #
+  # However, this component really does read and write only to the 'undo'
+  # part of the state bucket, and we have to get react to update somehow, and
+  # we don't want the parent to have to worry about this, so it's in @state.
+  getState: -> {isEnabled: @props.lc.canUndo()}
+  getInitialState: -> @getState()
+
   componentDidMount: ->
-    @subscriber = => @setState {isEnabled: @props.lc.canUndo()}
+    @subscriber = => @setState @getState()
     @props.lc.on 'drawingChange', @subscriber
   componentWillUnmount: ->
     @props.lc.removeEventListener('drawingChange', @subscriber)
