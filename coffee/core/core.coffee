@@ -58,7 +58,7 @@ class LC.LiterallyCanvas
       fn e.detail
 
   removeEventLlistener: (name, fn) ->
-    @canvas.removeEventLlistener(name, fn)
+    @canvas.removeEventListener(name, fn)
 
   clientCoordsToDrawingCoords: (x, y) ->
     x: (x - @position.x) / @scale,

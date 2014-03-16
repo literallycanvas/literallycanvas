@@ -120,3 +120,5 @@ class LC.TextTool extends LC.Tool
 
   end:(x, y, lc) ->
     lc.saveShape(@currentShape)
+
+  optionsStyle: 'font'

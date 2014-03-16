@@ -130,9 +130,10 @@ LC.React.UndoButton = React.createClass
 
 LC.React.RedoButton = React.createClass
   displayName: 'RedoButton'
-  getInitialState: -> {isEnabled: @props.lc.canRedo()}
+  getState: -> {isEnabled: @props.lc.canRedo()}
+  getInitialState: -> @getState()
   componentDidMount: ->
-    @subscriber = => @setState {isEnabled: @props.lc.canRedo()}
+    @subscriber = => @setState @getState()
     @props.lc.on 'drawingChange', @subscriber
   componentWillUnmount: ->
     @props.lc.removeEventListener('drawingChange', @subscriber)
@@ -155,9 +156,10 @@ LC.React.RedoButton = React.createClass
 
 LC.React.ClearButton = React.createClass
   displayName: 'ClearButton'
-  getInitialState: -> {isEnabled: @props.lc.canUndo()}
+  getState: -> {isEnabled: @props.lc.canUndo()}
+  getInitialState: -> @getState()
   componentDidMount: ->
-    @subscriber = => @setState {isEnabled: @props.lc.canUndo()}
+    @subscriber = => @setState @getState()
     @props.lc.on 'drawingChange', @subscriber
   componentWillUnmount: ->
     @props.lc.removeEventListener('drawingChange', @subscriber)
@@ -178,6 +180,32 @@ LC.React.ClearButton = React.createClass
 
 LC.React.Options = React.createClass
   displayName: 'Options'
+  getState: -> {
+    style: @props.lc.tool?.optionsStyle
+    tool: @props.lc.tool
+  }
+  getInitialState: -> @getState()
+  componentDidMount: ->
+    @subscriber = => @setState @getState()
+    @props.lc.on 'toolChange', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('toolChange', @subscriber)
+
   render: ->
-    {div} = React.DOM
-    (div())
+    # style can be null; cast it as a string
+    style = "" + @state.style
+    LC.React.OptionsStyles[style]({tool: @state.tool})
+
+
+LC.React.OptionsStyles =
+  'font': React.createClass
+    displayName: 'FontOptions'
+    render: -> React.DOM.div({}, "FONT STYLES")
+
+  'stroke-width': React.createClass
+    displayName: 'StrokeWidthOptions'
+    render: -> React.DOM.div({}, "STROKE WIDTHS")
+
+  'null': React.createClass
+    displayName: 'NoOptions'
+    render: -> React.DOM.div()
