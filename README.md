@@ -4,7 +4,7 @@ Literally Canvas
 Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
 widget that currently supports a minimal set of drawing operations. You can
 draw, erase, set the color with the eyedropper, undo, redo, pan, and zoom. It
-depends on jQuery.
+depends on jQuery and React.js.
 
 Get help on our mailing list:
 [literallycanvas@librelist.com](literallycanvas@librelist.com) (just send it a
@@ -15,7 +15,7 @@ Usage
 
 [Full documentation](http://literallycanvas.github.com)
 
-Literally Canvas depends on jQuery (tested on 1.8.2).
+Literally Canvas depends on jQuery (tested on 1.8.2) and React.js (0.9.0).
 
 Add the files under `lib/css` and `lib/img` to your project, as well as the
 appropriate file from `lib/js`. Then do this:

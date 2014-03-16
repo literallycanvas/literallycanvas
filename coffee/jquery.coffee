@@ -19,23 +19,20 @@ LC.init = (el, opts = {}) ->
 
   $el = $(el)
   $el.addClass('literally')
-  $tbEl = $('<div class="toolbar">')
-
-  $el.append($tbEl)
 
   unless $el.find('canvas').length
     $el.append('<canvas>')
   lc = new LC.LiterallyCanvas($el.find('canvas').get(0), opts)
-  tb = new LC.Toolbar(lc, $tbEl, opts)
-  tb.selectTool(tb.tools[0])
+  (new opts.toolClasses[0]()).select(lc)
+  LC.React.init(el)
 
   if 'onInit' of opts
     opts.onInit(lc)
 
-  [lc, tb]
+  [lc]
 
 
 $.fn.literallycanvas = (opts = {}) ->
   @each (ix, el) =>
-    [el.literallycanvas, el.literallycanvasToolbar] = LC.init(el, opts)
+    [el.literallycanvas] = LC.init(el, opts)
   this

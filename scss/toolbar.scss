@@ -20,6 +20,8 @@
     background-color: rgb(220, 220, 220);
 
     &, * {
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
       box-sizing: border-box;
     }
   }

@@ -1,0 +1,28 @@
+$pickerWidth: 60px;
+$optionsHeight: 60px;
+
+.literally {
+  &, & * {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  & > * {
+    position: absolute;
+  }
+
+  .lc-picker {
+    top: 0; left: 0; bottom: 0; width: $pickerWidth;
+    background-color: teal;
+  }
+
+  canvas {
+    top: 0; right: 0; bottom: $optionsHeight; left: $pickerWidth;
+  }
+
+  .lc-options {
+    right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
+    background-color: purple;
+  }
+}
