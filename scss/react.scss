@@ -84,6 +84,33 @@ $optionsHeight: 60px;
     border-bottom: $basicBorder;
   }
 
+  .color-well-label {
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.2em;
+    height: auto;
+  }
+
+  .color-well-container {
+    width: $pickerButtonSize;
+    height: $pickerButtonSize;
+    border: $basicBorder;
+    clear: both;
+    margin: auto;
+
+    .color-well-checker {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-color: black;
+    }
+
+    .color-well-color {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+    }
+  }
+
   .lc-pick-tool {
     img {
       position: absolute;

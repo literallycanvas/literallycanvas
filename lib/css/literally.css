@@ -175,6 +175,28 @@
     clear: both;
     width: 100%;
     border-bottom: 1px solid black; }
+  .literally .lc-picker .color-well-label {
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.2em;
+    height: auto; }
+  .literally .lc-picker .color-well-container {
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+    clear: both;
+    margin: auto; }
+    .literally .lc-picker .color-well-container .color-well-checker {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-color: black; }
+    .literally .lc-picker .color-well-container .color-well-color {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0; }
   .literally .lc-picker .lc-pick-tool img {
     position: absolute;
     top: 0;

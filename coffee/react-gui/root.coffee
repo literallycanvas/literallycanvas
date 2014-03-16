@@ -21,6 +21,5 @@ LC.React.init = (root, lc, toolNames, imageURLPrefix) ->
   root.appendChild(optionsElement)
 
   React.renderComponent(
-    LC.React.Picker({lc, root, toolNames, imageURLPrefix}),
-    pickerElement);
-  React.renderComponent(LC.React.Options({lc, root}), optionsElement);
+    LC.React.Picker({lc, toolNames, imageURLPrefix}), pickerElement);
+  React.renderComponent(LC.React.Options({lc}), optionsElement);
