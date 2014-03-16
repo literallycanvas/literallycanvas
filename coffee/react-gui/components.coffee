@@ -12,7 +12,7 @@ createToolComponent = ({displayName, getTool, imageName}) ->
     render: ->
       {div, img} = React.DOM
       {imageURLPrefix, isSelected, onSelect} = @props
-      
+
       className = React.addons.classSet
         'lc-pick-tool': true
         'toolbar-button': true
@@ -64,3 +64,120 @@ LC.React.ToolButtons =
     displayName: 'Eyedropper'
     imageName: 'eyedropper'
     getTool: -> new LC.EyeDropper()
+
+
+LC.React.Picker = React.createClass
+  displayName: 'Picker'
+  getInitialState: -> {selectedToolIndex: 0}
+  render: ->
+    {div} = React.DOM
+    {toolButtons, lc, root, imageURLPrefix} = @props
+    (div {className: 'lc-picker-contents'},
+      toolButtons.map((ToolButton, ix) =>
+        (ToolButton \
+          {
+            lc, root, imageURLPrefix,
+            key: ix
+            isSelected: ix == @state.selectedToolIndex,
+            onSelect: (tool) =>
+              lc.setTool(tool)
+              @setState({selectedToolIndex: ix})
+          }
+        )
+      ),
+      if toolButtons.length % 2 != 0
+        (div {className: 'toolbar-button thin-button disabled'})
+      LC.React.UndoRedo({lc, imageURLPrefix}),
+      LC.React.ClearButton({lc})
+    )
+
+
+LC.React.UndoRedo = React.createClass
+  displayName: 'UndoRedo'
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+    (div {className: 'lc-undo-redo'},
+      LC.React.UndoButton({lc}),
+      LC.React.RedoButton({lc})
+    )
+
+
+LC.React.UndoButton = React.createClass
+  displayName: 'UndoButton'
+  getInitialState: -> {isEnabled: @props.lc.canUndo()}
+  componentDidMount: ->
+    @subscriber = => @setState {isEnabled: @props.lc.canUndo()}
+    @props.lc.on 'drawingChange', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('drawingChange', @subscriber)
+
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+
+    className = React.addons.classSet
+      'lc-undo': true
+      'toolbar-button': true
+      'thin-button': true
+      'disabled': not @state.isEnabled
+    onClick = if lc.canUndo() then (=> lc.undo()) else ->
+
+    (div {
+      className, onClick,
+      dangerouslySetInnerHTML: {__html: "&larr;"}})
+
+
+LC.React.RedoButton = React.createClass
+  displayName: 'RedoButton'
+  getInitialState: -> {isEnabled: @props.lc.canRedo()}
+  componentDidMount: ->
+    @subscriber = => @setState {isEnabled: @props.lc.canRedo()}
+    @props.lc.on 'drawingChange', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('drawingChange', @subscriber)
+
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+
+    className = React.addons.classSet
+      'lc-redo': true
+      'toolbar-button': true
+      'thin-button': true
+      'disabled': not @state.isEnabled
+    onClick = if lc.canRedo() then (=> lc.redo()) else ->
+
+    (div {
+      className, onClick,
+      dangerouslySetInnerHTML: {__html: "&rarr;"}})
+
+
+LC.React.ClearButton = React.createClass
+  displayName: 'ClearButton'
+  getInitialState: -> {isEnabled: @props.lc.canUndo()}
+  componentDidMount: ->
+    @subscriber = => @setState {isEnabled: @props.lc.canUndo()}
+    @props.lc.on 'drawingChange', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('drawingChange', @subscriber)
+
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+
+    className = React.addons.classSet
+      'lc-clear': true
+      'toolbar-button': true
+      'fat-button': true
+      'disabled': not @state.isEnabled
+    onClick = if lc.canUndo() then (=> lc.clear()) else ->
+
+    (div {className, onClick}, 'Clear')
+
+
+LC.React.Options = React.createClass
+  displayName: 'Options'
+  render: ->
+    {div} = React.DOM
+    (div())
