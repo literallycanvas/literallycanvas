@@ -57,6 +57,9 @@ class LC.LiterallyCanvas
     @canvas.addEventListener name, (e) ->
       fn e.detail
 
+  removeEventLlistener: (name, fn) ->
+    @canvas.removeEventLlistener(name, fn)
+
   clientCoordsToDrawingCoords: (x, y) ->
     x: (x - @position.x) / @scale,
     y: (y - @position.y) / @scale,
@@ -244,6 +247,7 @@ class LC.LiterallyCanvas
         if shape
           @execute(new LC.AddShapeAction(this, shape))
     @repaint(true)
+    @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->
     @loadSnapshot(JSON.parse(str))

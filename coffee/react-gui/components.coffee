@@ -12,7 +12,7 @@ createToolComponent = ({displayName, getTool, imageName}) ->
     render: ->
       {div, img} = React.DOM
       {imageURLPrefix, isSelected, onSelect} = @props
-
+      
       className = React.addons.classSet
         'lc-pick-tool': true
         'toolbar-button': true

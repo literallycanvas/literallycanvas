@@ -35,7 +35,7 @@
   <body>
     <div class="fs-container">
       <div class="literally">
-        <canvas></canvas>
+        <canvas id="original-canvas"></canvas>
       </div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
     </div>
@@ -69,7 +69,7 @@
           // preserveCanvasContents: true,
           watermarkImage: watermarkImage,
           onInit: function(lc) {
-            // lc.loadSnapshotJSON(localStorage.getItem('drawing'));
+            lc.loadSnapshotJSON(localStorage.getItem('drawing'));
 
             lc.on('drawingChange', function() {
               localStorage.setItem('drawing', lc.getSnapshotJSON());
