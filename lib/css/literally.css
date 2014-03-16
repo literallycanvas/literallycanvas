@@ -186,3 +186,25 @@
 
 .literally .lc-options {
   border-top: 1px solid black; }
+  .literally .lc-options .lc-stroke-widths {
+    margin: 0;
+    padding: 0; }
+    .literally .lc-options .lc-stroke-widths li {
+      list-style-type: none;
+      display: inline-block;
+      border-right: 1px solid black;
+      width: 60px;
+      height: 60px;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle; }
+      .literally .lc-options .lc-stroke-widths li:hover {
+        background-color: rgba(0, 0, 0, 0.1); }
+      .literally .lc-options .lc-stroke-widths li.selected {
+        cursor: default;
+        background-color: rgba(0, 0, 0, 0.2); }
+      .literally .lc-options .lc-stroke-widths li.disabled {
+        opacity: 0.5;
+        cursor: default; }
+        .literally .lc-options .lc-stroke-widths li.disabled:hover {
+          background-color: transparent; }

@@ -96,4 +96,23 @@ $optionsHeight: 60px;
 
 .literally .lc-options {
   border-top: $basicBorder;
+
+  .lc-stroke-widths {
+    margin: 0;
+    padding: 0;
+    li {
+      @include hover-selected-and-disabled;
+
+      list-style-type: none;
+      display: inline-block;
+      border-right: $basicBorder;
+
+      width: $optionsHeight;
+      height: $optionsHeight;
+
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
 }
