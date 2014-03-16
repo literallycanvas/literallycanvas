@@ -208,3 +208,10 @@
         cursor: default; }
         .literally .lc-options .lc-stroke-widths li.disabled:hover {
           background-color: transparent; }
+  .literally .lc-options .lc-font-settings {
+    line-height: 30px;
+    padding-left: 4px; }
+    .literally .lc-options .lc-font-settings input {
+      margin: 0 0.5em 0 0; }
+      .literally .lc-options .lc-font-settings input[type=checkbox] {
+        margin: 0 0.5em 0 0.5em; }

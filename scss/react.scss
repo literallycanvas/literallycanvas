@@ -115,4 +115,17 @@ $optionsHeight: 60px;
       vertical-align: middle;
     }
   }
+
+  .lc-font-settings {
+    line-height: $optionsHeight/2;
+    padding-left: 4px;
+
+    input {
+      margin: 0 0.5em 0 0;
+
+      &[type=checkbox] {
+        margin: 0 0.5em 0 0.5em;
+      }
+    }
+  }
 }

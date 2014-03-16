@@ -213,11 +213,13 @@ LC.React.OptionsStyles =
     getText: -> @props.lc.tool?.text
     getInitialState: -> {
       text: @getText()
-      fontSizeString: 18
       isItalic: false
       isBold: false
       fontFamilyIndex: 0
+      fontSizeIndex: 4
     }
+
+    getFontSizes: -> [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288]
 
     getFamilies: -> [
       {name: 'Sans-serif', value: '"Helvetica Neue",Helvetica,Arial,sans-serif'},
@@ -235,7 +237,7 @@ LC.React.OptionsStyles =
       for k of @state
         unless k of newState
           newState[k] = @state[k]
-      fontSize = parseInt(newState.fontSizeString or '18', 0)
+      fontSize = @getFontSizes()[newState.fontSizeIndex]
       items = []
       items.push('italic') if newState.isItalic
       items.push('bold') if newState.isBold
@@ -248,7 +250,7 @@ LC.React.OptionsStyles =
       @setState {text: @getText()}
 
     handleFontSize: (event) ->
-      newState = {fontSizeString: event.target.value}
+      newState = {fontSizeIndex: event.target.value}
       @setState(newState)
       @updateTool(newState)
 
@@ -272,7 +274,7 @@ LC.React.OptionsStyles =
     render: ->
       {div, input, select, option, br, label, span} = React.DOM
 
-      (div {className: 'lc-font'},
+      (div {className: 'lc-font-settings'},
         (input \
           {
             type: 'text'
@@ -286,18 +288,12 @@ LC.React.OptionsStyles =
         (br())
 
         "Size: "
-        (input \
-          {
-            type: 'text'
-            value: @state.fontSizeString
-            onChange: @handleFontSize
-          }
+        (select {value: @state.fontSizeIndex, onChange: @handleFontSize},
+          @getFontSizes().map((size, ix) =>
+            (option {value: ix, key: ix}, size)
+          )
         )
-        (select \
-          {
-            value: @state.fontFamilyIndex,
-            onChange: @handleFontFamily
-          },
+        (select {value: @state.fontFamilyIndex, onChange: @handleFontFamily},
           @getFamilies().map((family, ix) =>
             (option {value: ix, key: ix}, family.name)
           )
