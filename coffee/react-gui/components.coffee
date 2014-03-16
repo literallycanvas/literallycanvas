@@ -213,7 +213,7 @@ LC.React.OptionsStyles =
     getText: -> @props.lc.tool?.text
     getInitialState: -> {
       text: @getText()
-      fontSize: 18
+      fontSizeString: 18
       isItalic: false
       isBold: false
       fontFamilyIndex: 0
@@ -229,36 +229,45 @@ LC.React.OptionsStyles =
         '"Lucida Typewriter",monospace')},
     ]
 
-    updateTool: ->
+    # LC's text tool API is a little funky: it just has a 'font' string you can
+    # set.
+    updateTool: (newState = {}) ->
+      for k of @state
+        unless k of newState
+          newState[k] = @state[k]
+      fontSize = parseInt(newState.fontSizeString or '18', 0)
       items = []
-      items.push('italic') if @state.isItalic
-      items.push('bold') if @state.isBold
-      items.push("#{@state.fontSize}px")
-      items.push(@getFamilies()[@state.fontFamilyIndex].value)
+      items.push('italic') if newState.isItalic
+      items.push('bold') if newState.isBold
+      items.push("#{fontSize}px")
+      items.push(@getFamilies()[newState.fontFamilyIndex].value)
       @props.lc.tool.font = items.join(' ')
-      console.log @props.lc.tool.font
 
     handleText: (event) ->
       @props.lc.tool.text = event.target.value
       @setState {text: @getText()}
 
     handleFontSize: (event) ->
-      @setState {fontSize: parseInt(event.target.value, 10)}
-      @updateTool()
+      newState = {fontSizeString: event.target.value}
+      @setState(newState)
+      @updateTool(newState)
 
     handleFontFamily: (event) ->
-      console.log event.target.value
-      @setState {fontFamilyIndex: event.target.value}
-      console.log @state.fontFamilyIndex, '!'
-      @updateTool()
+      newState = {fontFamilyIndex: event.target.value}
+      @setState(newState)
+      @updateTool(newState)
 
     handleItalic: (event) ->
-      @setState {isItalic: !@state.isItalic}
-      @updateTool()
+      newState = {isItalic: !@state.isItalic}
+      @setState(newState)
+      @updateTool(newState)
 
     handleBold: (event) ->
-      @setState {isItalic: !@state.isBold}
-      @updateTool()
+      newState = {isBold: !@state.isBold}
+      @setState(newState)
+      @updateTool(newState)
+
+    componentDidMount: -> @updateTool()
 
     render: ->
       {div, input, select, option, br, label, span} = React.DOM
@@ -267,7 +276,6 @@ LC.React.OptionsStyles =
         (input \
           {
             type: 'text'
-            key: 'text-value'
             placeholder: 'Enter text here'
             value: @state.text
             onChange: @handleText
@@ -281,37 +289,35 @@ LC.React.OptionsStyles =
         (input \
           {
             type: 'text'
-            key: 'font-size'
-            value: @state.fontSize
+            value: @state.fontSizeString
             onChange: @handleFontSize
           }
         )
         (select \
           {
-            key: 'font-family',
             value: @state.fontFamilyIndex,
             onChange: @handleFontFamily
           },
-          @getFamilies().map((family, ix) => (option {value: ix}, family.name))
+          @getFamilies().map((family, ix) =>
+            (option {value: ix, key: ix}, family.name)
+          )
         )
-        (label {for: 'italic'},
+        (label {htmlFor: 'italic'},
           (input \
             {
               type: 'checkbox',
               id: 'italic',
-              key: 'italic',
               checked: @state.isItalic,
               onChange: @handleItalic
             },
             "italic"
           )
         )
-        (label {for: 'bold'},
+        (label {htmlFor: 'bold'},
           (input \
             {
               type: 'checkbox',
               id: 'bold',
-              key: 'bold',
               checked: @state.isBold,
               onChange: @handleBold,
             },
