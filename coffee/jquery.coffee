@@ -13,9 +13,14 @@ LC.init = (el, opts = {}) ->
   opts.watermarkImage ?= null
   unless 'toolClasses' of opts
     opts.toolClasses = [
-        LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
-        LC.TextWidget, LC.PanWidget, LC.EyeDropperWidget,
-    ]
+      'Pencil',
+      'Eraser',
+      'Line',
+      'Rectangle',
+      'Text',
+      'Pan',
+      'Eyedropper',
+    ].map (k) -> LC.React.ToolButtons[k]
 
   $el = $(el)
   $el.addClass('literally')
@@ -23,8 +28,8 @@ LC.init = (el, opts = {}) ->
   unless $el.find('canvas').length
     $el.append('<canvas>')
   lc = new LC.LiterallyCanvas($el.find('canvas').get(0), opts)
-  (new opts.toolClasses[0]()).select(lc)
-  LC.React.init(el)
+  # (new opts.toolClasses[0]()).select(lc)
+  LC.React.init(el, lc, opts.toolClasses, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)

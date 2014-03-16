@@ -175,13 +175,14 @@
     clear: both;
     width: 100%;
     border-bottom: 1px solid black; }
-  .literally .lc-picker .widget img {
+  .literally .lc-picker .lc-pick-tool img {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    margin: auto; }
+    margin: auto;
+    width: 80%; }
 
 .literally .lc-options {
   border-top: 1px solid black; }

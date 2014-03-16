@@ -28,7 +28,9 @@ class LC.LiterallyCanvas
     @isDragging = false
     @position = {x: 0, y: 0}
     @scale = 1.0
-    @tool = undefined
+    # GUI immediately replaces this value, but it's initialized so you can have
+    # something really simple
+    @tool = new LC.Pencil()  
 
     if @opts.preserveCanvasContents
       backgroundImage = new Image()
