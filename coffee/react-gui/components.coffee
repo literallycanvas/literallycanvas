@@ -209,7 +209,9 @@ LC.React.Options = React.createClass
 LC.React.OptionsStyles =
   'font': React.createClass
     displayName: 'FontOptions'
-    render: -> React.DOM.div({}, "FONT STYLES")
+    render: ->
+      {div, input} = React.DOM
+      div()
 
   'stroke-width': React.createClass
     displayName: 'StrokeWidths'
