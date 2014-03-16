@@ -88,10 +88,10 @@ LC.React.Picker = React.createClass
   getInitialState: -> {selectedToolIndex: 4}
   render: ->
     {div} = React.DOM
-    {toolButtons, lc, root, imageURLPrefix} = @props
+    {toolNames, lc, root, imageURLPrefix} = @props
     (div {className: 'lc-picker-contents'},
-      toolButtons.map((ToolButton, ix) =>
-        (ToolButton \
+      toolNames.map((name, ix) =>
+        (LC.React.ToolButtons[name] \
           {
             lc, root, imageURLPrefix,
             key: ix
@@ -102,7 +102,7 @@ LC.React.Picker = React.createClass
           }
         )
       ),
-      if toolButtons.length % 2 != 0
+      if toolNames.length % 2 != 0
         (div {className: 'toolbar-button thin-button disabled'})
       LC.React.UndoRedo({lc, imageURLPrefix}),
       LC.React.ClearButton({lc})

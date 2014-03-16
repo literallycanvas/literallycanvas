@@ -20,7 +20,7 @@ LC.init = (el, opts = {}) ->
       'Text',
       'Pan',
       'Eyedropper',
-    ].map (k) -> LC.React.ToolButtons[k]
+    ]
 
   $el = $(el)
   $el.addClass('literally')

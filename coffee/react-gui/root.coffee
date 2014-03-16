@@ -2,7 +2,7 @@ window.LC = LC or {}
 LC.React = LC.React or {}
 
 
-LC.React.init = (root, lc, toolButtons, imageURLPrefix) ->
+LC.React.init = (root, lc, toolNames, imageURLPrefix) ->
   canvasElement = null
   for child in root.children
     if child.tagName.toLocaleLowerCase() == 'canvas'
@@ -21,6 +21,6 @@ LC.React.init = (root, lc, toolButtons, imageURLPrefix) ->
   root.appendChild(optionsElement)
 
   React.renderComponent(
-    LC.React.Picker({lc, root, toolButtons, imageURLPrefix}),
+    LC.React.Picker({lc, root, toolNames, imageURLPrefix}),
     pickerElement);
   React.renderComponent(LC.React.Options({lc, root}), optionsElement);
