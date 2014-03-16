@@ -66,6 +66,22 @@ LC.React.ToolButtons =
     getTool: -> new LC.EyeDropper()
 
 
+LC.React.Mixins =
+  UpdateOnDrawingChangeMixin:
+    componentDidMount: ->
+      @subscriber = => @setState @getState()
+      @props.lc.on 'drawingChange', @subscriber
+    componentWillUnmount: ->
+      @props.lc.removeEventListener('drawingChange', @subscriber)
+
+  UpdateOnToolChangeMixin:
+    componentDidMount: ->
+      @subscriber = => @setState @getState()
+      @props.lc.on 'toolChange', @subscriber
+    componentWillUnmount: ->
+      @props.lc.removeEventListener('toolChange', @subscriber)
+
+
 LC.React.Picker = React.createClass
   displayName: 'Picker'
   getInitialState: -> {selectedToolIndex: 0}
@@ -115,12 +131,7 @@ LC.React.UndoButton = React.createClass
   # we don't want the parent to have to worry about this, so it's in @state.
   getState: -> {isEnabled: @props.lc.canUndo()}
   getInitialState: -> @getState()
-
-  componentDidMount: ->
-    @subscriber = => @setState @getState()
-    @props.lc.on 'drawingChange', @subscriber
-  componentWillUnmount: ->
-    @props.lc.removeEventListener('drawingChange', @subscriber)
+  mixins: [LC.React.Mixins.UpdateOnDrawingChangeMixin]
 
   render: ->
     {div} = React.DOM
@@ -142,11 +153,7 @@ LC.React.RedoButton = React.createClass
   displayName: 'RedoButton'
   getState: -> {isEnabled: @props.lc.canRedo()}
   getInitialState: -> @getState()
-  componentDidMount: ->
-    @subscriber = => @setState @getState()
-    @props.lc.on 'drawingChange', @subscriber
-  componentWillUnmount: ->
-    @props.lc.removeEventListener('drawingChange', @subscriber)
+  mixins: [LC.React.Mixins.UpdateOnDrawingChangeMixin]
 
   render: ->
     {div} = React.DOM
@@ -168,11 +175,7 @@ LC.React.ClearButton = React.createClass
   displayName: 'ClearButton'
   getState: -> {isEnabled: @props.lc.canUndo()}
   getInitialState: -> @getState()
-  componentDidMount: ->
-    @subscriber = => @setState @getState()
-    @props.lc.on 'drawingChange', @subscriber
-  componentWillUnmount: ->
-    @props.lc.removeEventListener('drawingChange', @subscriber)
+  mixins: [LC.React.Mixins.UpdateOnDrawingChangeMixin]
 
   render: ->
     {div} = React.DOM
@@ -195,11 +198,7 @@ LC.React.Options = React.createClass
     tool: @props.lc.tool
   }
   getInitialState: -> @getState()
-  componentDidMount: ->
-    @subscriber = => @setState @getState()
-    @props.lc.on 'toolChange', @subscriber
-  componentWillUnmount: ->
-    @props.lc.removeEventListener('toolChange', @subscriber)
+  mixins: [LC.React.Mixins.UpdateOnToolChangeMixin]
 
   render: ->
     # style can be null; cast it as a string
@@ -216,6 +215,8 @@ LC.React.OptionsStyles =
     displayName: 'StrokeWidths'
     getState: -> {strokeWidth: @props.lc.tool?.strokeWidth}
     getInitialState: -> @getState()
+    mixins: [LC.React.Mixins.UpdateOnToolChangeMixin]
+
     render: ->
       {ul, li, svg, circle} = React.DOM
       strokeWidths = [1, 2, 5, 10, 20, 40]
