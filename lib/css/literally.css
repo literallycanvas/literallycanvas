@@ -180,12 +180,23 @@
     text-align: center;
     line-height: 1.2em;
     height: auto; }
+    .literally .lc-picker .color-well-label:hover {
+      background-color: rgba(0, 0, 0, 0.1); }
+    .literally .lc-picker .color-well-label.selected {
+      cursor: default;
+      background-color: rgba(0, 0, 0, 0.2); }
+    .literally .lc-picker .color-well-label.disabled {
+      opacity: 0.5;
+      cursor: default; }
+      .literally .lc-picker .color-well-label.disabled:hover {
+        background-color: transparent; }
   .literally .lc-picker .color-well-container {
     width: 30px;
     height: 30px;
     border: 1px solid black;
     clear: both;
-    margin: auto; }
+    margin: auto;
+    overflow: visible; }
     .literally .lc-picker .color-well-container .color-well-checker {
       position: absolute;
       width: 50%;
@@ -197,6 +208,22 @@
       right: 0;
       bottom: 0;
       left: 0; }
+  .literally .lc-picker .color-picker-popup {
+    position: absolute;
+    z-index: 1;
+    left: 110%;
+    top: -100px;
+    background-color: white;
+    border: 1px solid black; }
+    .literally .lc-picker .color-picker-popup .color-row {
+      clear: both; }
+      .literally .lc-picker .color-picker-popup .color-row .color-cell {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        float: left; }
+        .literally .lc-picker .color-picker-popup .color-row .color-cell:hover, .literally .lc-picker .color-picker-popup .color-row .color-cell.selected {
+          border: 1px solid black; }
   .literally .lc-picker .lc-pick-tool img {
     position: absolute;
     top: 0;

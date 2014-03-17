@@ -85,6 +85,7 @@ $optionsHeight: 60px;
   }
 
   .color-well-label {
+    @include hover-selected-and-disabled;
     font-size: 10px;
     text-align: center;
     line-height: 1.2em;
@@ -97,6 +98,7 @@ $optionsHeight: 60px;
     border: $basicBorder;
     clear: both;
     margin: auto;
+    overflow: visible;
 
     .color-well-checker {
       position: absolute;
@@ -110,6 +112,32 @@ $optionsHeight: 60px;
       top: 0; right: 0; bottom: 0; left: 0;
     }
   }
+
+  .color-picker-popup {
+    position: absolute;
+    z-index: 1;
+    left: 110%;
+    top: -100px;
+    background-color: white;
+    border: $basicBorder;
+
+    .color-row {
+      clear: both;
+
+      .color-cell {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        float: left;
+
+        &:hover, &.selected {
+          border: $basicBorder;
+        }
+      }
+    }
+  }
+
+
 
   .lc-pick-tool {
     img {
