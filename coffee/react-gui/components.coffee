@@ -213,39 +213,11 @@ LC.React.ColorWell = React.createClass
   }
   getInitialState: -> @getState()
 
-  openPicker: -> @setState {isPickerVisible: true}
+  togglePicker: -> @setState {isPickerVisible: not @state.isPickerVisible}
   closePicker: -> @setState {isPickerVisible: false}
   setColor: (c) ->
     @props.lc.setColor(@props.colorName, c)
     @setState @getState()
-    @closePicker()
-
-  renderPicker: ->
-    return null unless @state.isPickerVisible
-    {div} = React.DOM
-
-    rows = [("hsl(0, 0%, #{i}%)" for i in [0..100] by 10)]
-    for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
-      rows.push("hsl(#{hue}, 100%, #{i}%)" for i in [10..90] by 8)
-
-    (div {className: 'color-picker-popup'},
-      rows.map((row, ix) =>
-        (div {className: 'color-row', style: {width: 20 * row.length}},
-          row.map((cellColor, ix2) =>
-            className = React.addons.classSet
-              'color-cell': true
-              'selected': @state.color == cellColor
-            (div \
-              {
-                className,
-                onClick: => @setColor(cellColor)
-                style: {backgroundColor: cellColor}
-              }
-            )
-          )
-        )
-      )
-    )
 
   render: ->
     {div, label} = React.DOM
@@ -260,7 +232,7 @@ LC.React.ColorWell = React.createClass
           className: React.addons.classSet
             'color-well-container': true
             'selected': @state.isPickerVisible
-          onClick: @openPicker
+          onClick: @togglePicker
           style: {
             backgroundColor: 'white'
             position: 'relative'
@@ -277,5 +249,33 @@ LC.React.ColorWell = React.createClass
           " "
         ),
         @renderPicker()
+      )
+    )
+
+  renderPicker: ->
+    {div} = React.DOM
+    return null unless @state.isPickerVisible
+
+    rows = [("hsl(0, 0%, #{i}%)" for i in [0..100] by 10)]
+    for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+      rows.push("hsl(#{hue}, 100%, #{i}%)" for i in [10..90] by 8)
+
+    (div {className: 'color-picker-popup'},
+      rows.map((row, ix) =>
+        (div {className: 'color-row', key: ix, style: {width: 20 * row.length}},
+          row.map((cellColor, ix2) =>
+            className = React.addons.classSet
+              'color-cell': true
+              'selected': @state.color == cellColor
+            (div \
+              {
+                className,
+                onClick: => @setColor(cellColor)
+                style: {backgroundColor: cellColor}
+                key: ix2
+              }
+            )
+          )
+        )
       )
     )
