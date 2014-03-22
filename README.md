@@ -21,14 +21,12 @@ First, [download the tarball](https://github.com/literallycanvas/literallycanvas
 or install with bower (`bower install literallycanvas`). Then do this:
 
 ```html
+<link href="/static/css/literally.css" rel="stylesheet">
 <div class="literally"><canvas></canvas></div>
+<script>$('.literally').literallycanvas();</script>
 ```
 
-```javascript
-$('.literally').literallycanvas();
-```
-
-(You may have to tell it where to find the assets. See
+(You may have to tell it where to find the images. See
 [the installation instructions](http://literallycanvas.com/installing.html) for more information.)
 
 For options and other information, see the [full documentation](http://literallycanvas.com).
