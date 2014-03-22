@@ -17,8 +17,8 @@ Usage
 
 Literally Canvas depends on jQuery (tested on 1.8.2).
 
-Add the files under `lib/css` and `lib/img` to your project, as well as the
-appropriate file from `lib/js`. Then do this:
+First, [download the tarball](https://github.com/literallycanvas/literallycanvas/archive/master.tar.gz)
+or install with bower (`bower install literallycanvas`). Then do this:
 
 ```html
 <div class="literally"><canvas></canvas></div>
@@ -28,26 +28,14 @@ appropriate file from `lib/js`. Then do this:
 $('.literally').literallycanvas();
 ```
 
-(You can actually leave out the `<canvas>` tag, but it's classier to write it
-in.)
+(You may have to tell it where to find the assets. See
+[the installation instructions](http://literallycanvas.com/installing.html) for more information.)
 
-For options and other information, see the [full
-documentation](http://literallycanvas.github.com).
+For options and other information, see the [full documentation](http://literallycanvas.com).
 
 The color picker is derived from (but not identical to) [this one by Stefan
 Petre](http://www.eyecon.ro/bootstrap-colorpicker/). We intend to replace it in
 the next version.
-
-Files
------
-
-```
-coffee/       Coffeescript source code
-js/           Javascript dependencies and temporary Javascript files
-lib/          Things you need to use Literally Canvas on your page
-LICENSE       The license. Spoiler: it's BSD!
-README.md     You are here
-```
 
 Developing
 ----------
