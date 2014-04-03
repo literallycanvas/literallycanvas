@@ -245,7 +245,6 @@ class LC.LiterallyCanvas
 
   loadSnapshotJSON: (str) ->
     @loadSnapshot(JSON.parse(str))
-    @repaint(true)
 
 
 # maybe add checks to these in the future to make sure you never double-undo or
