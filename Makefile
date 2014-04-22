@@ -7,7 +7,7 @@ livereload:
 
 clean:
 	rm -f gen/*.js
-	rm -f lib/js/literallycanvas.*.js
+	rm -f lib/js/literallycanvas*.js
 
 watch-js:
 	watch -n 2 make lib/js/literallycanvas.js
