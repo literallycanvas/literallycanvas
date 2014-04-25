@@ -1,6 +1,11 @@
 Download a release; this branch is in development.
 --------------------------------------------------
 
+Literally Canvas v0.4 will have an overhauled GUI implemented in React.js.
+
+If you're handy at setting up JavaScript repositories the standard way
+(package.json, browserify, etc.) then we would really appreciate your help.
+
 Literally Canvas
 ================
 
