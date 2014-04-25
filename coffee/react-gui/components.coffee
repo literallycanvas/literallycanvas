@@ -180,59 +180,42 @@ LC.React.ZoomButtons = React.createClass
     {div} = React.DOM
     {lc} = @props
     (div {className: 'lc-zoom'},
-      LC.React.ZoomOutButton({lc}),
-      LC.React.ZoomInButton({lc}),
+      createZoomButton(lc, 'out')(),
+      createZoomButton(lc, 'in')(),
     )
 
 
-LC.React.ZoomOutButton = React.createClass
-  displayName: 'ZoomOutButton'
+createZoomButton = (lc, inOrOut) -> React.createClass
+  displayName: if inOrOut == 'in' then 'ZoomInButton' else 'ZoomOutButton'
 
-  getState: -> {isEnabled: @props.lc.scale > 0.6}
+  getState: -> {
+    isEnabled: switch
+      when inOrOut == 'in' then lc.scale < 4.0
+      when inOrOut == 'out' then  lc.scale > 0.6
+  }
   getInitialState: -> @getState()
   componentDidMount: ->
     @subscriber = => @setState @getState()
-    @props.lc.on 'zoom', @subscriber
+    lc.on 'zoom', @subscriber
   componentWillUnmount: ->
-    @props.lc.removeEventListener('zoom', @subscriber)
+    lc.removeEventListener('zoom', @subscriber)
 
   render: ->
     {div} = React.DOM
-    {lc} = @props
 
-    className = React.addons.classSet
-      'lc-zoom-out': true
+    className = "lc-zoom-#{inOrOut} " + React.addons.classSet
       'toolbar-button': true
       'thin-button': true
       'disabled': not @state.isEnabled
-    onClick = if @state.isEnabled then (=> lc.zoom(-0.2)) else ->
+    zoom = switch
+      when inOrOut == 'in' then -> lc.zoom(0.2)
+      when inOrOut == 'out' then -> lc.zoom(-0.2)
+    onClick = if @state.isEnabled then zoom else ->
 
-    (div {className, onClick}, "-")
-
-
-LC.React.ZoomInButton = React.createClass
-  displayName: 'ZoomInButton'
-
-  getState: -> {isEnabled: @props.lc.scale < 4.0}
-  getInitialState: -> @getState()
-  componentDidMount: ->
-    @subscriber = => @setState @getState()
-    @props.lc.on 'zoom', @subscriber
-  componentWillUnmount: ->
-    @props.lc.removeEventListener('zoom', @subscriber)
-
-  render: ->
-    {div} = React.DOM
-    {lc} = @props
-
-    className = React.addons.classSet
-      'lc-zoom-in': true
-      'toolbar-button': true
-      'thin-button': true
-      'disabled': not @state.isEnabled
-    onClick = if @state.isEnabled then (=> lc.zoom(0.2)) else ->
-
-    (div {className, onClick}, "+")
+    (div {className, onClick}, switch
+      when inOrOut == 'in' then '+'
+      when inOrOut == 'out' then '-'
+    )
 
 
 LC.React.ClearButton = React.createClass
