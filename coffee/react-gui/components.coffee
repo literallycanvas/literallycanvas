@@ -6,6 +6,7 @@ createToolComponent = ({displayName, getTool, imageName}) ->
   tool = getTool()
   React.createClass
     displayName: displayName,
+    getDefaultProps: -> {isSelected: false, lc: null}
     componentWillMount: ->
       if @props.isSelected
         # prevent race condition with options, tools getting set
