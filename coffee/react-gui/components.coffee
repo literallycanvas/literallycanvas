@@ -105,6 +105,7 @@ LC.React.Picker = React.createClass
       if toolNames.length % 2 != 0
         (div {className: 'toolbar-button thin-button disabled'})
       LC.React.UndoRedo({lc, imageURLPrefix}),
+      LC.React.ZoomButtons({lc})
       LC.React.ClearButton({lc})
       LC.React.ColorPickers({lc})
     )
@@ -171,6 +172,67 @@ LC.React.RedoButton = React.createClass
     (div {
       className, onClick,
       dangerouslySetInnerHTML: {__html: "&rarr;"}})
+
+
+LC.React.ZoomButtons = React.createClass
+  displayName: 'ZoomButtons'
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+    (div {className: 'lc-zoom'},
+      LC.React.ZoomOutButton({lc}),
+      LC.React.ZoomInButton({lc}),
+    )
+
+
+LC.React.ZoomOutButton = React.createClass
+  displayName: 'ZoomOutButton'
+
+  getState: -> {isEnabled: @props.lc.scale > 0.6}
+  getInitialState: -> @getState()
+  componentDidMount: ->
+    @subscriber = => @setState @getState()
+    @props.lc.on 'zoom', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('zoom', @subscriber)
+
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+
+    className = React.addons.classSet
+      'lc-zoom-out': true
+      'toolbar-button': true
+      'thin-button': true
+      'disabled': not @state.isEnabled
+    onClick = if @state.isEnabled then (=> lc.zoom(-0.2)) else ->
+
+    (div {className, onClick}, "-")
+
+
+LC.React.ZoomInButton = React.createClass
+  displayName: 'ZoomInButton'
+
+  getState: -> {isEnabled: @props.lc.scale < 4.0}
+  getInitialState: -> @getState()
+  componentDidMount: ->
+    @subscriber = => @setState @getState()
+    @props.lc.on 'zoom', @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener('zoom', @subscriber)
+
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+
+    className = React.addons.classSet
+      'lc-zoom-in': true
+      'toolbar-button': true
+      'thin-button': true
+      'disabled': not @state.isEnabled
+    onClick = if @state.isEnabled then (=> lc.zoom(0.2)) else ->
+
+    (div {className, onClick}, "+")
 
 
 LC.React.ClearButton = React.createClass

@@ -1,4 +1,4 @@
-.PHONY: coffee clean all update-gh-pages
+.PHONY: reactcoffee clean all update-gh-pages
 
 all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js lib/js/literallycanvas.jquery.js lib/js/literallycanvas.jquery.min.js lib/css/literally.css
 
