@@ -17,6 +17,7 @@ LC.init = (el, opts = {}) ->
       'Eraser',
       'Line',
       'Rectangle',
+      'Circle',
       'Text',
       'Pan',
       'Eyedropper',

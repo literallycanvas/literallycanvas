@@ -63,6 +63,42 @@ class LC.Rectangle extends LC.Shape
     shape
 
 
+class LC.Circle extends LC.Shape
+
+  className: 'Circle'
+
+  constructor: (
+      @x, @y, @strokeWidth, @strokeColor, @fillColor, @width=0, @height=0) ->
+
+  draw: (ctx) ->
+    ctx.save()
+    halfWidth = Math.floor(@width / 2)
+    halfHeight = Math.floor(@height / 2)
+    centerX = @x + halfWidth
+    centerY = @y + halfHeight
+
+    ctx.translate(centerX, centerY)
+    ctx.scale(1, Math.abs(@height / @width))
+    ctx.beginPath()
+    ctx.arc(0, 0, Math.abs(halfWidth), 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.restore()
+
+    ctx.fillStyle = @fillColor
+    ctx.fill()
+    ctx.lineWidth = @strokeWidth
+    ctx.strokeStyle = @strokeColor
+    ctx.stroke()
+
+  jsonContent: ->
+    {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
+
+  @fromJSON: (lc, data) ->
+    new LC.Circle(
+      data.x, data.y, data.strokeWidth, data.strokeColor, data.fillColor,
+      data.width, data.height)
+
+
 class LC.Line extends LC.Shape
 
   className: 'Line'

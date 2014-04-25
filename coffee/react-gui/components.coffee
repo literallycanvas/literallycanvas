@@ -52,6 +52,11 @@ LC.React.ToolButtons =
     imageName: 'rectangle'
     getTool: -> new LC.RectangleTool()
 
+  Circle: createToolComponent
+    displayName: 'Circle'
+    imageName: 'circle'
+    getTool: -> new LC.CircleTool()
+
   Text: createToolComponent
     displayName: 'Text'
     imageName: 'text'
