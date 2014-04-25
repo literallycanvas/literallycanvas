@@ -1,6 +1,6 @@
 {
   "name": "literallycanvas",
-  "version": "0.3",
+  "version": "0.3.0",
   "homepage": "http://literallycanvas.com",
   "authors": [
     "irskep",
@@ -17,7 +17,8 @@
   ],
   "license": "BSD",
   "dependencies": {
-    "jquery": "*"
+    "jquery": "*",
+    "react": "0.10.0"
   },
   "ignore": [
     "**/.*",

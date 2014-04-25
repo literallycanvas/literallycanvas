@@ -28,7 +28,9 @@ class LC.LiterallyCanvas
     @isDragging = false
     @position = {x: 0, y: 0}
     @scale = 1.0
-    @tool = undefined
+    # GUI immediately replaces this value, but it's initialized so you can have
+    # something really simple
+    @tool = new LC.Pencil()  
 
     if @opts.preserveCanvasContents
       backgroundImage = new Image()
@@ -54,6 +56,9 @@ class LC.LiterallyCanvas
   on: (name, fn) ->
     @canvas.addEventListener name, (e) ->
       fn e.detail
+
+  removeEventListener: (name, fn) ->
+    @canvas.removeEventListener(name, fn)
 
   clientCoordsToDrawingCoords: (x, y) ->
     x: (x - @position.x) / @scale,
@@ -242,6 +247,7 @@ class LC.LiterallyCanvas
         if shape
           @execute(new LC.AddShapeAction(this, shape))
     @repaint(true)
+    @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->
     @loadSnapshot(JSON.parse(str))

@@ -11,31 +11,32 @@ LC.init = (el, opts = {}) ->
   opts.sizeToContainer ?= true
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
-  unless 'toolClasses' of opts
-    opts.toolClasses = [
-        LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget,
-        LC.TextWidget, LC.PanWidget, LC.EyeDropperWidget,
+  unless 'tools' of opts
+    opts.tools = [
+      'Pencil',
+      'Eraser',
+      'Line',
+      'Rectangle',
+      'Text',
+      'Pan',
+      'Eyedropper',
     ]
 
   $el = $(el)
   $el.addClass('literally')
-  $tbEl = $('<div class="toolbar">')
-
-  $el.append($tbEl)
 
   unless $el.find('canvas').length
     $el.append('<canvas>')
   lc = new LC.LiterallyCanvas($el.find('canvas').get(0), opts)
-  tb = new LC.Toolbar(lc, $tbEl, opts)
-  tb.selectTool(tb.tools[0])
+  LC.React.init(el, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)
 
-  [lc, tb]
+  lc
 
 
 $.fn.literallycanvas = (opts = {}) ->
   @each (ix, el) =>
-    [el.literallycanvas, el.literallycanvasToolbar] = LC.init(el, opts)
+    el.literallycanvas = LC.init(el, opts)
   this

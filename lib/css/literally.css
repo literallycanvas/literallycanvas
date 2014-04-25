@@ -118,171 +118,149 @@
     width: 100%;
     background-color: blue; }
 
-/* toolbar structure */
-.literally {
-  /* action/tool buttons */
-  /* buttons derived from
-   * https://github.com/necolas/css3-github-buttons/blob/master/gh-buttons.css
-   */
-  /* overrides extra padding on button elements in Firefox */
-  /* did my own button groups */ }
-  .literally .toolbar {
+.literally, .literally * {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; }
+.literally > * {
+  position: absolute; }
+.literally .lc-picker {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 60px;
+  background-color: #ddd; }
+.literally canvas {
+  top: 0;
+  right: 0;
+  bottom: 60px;
+  left: 60px; }
+.literally .lc-options {
+  right: 0;
+  bottom: 0;
+  left: 60px;
+  height: 60px;
+  background-color: #ddd; }
+
+.literally .lc-picker {
+  border-right: 1px solid black; }
+  .literally .lc-picker .toolbar-button {
+    height: 30px;
+    line-height: 30px;
+    padding: 0;
+    cursor: pointer;
+    text-align: center; }
+    .literally .lc-picker .toolbar-button:hover {
+      background-color: rgba(0, 0, 0, 0.1); }
+    .literally .lc-picker .toolbar-button.selected {
+      cursor: default;
+      background-color: rgba(0, 0, 0, 0.2); }
+    .literally .lc-picker .toolbar-button.disabled {
+      opacity: 0.5;
+      cursor: default; }
+      .literally .lc-picker .toolbar-button.disabled:hover {
+        background-color: transparent; }
+  .literally .lc-picker .thin-button {
+    width: 30px;
+    height: 30px;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    cursor: pointer;
+    float: left;
+    position: relative; }
+    .literally .lc-picker .thin-button:nth-child(2n) {
+      border-right: none;
+      width: 29px; }
+  .literally .lc-picker .fat-button {
+    clear: both;
+    width: 100%;
+    border-bottom: 1px solid black; }
+  .literally .lc-picker .color-well-label {
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.2em;
+    height: auto; }
+    .literally .lc-picker .color-well-label:hover {
+      background-color: rgba(0, 0, 0, 0.1); }
+    .literally .lc-picker .color-well-label.selected {
+      cursor: default;
+      background-color: rgba(0, 0, 0, 0.2); }
+    .literally .lc-picker .color-well-label.disabled {
+      opacity: 0.5;
+      cursor: default; }
+      .literally .lc-picker .color-well-label.disabled:hover {
+        background-color: transparent; }
+  .literally .lc-picker .color-well-container {
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+    clear: both;
+    margin: auto;
+    overflow: visible; }
+    .literally .lc-picker .color-well-container .color-well-checker {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-color: black; }
+    .literally .lc-picker .color-well-container .color-well-color {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0; }
+  .literally .lc-picker .color-picker-popup {
     position: absolute;
+    z-index: 1;
+    left: 110%;
+    top: -100px;
+    background-color: white;
+    border: 1px solid black; }
+    .literally .lc-picker .color-picker-popup .color-row {
+      clear: both; }
+      .literally .lc-picker .color-picker-popup .color-row .color-cell {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        float: left; }
+        .literally .lc-picker .color-picker-popup .color-row .color-cell:hover, .literally .lc-picker .color-picker-popup .color-row .color-cell.selected {
+          border: 1px solid black; }
+  .literally .lc-picker .lc-pick-tool img {
+    position: absolute;
+    top: 0;
+    right: 0;
     bottom: 0;
     left: 0;
-    width: 100%;
-    background-color: gainsboro; }
-    .literally .toolbar, .literally .toolbar * {
-      box-sizing: border-box; }
-  .literally .toolbar-row {
-    border-top: 1px solid #c8c8c8; }
-    .literally .toolbar-row:first-child {
-      width: 100%;
-      height: 30px; }
-    .literally .toolbar-row .toolbar-row-left, .literally .toolbar-row .toolbar-row-right {
-      margin-top: 3px;
-      margin-bottom: 3px;
-      height: 24px;
-      line-height: 24px; }
-    .literally .toolbar-row .toolbar-row-left {
-      float: left;
-      padding-left: 3px; }
-    .literally .toolbar-row .toolbar-row-right {
-      width: 13em;
-      float: right;
-      text-align: right;
-      padding-right: 3px; }
-    .literally .toolbar-row .color-square {
-      width: 24px;
-      height: 24px;
-      border-radius: 5px;
-      border: 1px solid #c8c8c8;
-      margin-right: 3px; }
-      .literally .toolbar-row .color-square.primary-picker, .literally .toolbar-row .color-square.secondary-picker {
-        float: left; }
-      .literally .toolbar-row .color-square.background-picker {
-        display: inline-block; }
-  .literally .tools {
-    float: left; }
-    .literally .tools .button {
-      text-align: center;
-      width: 30px;
-      height: 24px;
-      padding: 0;
-      position: relative; }
-      .literally .tools .button .tool-image-wrapper {
-        height: 24px;
-        padding-top: 3px; }
-        .literally .tools .button .tool-image-wrapper img {
-          width: 18px;
-          height: 18px;
-          vertical-align: top; }
-  .literally .zoom-display {
-    text-align: center;
-    width: 1.5em;
-    border-radius: 5px;
-    background-color: #333;
-    font-weight: bold;
-    color: white;
-    display: inline-block;
-    line-height: 14px;
-    padding: 5px 5px 5px 5px; }
-  .literally .tool-options-container {
-    display: inline-block; }
-  .literally .button {
-    display: inline-block;
-    padding-left: 5px;
-    padding-right: 5px;
-    text-align: center;
-    text-decoration: none;
-    text-shadow: 1px 1px 0 white;
-    color: #333;
-    white-space: nowrap;
-    cursor: pointer;
-    outline: none;
-    background-color: #f4f4f4;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f4f4f4), to(#ececec));
-    background-image: -moz-linear-gradient(#f4f4f4, #ececec);
-    background-image: -ms-linear-gradient(#f4f4f4, #ececec);
-    background-image: -o-linear-gradient(#f4f4f4, #ececec);
-    background-image: linear-gradient(#f4f4f4, #ececec);
-    background-color: #ececec;
-    -moz-background-clip: padding;
-    /* for Firefox 3.6 */
-    background-clip: padding-box;
-    border-radius: 5px;
-    /* IE hacks */
-    zoom: 1;
-    *display: inline; }
-  .literally .button:hover,
-  .literally .button:focus,
-  .literally .button:active,
-  .literally .button.active {
-    text-decoration: none;
-    text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.3);
-    color: #fff;
-    background-color: #599bdc;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#599bdc), to(#3072b3));
-    background-image: -moz-linear-gradient(#599bdc, #3072b3);
-    background-image: -ms-linear-gradient(#599bdc, #3072b3);
-    background-image: -o-linear-gradient(#599bdc, #3072b3);
-    background-image: linear-gradient(#599bdc, #3072b3); }
-  .literally .button:active,
-  .literally .button.active {
-    background-color: #3072b3;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#3072b3), to(#599bdc));
-    background-image: -moz-linear-gradient(#3072b3, #599bdc);
-    background-image: -ms-linear-gradient(#3072b3, #599bdc);
-    background-image: -o-linear-gradient(#3072b3, #599bdc);
-    background-image: linear-gradient(#3072b3, #599bdc); }
-  .literally .button::-moz-focus-inner {
-    padding: 0;
-    border: 0; }
-  .literally .button.danger {
-    color: white;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
-    background-color: #f37873;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f37873), to(#b33630));
-    background-image: -moz-linear-gradient(#f37873, #b33630);
-    background-image: -ms-linear-gradient(#f37873, #b33630);
-    background-image: -o-linear-gradient(#f37873, #b33630);
-    background-image: linear-gradient(#f37873, #b33630); }
-  .literally .button.danger:hover,
-  .literally .button.danger:focus,
-  .literally .button.danger:active {
-    border-color: #b53f3a;
-    border-bottom-color: #a0302a;
-    color: #fff;
-    background-color: #dc5f59;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dc5f59), to(#b33630));
-    background-image: -moz-linear-gradient(#dc5f59, #b33630);
-    background-image: -ms-linear-gradient(#dc5f59, #b33630);
-    background-image: -o-linear-gradient(#dc5f59, #b33630);
-    background-image: linear-gradient(#dc5f59, #b33630); }
-  .literally .button.danger:active,
-  .literally .button.danger.active {
-    border-color: #a0302a;
-    border-bottom-color: #bf4843;
-    background-color: #b33630;
-    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b33630), to(#dc5f59));
-    background-image: -moz-linear-gradient(#b33630, #dc5f59);
-    background-image: -ms-linear-gradient(#b33630, #dc5f59);
-    background-image: -o-linear-gradient(#b33630, #dc5f59);
-    background-image: linear-gradient(#b33630, #dc5f59); }
-  .literally .button-group {
-    display: inline-block; }
-    .literally .button-group .button {
-      border-radius: 0;
-      border-left: 1px solid #d4d4d4; }
-      .literally .button-group .button:first-child {
-        border-radius: 5px 0px 0px 5px;
-        border-left: none; }
-      .literally .button-group .button:last-child {
-        border-radius: 0px 5px 5px 0px; }
+    margin: auto;
+    width: 80%; }
 
-.tool-options-text {
-  font-size: 12px; }
-  .tool-options-text .instructions {
-    margin-left: 2em; }
-  .tool-options-text #font-size {
-    width: 30px; }
+.literally .lc-options {
+  border-top: 1px solid black; }
+  .literally .lc-options .lc-stroke-widths {
+    margin: 0;
+    padding: 0; }
+    .literally .lc-options .lc-stroke-widths li {
+      list-style-type: none;
+      display: inline-block;
+      border-right: 1px solid black;
+      width: 60px;
+      height: 60px;
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle; }
+      .literally .lc-options .lc-stroke-widths li:hover {
+        background-color: rgba(0, 0, 0, 0.1); }
+      .literally .lc-options .lc-stroke-widths li.selected {
+        cursor: default;
+        background-color: rgba(0, 0, 0, 0.2); }
+      .literally .lc-options .lc-stroke-widths li.disabled {
+        opacity: 0.5;
+        cursor: default; }
+        .literally .lc-options .lc-stroke-widths li.disabled:hover {
+          background-color: transparent; }
+  .literally .lc-options .lc-font-settings {
+    line-height: 30px;
+    padding-left: 4px; }
+    .literally .lc-options .lc-font-settings input {
+      margin: 0 0.5em 0 0; }
+      .literally .lc-options .lc-font-settings input[type=checkbox] {
+        margin: 0 0.5em 0 0.5em; }

@@ -9,10 +9,14 @@ class LC.Tool
   # called when the user finishes dragging
   end: (x, y, lc) ->
 
+  # kind of options GUI to display
+  optionsStyle: null
+
 
 class LC.StrokeTool extends LC.Tool
 
   constructor: -> @strokeWidth = 5
+  optionsStyle: 'stroke-width'
 
 
 class LC.RectangleTool extends LC.StrokeTool
@@ -97,6 +101,7 @@ class LC.EyeDropper extends LC.Tool
   continue: (x, y, lc) ->
     @readColor(x, y, lc)
 
+
 class LC.TextTool extends LC.Tool
 
   constructor: (@text = '', @font = 'bold 18px sans-serif') ->
@@ -116,3 +121,4 @@ class LC.TextTool extends LC.Tool
   end:(x, y, lc) ->
     lc.saveShape(@currentShape)
 
+  optionsStyle: 'font'

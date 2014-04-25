@@ -1,10 +1,21 @@
+Download a release; this branch is in development.
+--------------------------------------------------
+
+Literally Canvas v0.4 will have an overhauled GUI implemented in React.js.
+
+If you're handy at setting up JavaScript repositories the standard way
+(package.json, browserify, etc.) then we would really appreciate your help.
+
+If you make this branch work with bower, or can't, please email the list or
+file an issue, respectively. Then we can remove this caveat.
+
 Literally Canvas
 ================
 
 Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
 widget that currently supports a minimal set of drawing operations. You can
 draw, erase, set the color with the eyedropper, undo, redo, pan, and zoom. It
-depends on jQuery.
+depends on jQuery and React.js.
 
 Get help on our mailing list:
 [literallycanvas@librelist.com](literallycanvas@librelist.com) (just send it a
@@ -15,7 +26,7 @@ Usage
 
 [Full documentation](http://literallycanvas.github.com)
 
-Literally Canvas depends on jQuery (tested on 1.8.2).
+Literally Canvas depends on jQuery (tested on 1.8.2) and React.js (0.9.0).
 
 First, [download the tarball](https://github.com/literallycanvas/literallycanvas/archive/master.tar.gz)
 or install with bower (`bower install literallycanvas`). Then do this:

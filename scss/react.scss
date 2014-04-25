@@ -1,0 +1,186 @@
+$basicBorder: 1px solid black;
+
+@mixin hover-selected-and-disabled {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+$pickerWidth: 60px;
+$pickerButtonSize: 30px;
+$optionsHeight: 60px;
+
+.literally {
+  &, & * {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  & > * {
+    position: absolute;
+  }
+
+  .lc-picker {
+    top: 0; left: 0; bottom: 0; width: $pickerWidth;
+    background-color: #ddd;
+  }
+
+  canvas {
+    top: 0; right: 0; bottom: $optionsHeight; left: $pickerWidth;
+  }
+
+  .lc-options {
+    right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
+    background-color: #ddd;
+  }
+}
+
+.literally .lc-picker {
+  border-right: $basicBorder;
+
+  .toolbar-button {
+    height: $pickerButtonSize;
+    line-height: $pickerButtonSize;
+    padding: 0;
+    cursor: pointer;
+    text-align: center;
+
+    @include hover-selected-and-disabled;
+  }
+
+  .thin-button {
+    width: $pickerWidth / 2;
+    height: $pickerButtonSize;
+    border-bottom: $basicBorder;
+    border-right: $basicBorder;
+    cursor: pointer;
+    float: left;
+    position: relative;
+
+    &:nth-child(2n) {
+      border-right: none;
+      width: $pickerWidth / 2 - 1px;
+    }
+  }
+
+  .fat-button {
+    clear: both;
+    width: 100%;
+    border-bottom: $basicBorder;
+  }
+
+  .color-well-label {
+    @include hover-selected-and-disabled;
+    font-size: 10px;
+    text-align: center;
+    line-height: 1.2em;
+    height: auto;
+  }
+
+  .color-well-container {
+    width: $pickerButtonSize;
+    height: $pickerButtonSize;
+    border: $basicBorder;
+    clear: both;
+    margin: auto;
+    overflow: visible;
+
+    .color-well-checker {
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-color: black;
+    }
+
+    .color-well-color {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+    }
+  }
+
+  .color-picker-popup {
+    position: absolute;
+    z-index: 1;
+    left: 110%;
+    top: -100px;
+    background-color: white;
+    border: $basicBorder;
+
+    .color-row {
+      clear: both;
+
+      .color-cell {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        float: left;
+
+        &:hover, &.selected {
+          border: $basicBorder;
+        }
+      }
+    }
+  }
+
+
+
+  .lc-pick-tool {
+    img {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      margin: auto;
+      width: 80%;
+    }
+  }
+}
+
+.literally .lc-options {
+  border-top: $basicBorder;
+
+  .lc-stroke-widths {
+    margin: 0;
+    padding: 0;
+    li {
+      @include hover-selected-and-disabled;
+
+      list-style-type: none;
+      display: inline-block;
+      border-right: $basicBorder;
+
+      width: $optionsHeight;
+      height: $optionsHeight;
+
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
+
+  .lc-font-settings {
+    line-height: $optionsHeight/2;
+    padding-left: 4px;
+
+    input {
+      margin: 0 0.5em 0 0;
+
+      &[type=checkbox] {
+        margin: 0 0.5em 0 0.5em;
+      }
+    }
+  }
+}
