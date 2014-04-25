@@ -174,34 +174,24 @@ LC.React.RedoButton = React.createClass
       dangerouslySetInnerHTML: {__html: "&rarr;"}})
 
 
-LC.React.ZoomButtons = React.createClass
-  displayName: 'ZoomButtons'
-  render: ->
-    {div} = React.DOM
-    {lc} = @props
-    (div {className: 'lc-zoom'},
-      createZoomButton(lc, 'out')(),
-      createZoomButton(lc, 'in')(),
-    )
-
-
-createZoomButton = (lc, inOrOut) -> React.createClass
+createZoomButtonComponent = (inOrOut) -> React.createClass
   displayName: if inOrOut == 'in' then 'ZoomInButton' else 'ZoomOutButton'
 
   getState: -> {
     isEnabled: switch
-      when inOrOut == 'in' then lc.scale < 4.0
-      when inOrOut == 'out' then  lc.scale > 0.6
+      when inOrOut == 'in' then @props.lc.scale < 4.0
+      when inOrOut == 'out' then  @props.lc.scale > 0.6
   }
   getInitialState: -> @getState()
   componentDidMount: ->
     @subscriber = => @setState @getState()
-    lc.on 'zoom', @subscriber
+    @props.lc.on 'zoom', @subscriber
   componentWillUnmount: ->
-    lc.removeEventListener('zoom', @subscriber)
+    @props.lc.removeEventListener('zoom', @subscriber)
 
   render: ->
     {div} = React.DOM
+    {lc} = @props
 
     className = "lc-zoom-#{inOrOut} " + React.addons.classSet
       'toolbar-button': true
@@ -216,6 +206,16 @@ createZoomButton = (lc, inOrOut) -> React.createClass
       when inOrOut == 'in' then '+'
       when inOrOut == 'out' then '-'
     )
+
+
+ZoomOutButton = createZoomButtonComponent('out')
+ZoomInButton = createZoomButtonComponent('in')
+LC.React.ZoomButtons = React.createClass
+  displayName: 'ZoomButtons'
+  render: ->
+    {div} = React.DOM
+    {lc} = @props
+    (div {className: 'lc-zoom'}, ZoomOutButton({lc}), ZoomInButton({lc}))
 
 
 LC.React.ClearButton = React.createClass
