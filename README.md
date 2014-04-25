@@ -1,3 +1,6 @@
+Download a release; this branch is in development.
+--------------------------------------------------
+
 Literally Canvas
 ================
 
