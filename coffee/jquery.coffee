@@ -33,10 +33,10 @@ LC.init = (el, opts = {}) ->
   if 'onInit' of opts
     opts.onInit(lc)
 
-  [lc]
+  lc
 
 
 $.fn.literallycanvas = (opts = {}) ->
   @each (ix, el) =>
-    [el.literallycanvas] = LC.init(el, opts)
+    el.literallycanvas = LC.init(el, opts)
   this
