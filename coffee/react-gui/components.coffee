@@ -111,19 +111,8 @@ LC.React.Picker = React.createClass
     )
 
 
-LC.React.UndoRedo = React.createClass
-  displayName: 'UndoRedo'
-  render: ->
-    {div} = React.DOM
-    {lc} = @props
-    (div {className: 'lc-undo-redo'},
-      LC.React.UndoButton({lc}),
-      LC.React.RedoButton({lc})
-    )
-
-
-LC.React.UndoButton = React.createClass
-  displayName: 'UndoButton'
+createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
+  displayName: if undoOrRedo == 'undo' then 'UndoButton' else 'RedoButton'
 
   # We do this a lot, even though it reads as a React no-no.
   # The reason is that '@props.lc' is a monolithic state bucket for
@@ -132,7 +121,11 @@ LC.React.UndoButton = React.createClass
   # However, this component really does read and write only to the 'undo'
   # part of the state bucket, and we have to get react to update somehow, and
   # we don't want the parent to have to worry about this, so it's in @state.
-  getState: -> {isEnabled: @props.lc.canUndo()}
+  getState: -> {
+    isEnabled: switch
+      when undoOrRedo == 'undo' then @props.lc.canUndo()
+      when undoOrRedo == 'redo' then @props.lc.canRedo()
+  }
   getInitialState: -> @getState()
   mixins: [LC.React.Mixins.UpdateOnDrawingChangeMixin]
 
@@ -140,38 +133,27 @@ LC.React.UndoButton = React.createClass
     {div} = React.DOM
     {lc} = @props
 
-    className = React.addons.classSet
-      'lc-undo': true
+    className = "lc-#{undoOrRedo} " + React.addons.classSet
       'toolbar-button': true
       'thin-button': true
       'disabled': not @state.isEnabled
-    onClick = if lc.canUndo() then (=> lc.undo()) else ->
+    onClick = switch
+      when !@state.isEnabled then ->
+      when undoOrRedo == 'undo' then -> lc.undo()
+      when undoOrRedo == 'redo' then -> lc.redo()
 
-    (div {
-      className, onClick,
-      dangerouslySetInnerHTML: {__html: "&larr;"}})
+    (div {className, onClick, dangerouslySetInnerHTML: {
+      __html: if undoOrRedo == 'undo' then "&larr;" else "&rarr;"}})
 
 
-LC.React.RedoButton = React.createClass
-  displayName: 'RedoButton'
-  getState: -> {isEnabled: @props.lc.canRedo()}
-  getInitialState: -> @getState()
-  mixins: [LC.React.Mixins.UpdateOnDrawingChangeMixin]
-
+UndoButton = createUndoRedoButtonComponent('undo')
+RedoButton = createUndoRedoButtonComponent('redo')
+LC.React.UndoRedo = React.createClass
+  displayName: 'UndoRedo'
   render: ->
     {div} = React.DOM
     {lc} = @props
-
-    className = React.addons.classSet
-      'lc-redo': true
-      'toolbar-button': true
-      'thin-button': true
-      'disabled': not @state.isEnabled
-    onClick = if lc.canRedo() then (=> lc.redo()) else ->
-
-    (div {
-      className, onClick,
-      dangerouslySetInnerHTML: {__html: "&rarr;"}})
+    (div {className: 'lc-undo-redo'}, UndoButton({lc}), RedoButton({lc}))
 
 
 createZoomButtonComponent = (inOrOut) -> React.createClass
@@ -197,10 +179,10 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
       'toolbar-button': true
       'thin-button': true
       'disabled': not @state.isEnabled
-    zoom = switch
+    onClick = switch
+      when !@state.isEnabled then ->
       when inOrOut == 'in' then -> lc.zoom(0.2)
       when inOrOut == 'out' then -> lc.zoom(-0.2)
-    onClick = if @state.isEnabled then zoom else ->
 
     (div {className, onClick}, switch
       when inOrOut == 'in' then '+'
