@@ -6,6 +6,9 @@ Literally Canvas v0.4 will have an overhauled GUI implemented in React.js.
 If you're handy at setting up JavaScript repositories the standard way
 (package.json, browserify, etc.) then we would really appreciate your help.
 
+If you make this branch work with bower, or can't, please email the list or
+file an issue, respectively. Then we can remove this caveat.
+
 Literally Canvas
 ================
 
