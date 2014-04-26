@@ -34,6 +34,23 @@ class LC.RectangleTool extends LC.StrokeTool
     lc.saveShape(@currentShape)
 
 
+class LC.CircleTool extends LC.StrokeTool
+
+  # optionsStyle is inherited ('stroke-width') so it'll have a stroke width
+  # picker in the toolbar.
+  begin: (x, y, lc) ->
+    @currentShape = new LC.Circle(
+      x, y, @strokeWidth, lc.getColor('primary'), lc.getColor('secondary'))
+
+  continue: (x, y, lc) ->
+    @currentShape.width = x - @currentShape.x
+    @currentShape.height = y - @currentShape.y
+    lc.update(@currentShape)
+
+  end: (x, y, lc) ->
+    lc.saveShape(@currentShape)
+
+
 class LC.LineTool extends LC.StrokeTool
 
   begin: (x, y, lc) ->
