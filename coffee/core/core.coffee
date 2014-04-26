@@ -30,7 +30,7 @@ class LC.LiterallyCanvas
     @scale = 1.0
     # GUI immediately replaces this value, but it's initialized so you can have
     # something really simple
-    @tool = new LC.Pencil()  
+    @tool = new LC.Pencil()
 
     if @opts.preserveCanvasContents
       backgroundImage = new Image()
@@ -162,8 +162,8 @@ class LC.LiterallyCanvas
   update: (shape) ->
     @repaint(false)
     @transformed =>
-      shape.update(@ctx)
-    , @ctx
+      shape.update(@ctx, @bufferCtx)
+    , @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
@@ -176,12 +176,16 @@ class LC.LiterallyCanvas
 
   # Executes the given function after translating and scaling the context.
   # The context is restored to its original state before returning.
-  transformed: (fn, ctx) ->
-    ctx.save()
-    ctx.translate @position.x, @position.y
-    ctx.scale @scale, @scale
+  transformed: (fn, contexts...) ->
+    for ctx in contexts
+      ctx.save()
+      ctx.translate @position.x, @position.y
+      ctx.scale @scale, @scale
+
     fn()
-    ctx.restore()
+
+    for ctx in contexts
+      ctx.restore()
 
   clear: ->
     oldShapes = @shapes

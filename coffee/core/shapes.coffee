@@ -134,35 +134,46 @@ class LC.LinePathShape extends LC.Shape
       ).concat(@tail)
 
   draw: (ctx) ->
-    points = @smoothedPoints
+    @drawPoints(ctx, @smoothedPoints)
+
+  update: (ctx, buffer) ->
+    @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
+
+    if @tail
+      segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
+      segmentEnd = segmentStart + @segmentSize + 1
+      @drawPoints(buffer, @smoothedPoints.slice(segmentStart, segmentEnd))
+
+  drawPoints: (ctx, points) ->
     return unless points.length
 
-    ctx.strokeStyle = points[0].color
-    ctx.lineWidth = points[0].size
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.moveTo(points[0].x, points[0].y)
+    lastPoint = points[0]
+
     for point in points.slice(1)
-      ctx.lineTo(point.x, point.y)
-    ctx.stroke()
+      @drawLine(ctx, lastPoint, point)
+      lastPoint = point
 
-    # Polygonal Line Code
-    #poly = LC.toPoly(@smoothedPoints)
+  drawLine: (ctx, a, b) ->
+    pen = new LC.Point a.x, a.y, a.size, a.color
 
-    #_.each [fp, lp], (p) ->
-    #  ctx.beginPath()
-    #  ctx.fillStyle = p.color
-    #  ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2)
-    #  ctx.fill()
-    #  ctx.closePath()
+    if Math.abs(a.x - b.x) > Math.abs(a.y - b.y)
+      delta = [1, (b.y - a.y) / (b.x - a.x)]
+      dist = Math.floor(Math.abs(b.x - a.x))
+    else
+      delta = [(b.x - a.x) / (b.y - a.y), 1]
+      dist = Math.floor(Math.abs(b.y - a.y))
 
-    #ctx.beginPath(poly[0].x, poly[0].y)
-    #ctx.fillStyle = poly[0].color
-    #_.each poly, (point) ->
-    #  ctx.lineTo(point.x, point.y)
-    #ctx.closePath()
-    #ctx.fill()
-    
+    for i in [0..dist]
+      @drawPoint(ctx, pen)
+      pen.x = pen.x + delta[0]
+      pen.y = pen.y + delta[1]
+
+  drawPoint: (ctx, point) ->
+    ctx.beginPath()
+    ctx.arc(point.x, point.y, point.size / 2, 0, 2 * Math.PI, false)
+    ctx.fillStyle = point.color
+    ctx.fill()
+
 
 class LC.EraseLinePathShape extends LC.LinePathShape
 
