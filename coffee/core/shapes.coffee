@@ -147,6 +147,8 @@ class LC.LinePathShape extends LC.Shape
   drawPoints: (ctx, points) ->
     return unless points.length
 
+    ctx.lineCap = 'round'
+
     ctx.strokeStyle = points[0].color
     ctx.lineWidth = points[0].size
 
