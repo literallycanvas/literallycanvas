@@ -147,32 +147,16 @@ class LC.LinePathShape extends LC.Shape
   drawPoints: (ctx, points) ->
     return unless points.length
 
-    lastPoint = points[0]
+    ctx.strokeStyle = points[0].color
+    ctx.lineWidth = points[0].size
+
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, points[0].y)
 
     for point in points.slice(1)
-      @drawLine(ctx, lastPoint, point)
-      lastPoint = point
+        ctx.lineTo(point.x, point.y)
 
-  drawLine: (ctx, a, b) ->
-    pen = new LC.Point a.x, a.y, a.size, a.color
-
-    if Math.abs(a.x - b.x) > Math.abs(a.y - b.y)
-      delta = [1, (b.y - a.y) / (b.x - a.x)]
-      dist = Math.floor(Math.abs(b.x - a.x))
-    else
-      delta = [(b.x - a.x) / (b.y - a.y), 1]
-      dist = Math.floor(Math.abs(b.y - a.y))
-
-    for i in [0..dist]
-      @drawPoint(ctx, pen)
-      pen.x = pen.x + delta[0]
-      pen.y = pen.y + delta[1]
-
-  drawPoint: (ctx, point) ->
-    ctx.beginPath()
-    ctx.arc(point.x, point.y, point.size / 2, 0, 2 * Math.PI, false)
-    ctx.fillStyle = point.color
-    ctx.fill()
+    ctx.stroke()
 
 
 class LC.EraseLinePathShape extends LC.LinePathShape
