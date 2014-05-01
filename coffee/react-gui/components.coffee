@@ -241,11 +241,17 @@ LC.React.ColorWell = React.createClass
   }
   getInitialState: -> @getState()
 
+  # our color state tracks lc's
+  componentDidMount: ->
+    @subscriber = => @setState {color: @props.lc.colors[@props.colorName]}
+    @props.lc.on "#{@props.colorName}ColorChange", @subscriber
+  componentWillUnmount: ->
+    @props.lc.removeEventListener(
+      "#{@props.colorName}ColorChange", @subscriber)
+
   togglePicker: -> @setState {isPickerVisible: not @state.isPickerVisible}
   closePicker: -> @setState {isPickerVisible: false}
-  setColor: (c) ->
-    @props.lc.setColor(@props.colorName, c)
-    @setState @getState()
+  setColor: (c) -> @props.lc.setColor(@props.colorName, c)
 
   render: ->
     {div, label} = React.DOM
