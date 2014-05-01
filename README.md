@@ -1,6 +1,8 @@
 Download a release; this branch is in development.
 --------------------------------------------------
 
+Installation: http://literallycanvas.com/installing.html
+
 Literally Canvas v0.4 will have an overhauled GUI implemented in React.js.
 
 If you're handy at setting up JavaScript repositories the standard way
