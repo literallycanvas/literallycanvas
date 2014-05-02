@@ -161,9 +161,7 @@ class LC.LiterallyCanvas
   # The context is restored to its original state before returning.
   update: (shape) ->
     @repaint(false)
-    @transformed =>
-      shape.update(@ctx, @bufferCtx)
-    , @ctx, @bufferCtx
+    @transformed (=> shape.update(@ctx, @bufferCtx)), @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
