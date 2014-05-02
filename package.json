@@ -2,7 +2,7 @@
   "name": "literallycanvas",
   "version": "0.4.0",
   "description": "HTML5 drawing widget",
-  "main": "lib/js/literallycanvas.jquery.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,11 +20,13 @@
   "bugs": {
     "url": "https://github.com/literallycanvas/literallycanvas/issues"
   },
-  "dependencies": {
-    "envify": "~1.2.1",
-    "react": "~0.10.0",
+  "devDependencies": {
     "browserify": "~3.44.2",
-    "gulp": "~3.6.2",
+    "envify": "~1.2.1",
+    "gulp": "~3.6.2"
+  },
+  "dependencies": {
+    "react": "~0.10.0",
     "jquery": "~2.1.1"
   }
 }
