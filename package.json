@@ -1,0 +1,30 @@
+{
+  "name": "literallycanvas",
+  "version": "0.4.0",
+  "description": "HTML5 drawing widget",
+  "main": "lib/js/literallycanvas.jquery.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/literallycanvas/literallycanvas.git"
+  },
+  "keywords": [
+    "html5",
+    "canvas",
+    "drawing"
+  ],
+  "author": "Steve Johnson and Cameron Paul",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/literallycanvas/literallycanvas/issues"
+  },
+  "dependencies": {
+    "envify": "~1.2.1",
+    "react": "~0.10.0",
+    "browserify": "~3.44.2",
+    "gulp": "~3.6.2",
+    "jquery": "~2.1.1"
+  }
+}
