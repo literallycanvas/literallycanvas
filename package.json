@@ -25,7 +25,7 @@
     "envify": "~1.2.1",
     "gulp": "~3.6.2",
     "uglify-js": "~2.4.13",
-    "sass": "~0.5.0"
+    "gulp-ruby-sass": "~0.4.3"
   },
   "dependencies": {
     "react": "~0.10.0",
