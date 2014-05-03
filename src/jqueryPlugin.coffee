@@ -1,7 +1,7 @@
-window.LC = window.LC ? {}
+$ = require 'jquery'
 
 
-LC.init = (el, opts = {}) ->
+init = (el, opts = {}) ->
   opts.primaryColor ?= '#000'
   opts.secondaryColor ?= '#fff'
   opts.backgroundColor ?= 'transparent'
@@ -36,7 +36,11 @@ LC.init = (el, opts = {}) ->
   lc
 
 
-$.fn.literallycanvas = (opts = {}) ->
-  @each (ix, el) =>
-    el.literallycanvas = LC.init(el, opts)
-  this
+initJQueryPlugin = ->
+  $.fn.literallycanvas = (opts = {}) ->
+    @each (ix, el) =>
+      el.literallycanvas = LC.init(el, opts)
+    this
+
+
+module.exports = {init, initJQueryPlugin}

@@ -25,7 +25,14 @@
     "envify": "~1.2.1",
     "gulp": "~3.6.2",
     "uglify-js": "~2.4.13",
-    "gulp-ruby-sass": "~0.4.3"
+    "gulp-ruby-sass": "~0.4.3",
+    "coffeeify": "~0.6.0",
+    "reactify": "~0.13.1",
+    "vinyl-source-stream": "~0.1.1",
+    "watchify": "~0.8.3",
+    "gulp-uglify": "~0.2.1",
+    "streamify": "~0.2.3",
+    "gulp-streamify": "0.0.5"
   },
   "dependencies": {
     "react": "~0.10.0",
