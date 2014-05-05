@@ -1,23 +1,23 @@
-window.LC = LC or {}
-LC.React = LC.React or {}
+React = require 'React'
+createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 
 
-LC.React.Options = React.createClass
+Options = React.createClass
   displayName: 'Options'
   getState: -> {
     style: @props.lc.tool?.optionsStyle
     tool: @props.lc.tool
   }
   getInitialState: -> @getState()
-  mixins: [LC.React.Mixins.UpdateOnToolChangeMixin]
+  mixins: [createSetStateOnEventMixin('toolChange')]
 
   render: ->
     # style can be null; cast it as a string
     style = "" + @state.style
-    LC.React.OptionsStyles[style]({lc: @props.lc, tool: @state.tool})
+    OptionsStyles[style]({lc: @props.lc, tool: @state.tool})
 
 
-LC.React.OptionsStyles =
+OptionsStyles =
   'font': React.createClass
     displayName: 'FontOptions'
     getText: -> @props.lc.tool?.text
@@ -136,7 +136,7 @@ LC.React.OptionsStyles =
     displayName: 'StrokeWidths'
     getState: -> {strokeWidth: @props.lc.tool?.strokeWidth}
     getInitialState: -> @getState()
-    mixins: [LC.React.Mixins.UpdateOnToolChangeMixin]
+    mixins: [createSetStateOnEventMixin('toolChange')]
 
     render: ->
       {ul, li, svg, circle} = React.DOM
@@ -175,3 +175,6 @@ LC.React.OptionsStyles =
   'null': React.createClass
     displayName: 'NoOptions'
     render: -> React.DOM.div()
+
+
+module.exports = Options

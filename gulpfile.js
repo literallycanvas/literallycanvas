@@ -4,6 +4,7 @@ var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var uglify = require('gulp-uglify');
 var streamify = require('gulp-streamify')
+var rename = require('gulp-rename');
 
 var topFile = './src/index.coffee'
 
@@ -22,8 +23,9 @@ gulp.task('browserify', function() {
 
   return bundleStream
     .pipe(source(topFile))
-    .pipe(streamify(uglify()))
-    .pipe(gulp.dest('./lib/js/bundle.js'))
+    //.pipe(streamify(uglify()))
+    .pipe(rename('literallycanvas.jquery.js'))
+    .pipe(gulp.dest('./lib/js/'));
 })
 
 

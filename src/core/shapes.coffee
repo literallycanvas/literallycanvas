@@ -1,7 +1,44 @@
-window.LC = window.LC ? {}
+util = require './util'
+
+# this fn depends on Point, but LinePathShape depends on it, so it can't be
+# moved out of this file yet.
+bspline = (points, order) ->
+  if not order
+    return points
+  return bspline(_dual(_dual(_refine(points))), order - 1)
+
+_refine = (points) ->
+  points = [points[0]].concat(points).concat(util.last(points))
+  refined = []
+
+  index = 0
+  for point in points
+    refined[index * 2] = point
+    refined[index * 2 + 1] = _mid point, points[index + 1] if points[index + 1]
+    index += 1
+
+  return refined
+
+_dual = (points) ->
+  dualed = []
+
+  index = 0
+  for point in points
+    dualed[index] = _mid point, points[index + 1] if points[index + 1]
+    index += 1
+
+  return dualed
+
+_mid = (a, b) ->
+  return new Point a.x + ((b.x - a.x) / 2),
+                      a.y + ((b.y - a.y) / 2),
+                      a.size + ((b.size - a.size) / 2),
+                      a.color
 
 
-class LC.Shape
+shapes = {}
+
+shapes.Shape = class Shape
 
   className: null
 
@@ -17,7 +54,7 @@ class LC.Shape
   @fromJSON: (lc, data) -> raise "not implemented"
 
 
-class LC.ImageShape extends LC.Shape
+shapes.ImageShape = class ImageShape extends Shape
 
   className: 'ImageShape'
 
@@ -33,11 +70,11 @@ class LC.ImageShape extends LC.Shape
   @fromJSON: (lc, data) ->
     img = new Image()
     img.src = data.imageSrc
-    i = new LC.ImageShape(data.x, data.y, img)
+    i = new ImageShape(data.x, data.y, img)
     i
 
 
-class LC.Rectangle extends LC.Shape
+shapes.Rectangle = class Rectangle extends Shape
 
   className: 'Rectangle'
 
@@ -56,14 +93,14 @@ class LC.Rectangle extends LC.Shape
     {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
 
   @fromJSON: (lc, data) ->
-    shape = new LC.Rectangle(
+    shape = new Rectangle(
       data.x, data.y, data.strokeWidth, data.strokeColor, data.fillColor)
     shape.width = data.width
     shape.height = data.height
     shape
 
 
-class LC.Line extends LC.Shape
+shapes.Line = class Line extends Shape
 
   className: 'Line'
 
@@ -82,14 +119,14 @@ class LC.Line extends LC.Shape
     {@x1, @y1, @x2, @y2, @strokeWidth, @color}
 
   @fromJSON: (lc, data) ->
-    shape = new LC.Line(
+    shape = new Rectangle(
       data.x1, data.y1, data.x2, data.y2, data.strokeWidth, data.color)
     shape
 
 
-class LC.LinePathShape extends LC.Shape
+shapes.LinePath = class LinePath extends Shape
 
-  className: 'LinePathShape'
+  className: 'LinePath'
 
   constructor: (_points = [], @order = 3, @tailSize = 3)->
     # The number of smoothed points generated for each point added
@@ -107,9 +144,9 @@ class LC.LinePathShape extends LC.Shape
     {@order, @tailSize, @points}
 
   @fromJSON: (lc, data) ->
-    points = (new LC.Point.fromJSON(lc, pointData) \
+    points = (new Point.fromJSON(lc, pointData) \
               for pointData in data.points)
-    new LC.LinePathShape(points, data.order, data.tailSize)
+    new LinePath(points, data.order, data.tailSize)
 
   addPoint: (point) ->
     # Brush Variance Code
@@ -119,10 +156,10 @@ class LC.LinePathShape extends LC.Shape
     @points.push(point)
 
     if not @smoothedPoints or @points.length < @sampleSize
-      @smoothedPoints = LC.bspline(@points, @order)
+      @smoothedPoints = bspline(@points, @order)
     else
-      @tail = LC.util.last(
-        LC.bspline(LC.util.last(@points, @sampleSize), @order),
+      @tail = util.last(
+        bspline(util.last(@points, @sampleSize), @order),
                    @segmentSize * @tailSize)
 
       # Remove the last @tailSize - 1 segments from @smoothedPoints
@@ -164,9 +201,9 @@ class LC.LinePathShape extends LC.Shape
     #ctx.fill()
     
 
-class LC.EraseLinePathShape extends LC.LinePathShape
+shapes.EraseLinePath = class EraseLinePath extends LinePath
 
-  className: 'EraseLinePathShape'
+  className: 'EraseLinePath'
 
   draw: (ctx) ->
     ctx.save()
@@ -180,14 +217,14 @@ class LC.EraseLinePathShape extends LC.LinePathShape
     super(ctx)
     ctx.restore()
 
-  # same as LinePathShape
+  # same as LinePath
   @fromJSON: (lc, data) ->
-    points = (new LC.Point.fromJSON(lc, pointData) \
+    points = (new Point.fromJSON(lc, pointData) \
               for pointData in data.points)
-    new LC.EraseLinePathShape(points, data.order, data.tailSize)
+    new EraseLinePath(points, data.order, data.tailSize)
 
 
-class LC.Point
+shapes.Point = class Point extends Shape
 
   className: 'Point'
 
@@ -197,12 +234,12 @@ class LC.Point
 
   jsonContent: -> {@x, @y, @size, @color}
   @fromJSON: (lc, data) ->
-    new LC.Point(data.x, data.y, data.size, data.color)
+    new Point(data.x, data.y, data.size, data.color)
 
 
-class LC.TextShape extends LC.Shape
+shapes.Text = class Text extends Shape
 
-  className: 'TextShape'
+  className: 'Text'
 
   constructor: (@x, @y, @text, @color, @font = '18px sans-serif;') ->
   draw: (ctx) -> 
@@ -211,4 +248,7 @@ class LC.TextShape extends LC.Shape
     ctx.fillText(@text, @x, @y)
   jsonContent: -> {@x, @y, @text, @color, @font}
   @fromJSON: (lc, data) ->
-    new LC.TextShape(data.x, data.y, data.text, data.color, data.font)
+    new Text(data.x, data.y, data.text, data.color, data.font)
+
+
+module.exports = shapes

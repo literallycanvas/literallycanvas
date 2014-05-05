@@ -32,7 +32,8 @@
     "watchify": "~0.8.3",
     "gulp-uglify": "~0.2.1",
     "streamify": "~0.2.3",
-    "gulp-streamify": "0.0.5"
+    "gulp-streamify": "0.0.5",
+    "gulp-rename": "~1.2.0"
   },
   "dependencies": {
     "react": "~0.10.0",

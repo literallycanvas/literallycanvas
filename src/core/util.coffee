@@ -1,9 +1,6 @@
-window.LC = window.LC ? {}
-
-
 slice = Array.prototype.slice
 
-LC.util =
+module.exports =
   last: (array, n = null) ->
     if n
       return slice.call(array, Math.max(array.length - n, 0))
