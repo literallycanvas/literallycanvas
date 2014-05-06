@@ -144,8 +144,7 @@ shapes.LinePath = class LinePath extends Shape
     {@order, @tailSize, @points}
 
   @fromJSON: (lc, data) ->
-    points = (new Point.fromJSON(lc, pointData) \
-              for pointData in data.points)
+    points = (Point.fromJSON(lc, pointData.data) for pointData in data.points)
     new LinePath(points, data.order, data.tailSize)
 
   addPoint: (point) ->
@@ -219,8 +218,7 @@ shapes.EraseLinePath = class EraseLinePath extends LinePath
 
   # same as LinePath
   @fromJSON: (lc, data) ->
-    points = (new Point.fromJSON(lc, pointData) \
-              for pointData in data.points)
+    points = (Point.fromJSON(lc, pointData.data) for pointData in data.points)
     new EraseLinePath(points, data.order, data.tailSize)
 
 

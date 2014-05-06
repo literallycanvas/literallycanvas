@@ -246,10 +246,14 @@ module.exports = class LiterallyCanvas
 
     @shapes = []
     for shapeRepr in snapshot.shapes
-      if shapeRepr.className of LC
+      if shapeRepr.className of shapes
         shape = shapes[shapeRepr.className].fromJSON(this, shapeRepr.data)
         if shape
           @execute(new actions.AddShapeAction(this, shape))
+        else
+          console.log 'Unreadable shape:', shapeRepr
+      else
+        console.log "Unknown shape:", shapeRepr.className
     @repaint(true)
     @trigger('drawingChange', {})
 
