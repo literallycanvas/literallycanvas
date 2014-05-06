@@ -1,3 +1,5 @@
+$ = window.$
+
 coordsForTouchEvent = ($el, e) ->
   tx = e.originalEvent.changedTouches[0].pageX
   ty = e.originalEvent.changedTouches[0].pageY

@@ -1,3 +1,4 @@
+$ = window.$
 slice = Array.prototype.slice
 
 module.exports =

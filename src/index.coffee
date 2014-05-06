@@ -38,8 +38,8 @@ init = (el, opts = {}) ->
   lc
 
 
-initJQueryPlugin = ->
-  $.fn.literallycanvas = (opts = {}) ->
+registerJQueryPlugin = (_$) ->
+  _$.fn.literallycanvas = (opts = {}) ->
     @each (ix, el) =>
       el.literallycanvas = init(el, opts)
     this
@@ -47,7 +47,7 @@ initJQueryPlugin = ->
 
 # non-browserify compatibility
 window.LC = {init}
-initJQueryPlugin()
+registerJQueryPlugin($)
 
 
-module.exports = {init, initJQueryPlugin}
+module.exports = {init, registerJQueryPlugin}
