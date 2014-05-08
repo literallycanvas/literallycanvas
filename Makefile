@@ -1,6 +1,9 @@
-.PHONY: clean all update-gh-pages lib/js/literallycanvas.js lib/js/literallycanvas.min.js lib/js/literallycanvas.jquery.js lib/js/literallycanvas.jquery.min.js lib/css/literally.css
+.PHONY: clean all update-gh-pages gulp
 
-all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js lib/js/literallycanvas.jquery.js lib/js/literallycanvas.jquery.min.js lib/css/literally.css
+all: gulp
+
+gulp:
+	gulp
 
 livereload:
 	livereload . -p 33233
@@ -8,20 +11,6 @@ livereload:
 clean:
 	rm -f gen/*.js
 	rm -f lib/js/literallycanvas*.js
-
-lib/js/literallycanvas.jquery.js:
-	uglifyjs gen/core/*.js gen/react/*.js gen/jquery.js \
-		-o lib/js/literallycanvas.jquery.js --beautify
-
-lib/js/literallycanvas.jquery.min.js:
-	uglifyjs gen/core/*.js gen/react/*.js gen/jquery.js \
-		-o lib/js/literallycanvas.jquery.min.js --compress
-
-lib/js/literallycanvas.js:
-	uglifyjs gen/core/*.js -o lib/js/literallycanvas.js --beautify
-
-lib/js/literallycanvas.min.js:
-	uglifyjs gen/core/*.js -o lib/js/literallycanvas.min.js --compress
 
 serve:
 	python -m SimpleHTTPServer 8000 .
