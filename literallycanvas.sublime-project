@@ -4,7 +4,10 @@
 		{
 			"follow_symlinks": true,
 			"path": ".",
-      "folder_exclude_patterns": [".sass-cache", "gen"],
+      "folder_exclude_patterns": [
+        ".sass-cache", "gen", "lib", "demo/*.js", "demo/js", "demo/css",
+        "literallycanvas", "node_modules"
+      ],
       "file_exclude_patterns": ["*~"]
 		},
 	]

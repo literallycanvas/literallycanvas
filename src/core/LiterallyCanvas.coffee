@@ -1,10 +1,14 @@
-window.LC = window.LC ? {}
+actions = require './actions'
+bindEvents = require './bindEvents'
+math = require './math'
+shapes = require './shapes'
+{Pencil} = require './tools'
+util = require './util'
 
-
-class LC.LiterallyCanvas
+module.exports = class LiterallyCanvas
 
   constructor: (@canvas, @opts) ->
-    LC.bindEvents(this, @canvas, @opts.keyboardShortcuts)
+    bindEvents(this, @canvas, @opts.keyboardShortcuts)
 
     @colors =
       primary: @opts.primaryColor or '#000'
@@ -30,18 +34,18 @@ class LC.LiterallyCanvas
     @scale = 1.0
     # GUI immediately replaces this value, but it's initialized so you can have
     # something really simple
-    @tool = new LC.Pencil()
+    @tool = new Pencil()
 
     if @opts.preserveCanvasContents
       backgroundImage = new Image()
       backgroundImage.src = @canvas.toDataURL()
       backgroundImage.onload = => @repaint()
-      @backgroundShapes.push(new LC.ImageShape(0, 0, backgroundImage))
+      @backgroundShapes.push(new shapes.ImageShape(0, 0, backgroundImage))
 
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
     if @opts.sizeToContainer
-      LC.util.sizeToContainer(@canvas, => @repaint())
+      util.sizeToContainer(@canvas, => @repaint())
 
     @repaint()
 
@@ -100,7 +104,7 @@ class LC.LiterallyCanvas
   getColor: (name) -> @colors[name]
 
   saveShape: (shape) ->
-    @execute(new LC.AddShapeAction(this, shape))
+    @execute(new actions.AddShapeAction(this, shape))
     @trigger('shapeSave', {shape: shape})
     @trigger('drawingChange', {shape: shape})
 
@@ -119,9 +123,9 @@ class LC.LiterallyCanvas
     @scale = Math.min(@scale, 4.0)
     @scale = Math.round(@scale * 100) / 100
 
-    @position.x = LC.scalePositionScalar(
+    @position.x = math.scalePositionScalar(
       @position.x, @canvas.width, oldScale, @scale)
-    @position.y = LC.scalePositionScalar(
+    @position.y = math.scalePositionScalar(
       @position.y, @canvas.height, oldScale, @scale)
 
     @repaint()
@@ -188,7 +192,7 @@ class LC.LiterallyCanvas
   clear: ->
     oldShapes = @shapes
     newShapes = []
-    @execute(new LC.ClearAction(this, oldShapes, newShapes))
+    @execute(new actions.ClearAction(this, oldShapes, newShapes))
     @repaint()
     @trigger('clear', null)
     @trigger('drawingChange', {})
@@ -231,7 +235,7 @@ class LC.LiterallyCanvas
 
   canvasWithBackground: (backgroundImageOrCanvas) ->
     @repaint(true, true)
-    LC.util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
+    util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
   getSnapshot: -> {shapes: (shape.toJSON() for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
@@ -244,41 +248,16 @@ class LC.LiterallyCanvas
 
     @shapes = []
     for shapeRepr in snapshot.shapes
-      if shapeRepr.className of LC
-        shape = LC[shapeRepr.className].fromJSON(this, shapeRepr.data)
+      if shapeRepr.className of shapes
+        shape = shapes[shapeRepr.className].fromJSON(this, shapeRepr.data)
         if shape
-          @execute(new LC.AddShapeAction(this, shape))
+          @execute(new actions.AddShapeAction(this, shape))
+        else
+          console.log 'Unreadable shape:', shapeRepr
+      else
+        console.log "Unknown shape:", shapeRepr.className
     @repaint(true)
     @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->
     @loadSnapshot(JSON.parse(str))
-
-
-# maybe add checks to these in the future to make sure you never double-undo or
-# double-redo
-class LC.ClearAction
-
-  constructor: (@lc, @oldShapes, @newShapes) ->
-
-  do: ->
-    @lc.shapes = @newShapes
-    @lc.repaint()
-
-  undo: ->
-    @lc.shapes = @oldShapes
-    @lc.repaint()
-
-
-class LC.AddShapeAction
-
-  constructor: (@lc, @shape) ->
-
-  do: ->
-    @ix = @lc.shapes.length
-    @lc.shapes.push(@shape)
-    @lc.repaint()
-
-  undo: ->
-    @lc.shapes.pop(@ix)
-    @lc.repaint()

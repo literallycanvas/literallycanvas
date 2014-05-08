@@ -2,7 +2,7 @@
 from livereload.task import Task
 from livereload.compiler import shell
 
-Task.add('coffee/*.coffee', shell('make clean all'))
-Task.add('coffee/*/*.coffee', shell('make clean all'))
-Task.add('scss/*.scss', shell('make lib/css/literally.css'))
-Task.add('demo/*.html', shell('make clean all'))
+Task.add('src/*.coffee', shell('gulp browserify'))
+Task.add('src/*/*.coffee', shell('gulp browserify'))
+Task.add('scss/*.scss', shell('gulp sass'))
+Task.add('demo/*.html', shell('gulp'))

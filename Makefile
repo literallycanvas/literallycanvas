@@ -1,6 +1,9 @@
-.PHONY: reactcoffee jquerycoffee corecoffee clean all update-gh-pages
+.PHONY: clean all update-gh-pages gulp
 
-all: lib/js/literallycanvas.js lib/js/literallycanvas.min.js lib/js/literallycanvas.jquery.js lib/js/literallycanvas.jquery.min.js lib/css/literally.css
+all: gulp
+
+gulp:
+	gulp
 
 livereload:
 	livereload . -p 33233
@@ -8,41 +11,6 @@ livereload:
 clean:
 	rm -f gen/*.js
 	rm -f lib/js/literallycanvas*.js
-
-watch-js:
-	watch -n 2 make lib/js/literallycanvas.js
-
-watch-css:
-	sass --watch scss/literally.scss:lib/css/literally.css
-
-lib/css/literally.css: scss/*.scss
-	sass scss/literally.scss:lib/css/literally.css
-
-corecoffee: coffee/core/*.coffee
-	mkdir -p gen/core
-	coffee -o gen/core -c coffee/core
-
-reactcoffee: coffee/react-gui/*.coffee
-	mkdir -p gen/react
-	coffee -o gen/react -c coffee/react-gui
-
-jquerycoffee: coffee/jquery.coffee
-	mkdir -p gen
-	coffee -o gen -c coffee/jquery.coffee
-
-lib/js/literallycanvas.jquery.js: jquerycoffee corecoffee reactcoffee
-	uglifyjs gen/core/*.js gen/react/*.js gen/jquery.js \
-		-o lib/js/literallycanvas.jquery.js --beautify
-
-lib/js/literallycanvas.jquery.min.js: jquerycoffee corecoffee
-	uglifyjs gen/core/*.js gen/react/*.js gen/jquery.js \
-		-o lib/js/literallycanvas.jquery.min.js --compress
-
-lib/js/literallycanvas.js: corecoffee
-	uglifyjs gen/core/*.js -o lib/js/literallycanvas.js --beautify
-
-lib/js/literallycanvas.min.js: corecoffee
-	uglifyjs gen/core/*.js -o lib/js/literallycanvas.min.js --compress
 
 serve:
 	python -m SimpleHTTPServer 8000 .

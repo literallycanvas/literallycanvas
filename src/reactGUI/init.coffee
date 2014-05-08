@@ -1,8 +1,10 @@
-window.LC = LC or {}
-LC.React = LC.React or {}
+React = require 'React'
+
+Options = require './Options'
+Picker = require './Picker'
 
 
-LC.React.init = (root, lc, toolNames, imageURLPrefix) ->
+init = (root, lc, toolNames, imageURLPrefix) ->
   canvasElement = null
   for child in root.children
     if child.tagName.toLocaleLowerCase() == 'canvas'
@@ -20,6 +22,8 @@ LC.React.init = (root, lc, toolNames, imageURLPrefix) ->
   optionsElement.className = 'lc-options'
   root.appendChild(optionsElement)
 
-  React.renderComponent(
-    LC.React.Picker({lc, toolNames, imageURLPrefix}), pickerElement);
-  React.renderComponent(LC.React.Options({lc}), optionsElement);
+  React.renderComponent(Picker({lc, toolNames, imageURLPrefix}), pickerElement)
+  React.renderComponent(Options({lc}), optionsElement)
+
+
+module.exports = init

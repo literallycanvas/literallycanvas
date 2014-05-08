@@ -1,4 +1,8 @@
-class LC.Tool
+shapes = require './shapes'
+
+tools = {}
+
+tools.Tool = class Tool
 
   # called when the user starts dragging
   begin: (x, y, lc) ->
@@ -13,16 +17,16 @@ class LC.Tool
   optionsStyle: null
 
 
-class LC.StrokeTool extends LC.Tool
+tools.StrokeTool = class StrokeTool extends Tool
 
   constructor: -> @strokeWidth = 5
   optionsStyle: 'stroke-width'
 
 
-class LC.RectangleTool extends LC.StrokeTool
+tools.Rectangle = class Rectangle extends StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new LC.Rectangle(
+    @currentShape = new shapes.Rectangle(
       x, y, @strokeWidth, lc.getColor('primary'), lc.getColor('secondary'))
 
   continue: (x, y, lc) ->
@@ -34,10 +38,10 @@ class LC.RectangleTool extends LC.StrokeTool
     lc.saveShape(@currentShape)
 
 
-class LC.LineTool extends LC.StrokeTool
+tools.Line = class Line extends StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new LC.Line(
+    @currentShape = new shapes.Line(
       x, y, x, y, @strokeWidth, lc.getColor('primary'))
 
   continue: (x, y, lc) ->
@@ -49,7 +53,7 @@ class LC.LineTool extends LC.StrokeTool
     lc.saveShape(@currentShape)
    
 
-class LC.Pencil extends LC.StrokeTool
+tools.Pencil = class Pencil extends StrokeTool
 
   begin: (x, y, lc) ->
     @color = lc.getColor('primary')
@@ -64,20 +68,20 @@ class LC.Pencil extends LC.StrokeTool
     lc.saveShape(@currentShape)
     @currentShape = undefined
 
-  makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, @color)
-  makeShape: -> new LC.LinePathShape(this)
+  makePoint: (x, y, lc) -> new shapes.Point(x, y, @strokeWidth, @color)
+  makeShape: -> new shapes.LinePath(this)
 
 
-class LC.Eraser extends LC.Pencil
+tools.Eraser = class Eraser extends Pencil
 
   constructor: () ->
     @strokeWidth = 10
 
-  makePoint: (x, y, lc) -> new LC.Point(x, y, @strokeWidth, '#000')
-  makeShape: -> new LC.EraseLinePathShape(this)
+  makePoint: (x, y, lc) -> new shapes.Point(x, y, @strokeWidth, '#000')
+  makeShape: -> new shapes.EraseLinePath(this)
 
 
-class LC.Pan extends LC.Tool
+tools.Pan = class Pan extends Tool
 
   begin: (x, y, lc) -> @start = {x, y}
 
@@ -89,7 +93,7 @@ class LC.Pan extends LC.Tool
     lc.repaint()
 
 
-class LC.EyeDropper extends LC.Tool
+tools.EyeDropper = class EyeDropper extends Tool
     
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)
@@ -102,7 +106,7 @@ class LC.EyeDropper extends LC.Tool
     @readColor(x, y, lc)
 
 
-class LC.TextTool extends LC.Tool
+tools.Text = class Text extends Tool
 
   constructor: (@text = '', @font = 'bold 18px sans-serif') ->
 
@@ -111,7 +115,7 @@ class LC.TextTool extends LC.Tool
 
   begin:(x, y, lc) ->
     @color = lc.getColor('primary')
-    @currentShape = new LC.TextShape(x, y, @text, @color, @font)
+    @currentShape = new shapes.Text(x, y, @text, @color, @font)
 
   continue:(x, y, lc) ->
     @currentShape.x = x
@@ -122,3 +126,6 @@ class LC.TextTool extends LC.Tool
     lc.saveShape(@currentShape)
 
   optionsStyle: 'font'
+
+
+module.exports = tools

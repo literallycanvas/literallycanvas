@@ -1,3 +1,5 @@
+$ = window.$
+
 coordsForTouchEvent = ($el, e) ->
   tx = e.originalEvent.changedTouches[0].pageX
   ty = e.originalEvent.changedTouches[0].pageY
@@ -23,7 +25,7 @@ buttonIsDown = (e) ->
     return e.which > 0
 
 
-LC.bindEvents = (lc, canvas, panWithKeyboard = false) ->
+module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
   $c = $(canvas)
 
   $c.mousedown (e) =>
