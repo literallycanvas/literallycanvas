@@ -170,35 +170,32 @@ shapes.LinePath = class LinePath extends Shape
       ).concat(@tail)
 
   draw: (ctx) ->
-    points = @smoothedPoints
+    @drawPoints(ctx, @smoothedPoints)
+
+  update: (ctx, buffer) ->
+    @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
+
+    if @tail
+      segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
+      segmentEnd = segmentStart + @segmentSize + 1
+      @drawPoints(buffer, @smoothedPoints.slice(segmentStart, segmentEnd))
+
+  drawPoints: (ctx, points) ->
     return unless points.length
+
+    ctx.lineCap = 'round'
 
     ctx.strokeStyle = points[0].color
     ctx.lineWidth = points[0].size
-    ctx.lineCap = 'round'
+
     ctx.beginPath()
     ctx.moveTo(points[0].x, points[0].y)
+
     for point in points.slice(1)
-      ctx.lineTo(point.x, point.y)
+        ctx.lineTo(point.x, point.y)
+
     ctx.stroke()
 
-    # Polygonal Line Code
-    #poly = LC.toPoly(@smoothedPoints)
-
-    #_.each [fp, lp], (p) ->
-    #  ctx.beginPath()
-    #  ctx.fillStyle = p.color
-    #  ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2)
-    #  ctx.fill()
-    #  ctx.closePath()
-
-    #ctx.beginPath(poly[0].x, poly[0].y)
-    #ctx.fillStyle = poly[0].color
-    #_.each poly, (point) ->
-    #  ctx.lineTo(point.x, point.y)
-    #ctx.closePath()
-    #ctx.fill()
-    
 
 shapes.EraseLinePath = class EraseLinePath extends LinePath
 
