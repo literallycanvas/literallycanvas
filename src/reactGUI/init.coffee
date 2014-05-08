@@ -1,4 +1,4 @@
-React = require 'React'
+React = require './React-shim'
 
 Options = require './Options'
 Picker = require './Picker'

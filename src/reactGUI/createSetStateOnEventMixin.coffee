@@ -1,4 +1,4 @@
-React = require 'React'
+React = require './React-shim'
 
 module.exports = createSetStateOnEventMixin = (eventName) ->
   componentDidMount: ->
