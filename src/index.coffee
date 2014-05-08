@@ -2,6 +2,10 @@ $ = window.$
 LiterallyCanvas = require './core/LiterallyCanvas'
 initReact = require './reactGUI/init'
 
+shapes = require './core/shapes'
+tools = require './core/tools'
+util = require './core/util'
+
 
 init = (el, opts = {}) ->
   opts.primaryColor ?= '#000'
@@ -50,4 +54,4 @@ window.LC = {init}
 registerJQueryPlugin($)
 
 
-module.exports = {init, registerJQueryPlugin}
+module.exports = {init, registerJQueryPlugin, shapes, tools, util}

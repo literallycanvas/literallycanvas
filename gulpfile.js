@@ -19,7 +19,7 @@ gulp.task('browserify', function() {
       basedir: 'src', extensions: ['.js', '.coffee']
   }).add('./index.coffee')
     .transform('coffeeify')
-    .bundle()
+    .bundle({standalone: 'LC'})
 
   return bundleStream
     .pipe(source('./src/index.coffee'))
