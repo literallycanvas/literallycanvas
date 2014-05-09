@@ -1,4 +1,4 @@
-React = require 'React'
+React = require './React-shim'
 
 ClearButton = require './ClearButton'
 ColorWell = require './ColorWell'

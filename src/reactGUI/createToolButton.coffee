@@ -1,4 +1,4 @@
-React = require 'React/addons'
+React = require './React-shim'
 
 
 createToolButton = ({displayName, getTool, imageName}) ->

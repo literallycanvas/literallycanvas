@@ -1,4 +1,4 @@
-React = require 'React'
+React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 
 ClearButton = React.createClass

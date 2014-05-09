@@ -1,4 +1,4 @@
-React = require 'React'
+React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 
 createZoomButtonComponent = (inOrOut) -> React.createClass
