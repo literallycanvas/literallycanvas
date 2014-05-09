@@ -1,5 +1,49 @@
 util = require './util'
 
+shapes = {}
+
+
+defineShape = (name, {constructor, draw, update, toJSON, fromJSON}) ->
+  class shapes[name]
+    className: name
+    constructor: constructor
+    toJSON: toJSON
+    @fromJSON: fromJSON
+
+    # Redraw the entire shape
+    draw: draw
+    # Draw just the most recent portion of the shape if applicable
+    update: update or (ctx) -> draw(ctx)
+
+
+# only use this if you know what you're doing.
+# NB: fromJSON must be a class variable.
+defineShapeWithClass = (name, cls) ->
+  cls::className = name
+  shapes[name] = cls
+  cls
+
+
+createShape = (name, args...) -> new shapes[name](args...)
+
+
+JSONToShape = ({className, data}) ->
+  if className of shapes
+    shape = shapes[className].fromJSON(data)
+    if shape
+      return shape
+    else
+      console.log 'Unreadable shape:', className, data
+      return null
+  else
+    console.log "Unknown shape:", className, data
+    return null
+
+
+shapeToJSON = (shape) ->
+  {className: shape.className, data: shape.toJSON()}
+
+
 # this fn depends on Point, but LinePathShape depends on it, so it can't be
 # moved out of this file yet.
 bspline = (points, order) ->
@@ -30,34 +74,13 @@ _dual = (points) ->
   return dualed
 
 _mid = (a, b) ->
-  return new Point a.x + ((b.x - a.x) / 2),
+  return createShape 'Point', a.x + ((b.x - a.x) / 2),
                       a.y + ((b.y - a.y) / 2),
                       a.size + ((b.size - a.size) / 2),
                       a.color
 
 
-shapes = {}
-
-shapes.Shape = class Shape
-
-  className: null
-
-  # Redraw the entire shape
-  draw: (ctx) ->
-
-  # Draw just the most recent portion of the shape if applicable
-  update: (ctx) ->
-    @draw(ctx)
-
-  toJSON: -> {className: @className, data: @jsonContent()}
-  jsonContent: -> raise "not implemented"
-  @fromJSON: (lc, data) -> raise "not implemented"
-
-
-shapes.ImageShape = class ImageShape extends Shape
-
-  className: 'ImageShape'
-
+defineShape 'Image',
   # TODO: allow resizing/filling
   constructor: (@x, @y, @image) ->
   draw: (ctx, retryCallback) ->
@@ -65,19 +88,14 @@ shapes.ImageShape = class ImageShape extends Shape
       ctx.drawImage(@image, @x, @y)
     else
       @image.onload = retryCallback
-  jsonContent: ->
-    {@x, @y, imageSrc: @image.src}
-  @fromJSON: (lc, data) ->
+  toJSON: -> {@x, @y, imageSrc: @image.src}
+  fromJSON: (data) ->
     img = new Image()
     img.src = data.imageSrc
-    i = new ImageShape(data.x, data.y, img)
-    i
+    createShape('Image', data.x, data.y, img)
 
 
-shapes.Rectangle = class Rectangle extends Shape
-
-  className: 'Rectangle'
-
+defineShape 'Rectangle',
   constructor: (@x, @y, @strokeWidth, @strokeColor, @fillColor) ->
     @width = 0
     @height = 0
@@ -89,21 +107,17 @@ shapes.Rectangle = class Rectangle extends Shape
     ctx.strokeStyle = @strokeColor
     ctx.strokeRect(@x, @y, @width, @height)
 
-  jsonContent: ->
-    {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
+  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
 
-  @fromJSON: (lc, data) ->
-    shape = new Rectangle(
+  fromJSON: (data) ->
+    shape = createShape('Rectangle',
       data.x, data.y, data.strokeWidth, data.strokeColor, data.fillColor)
     shape.width = data.width
     shape.height = data.height
     shape
 
 
-shapes.Line = class Line extends Shape
-
-  className: 'Line'
-
+defineShape 'Line',
   constructor: (@x1, @y1, @x2, @y2, @strokeWidth, @color) ->
 
   draw: (ctx) ->
@@ -115,19 +129,14 @@ shapes.Line = class Line extends Shape
     ctx.lineTo(@x2, @y2)
     ctx.stroke()
 
-  jsonContent: ->
-    {@x1, @y1, @x2, @y2, @strokeWidth, @color}
+  toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color}
 
-  @fromJSON: (lc, data) ->
-    shape = new Rectangle(
+  fromJSON: (data) ->
+    createShape('Line',
       data.x1, data.y1, data.x2, data.y2, data.strokeWidth, data.color)
-    shape
 
 
-shapes.LinePath = class LinePath extends Shape
-
-  className: 'LinePath'
-
+LinePath = defineShapeWithClass 'LinePath', class LinePath
   constructor: (_points = [], @order = 3, @tailSize = 3)->
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
@@ -139,17 +148,19 @@ shapes.LinePath = class LinePath extends Shape
     for point in _points
       @addPoint(point)
 
-  jsonContent: ->
+  toJSON: ->
     # TODO: make point storage more efficient
-    {@order, @tailSize, @points}
+    {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
 
-  @fromJSON: (lc, data) ->
-    points = (Point.fromJSON(lc, pointData.data) for pointData in data.points)
-    new LinePath(points, data.order, data.tailSize)
+  @fromJSON: (data) ->
+    points = (JSONToShape(pointData) for pointData in data.points)
+    return null unless points[0]
+    createShape('LinePath', points, data.order, data.tailSize)
 
   addPoint: (point) ->
     # Brush Variance Code
-    #distance = LC.len(LC.diff(LC.util.last(@points), newPoint)) if @points.length
+    #if @points.length
+    #distance = LC.len(LC.diff(LC.util.last(@points), newPoint))
     #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
 
     @points.push(point)
@@ -197,10 +208,7 @@ shapes.LinePath = class LinePath extends Shape
     ctx.stroke()
 
 
-shapes.EraseLinePath = class EraseLinePath extends LinePath
-
-  className: 'EraseLinePath'
-
+defineShapeWithClass 'ErasedLinePath', class ErasedLinePath extends LinePath
   draw: (ctx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
@@ -213,37 +221,33 @@ shapes.EraseLinePath = class EraseLinePath extends LinePath
     super(ctx)
     ctx.restore()
 
-  # same as LinePath
-  @fromJSON: (lc, data) ->
-    points = (Point.fromJSON(lc, pointData.data) for pointData in data.points)
-    new EraseLinePath(points, data.order, data.tailSize)
+  # same as LinePah
+  @fromJSON: (data) ->
+    points = (JSONToShape(pointData) for pointData in data.points)
+    return null unless points[0]
+    createShape('ErasedLinePath', points, data.order, data.tailSize)
 
 
-shapes.Point = class Point extends Shape
-
-  className: 'Point'
-
+defineShape 'Point',
   constructor: (@x, @y, @size, @color) ->
   lastPoint: -> this
   draw: (ctx) -> console.log 'draw point', @x, @y, @size, @color
+  toJSON: -> {@x, @y, @size, @color}
+  fromJSON: (data) -> createShape(
+    'Point', data.x, data.y, data.size, data.color)
 
-  jsonContent: -> {@x, @y, @size, @color}
-  @fromJSON: (lc, data) ->
-    new Point(data.x, data.y, data.size, data.color)
 
-
-shapes.Text = class Text extends Shape
-
-  className: 'Text'
-
+defineShape 'Text',
   constructor: (@x, @y, @text, @color, @font = '18px sans-serif;') ->
   draw: (ctx) -> 
     ctx.font  = @font
     ctx.fillStyle = @color
     ctx.fillText(@text, @x, @y)
-  jsonContent: -> {@x, @y, @text, @color, @font}
-  @fromJSON: (lc, data) ->
-    new Text(data.x, data.y, data.text, data.color, data.font)
+  toJSON: -> {@x, @y, @text, @color, @font}
+  fromJSON: (data) ->
+    createShape('Text', data.x, data.y, data.text, data.color, data.font)
 
 
-module.exports = shapes
+module.exports = {
+  defineShape, defineShapeWithClass, createShape, JSONToShape, shapeToJSON
+}

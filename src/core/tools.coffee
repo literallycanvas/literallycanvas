@@ -1,4 +1,4 @@
-shapes = require './shapes'
+{createShape} = require './shapes'
 
 tools = {}
 
@@ -26,22 +26,25 @@ tools.StrokeTool = class StrokeTool extends Tool
 tools.Rectangle = class Rectangle extends StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new shapes.Rectangle(
+    @currentShape = createShape('Rectangle',
       x, y, @strokeWidth, lc.getColor('primary'), lc.getColor('secondary'))
+    console.log 'begin', @currentShape
 
   continue: (x, y, lc) ->
     @currentShape.width = x - @currentShape.x
     @currentShape.height = y - @currentShape.y
     lc.update(@currentShape)
+    console.log 'continue', @currentShape
 
   end: (x, y, lc) ->
+    console.log 'save', @currentShape
     lc.saveShape(@currentShape)
 
 
 tools.Line = class Line extends StrokeTool
 
   begin: (x, y, lc) ->
-    @currentShape = new shapes.Line(
+    @currentShape = createShape('Line',
       x, y, x, y, @strokeWidth, lc.getColor('primary'))
 
   continue: (x, y, lc) ->
@@ -68,8 +71,8 @@ tools.Pencil = class Pencil extends StrokeTool
     lc.saveShape(@currentShape)
     @currentShape = undefined
 
-  makePoint: (x, y, lc) -> new shapes.Point(x, y, @strokeWidth, @color)
-  makeShape: -> new shapes.LinePath(this)
+  makePoint: (x, y, lc) -> createShape('Point', x, y, @strokeWidth, @color)
+  makeShape: -> createShape('LinePath')
 
 
 tools.Eraser = class Eraser extends Pencil
@@ -77,8 +80,8 @@ tools.Eraser = class Eraser extends Pencil
   constructor: () ->
     @strokeWidth = 10
 
-  makePoint: (x, y, lc) -> new shapes.Point(x, y, @strokeWidth, '#000')
-  makeShape: -> new shapes.EraseLinePath(this)
+  makePoint: (x, y, lc) -> createShape('Point', x, y, @strokeWidth, '#000')
+  makeShape: -> createShape('ErasedLinePath')
 
 
 tools.Pan = class Pan extends Tool
@@ -115,7 +118,7 @@ tools.Text = class Text extends Tool
 
   begin:(x, y, lc) ->
     @color = lc.getColor('primary')
-    @currentShape = new shapes.Text(x, y, @text, @color, @font)
+    @currentShape = createShape('Text', x, y, @text, @color, @font)
 
   continue:(x, y, lc) ->
     @currentShape.x = x

@@ -1,7 +1,7 @@
 actions = require './actions'
 bindEvents = require './bindEvents'
 math = require './math'
-shapes = require './shapes'
+{createShape, shapeToJSON, JSONToShape} = require './shapes'
 {Pencil} = require './tools'
 util = require './util'
 
@@ -40,7 +40,7 @@ module.exports = class LiterallyCanvas
       backgroundImage = new Image()
       backgroundImage.src = @canvas.toDataURL()
       backgroundImage.onload = => @repaint()
-      @backgroundShapes.push(new shapes.ImageShape(0, 0, backgroundImage))
+      @backgroundShapes.push(createShape('Image', 0, 0, backgroundImage))
 
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
@@ -237,7 +237,7 @@ module.exports = class LiterallyCanvas
     @repaint(true, true)
     util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
-  getSnapshot: -> {shapes: (shape.toJSON() for shape in @shapes), @colors}
+  getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
 
   loadSnapshot: (snapshot) ->
@@ -248,14 +248,8 @@ module.exports = class LiterallyCanvas
 
     @shapes = []
     for shapeRepr in snapshot.shapes
-      if shapeRepr.className of shapes
-        shape = shapes[shapeRepr.className].fromJSON(this, shapeRepr.data)
-        if shape
-          @execute(new actions.AddShapeAction(this, shape))
-        else
-          console.log 'Unreadable shape:', shapeRepr
-      else
-        console.log "Unknown shape:", shapeRepr.className
+      shape = JSONToShape(shapeRepr)
+      @execute(new actions.AddShapeAction(this, shape)) if shape
     @repaint(true)
     @trigger('drawingChange', {})
 
