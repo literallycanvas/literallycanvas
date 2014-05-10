@@ -74,15 +74,17 @@ _dual = (points) ->
   return dualed
 
 _mid = (a, b) ->
-  return createShape 'Point', a.x + ((b.x - a.x) / 2),
-                      a.y + ((b.y - a.y) / 2),
-                      a.size + ((b.size - a.size) / 2),
-                      a.color
+  createShape('Point', {
+    x: a.x + ((b.x - a.x) / 2),
+    y: a.y + ((b.y - a.y) / 2),
+    size: a.size + ((b.size - a.size) / 2),
+    color: a.color
+  })
 
 
 defineShape 'Image',
   # TODO: allow resizing/filling
-  constructor: (@x, @y, @image) ->
+  constructor: ({@x, @y, @image}) ->
   draw: (ctx, retryCallback) ->
     if @image.width
       ctx.drawImage(@image, @x, @y)
@@ -92,13 +94,14 @@ defineShape 'Image',
   fromJSON: (data) ->
     img = new Image()
     img.src = data.imageSrc
-    createShape('Image', data.x, data.y, img)
+    createShape('Image', {x: data.x, x: data.y, image: img})
 
 
 defineShape 'Rectangle',
-  constructor: (@x, @y, @strokeWidth, @strokeColor, @fillColor) ->
-    @width = 0
-    @height = 0
+  constructor: (
+      {@x, @y, @strokeWidth, @strokeColor, @fillColor, @width, @height}) ->
+    @width ?= 0
+    @height ?= 0
 
   draw: (ctx) ->
     ctx.fillStyle = @fillColor
@@ -108,17 +111,11 @@ defineShape 'Rectangle',
     ctx.strokeRect(@x, @y, @width, @height)
 
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
-
-  fromJSON: (data) ->
-    shape = createShape('Rectangle',
-      data.x, data.y, data.strokeWidth, data.strokeColor, data.fillColor)
-    shape.width = data.width
-    shape.height = data.height
-    shape
+  fromJSON: (data) -> createShape('Rectangle', data)
 
 
 defineShape 'Line',
-  constructor: (@x1, @y1, @x2, @y2, @strokeWidth, @color) ->
+  constructor: ({@x1, @y1, @x2, @y2, @strokeWidth, @color}) ->
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
@@ -130,10 +127,7 @@ defineShape 'Line',
     ctx.stroke()
 
   toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color}
-
-  fromJSON: (data) ->
-    createShape('Line',
-      data.x1, data.y1, data.x2, data.y2, data.strokeWidth, data.color)
+  fromJSON: (data) -> createShape('Line', data)
 
 
 LinePath = defineShapeWithClass 'LinePath', class LinePath
@@ -229,23 +223,22 @@ defineShapeWithClass 'ErasedLinePath', class ErasedLinePath extends LinePath
 
 
 defineShape 'Point',
-  constructor: (@x, @y, @size, @color) ->
+  constructor: ({@x, @y, @size, @color}) ->
   lastPoint: -> this
   draw: (ctx) -> console.log 'draw point', @x, @y, @size, @color
   toJSON: -> {@x, @y, @size, @color}
-  fromJSON: (data) -> createShape(
-    'Point', data.x, data.y, data.size, data.color)
+  fromJSON: (data) -> createShape('Point', data)
 
 
 defineShape 'Text',
-  constructor: (@x, @y, @text, @color, @font = '18px sans-serif;') ->
+  constructor: ({@x, @y, @text, @color, @font}) ->
+    @font ?= '18px sans-serif'
   draw: (ctx) -> 
     ctx.font  = @font
     ctx.fillStyle = @color
     ctx.fillText(@text, @x, @y)
   toJSON: -> {@x, @y, @text, @color, @font}
-  fromJSON: (data) ->
-    createShape('Text', data.x, data.y, data.text, data.color, data.font)
+  fromJSON: (data) -> createShape('Text', data)
 
 
 module.exports = {

@@ -40,7 +40,8 @@ module.exports = class LiterallyCanvas
       backgroundImage = new Image()
       backgroundImage.src = @canvas.toDataURL()
       backgroundImage.onload = => @repaint()
-      @backgroundShapes.push(createShape('Image', 0, 0, backgroundImage))
+      @backgroundShapes.push(
+        createShape('Image', {x: 0, y: 0, image: backgroundImage}))
 
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
