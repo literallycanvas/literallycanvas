@@ -71,7 +71,8 @@ tools.Pencil = class Pencil extends StrokeTool
     lc.saveShape(@currentShape)
     @currentShape = undefined
 
-  makePoint: (x, y, lc) -> createShape('Point', {x, y, @strokeWidth, @color})
+  makePoint: (x, y, lc) ->
+    createShape('Point', {x, y, size: @strokeWidth, @color})
   makeShape: -> createShape('LinePath')
 
 
@@ -81,7 +82,7 @@ tools.Eraser = class Eraser extends Pencil
     @strokeWidth = 10
 
   makePoint: (x, y, lc) ->
-    createShape('Point', {x, y, @strokeWidth, color: '#000'})
+    createShape('Point', {x, y, size: @strokeWidth, color: '#000'})
   makeShape: -> createShape('ErasedLinePath')
 
 
