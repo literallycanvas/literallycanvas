@@ -54,4 +54,10 @@ window.LC = {init}
 registerJQueryPlugin($)
 
 
-module.exports = {init, registerJQueryPlugin, shapes, tools, util}
+module.exports = {
+  init, registerJQueryPlugin, util,
+
+  defineShape: shapes.defineShape,
+  defineShapeWithClass: shapes.defineShapeWithClass,
+  createShape: shapes.createShape,
+}
