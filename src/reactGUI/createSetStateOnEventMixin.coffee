@@ -2,7 +2,6 @@ React = require './React-shim'
 
 module.exports = createSetStateOnEventMixin = (eventName) ->
   componentDidMount: ->
-    @subscriber = => @setState @getState()
-    @props.lc.on eventName, @subscriber
+    @subscriber = @props.lc.on eventName, => @setState @getState()
   componentWillUnmount: ->
     @props.lc.removeEventListener(eventName, @subscriber)

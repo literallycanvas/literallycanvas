@@ -5,10 +5,14 @@
 			"follow_symlinks": true,
 			"path": ".",
       "folder_exclude_patterns": [
-        ".sass-cache", "gen", "lib", "demo/*.js", "demo/js", "demo/css",
+        ".sass-cache", "gen", "lib", "demo/js", "demo/css",
         "literallycanvas", "node_modules"
       ],
-      "file_exclude_patterns": ["*~"]
+      "file_exclude_patterns": [
+        "*~",
+        "demo/*.js",
+        "demo/*.png"
+      ]
 		},
 	]
 }

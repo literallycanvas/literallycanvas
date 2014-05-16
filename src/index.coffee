@@ -58,6 +58,5 @@ module.exports = {
   init, registerJQueryPlugin, util,
 
   defineShape: shapes.defineShape,
-  defineShapeWithClass: shapes.defineShapeWithClass,
   createShape: shapes.createShape,
 }

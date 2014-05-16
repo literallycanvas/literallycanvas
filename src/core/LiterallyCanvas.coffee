@@ -59,11 +59,12 @@ module.exports = class LiterallyCanvas
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
 
   on: (name, fn) ->
-    @canvas.addEventListener name, (e) ->
-      fn e.detail
+    wrapper = (e) -> fn e.detail
+    @canvas.addEventListener(name, wrapper)
+    wrapper
 
-  removeEventListener: (name, fn) ->
-    @canvas.removeEventListener(name, fn)
+  removeEventListener: (name, wrapper) ->
+    @canvas.removeEventListener(name, wrapper)
 
   clientCoordsToDrawingCoords: (x, y) ->
     x: (x - @position.x) / @scale,

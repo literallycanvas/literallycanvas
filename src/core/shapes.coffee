@@ -3,28 +3,24 @@ util = require './util'
 shapes = {}
 
 
-defineShape = (name, {constructor, draw, update, toJSON, fromJSON}) ->
-  class shapes[name]
-    className: name
-    constructor: constructor
-    toJSON: toJSON
-    @fromJSON: fromJSON
+defineShape = (name, props) ->
+  Shape = (args...) ->
+    props.constructor.call(this, args...)
+    this
+  Shape.prototype.className = name
+  Shape.fromJSON = props.fromJSON
+  Shape.prototype.update = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
 
-    # Redraw the entire shape
-    draw: draw
-    # Draw just the most recent portion of the shape if applicable
-    update: update or (ctx) -> draw(ctx)
+  for k of props
+    if k != 'fromJSON'
+      Shape.prototype[k] = props[k]
 
-
-# only use this if you know what you're doing.
-# NB: fromJSON must be a class variable.
-defineShapeWithClass = (name, cls) ->
-  cls::className = name
-  shapes[name] = cls
-  cls
+  shapes[name] = Shape
+  Shape
 
 
-createShape = (name, args...) -> new shapes[name](args...)
+createShape = (name, args...) ->
+  new shapes[name](args...)
 
 
 JSONToShape = ({className, data}) ->
@@ -130,8 +126,8 @@ defineShape 'Line',
   fromJSON: (data) -> createShape('Line', data)
 
 
-LinePath = defineShapeWithClass 'LinePath', class LinePath
-  constructor: (_points = [], @order = 3, @tailSize = 3)->
+linePathFuncs = 
+  constructor: (_points = [], @order = 3, @tailSize = 3) ->
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
 
@@ -146,10 +142,21 @@ LinePath = defineShapeWithClass 'LinePath', class LinePath
     # TODO: make point storage more efficient
     {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
 
-  @fromJSON: (data) ->
+  fromJSON: (data) ->
     points = (JSONToShape(pointData) for pointData in data.points)
     return null unless points[0]
     createShape('LinePath', points, data.order, data.tailSize)
+
+  draw: (ctx) ->
+    @drawPoints(ctx, @smoothedPoints)
+
+  update: (ctx, bufferCtx) ->
+    @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
+
+    if @tail
+      segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
+      segmentEnd = segmentStart + @segmentSize + 1
+      @drawPoints(bufferCtx, @smoothedPoints.slice(segmentStart, segmentEnd))
 
   addPoint: (point) ->
     # Brush Variance Code
@@ -174,17 +181,6 @@ LinePath = defineShapeWithClass 'LinePath', class LinePath
         0, @smoothedPoints.length - @segmentSize * (@tailSize - 1)
       ).concat(@tail)
 
-  draw: (ctx) ->
-    @drawPoints(ctx, @smoothedPoints)
-
-  update: (ctx, buffer) ->
-    @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
-
-    if @tail
-      segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
-      segmentEnd = segmentStart + @segmentSize + 1
-      @drawPoints(buffer, @smoothedPoints.slice(segmentStart, segmentEnd))
-
   drawPoints: (ctx, points) ->
     return unless points.length
 
@@ -202,21 +198,34 @@ LinePath = defineShapeWithClass 'LinePath', class LinePath
     ctx.stroke()
 
 
-defineShapeWithClass 'ErasedLinePath', class ErasedLinePath extends LinePath
+LinePath = defineShape 'LinePath', linePathFuncs
+
+
+defineShape 'ErasedLinePath',
+  constructor: linePathFuncs.constructor
+  toJSON: linePathFuncs.toJSON
+  addPoint: linePathFuncs.addPoint
+  drawPoints: linePathFuncs.drawPoints
+
   draw: (ctx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
-    super(ctx)
+    linePathFuncs.draw.call(this, ctx)
     ctx.restore()
 
-  update: (ctx) ->
+  update: (ctx, bufferCtx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
-    super(ctx)
+    bufferCtx.save()
+    bufferCtx.globalCompositeOperation = "destination-out"
+
+    linePathFuncs.update.call(this, ctx, bufferCtx)
+
     ctx.restore()
+    bufferCtx.restore()
 
   # same as LinePah
-  @fromJSON: (data) ->
+  fromJSON: (data) ->
     points = (JSONToShape(pointData) for pointData in data.points)
     return null unless points[0]
     createShape('ErasedLinePath', points, data.order, data.tailSize)
@@ -241,6 +250,4 @@ defineShape 'Text',
   fromJSON: (data) -> createShape('Text', data)
 
 
-module.exports = {
-  defineShape, defineShapeWithClass, createShape, JSONToShape, shapeToJSON
-}
+module.exports = {defineShape, createShape, JSONToShape, shapeToJSON}
