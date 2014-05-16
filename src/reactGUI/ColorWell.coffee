@@ -11,8 +11,8 @@ ColorWell = React.createClass
 
   # our color state tracks lc's
   componentDidMount: ->
-    @subscriber = => @setState {color: @props.lc.colors[@props.colorName]}
-    @props.lc.on "#{@props.colorName}ColorChange", @subscriber
+    @subscriber = @props.lc.on "#{@props.colorName}ColorChange", =>
+      @setState {color: @props.lc.colors[@props.colorName]}
   componentWillUnmount: ->
     @props.lc.removeEventListener(
       "#{@props.colorName}ColorChange", @subscriber)
