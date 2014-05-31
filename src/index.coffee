@@ -3,8 +3,17 @@ LiterallyCanvas = require './core/LiterallyCanvas'
 initReact = require './reactGUI/init'
 
 shapes = require './core/shapes'
-tools = require './core/tools'
 util = require './core/util'
+
+
+tools =
+  Pencil: require './tools/Pencil'
+  Eraser: require './tools/Eraser'
+  Line: require './tools/Line'
+  Rectangle: require './tools/Rectangle'
+  Text: require './tools/Text'
+  Pan: require './tools/Pan'
+  Eyedropper: require './tools/Eyedropper'
 
 
 init = (el, opts = {}) ->
@@ -19,13 +28,13 @@ init = (el, opts = {}) ->
   opts.watermarkImage ?= null
   unless 'tools' of opts
     opts.tools = [
-      'Pencil',
-      'Eraser',
-      'Line',
-      'Rectangle',
-      'Text',
-      'Pan',
-      'Eyedropper',
+      tools.Pencil,
+      tools.Eraser,
+      tools.Line,
+      tools.Rectangle,
+      tools.Text,
+      tools.Pan,
+      tools.Eyedropper,
     ]
 
   $el = $(el)
@@ -55,7 +64,7 @@ registerJQueryPlugin($)
 
 
 module.exports = {
-  init, registerJQueryPlugin, util,
+  init, registerJQueryPlugin, util, tools
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,

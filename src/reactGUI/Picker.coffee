@@ -2,7 +2,6 @@ React = require './React-shim'
 
 ClearButton = require './ClearButton'
 ColorWell = require './ColorWell'
-toolButtons = require './toolButtons'
 UndoRedoButtons = require './UndoRedoButtons'
 ZoomButtons = require './ZoomButtons'
 
@@ -24,10 +23,10 @@ Picker = React.createClass
   getInitialState: -> {selectedToolIndex: 0}
   render: ->
     {div} = React.DOM
-    {toolNames, lc, imageURLPrefix} = @props
+    {toolButtonComponents, lc, imageURLPrefix} = @props
     (div {className: 'lc-picker-contents'},
-      toolNames.map((name, ix) =>
-        (toolButtons[name] \
+      toolButtonComponents.map((component, ix) =>
+        (component \
           {
             lc, imageURLPrefix,
             key: ix
@@ -38,7 +37,7 @@ Picker = React.createClass
           }
         )
       ),
-      if toolNames.length % 2 != 0
+      if toolButtonComponents.length % 2 != 0
         (div {className: 'toolbar-button thin-button disabled'})
       UndoRedoButtons({lc, imageURLPrefix}),
       ZoomButtons({lc})

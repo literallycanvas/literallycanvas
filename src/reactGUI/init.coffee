@@ -1,10 +1,11 @@
 React = require './React-shim'
 
+createToolButton = require './createToolButton'
 Options = require './Options'
 Picker = require './Picker'
 
 
-init = (root, lc, toolNames, imageURLPrefix) ->
+init = (root, lc, tools, imageURLPrefix) ->
   canvasElement = null
   for child in root.children
     if child.tagName.toLocaleLowerCase() == 'canvas'
@@ -22,7 +23,15 @@ init = (root, lc, toolNames, imageURLPrefix) ->
   optionsElement.className = 'lc-options'
   root.appendChild(optionsElement)
 
-  React.renderComponent(Picker({lc, toolNames, imageURLPrefix}), pickerElement)
+  toolButtonComponents = tools.map (ToolClass) ->
+    toolInstance = new ToolClass()
+    createToolButton
+      displayName: toolInstance.name
+      imageName: toolInstance.iconName
+      getTool: -> toolInstance
+
+  React.renderComponent(Picker(
+    {lc, toolButtonComponents, imageURLPrefix}), pickerElement)
   React.renderComponent(Options({lc}), optionsElement)
 
 
