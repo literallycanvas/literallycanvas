@@ -1,5 +1,6 @@
 var browserify = require('browserify');
 var gulp = require('gulp');
+var livereload = require('gulp-livereload');
 var rename = require('gulp-rename');
 var sass = require('gulp-ruby-sass');
 var source = require('vinyl-source-stream');
@@ -28,7 +29,7 @@ gulp.task('browserify', function() {
     //.pipe(streamify(uglify()))
     .pipe(rename('literallycanvas.js'))
     .pipe(gulp.dest('./lib/js/'));
-})
+});
 
 
 gulp.task('uglify', ['browserify'], function() {
@@ -36,9 +37,25 @@ gulp.task('uglify', ['browserify'], function() {
     .pipe(uglify())
     .pipe(rename('literallycanvas.min.js'))
     .pipe(gulp.dest('./lib/js'))
-})
+});
 
 
 gulp.task('default', ['uglify', 'sass'], function() {
-  // place code for your default task here
+});
+
+
+gulp.task('livereload', function() {
+  var server = livereload();
+  gulp.watch(['lib/js/*', 'lib/css/*', 'demo/*']).on('change', function(file) {
+    server.changed(file.path);
+  });
+});
+
+gulp.task('watch', function() {
+  gulp.watch(['src/*.coffee', 'src/*/*.coffee'], ['browserify']);
+  gulp.watch('scss/*.scss', ['sass']);
+});
+
+
+gulp.task('dev', ['browserify', 'sass', 'watch', 'livereload'], function() {
 });
