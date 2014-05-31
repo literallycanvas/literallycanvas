@@ -5,11 +5,7 @@ all: gulp
 gulp:
 	gulp
 
-livereload:
-	livereload . -p 33233
-
 clean:
-	rm -f gen/*.js
 	rm -f lib/js/literallycanvas*.js
 
 serve:
