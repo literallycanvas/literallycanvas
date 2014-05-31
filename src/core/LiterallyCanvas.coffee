@@ -2,7 +2,7 @@ actions = require './actions'
 bindEvents = require './bindEvents'
 math = require './math'
 {createShape, shapeToJSON, JSONToShape} = require './shapes'
-{Pencil} = require './tools'
+Pencil = require '../tools/Pencil'
 util = require './util'
 
 module.exports = class LiterallyCanvas
