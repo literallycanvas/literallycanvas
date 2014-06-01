@@ -78,4 +78,6 @@ module.exports = {
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
+  JSONToShape: shapes.JSONToShape,
+  shapeToJSON: shapes.shapeToJSON,
 }
