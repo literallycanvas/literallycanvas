@@ -12,6 +12,7 @@ require './optionsStyles/null'
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
 
 
+baseTools = require './tools/base'
 tools =
   Pencil: require './tools/Pencil'
   Eraser: require './tools/Eraser'
@@ -20,6 +21,9 @@ tools =
   Text: require './tools/Text'
   Pan: require './tools/Pan'
   Eyedropper: require './tools/Eyedropper'
+
+  Tool: baseTools.Tool
+  ToolWithStroke: baseTools.ToolWithStroke
 
 
 init = (el, opts = {}) ->
