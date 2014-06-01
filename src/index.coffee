@@ -6,6 +6,12 @@ shapes = require './core/shapes'
 util = require './core/util'
 
 
+require './optionsStyles/font'
+require './optionsStyles/stroke-width'
+require './optionsStyles/null'
+{defineOptionsStyle} = require './optionsStyles/optionsStyles'
+
+
 tools =
   Pencil: require './tools/Pencil'
   Eraser: require './tools/Eraser'
@@ -64,7 +70,7 @@ registerJQueryPlugin($)
 
 
 module.exports = {
-  init, registerJQueryPlugin, util, tools
+  init, registerJQueryPlugin, util, tools, defineOptionsStyle,
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
