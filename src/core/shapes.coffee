@@ -80,7 +80,10 @@ _mid = (a, b) ->
 
 defineShape 'Image',
   # TODO: allow resizing/filling
-  constructor: ({@x, @y, @image}) ->
+  constructor: (args={}) ->
+    @x = args.x or 0
+    @y = args.y or 0
+    @image = args.image or null
   draw: (ctx, retryCallback) ->
     if @image.width
       ctx.drawImage(@image, @x, @y)
@@ -94,10 +97,14 @@ defineShape 'Image',
 
 
 defineShape 'Rectangle',
-  constructor: (
-      {@x, @y, @strokeWidth, @strokeColor, @fillColor, @width, @height}) ->
-    @width ?= 0
-    @height ?= 0
+  constructor: (args={}) ->
+    @x = args.x or 0
+    @y = args.y or 0
+    @width = args.width or 0
+    @height = args.height or 0
+    @strokeWidth = args.strokeWidth or 1
+    @strokeColor = args.strokeColor or 'black'
+    @fillColor = args.fillColor or 'transparent'
 
   draw: (ctx) ->
     ctx.fillStyle = @fillColor
@@ -111,7 +118,13 @@ defineShape 'Rectangle',
 
 
 defineShape 'Line',
-  constructor: ({@x1, @y1, @x2, @y2, @strokeWidth, @color}) ->
+  constructor: (args={}) ->
+    @x1 = args.x1 or 0
+    @y1 = args.y1 or 0
+    @x2 = args.x2 or 0
+    @y2 = args.y2 or 0
+    @strokeWidth = args.strokeWidth or 1
+    @color = args.color or 'black'
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
@@ -127,7 +140,11 @@ defineShape 'Line',
 
 
 linePathFuncs = 
-  constructor: (_points = [], @order = 3, @tailSize = 3) ->
+  constructor: (args={}) ->
+    points = args.points or []
+    @order = args.order or 3
+    @tailSize = args.tailSize or 3
+
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
 
@@ -135,7 +152,7 @@ linePathFuncs =
     @sampleSize = @tailSize + 1
 
     @points = []
-    for point in _points
+    for point in points
       @addPoint(point)
 
   toJSON: ->
@@ -145,7 +162,8 @@ linePathFuncs =
   fromJSON: (data) ->
     points = (JSONToShape(pointData) for pointData in data.points)
     return null unless points[0]
-    createShape('LinePath', points, data.order, data.tailSize)
+    createShape(
+      'LinePath', {points, order: data.order, tailSize: data.tailSize})
 
   draw: (ctx) ->
     @drawPoints(ctx, @smoothedPoints)
@@ -228,20 +246,29 @@ defineShape 'ErasedLinePath',
   fromJSON: (data) ->
     points = (JSONToShape(pointData) for pointData in data.points)
     return null unless points[0]
-    createShape('ErasedLinePath', points, data.order, data.tailSize)
+    createShape(
+      'ErasedLinePath', {points, order: data.order, tailSize: data.tailSize})
 
 
 defineShape 'Point',
-  constructor: ({@x, @y, @size, @color}) ->
+  constructor: (args={}) ->
+    @x = args.x or 0
+    @y = args.y or 0
+    @size = args.size or 0
+    @color = args.color or ''
   lastPoint: -> this
-  draw: (ctx) -> console.log 'draw point', @x, @y, @size, @color
+  draw: (ctx) -> throw "not implemented"
   toJSON: -> {@x, @y, @size, @color}
   fromJSON: (data) -> createShape('Point', data)
 
 
 defineShape 'Text',
-  constructor: ({@x, @y, @text, @color, @font}) ->
-    @font ?= '18px sans-serif'
+  constructor: (args={}) ->
+    @x = args.x or 0
+    @y = args.y or 0
+    @text = args.text or ''
+    @color = args.color or 'black'
+    @font  = args.font or '18px sans-serif'
   draw: (ctx) -> 
     ctx.font  = @font
     ctx.fillStyle = @color
