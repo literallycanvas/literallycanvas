@@ -9,7 +9,7 @@ clean:
 	rm -f lib/js/literallycanvas*.js
 
 serve:
-	python -m SimpleHTTPServer 8000 .
+	gulp serve
 
 release: all
 	-rm -rf literallycanvas
