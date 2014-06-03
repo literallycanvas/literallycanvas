@@ -76,8 +76,9 @@
             });
 
             $("#open-image").click(function() {
-              window.open(lc.canvasWithBackground(
-                  $('.literally .background').get(0)).toDataURL());
+              window.open(lc.canvasForExport({
+                backgroundImage: $('.literally .background').get(0)
+              }).toDataURL());
             });
           }
         });

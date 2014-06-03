@@ -231,13 +231,14 @@ module.exports = class LiterallyCanvas
     else
       null
 
-  canvasForExport: ->
+  canvasForExport: (opts={}) ->
+    opts.backgroundImage ?= null
     @repaint(true, true)
-    @canvas
 
-  canvasWithBackground: (backgroundImageOrCanvas) ->
-    @repaint(true, true)
-    util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
+    if opts.backgroundImage
+      util.combineCanvases(backgroundImageOrCanvas, @canvas())
+    else
+      @canvas
 
   getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
