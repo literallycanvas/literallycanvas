@@ -1,4 +1,4 @@
-Pencil = require './pencil'
+Pencil = require './Pencil'
 {createShape} = require '../core/shapes'
 
 
