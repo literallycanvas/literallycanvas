@@ -1,6 +1,6 @@
 var browserify = require('browserify');
 var gulp = require('gulp');
-var livereload = require('gulp-livereload');
+var connect = require('gulp-connect');
 var rename = require('gulp-rename');
 var sass = require('gulp-ruby-sass');
 var source = require('vinyl-source-stream');
@@ -44,18 +44,18 @@ gulp.task('default', ['uglify', 'sass'], function() {
 });
 
 
-gulp.task('livereload', function() {
-  var server = livereload();
-  gulp.watch(['lib/js/*', 'lib/css/*', 'demo/*']).on('change', function(file) {
-    server.changed(file.path);
-  });
-});
-
 gulp.task('watch', function() {
   gulp.watch(['src/*.coffee', 'src/*/*.coffee'], ['browserify']);
   gulp.watch('scss/*.scss', ['sass']);
 });
 
 
-gulp.task('dev', ['browserify', 'sass', 'watch', 'livereload'], function() {
+gulp.task('serve', function() {
+  connect.server({
+    livereload: true
+  });
+});
+
+
+gulp.task('dev', ['browserify', 'sass', 'watch', 'serve'], function() {
 });
