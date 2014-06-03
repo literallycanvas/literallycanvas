@@ -5,6 +5,9 @@ math = require './math'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
+VIEW_BOUNDS = 'view-bounds'
+CONTENT_BOUNDS = 'content-bounds'
+
 module.exports = class LiterallyCanvas
 
   constructor: (@canvas, @opts) ->
@@ -232,7 +235,10 @@ module.exports = class LiterallyCanvas
       null
 
   canvasForExport: (opts={}) ->
+    # Image or canvas
     opts.backgroundImage ?= null
+    # VIEW_BOUNDS, CONTENT_BOUNDS, or {x, y, width, height}
+    opts.clipTo ?= VIEW_BOUNDS
     @repaint(true, true)
 
     if opts.backgroundImage
