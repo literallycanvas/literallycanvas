@@ -1,4 +1,3 @@
-$ = window.$
 slice = Array.prototype.slice
 
 module.exports =
@@ -9,21 +8,21 @@ module.exports =
       return array[array.length - 1]
 
   sizeToContainer: (canvas, callback = ->) ->
-    $canvas = $(canvas)
-    $container = $canvas.parent()
+    container = canvas.parentElement
     resize = =>
-      canvas.style.width = "#{$container.width()}px"
-      canvas.style.height = "#{$container.height()}px"
-      canvas.setAttribute('width', $canvas.width())
-      canvas.setAttribute('height', $canvas.height())
+      canvas.style.width = "#{container.offsetWidth}px"
+      canvas.style.height = "#{container.offsetHeight}px"
+      canvas.setAttribute('width', canvas.offsetWidth)
+      canvas.setAttribute('height', canvas.offsetHeight)
       callback()
 
-    $container.resize(resize)
-    $(window).bind('orientationchange resize', resize)
+    container.addEventListener 'resize', resize
+    window.addEventListener 'resize', resize
+    window.addEventListener 'orientationchange', resize
     resize()
 
   combineCanvases: (a, b) ->
-    c = $('<canvas>').get(0)
+    c = document.createElement('canvas')
     c.width = Math.max(a.width, b.width)
     c.height = Math.max(a.height, b.height)
     ctx = c.getContext('2d')

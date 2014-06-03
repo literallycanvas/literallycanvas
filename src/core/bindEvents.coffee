@@ -1,9 +1,7 @@
-$ = window.$
-
-coordsForTouchEvent = ($el, e) ->
-  tx = e.originalEvent.changedTouches[0].pageX
-  ty = e.originalEvent.changedTouches[0].pageY
-  p = $el.offset()
+coordsForTouchEvent = (el, e) ->
+  tx = e.changedTouches[0].pageX
+  ty = e.changedTouches[0].pageY
+  p = el.getBoundingClientRect()
   return [tx - p.left, ty - p.top]
 
 
@@ -11,7 +9,7 @@ position = (e) ->
   if e.offsetX?
     {left: e.offsetX, top: e.offsetY}
   else
-    p = $(e.target).offset()
+    p = e.target.getBoundingClientRect()
     {
       left: e.pageX - p.left,
       top: e.pageY - p.top,
@@ -26,59 +24,58 @@ buttonIsDown = (e) ->
 
 
 module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
-  $c = $(canvas)
 
-  $c.mousedown (e) =>
+  canvas.addEventListener 'mousedown', (e) =>
     down = true
-    e.originalEvent.preventDefault();
+    e.preventDefault()
     document.onselectstart = -> false # disable selection while dragging
     p = position(e)
     lc.begin(p.left, p.top)
 
-  $c.mousemove (e) =>
-    e.originalEvent.preventDefault()
+  canvas.addEventListener 'mousemove', (e) =>
+    e.preventDefault()
     p = position(e)
     lc.continue(p.left, p.top)
 
-  $c.mouseup (e) =>
-    e.originalEvent.preventDefault()
+  canvas.addEventListener 'mouseup', (e) =>
+    e.preventDefault()
     document.onselectstart = -> true # enable selection while dragging
     p = position(e)
     lc.end(p.left, p.top)
 
-  $c.mouseenter (e) =>
+  canvas.addEventListener 'mouseenter', (e) =>
     p = position(e)
     if buttonIsDown(e)
       lc.begin(p.left, p.top)
 
-  $c.mouseout (e) =>
+  canvas.addEventListener 'mouseout', (e) =>
     p = position(e)
     lc.end(p.left, p.top)
 
-  $c.bind 'touchstart', (e) ->
+  canvas.addEventListener 'touchstart', (e) ->
     e.preventDefault()
-    if e.originalEvent.touches.length == 1
-      lc.begin(coordsForTouchEvent($c, e)...)
+    if e.touches.length == 1
+      lc.begin(coordsForTouchEvent(canvas, e)...)
     else
-      lc.continue(coordsForTouchEvent($c, e)...)
+      lc.continue(coordsForTouchEvent(canvas, e)...)
 
-  $c.bind 'touchmove', (e) ->
+  canvas.addEventListener 'touchmove', (e) ->
     e.preventDefault()
-    lc.continue(coordsForTouchEvent($c, e)...)
+    lc.continue(coordsForTouchEvent(canvas, e)...)
 
-  $c.bind 'touchend', (e) ->
-    e.preventDefault()
-    return unless e.originalEvent.touches.length == 0
-    lc.end(coordsForTouchEvent($c, e)...)
-
-  $c.bind 'touchcancel', (e) ->
+  canvas.addEventListener 'touchend', (e) ->
     e.preventDefault()
     return unless e.originalEvent.touches.length == 0
-    lc.end(coordsForTouchEvent($c, e)...)
+    lc.end(coordsForTouchEvent(canvas, e)...)
+
+  canvas.addEventListener 'touchcancel', (e) ->
+    e.preventDefault()
+    return unless e.originalEvent.touches.length == 0
+    lc.end(coordsForTouchEvent(canvas, e)...)
 
   if panWithKeyboard
-    $(document).keydown (e) ->
-      switch e.which
+    document.addEventListener 'keydown', (e) ->
+      switch e.keyCode
         when 37 then lc.pan -10, 0
         when 38 then lc.pan 0, -10
         when 39 then lc.pan 10, 0
