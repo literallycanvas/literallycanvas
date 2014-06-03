@@ -22,7 +22,7 @@ module.exports =
     resize()
 
   combineCanvases: (a, b) ->
-    c = document.getElementsByTagName('canvas')[0]
+    c = document.createElement('canvas')
     c.width = Math.max(a.width, b.width)
     c.height = Math.max(a.height, b.height)
     ctx = c.getContext('2d')
