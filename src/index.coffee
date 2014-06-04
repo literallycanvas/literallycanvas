@@ -1,4 +1,3 @@
-$ = window.$
 LiterallyCanvas = require './core/LiterallyCanvas'
 initReact = require './reactGUI/init'
 
@@ -47,12 +46,12 @@ init = (el, opts = {}) ->
       tools.Eyedropper,
     ]
 
-  $el = $(el)
-  $el.addClass('literally')
+  if [' ', ' '].join(el.className).indexOf(' literally ') == -1
+    el.className = el.className + 'literally'
 
-  unless $el.find('canvas').length
-    $el.append('<canvas>')
-  lc = new LiterallyCanvas($el.find('canvas').get(0), opts)
+  unless el.getElementsByTagName('canvas').length
+    el.appendChild(document.createElement('canvas'))
+  lc = new LiterallyCanvas(el.getElementsByTagName('canvas')[0], opts)
   initReact(el, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
@@ -70,7 +69,8 @@ registerJQueryPlugin = (_$) ->
 
 # non-browserify compatibility
 window.LC = {init}
-registerJQueryPlugin($)
+if window.$
+    registerJQueryPlugin(window.$)
 
 
 module.exports = {
