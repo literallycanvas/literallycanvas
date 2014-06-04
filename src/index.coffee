@@ -47,7 +47,7 @@ init = (el, opts = {}) ->
     ]
 
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
-    el.className = el.className + 'literally'
+    el.className = el.className + ' literally'
 
   unless el.getElementsByTagName('canvas').length
     el.appendChild(document.createElement('canvas'))
