@@ -38,6 +38,5 @@
   },
   "dependencies": {
     "react": ">=0.10.0",
-    "jquery": ">=2.0.0"
   }
 }
