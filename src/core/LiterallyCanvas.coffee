@@ -238,15 +238,15 @@ module.exports = class LiterallyCanvas
     # Image or canvas
     opts.backgroundImage ?= null
     # {x, y, width, height}
-    opts.clipTo ?= @getContentBounds()
+    opts.rect ?= @getContentBounds()
     opts.scale ?= 1
     @repaint(true, true)
 
     rectArgs =
-      x: opts.clipTo.x
-      y: opts.clipTo.y
-      width: opts.clipTo.width
-      height: opts.clipTo.height
+      x: opts.rect.x
+      y: opts.rect.y
+      width: opts.rect.width
+      height: opts.rect.height
       fillColor: @colors.background
       strokeColor: 'transparent'
       strokeWidth: 0
@@ -255,7 +255,7 @@ module.exports = class LiterallyCanvas
       [createShape('Rectangle', rectArgs)]
         .concat(@backgroundShapes)
         .concat(@shapes),
-      opts.clipTo, opts.scale)
+      opts.rect, opts.scale)
 
   canvasForExport: ->
     @repaint(true, true)
