@@ -194,15 +194,11 @@ linePathFuncs =
 
     if @tail
       segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
-      segmentEnd = segmentStart + @segmentSize + 1
-      @drawPoints(bufferCtx, @smoothedPoints.slice(segmentStart, segmentEnd))
+      drawStart = if segmentStart < @segmentSize * 2 then 0 else segmentStart
+      drawEnd = segmentStart + @segmentSize + 1
+      @drawPoints(bufferCtx,@smoothedPoints.slice(drawStart, drawEnd))
 
   addPoint: (point) ->
-    # Brush Variance Code
-    #if @points.length
-    #distance = LC.len(LC.diff(LC.util.last(@points), newPoint))
-    #newPoint.size = newPoint.size + Math.sqrt(distance) if distance
-
     @points.push(point)
 
     if not @smoothedPoints or @points.length < @sampleSize

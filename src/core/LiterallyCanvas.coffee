@@ -5,8 +5,6 @@ math = require './math'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
-CONTENT_BOUNDS = 'content-bounds'
-
 module.exports = class LiterallyCanvas
 
   constructor: (@canvas, @opts) ->
@@ -243,8 +241,6 @@ module.exports = class LiterallyCanvas
     opts.clipTo ?= @getContentBounds()
     opts.scale ?= 1
     @repaint(true, true)
-
-    console.log opts.clipTo
 
     rectArgs =
       x: opts.clipTo.x
