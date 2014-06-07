@@ -7,7 +7,7 @@ module.exports =
     else
       return array[array.length - 1]
 
-  matchSize: (elementToMatch, elementsToResize, callback = ->) ->
+  matchElementSize: (elementToMatch, elementsToResize, callback = ->) ->
     resize = =>
       for el in elementsToResize
         el.style.width = "#{elementToMatch.offsetWidth}px"

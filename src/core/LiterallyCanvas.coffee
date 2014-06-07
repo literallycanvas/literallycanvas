@@ -46,7 +46,7 @@ module.exports = class LiterallyCanvas
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
     if @opts.sizeToContainer
-      util.matchSize(@canvas.parentElement, [@canvas], => @repaint())
+      util.matchElementSize(@canvas.parentElement, [@canvas], => @repaint())
 
     @repaint()
 
