@@ -7,16 +7,17 @@ module.exports =
     else
       return array[array.length - 1]
 
-  sizeToContainer: (canvas, callback = ->) ->
-    container = canvas.parentElement
+  matchElementSize: (elementToMatch, elementsToResize, callback = ->) ->
     resize = =>
-      canvas.style.width = "#{container.offsetWidth}px"
-      canvas.style.height = "#{container.offsetHeight}px"
-      canvas.setAttribute('width', canvas.offsetWidth)
-      canvas.setAttribute('height', canvas.offsetHeight)
+      for el in elementsToResize
+        el.style.width = "#{elementToMatch.offsetWidth}px"
+        el.style.height = "#{elementToMatch.offsetHeight}px"
+        if el.width?
+          el.setAttribute('width', el.offsetWidth)
+          el.setAttribute('height', el.offsetHeight)
       callback()
 
-    container.addEventListener 'resize', resize
+    elementToMatch.addEventListener 'resize', resize
     window.addEventListener 'resize', resize
     window.addEventListener 'orientationchange', resize
     resize()
@@ -29,3 +30,28 @@ module.exports =
     ctx.drawImage(a, 0, 0)
     ctx.drawImage(b, 0, 0)
     c
+
+  renderShapes: (shapes, bounds, scale=1, canvas=null) ->
+    canvas = canvas or document.createElement('canvas')
+    canvas.width = bounds.width * scale
+    canvas.height = bounds.height * scale
+    ctx = canvas.getContext('2d')
+    ctx.translate(-bounds.x * scale, -bounds.y * scale)
+    ctx.scale(scale, scale)
+    for shape in shapes
+      shape.draw(ctx)
+    canvas
+
+  # [{x, y, width, height}]
+  getBoundingRect: (rects) ->
+    return {x: 0, y: 0, width: 0, height: 0} unless rects.length
+    minX = rects[0].x
+    minY = rects[0].y
+    maxX = rects[0].x + rects[0].width
+    maxY = rects[0].y + rects[0].height
+    for rect in rects
+      minX = Math.floor Math.min(rect.x, minX)
+      minY = Math.floor Math.min(rect.y, minY)
+      maxX = Math.ceil Math.max(maxX, rect.x + rect.width)
+      maxY = Math.ceil Math.max(maxY, rect.y + rect.height)
+    {x: minX, y: minY, width: maxX - minX, height: maxY - minY}

@@ -76,13 +76,15 @@
             });
 
             $("#open-image").click(function() {
-              window.open(lc.canvasWithBackground(
-                  $('.literally .background').get(0)).toDataURL());
+              window.open(lc.getImage({
+                // rect: {x: 0, y: 0, width: 100, height: 100}
+                scale: 2
+              }).toDataURL());
             });
           }
         });
       });
     </script>
-    <script src="http://localhost:35729/livereload.js"></script>
+    <script src="//localhost:35729/livereload.js"></script>
   </body>
 </html>

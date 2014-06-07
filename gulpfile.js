@@ -11,7 +11,8 @@ var uglify = require('gulp-uglify');
 gulp.task('sass', function() {
   return gulp.src('scss/literally.scss')
     .pipe(sass({ style: 'compressed' }))
-    .pipe(gulp.dest('lib/css/literally.css'))
+    .pipe(gulp.dest('lib/css'))
+    .pipe(connect.reload())
 });
 
 
@@ -28,15 +29,16 @@ gulp.task('browserify', function() {
     .pipe(source('./src/index.coffee'))
     //.pipe(streamify(uglify()))
     .pipe(rename('literallycanvas.js'))
-    .pipe(gulp.dest('./lib/js/'));
+    .pipe(gulp.dest('./lib/js/'))
+    .pipe(connect.reload());
 });
 
 
 gulp.task('uglify', ['browserify'], function() {
-  gulp.src('./lib/js/literallycanvas.js')
+  return gulp.src('./lib/js/literallycanvas.js')
     .pipe(uglify())
     .pipe(rename('literallycanvas.min.js'))
-    .pipe(gulp.dest('./lib/js'))
+    .pipe(gulp.dest('./lib/js'));
 });
 
 
@@ -44,9 +46,15 @@ gulp.task('default', ['uglify', 'sass'], function() {
 });
 
 
+gulp.task('demo-reload', function () {
+  return gulp.src('demo/*').pipe(connect.reload());
+});
+
+
 gulp.task('watch', function() {
   gulp.watch(['src/*.coffee', 'src/*/*.coffee'], ['browserify']);
   gulp.watch('scss/*.scss', ['sass']);
+  gulp.watch('demo/*', ['demo-reload']);
 });
 
 

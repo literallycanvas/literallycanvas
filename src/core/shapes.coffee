@@ -89,6 +89,7 @@ defineShape 'Image',
       ctx.drawImage(@image, @x, @y)
     else
       @image.onload = retryCallback
+  getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height}
   toJSON: -> {@x, @y, imageSrc: @image.src}
   fromJSON: (data) ->
     img = new Image()
@@ -113,6 +114,12 @@ defineShape 'Rectangle',
     ctx.strokeStyle = @strokeColor
     ctx.strokeRect(@x, @y, @width, @height)
 
+  getBoundingRect: -> {
+    x: @x - @strokeWidth / 2,
+    y: @y - @strokeWidth / 2,
+    width: @width + @strokeWidth,
+    height: @height + @strokeWidth,
+  }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Rectangle', data)
 
@@ -135,6 +142,12 @@ defineShape 'Line',
     ctx.lineTo(@x2, @y2)
     ctx.stroke()
 
+  getBoundingRect: -> {
+    x: Math.min(@x1, @x2) - @strokeWidth / 2,
+    y: Math.min(@y1, @y2) - @strokeWidth / 2,
+    width: Math.abs(@x2 - @x1) + @strokeWidth / 2,
+    height: Math.abs(@y2 - @y1) + @strokeWidth / 2,
+  }
   toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color}
   fromJSON: (data) -> createShape('Line', data)
 
@@ -154,6 +167,14 @@ linePathFuncs =
     @points = []
     for point in points
       @addPoint(point)
+
+  getBoundingRect: ->
+    util.getBoundingRect @points.map (p) -> {
+      x: p.x - p.size / 2,
+      y: p.y - p.size / 2,
+      width: p.size,
+      height: p.size,
+    }
 
   toJSON: ->
     # TODO: make point storage more efficient
@@ -220,6 +241,7 @@ defineShape 'ErasedLinePath',
   toJSON: linePathFuncs.toJSON
   addPoint: linePathFuncs.addPoint
   drawPoints: linePathFuncs.drawPoints
+  getBoundingRect: linePathFuncs.getBoundingRect
 
   draw: (ctx) ->
     ctx.save()
@@ -265,10 +287,14 @@ defineShape 'Text',
     @text = args.text or ''
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
+    @boundingBoxHeight = 0 # set by random shit; double ugh
   draw: (ctx) -> 
     ctx.font  = @font
     ctx.fillStyle = @color
     ctx.fillText(@text, @x, @y)
+    @boundingBoxWidth = Math.ceil ctx.measureText(@text).width
+  getBoundingRect: ->
+    {@x, @y, width: @boundingBoxWidth, height: 18} # we don't know height :-(
   toJSON: -> {@x, @y, @text, @color, @font}
   fromJSON: (data) -> createShape('Text', data)
 

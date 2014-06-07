@@ -46,7 +46,7 @@ module.exports = class LiterallyCanvas
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
     if @opts.sizeToContainer
-      util.sizeToContainer(@canvas, => @repaint())
+      util.matchElementSize(@canvas.parentElement, [@canvas], => @repaint())
 
     @repaint()
 
@@ -231,13 +231,39 @@ module.exports = class LiterallyCanvas
     else
       null
 
+  getContentBounds: ->
+    util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
+
+  getImage: (opts={}) ->
+    # Image or canvas
+    opts.backgroundImage ?= null
+    # {x, y, width, height}
+    opts.rect ?= @getContentBounds()
+    opts.scale ?= 1
+    @repaint(true, true)
+
+    rectArgs =
+      x: opts.rect.x
+      y: opts.rect.y
+      width: opts.rect.width
+      height: opts.rect.height
+      fillColor: @colors.background
+      strokeColor: 'transparent'
+      strokeWidth: 0
+
+    util.renderShapes(
+      [createShape('Rectangle', rectArgs)]
+        .concat(@backgroundShapes)
+        .concat(@shapes),
+      opts.rect, opts.scale)
+
   canvasForExport: ->
     @repaint(true, true)
     @canvas
 
   canvasWithBackground: (backgroundImageOrCanvas) ->
     @repaint(true, true)
-    util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
+    util.combineCanvases(backgroundImageOrCanvas, @canvas)
 
   getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
