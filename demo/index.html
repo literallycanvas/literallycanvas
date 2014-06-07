@@ -34,10 +34,13 @@
 
   <body>
     <div class="fs-container">
-      <div class="literally">
+      <div class="literally one">
         <canvas id="original-canvas"></canvas>
       </div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
+
+      <br><br>
+      <div class="literally two"></div>
     </div>
 
     <script src="/demo/jquery-1.8.2.js"></script>
@@ -54,7 +57,7 @@
         });
 
         // you can preserve the canvas contents
-        var ctx = $('canvas').get(0).getContext('2d');
+        var ctx = $('.literally.one canvas').get(0).getContext('2d');
         ctx.fillStyle = 'rgb(255,255,0)';
         ctx.fillRect(0, 0, 300, 300);
 
@@ -63,7 +66,7 @@
         watermarkImage.src = watermarkImageURL;
 
         // the only LC-specific thing we have to do
-        $('.literally').literallycanvas({
+        $('.literally.one').literallycanvas({
           backgroundColor: 'transparent',
           imageURLPrefix: '/lib/img',
           // preserveCanvasContents: true,
@@ -85,6 +88,18 @@
         });
       });
     </script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.literally.two').literallycanvas({
+          imageURLPrefix: '/lib/img',
+          onInit: function(lc) {
+            console.log('initialized with', lc)
+          }
+        });
+      });
+    </script>
+
     <script src="//localhost:35729/livereload.js"></script>
   </body>
 </html>
