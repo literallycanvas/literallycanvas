@@ -5,7 +5,6 @@ math = require './math'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
-VIEW_BOUNDS = 'view-bounds'
 CONTENT_BOUNDS = 'content-bounds'
 
 module.exports = class LiterallyCanvas
@@ -49,7 +48,7 @@ module.exports = class LiterallyCanvas
     @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
 
     if @opts.sizeToContainer
-      util.sizeToContainer(@canvas, => @repaint())
+      util.matchSize(@canvas.parentElement, [@canvas], => @repaint())
 
     @repaint()
 
@@ -234,17 +233,41 @@ module.exports = class LiterallyCanvas
     else
       null
 
-  canvasForExport: (opts={}) ->
+  getContentBounds: ->
+    util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
+
+  getImage: (opts={}) ->
     # Image or canvas
     opts.backgroundImage ?= null
-    # VIEW_BOUNDS, CONTENT_BOUNDS, or {x, y, width, height}
-    opts.clipTo ?= VIEW_BOUNDS
+    # {x, y, width, height}
+    opts.clipTo ?= @getContentBounds()
+    opts.scale ?= 1
     @repaint(true, true)
 
-    if opts.backgroundImage
-      util.combineCanvases(backgroundImageOrCanvas, @canvas())
-    else
-      @canvas
+    console.log opts.clipTo
+
+    rectArgs =
+      x: opts.clipTo.x
+      y: opts.clipTo.y
+      width: opts.clipTo.width
+      height: opts.clipTo.height
+      fillColor: @colors.background
+      strokeColor: 'transparent'
+      strokeWidth: 0
+
+    util.renderShapes(
+      [createShape('Rectangle', rectArgs)]
+        .concat(@backgroundShapes)
+        .concat(@shapes),
+      opts.clipTo, opts.scale)
+
+  canvasForExport: ->
+    @repaint(true, true)
+    @canvas
+
+  canvasWithBackground: (backgroundImageOrCanvas) ->
+    @repaint(true, true)
+    util.combineCanvases(backgroundImageOrCanvas, @canvas)
 
   getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())

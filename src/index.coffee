@@ -34,8 +34,10 @@ init = (el, opts = {}) ->
   opts.keyboardShortcuts ?= true
   opts.preserveCanvasContents ?= false
   opts.sizeToContainer ?= true
+
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
+
   unless 'tools' of opts
     opts.tools = [
       tools.Pencil,
