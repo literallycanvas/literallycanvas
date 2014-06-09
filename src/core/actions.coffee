@@ -6,11 +6,11 @@ class ClearAction
 
   do: ->
     @lc.shapes = @newShapes
-    @lc.repaint()
+    @lc.repaintLayer('main')
 
   undo: ->
     @lc.shapes = @oldShapes
-    @lc.repaint()
+    @lc.repaintLaye('main')
 
 
 class AddShapeAction
@@ -20,11 +20,11 @@ class AddShapeAction
   do: ->
     @ix = @lc.shapes.length
     @lc.shapes.push(@shape)
-    @lc.repaint()
+    @lc.repaintLayer('main')
 
   undo: ->
     @lc.shapes.pop(@ix)
-    @lc.repaint()
+    @lc.repaintLayer('main')
 
 
 module.exports = {ClearAction, AddShapeAction}

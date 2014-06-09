@@ -81,4 +81,4 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
         when 39 then lc.pan 10, 0
         when 40 then lc.pan 0, 10
 
-      lc.repaint()
+      lc.repaintAllLayers()

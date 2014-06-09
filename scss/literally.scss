@@ -53,6 +53,11 @@ $optionsHeight: 60px;
   .lc-drawing {
     top: 0; right: 0; bottom: $optionsHeight; left: $pickerWidth;
     cursor: default;
+
+    & > * {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+    }
   }
 
   .lc-options {

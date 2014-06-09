@@ -37,6 +37,9 @@ init = (el, opts = {}) ->
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
 
+  opts.pickerWidth = 60
+  opts.optionsHeight = 60
+
   unless 'tools' of opts
     opts.tools = [
       tools.Pencil,
@@ -48,13 +51,48 @@ init = (el, opts = {}) ->
       tools.Eyedropper,
     ]
 
+  canvases = el.getElementsByTagName('canvas')
+  backgroundImage = null
+  if opts.preserveCanvasContents
+    oldCanvas = if canvases.length then canvases[0] else null
+    unless oldCanvas
+      throw "Can't preserve old canvas if there isn't one"
+    backgroundImage = new Image()
+    backgroundImage.src = oldCanvas.toDataURL()
+    opts.backgroundShapes.unshift(
+      shapes.createShape('Image', {x: 0, y: 0, image: backgroundImage}))
+
+  ### henceforth, all pre-existing DOM children shall be destroyed ###
+
+  for child in el.children
+    el.removeChild(child)
+
+  ### and now we rebuild the city ###
+
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
 
-  unless el.getElementsByTagName('canvas').length
-    el.appendChild(document.createElement('canvas'))
-  lc = new LiterallyCanvas(el.getElementsByTagName('canvas')[0], opts)
-  initReact(el, lc, opts.tools, opts.imageURLPrefix)
+  pickerElement = document.createElement('div')
+  pickerElement.className = 'lc-picker'
+
+  drawingViewElement = document.createElement('div')
+  drawingViewElement.className = 'lc-drawing'
+
+  optionsElement = document.createElement('div')
+  optionsElement.className = 'lc-options'
+
+  el.appendChild(pickerElement)
+  el.appendChild(drawingViewElement)
+  el.appendChild(optionsElement)
+
+  ### and get to work ###
+
+  lc = new LiterallyCanvas(drawingViewElement, opts)
+
+  if backgroundImage
+    backgroundImage.onload = => lc.repaintLayer('background')
+
+  initReact(pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)
