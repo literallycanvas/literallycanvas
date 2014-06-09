@@ -39,8 +39,10 @@
       </div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
 
+      <!--
       <br><br>
       <div class="literally two"></div>
+      -->
     </div>
 
     <script src="/demo/jquery-1.8.2.js"></script>
@@ -61,17 +63,23 @@
         ctx.fillStyle = 'rgb(255,255,0)';
         ctx.fillRect(0, 0, 300, 300);
 
-        var watermarkImageURL = '/demo/watermark.png';
+        var backgroundImage = new Image();
+        backgroundImage.src = '/demo/bear.png';
+
         var watermarkImage = new Image();
-        watermarkImage.src = watermarkImageURL;
+        watermarkImage.src = '/demo/watermark.png';
 
         // the only LC-specific thing we have to do
         $('.literally.one').literallycanvas({
-          backgroundColor: 'transparent',
+          backgroundShapes: [
+            LC.createShape(
+              'Image', {image: backgroundImage, x: 100, y: 100})
+          ],
           imageURLPrefix: '/lib/img',
-          // preserveCanvasContents: true,
+          preserveCanvasContents: true,
           watermarkImage: watermarkImage,
           onInit: function(lc) {
+            window.demoLC = lc;
             lc.loadSnapshotJSON(localStorage.getItem('drawing'));
 
             lc.on('drawingChange', function() {
@@ -89,6 +97,7 @@
       });
     </script>
 
+    <!--
     <script type="text/javascript">
       $(document).ready(function(){
         $('.literally.two').literallycanvas({
@@ -99,6 +108,7 @@
         });
       });
     </script>
+    -->
 
     <script src="//localhost:35729/livereload.js"></script>
   </body>

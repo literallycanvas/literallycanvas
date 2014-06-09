@@ -7,24 +7,35 @@ util = require './util'
 
 module.exports = class LiterallyCanvas
 
-  constructor: (@canvas, @opts) ->
-    bindEvents(this, @canvas, @opts.keyboardShortcuts)
+  constructor: (@containerEl, opts) ->
+    bindEvents(this, @containerEl, opts.keyboardShortcuts)
 
     @colors =
-      primary: @opts.primaryColor or '#000'
-      secondary: @opts.secondaryColor or '#fff'
-      background: @opts.backgroundColor or 'transparent'
-    @canvas.style.backgroundColor = @colors.background
+      primary: opts.primaryColor or '#000'
+      secondary: opts.secondaryColor or '#fff'
+      background: opts.backgroundColor or 'transparent'
 
-    @watermarkImage = @opts.watermarkImage
-    if @watermarkImage and not @watermarkImage.complete
-      @watermarkImage.onload = => @repaint(true, false)
+    if opts.watermarkImage
+      watermarkEl = document.createElement('div')
+
+      watermarkEl.style['background-image'] = "url(#{opts.watermarkImage.src})"
+      watermarkEl.style['background-repeat'] = 'no-repeat';
+      watermarkEl.style['background-position'] = 'center center';
+      @containerEl.appendChild(watermarkEl)
+      util.matchElementSize(@containerEl, [watermarkEl])
+
+    @backgroundCanvas = document.createElement('canvas')
+    @backgroundCtx = @backgroundCanvas.getContext('2d')
+    @containerEl.appendChild(@backgroundCanvas)
+    @backgroundShapes = opts.backgroundShapes || []
+
+    @canvas = document.createElement('canvas')
+    @containerEl.appendChild(@canvas)
 
     @buffer = document.createElement('canvas')
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
 
-    @backgroundShapes = []
     @shapes = []
     @undoStack = []
     @redoStack = []
@@ -36,24 +47,14 @@ module.exports = class LiterallyCanvas
     # something really simple
     @tool = new Pencil()
 
-    if @opts.preserveCanvasContents
-      backgroundImage = new Image()
-      backgroundImage.src = @canvas.toDataURL()
-      backgroundImage.onload = => @repaint()
-      @backgroundShapes.push(
-        createShape('Image', {x: 0, y: 0, image: backgroundImage}))
+    util.matchElementSize(
+      @containerEl, [@backgroundCanvas], => @repaintLayer('background'))
 
-    @backgroundShapes = @backgroundShapes.concat(@opts.backgroundShapes or [])
+    util.matchElementSize(
+      @containerEl, [@canvas], => @repaintLayer('main'))
 
-    if @opts.sizeToContainer
-      util.matchElementSize(@canvas.parentElement, [@canvas], => @repaint())
-
-    @repaint()
-
-  updateSize: =>
-    @canvas.setAttribute('width', @canvas.clientWidth)
-    @canvas.setAttribute('height', @canvas.clientHeight)
-    @repaint()
+    @repaintLayer('background')
+    @repaintLayer('main')
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
@@ -99,9 +100,15 @@ module.exports = class LiterallyCanvas
 
   setColor: (name, color) ->
     @colors[name] = color
-    @canvas.style.backgroundColor = @colors.background
     @trigger "#{name}ColorChange", @colors[name]
-    @repaint()
+    switch name
+      when 'background'
+        @containerEl.style.backgroundColor = @colors.background
+      when 'primary'
+        @repaintLayer('main')
+      when 'secondary'
+        @repaintLayer('main')
+    @trigger "drawingChange" if name == 'background'
 
   getColor: (name) -> @colors[name]
 
@@ -130,35 +137,35 @@ module.exports = class LiterallyCanvas
     @position.y = math.scalePositionScalar(
       @position.y, @canvas.height, oldScale, @scale)
 
-    @repaint()
+    @repaintAllLayers()
     @trigger('zoom', {oldScale: oldScale, newScale: @scale})
+
+  repaintAllLayers: ->
+    for key in ['background', 'main']
+      @repaintLayer(key)
+    null
 
   # Repaints the canvas.
   # If dirty is true then all saved shapes are completely redrawn,
   # otherwise the back buffer is simply copied to the screen as is.
-  # If drawBackground is true, the background is rendered as a solid
-  # color, otherwise it is left transparent.
-  repaint: (dirty = true, drawBackground = false) ->
-    retryCallback = => @repaint(true)
-    if dirty
-      @buffer.width = @canvas.width
-      @buffer.height = @canvas.height
-      @bufferCtx.clearRect(0, 0, @buffer.width, @buffer.height)
-      if drawBackground
-        @bufferCtx.fillStyle = @colors.background
-        @bufferCtx.fillRect(0, 0, @buffer.width, @buffer.height)
-      if @watermarkImage
-        @bufferCtx.drawImage(
-          @watermarkImage,
-          @canvas.width / 2 - @watermarkImage.width / 2,
-          @canvas.height / 2 - @watermarkImage.height / 2,
-        )
-      @draw(@backgroundShapes, @bufferCtx, retryCallback)
-      @draw(@shapes, @bufferCtx, retryCallback)
-    @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-    if @canvas.width > 0 and @canvas.height > 0
-      @ctx.drawImage @buffer, 0, 0
-    @trigger('repaint', null)
+  repaintLayer: (repaintLayerKey, dirty=(repaintLayerKey == 'main')) ->
+    switch repaintLayerKey
+      when 'background'
+        @backgroundCtx.clearRect(
+          0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
+        retryCallback = => @repaintLayer('background')
+        @draw(@backgroundShapes, @backgroundCtx, retryCallback)
+      when 'main'
+        retryCallback = => @repaintLayer('main', true)
+        if dirty
+          @buffer.width = @canvas.width
+          @buffer.height = @canvas.height
+          @bufferCtx.clearRect(0, 0, @buffer.width, @buffer.height)
+          @draw(@shapes, @bufferCtx, retryCallback)
+        @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+        if @canvas.width > 0 and @canvas.height > 0
+          @ctx.drawImage @buffer, 0, 0
+    @trigger('repaint', {layerKey: repaintLayerKey})
 
   # Redraws the back buffer to the screen in its current state
   # then draws the given shape translated and scaled on top of that.
@@ -166,7 +173,7 @@ module.exports = class LiterallyCanvas
   # without doing a full repaint.
   # The context is restored to its original state before returning.
   update: (shape) ->
-    @repaint(false)
+    @repaintLayer('main', false)
     @transformed (=> shape.update(@ctx, @bufferCtx)), @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
@@ -195,7 +202,7 @@ module.exports = class LiterallyCanvas
     oldShapes = @shapes
     newShapes = []
     @execute(new actions.ClearAction(this, oldShapes, newShapes))
-    @repaint()
+    @repaintLayer('main')
     @trigger('clear', null)
     @trigger('drawingChange', {})
 
@@ -240,7 +247,8 @@ module.exports = class LiterallyCanvas
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
     opts.scale ?= 1
-    @repaint(true, true)
+    opts.includeWatermark ?= false
+    @repaintLayer('main', true)
 
     rectArgs =
       x: opts.rect.x
@@ -251,19 +259,18 @@ module.exports = class LiterallyCanvas
       strokeColor: 'transparent'
       strokeWidth: 0
 
-    util.renderShapes(
-      [createShape('Rectangle', rectArgs)]
-        .concat(@backgroundShapes)
-        .concat(@shapes),
-      opts.rect, opts.scale)
+    util.combineCanvases(
+      util.renderShapes(
+        [createShape('Rectangle', rectArgs)].concat(@backgroundShapes),
+        opts.rect, opts.scale),
+      util.renderShapes(@shapes, opts.rect, opts.scale))
 
   canvasForExport: ->
-    @repaint(true, true)
-    @canvas
+    @repaintAllLayers()
+    util.combineCanvases(@backgroundCanvas, @canvas)
 
   canvasWithBackground: (backgroundImageOrCanvas) ->
-    @repaint(true, true)
-    util.combineCanvases(backgroundImageOrCanvas, @canvas)
+    util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
   getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
@@ -278,7 +285,7 @@ module.exports = class LiterallyCanvas
     for shapeRepr in snapshot.shapes
       shape = JSONToShape(shapeRepr)
       @execute(new actions.AddShapeAction(this, shape)) if shape
-    @repaint(true)
+    @repaintAllLayers()
     @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->

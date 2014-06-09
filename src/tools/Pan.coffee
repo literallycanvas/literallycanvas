@@ -11,7 +11,7 @@ module.exports = class Pan extends Tool
 
   continue: (x, y, lc) ->
     lc.pan @start.x - x, @start.y - y
-    lc.repaint()
+    lc.repaintAllLayers()
 
   end: (x, y, lc) ->
-    lc.repaint()
+    lc.repaintAllLayers()
