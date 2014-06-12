@@ -15,14 +15,8 @@ module.exports = class LiterallyCanvas
       secondary: opts.secondaryColor or '#fff'
       background: opts.backgroundColor or 'transparent'
 
-    if opts.watermarkImage
-      watermarkEl = document.createElement('div')
-
-      watermarkEl.style['background-image'] = "url(#{opts.watermarkImage.src})"
-      watermarkEl.style['background-repeat'] = 'no-repeat';
-      watermarkEl.style['background-position'] = 'center center';
-      @containerEl.appendChild(watermarkEl)
-      util.matchElementSize(@containerEl, [watermarkEl])
+    @watermarkImage = opts.watermarkImage
+    @watermarkScale = opts.watermarkScale or 1
 
     @backgroundCanvas = document.createElement('canvas')
     @backgroundCtx = @backgroundCanvas.getContext('2d')
@@ -30,9 +24,11 @@ module.exports = class LiterallyCanvas
     @backgroundShapes = opts.backgroundShapes || []
 
     @canvas = document.createElement('canvas')
+    @canvas.style['background-color'] = 'transparent'
     @containerEl.appendChild(@canvas)
 
     @buffer = document.createElement('canvas')
+    @buffer.style['background-color'] = 'transparent'
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
 
@@ -109,6 +105,7 @@ module.exports = class LiterallyCanvas
     switch name
       when 'background'
         @containerEl.style.backgroundColor = @colors.background
+        @repaintLayer('background')
       when 'primary'
         @repaintLayer('main')
       when 'secondary'
@@ -164,6 +161,7 @@ module.exports = class LiterallyCanvas
       when 'background'
         @backgroundCtx.clearRect(
           0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
+        @_renderWatermark() if @watermarkImage
         retryCallback = => @repaintLayer('background')
         @draw(@backgroundShapes, @backgroundCtx, retryCallback)
       when 'main'
@@ -177,6 +175,16 @@ module.exports = class LiterallyCanvas
         if @canvas.width > 0 and @canvas.height > 0
           @ctx.drawImage @buffer, 0, 0
     @trigger('repaint', {layerKey: repaintLayerKey})
+
+  _renderWatermark: ->
+    @backgroundCtx.save()
+    @backgroundCtx.translate(
+      @backgroundCanvas.width / 2, @backgroundCanvas.height / 2)
+    @backgroundCtx.scale(
+      @watermarkScale * @backingScale, @watermarkScale * @backingScale)
+    @backgroundCtx.drawImage(
+      @watermarkImage, -@watermarkImage.width / 2, -@watermarkImage.height / 2)
+    @backgroundCtx.restore()
 
   # Redraws the back buffer to the screen in its current state
   # then draws the given shape translated and scaled on top of that.
@@ -254,8 +262,6 @@ module.exports = class LiterallyCanvas
     util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
 
   getImage: (opts={}) ->
-    # Image or canvas
-    opts.backgroundImage ?= null
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
     opts.scale ?= 1
