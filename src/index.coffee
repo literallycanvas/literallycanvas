@@ -38,9 +38,6 @@ init = (el, opts = {}) ->
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
 
-  opts.pickerWidth = 60
-  opts.optionsHeight = 60
-
   unless 'tools' of opts
     opts.tools = [
       tools.Pencil,
