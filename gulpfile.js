@@ -60,7 +60,7 @@ gulp.task('watch', function() {
 
 gulp.task('serve', function() {
   connect.server({
-    livereload: true
+    livereload: {port: 35728}
   });
 });
 

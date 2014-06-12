@@ -26,19 +26,17 @@ tools =
 
 
 init = (el, opts = {}) ->
+  opts.imageURLPrefix ?= 'lib/img'
+
   opts.primaryColor ?= '#000'
   opts.secondaryColor ?= '#fff'
   opts.backgroundColor ?= 'transparent'
-  opts.imageURLPrefix ?= 'lib/img'
+
   opts.keyboardShortcuts ?= true
   opts.preserveCanvasContents ?= false
-  opts.sizeToContainer ?= true
 
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
-
-  opts.pickerWidth = 60
-  opts.optionsHeight = 60
 
   unless 'tools' of opts
     opts.tools = [
