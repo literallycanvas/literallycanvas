@@ -126,16 +126,22 @@ module.exports = class LiterallyCanvas
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
-    @position.x = @position.x - x
-    @position.y = @position.y - y
+    @setPan(@position.x - x, @position.y - y)
+
+  setPan: (x, y) ->
+    @position = {x, y}
     @trigger('pan', {x: @position.x, y: @position.y})
 
   zoom: (factor) ->
+    newScale = @scale + factor
+    newScale = Math.max(newScale, 0.6)
+    newScale = Math.min(newScale, 4.0)
+    newScale = Math.round(newScale * 100) / 100
+    @setZoom(newScale)
+
+  setZoom: (scale) ->
     oldScale = @scale
-    @scale = @scale + factor
-    @scale = Math.max(@scale, 0.6)
-    @scale = Math.min(@scale, 4.0)
-    @scale = Math.round(@scale * 100) / 100
+    @scale = scale
 
     @position.x = math.scalePositionScalar(
       @position.x, @canvas.width, oldScale, @scale)
