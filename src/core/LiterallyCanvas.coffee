@@ -248,8 +248,6 @@ module.exports = class LiterallyCanvas
     util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
 
   getImage: (opts={}) ->
-    # Image or canvas
-    opts.backgroundImage ?= null
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
     opts.scale ?= 1
