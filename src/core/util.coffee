@@ -1,20 +1,20 @@
 slice = Array.prototype.slice
 
-module.exports =
+util =
   last: (array, n = null) ->
     if n
       return slice.call(array, Math.max(array.length - n, 0))
     else
       return array[array.length - 1]
 
-  matchElementSize: (elementToMatch, elementsToResize, callback = ->) ->
+  matchElementSize: (elementToMatch, elementsToResize, scale, callback = ->) ->
     resize = =>
       for el in elementsToResize
         el.style.width = "#{elementToMatch.offsetWidth}px"
         el.style.height = "#{elementToMatch.offsetHeight}px"
         if el.width?
-          el.setAttribute('width', el.offsetWidth)
-          el.setAttribute('height', el.offsetHeight)
+          el.setAttribute('width', el.offsetWidth * scale)
+          el.setAttribute('height', el.offsetHeight * scale)
       callback()
 
     elementToMatch.addEventListener 'resize', resize
@@ -55,3 +55,10 @@ module.exports =
       maxX = Math.ceil Math.max(maxX, rect.x + rect.width)
       maxY = Math.ceil Math.max(maxY, rect.y + rect.height)
     {x: minX, y: minY, width: maxX - minX, height: maxY - minY}
+
+  getBackingScale: (context) ->
+    return 1 unless window.devicePixelRatio?
+    return 1 unless window.devicePixelRatio > 1
+    return window.devicePixelRatio
+
+module.exports = util
