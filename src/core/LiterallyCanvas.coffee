@@ -36,6 +36,8 @@ module.exports = class LiterallyCanvas
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
 
+    @backingScale = util.getBackingScale(@ctx)
+
     @shapes = []
     @undoStack = []
     @redoStack = []
@@ -48,10 +50,11 @@ module.exports = class LiterallyCanvas
     @tool = new Pencil()
 
     util.matchElementSize(
-      @containerEl, [@backgroundCanvas], => @repaintLayer('background'))
+      @containerEl, [@backgroundCanvas], @backingScale,
+      => @repaintLayer('background'))
 
     util.matchElementSize(
-      @containerEl, [@canvas], => @repaintLayer('main'))
+      @containerEl, [@canvas], @backingScale, => @repaintLayer('main'))
 
     @repaintLayer('background')
     @repaintLayer('main')
@@ -67,13 +70,15 @@ module.exports = class LiterallyCanvas
   removeEventListener: (name, wrapper) ->
     @canvas.removeEventListener(name, wrapper)
 
+  getRenderScale: -> @scale * @backingScale
+
   clientCoordsToDrawingCoords: (x, y) ->
-    x: (x - @position.x) / @scale,
-    y: (y - @position.y) / @scale,
+    x: (x * @backingScale - @position.x) / @getRenderScale(),
+    y: (y * @backingScale - @position.y) / @getRenderScale(),
 
   drawingCoordsToClientCoords: (x, y) ->
-    x: x * @scale + @position.x,
-    y: y * @scale + @position.y
+    x: x * @getRenderScale() + @position.x,
+    y: y * @getRenderScale() + @position.y
 
   setTool: (tool) ->
     @tool = tool
@@ -191,7 +196,8 @@ module.exports = class LiterallyCanvas
     for ctx in contexts
       ctx.save()
       ctx.translate @position.x, @position.y
-      ctx.scale @scale, @scale
+      scale = @getRenderScale()
+      ctx.scale scale, scale
 
     fn()
 
@@ -248,6 +254,8 @@ module.exports = class LiterallyCanvas
     opts.rect ?= @getContentBounds()
     opts.scale ?= 1
     opts.includeWatermark ?= false
+    opts.scaleDownRetina ?= true
+    opts.scale /= @backingScale if opts.scaleDownRetina
     @repaintLayer('main', true)
 
     rectArgs =
