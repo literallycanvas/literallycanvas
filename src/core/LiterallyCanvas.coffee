@@ -19,8 +19,8 @@ module.exports = class LiterallyCanvas
       watermarkEl = document.createElement('div')
 
       watermarkEl.style['background-image'] = "url(#{opts.watermarkImage.src})"
-      watermarkEl.style['background-repeat'] = 'no-repeat';
-      watermarkEl.style['background-position'] = 'center center';
+      watermarkEl.style['background-repeat'] = 'no-repeat'
+      watermarkEl.style['background-position'] = 'center center'
       @containerEl.appendChild(watermarkEl)
       util.matchElementSize(@containerEl, [watermarkEl])
 
@@ -56,8 +56,23 @@ module.exports = class LiterallyCanvas
     util.matchElementSize(
       @containerEl, [@canvas], @backingScale, => @repaintLayer('main'))
 
-    @repaintLayer('background')
-    @repaintLayer('main')
+    width = opts.imageSize.width
+    height = opts.imageSize.height
+
+    # TODO: DRY these up
+    if width == 'infinite' or not width
+      @width = undefined
+    else
+      @width = width
+
+    if height == 'infinite' or not height
+      @height = undefined
+    else
+      @height = height
+
+    # This will ensure that we are zoomed to @scale, panned to @position, and
+    # that all layers are repainted.
+    @setZoom(@scale)
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
@@ -129,6 +144,21 @@ module.exports = class LiterallyCanvas
     @setPan(@position.x - x, @position.y - y)
 
   setPan: (x, y) ->
+    renderScale = @getRenderScale()
+
+    # TODO: DRY these up
+    if @width
+      if @canvas.width > @width * renderScale
+        x = (@canvas.width - @width * renderScale) / 2
+      else
+        x = Math.max(Math.min(0, x), @canvas.width - @width * renderScale)
+
+    if @height
+      if @canvas.height > @height * renderScale
+        y = (@canvas.height - @height * renderScale) / 2
+      else
+        y = Math.max(Math.min(0, y), @canvas.height - @height * renderScale)
+
     @position = {x, y}
     @trigger('pan', {x: @position.x, y: @position.y})
 
@@ -148,6 +178,7 @@ module.exports = class LiterallyCanvas
     @position.y = math.scalePositionScalar(
       @position.y, @canvas.height, oldScale, @scale)
 
+    @setPan(@position.x, @position.y)
     @repaintAllLayers()
     @trigger('zoom', {oldScale: oldScale, newScale: @scale})
 
@@ -175,7 +206,13 @@ module.exports = class LiterallyCanvas
           @draw(@shapes, @bufferCtx, retryCallback)
         @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
         if @canvas.width > 0 and @canvas.height > 0
-          @ctx.drawImage @buffer, 0, 0
+          @ctx.fillStyle = '#ccc'
+          @ctx.fillRect(0, 0, @canvas.width, @canvas.height)
+          @clipped (=>
+            @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+            @ctx.drawImage @buffer, 0, 0
+          ), @ctx
+
     @trigger('repaint', {layerKey: repaintLayerKey})
 
   # Redraws the back buffer to the screen in its current state
@@ -185,7 +222,11 @@ module.exports = class LiterallyCanvas
   # The context is restored to its original state before returning.
   update: (shape) ->
     @repaintLayer('main', false)
-    @transformed (=> shape.update(@ctx, @bufferCtx)), @ctx, @bufferCtx
+    @clipped (=>
+      @transformed (=>
+        shape.update(@ctx, @bufferCtx)
+      ), @ctx, @bufferCtx
+    ), @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
@@ -194,7 +235,27 @@ module.exports = class LiterallyCanvas
     drawShapes = =>
       for shape in shapes
         shape.draw(ctx, retryCallback)
-    @transformed(drawShapes, ctx)
+    @clipped (=> @transformed(drawShapes, ctx)), ctx
+
+  # Executes the given function after clipping the canvas to the image size.
+  # The context is restored to its original state before returning.
+  # This should not be called inside an @transformed block.
+  clipped: (fn, contexts...) ->
+    x = if @width then @position.x else 0
+    y = if @height then @position.y else 0
+    width = if @width then @width * @getRenderScale() else @canvas.width
+    height = if @height then @height * @getRenderScale() else @canvas.height
+
+    for ctx in contexts
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(x, y, width, height)
+      ctx.clip()
+
+    fn()
+
+    for ctx in contexts
+      ctx.restore()
 
   # Executes the given function after translating and scaling the context.
   # The context is restored to its original state before returning.
@@ -251,7 +312,7 @@ module.exports = class LiterallyCanvas
       null
 
   getContentBounds: ->
-    util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
+    util.getBoundingRect @width, @height, @shapes.map((s) -> s.getBoundingRect())
 
   getImage: (opts={}) ->
     # Image or canvas
