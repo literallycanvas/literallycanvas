@@ -37,6 +37,7 @@ init = (el, opts = {}) ->
 
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
+  opts.watermarkScale ?= 1
 
   unless 'tools' of opts
     opts.tools = [
