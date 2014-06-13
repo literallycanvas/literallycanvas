@@ -20,13 +20,16 @@ defineShape = (name, props) ->
 
 
 createShape = (name, args...) ->
-  new shapes[name](args...)
+  s = new shapes[name](args...)
+  s.id = util.getGUID()
+  s
 
 
-JSONToShape = ({className, data}) ->
+JSONToShape = ({className, data, id}) ->
   if className of shapes
     shape = shapes[className].fromJSON(data)
     if shape
+      shape.id = id if id
       return shape
     else
       console.log 'Unreadable shape:', className, data
@@ -37,7 +40,7 @@ JSONToShape = ({className, data}) ->
 
 
 shapeToJSON = (shape) ->
-  {className: shape.className, data: shape.toJSON()}
+  {className: shape.className, data: shape.toJSON(), id: shape.id}
 
 
 # this fn depends on Point, but LinePathShape depends on it, so it can't be
