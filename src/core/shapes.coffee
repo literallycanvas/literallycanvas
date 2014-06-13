@@ -179,12 +179,35 @@ linePathFuncs =
       height: p.size,
     }
 
+  # returns false if no points because there are no points to share style
+  doAllPointsShareStyle: ->
+    return false unless @points.length
+    size = @points[0].size
+    color = @points[0].color
+    for point in @points
+      return false unless point.size == size and point.color == color
+    return true
+
   toJSON: ->
-    # TODO: make point storage more efficient
-    {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
+    if @doAllPointsShareStyle()
+      {
+        @order, @tailSize,
+        pointCoordinatePairs: ([point.x, point.y] for point in @points),
+        pointSize: @points[0].size,
+        pointColor: @points[0].color
+      }
+    else
+      {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) ->
-    points = (JSONToShape(pointData) for pointData in data.points)
+    points = null
+    if data.points
+      points = (JSONToShape(pointData) for pointData in data.points)
+    else if data.pointCoordinatePairs
+      points = (JSONToShape({
+        className: 'Point',
+        data: {x: x, y: y, size: data.pointSize, color: data.pointColor}
+      }) for [x, y] in data.pointCoordinatePairs)
     return null unless points[0]
     createShape(
       'LinePath', {points, order: data.order, tailSize: data.tailSize})
@@ -271,6 +294,7 @@ defineShape 'ErasedLinePath',
       'ErasedLinePath', {points, order: data.order, tailSize: data.tailSize})
 
 
+# this is currently just used for LinePath/ErasedLinePath internal storage.
 defineShape 'Point',
   constructor: (args={}) ->
     @x = args.x or 0
