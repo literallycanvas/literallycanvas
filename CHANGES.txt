@@ -1,3 +1,40 @@
+v0.4:
+ * New GUI using React.js
+ * Simplified color picker
+ * Removed jQuery dependency, though the plugin works if jQuery is present
+ * Performance improvements
+ * Retina display rendering is the correct size instead of being scaled up
+   half-resolution
+ * Code is browserified; can still be used as a standalone script
+ * Overhauled API for defining tools and shapes (see docs)
+ * Backgrounds and watermarks are no longer affected by the eraser
+ * No DOM is preserved inside the container div at all
+ * LiterallyCanvas class API
+   * Constructor takes (containerElement, opts) instead of (canvas, opts)
+   * API for subscribing/unsubscribing event listeners has changed (see #130)
+   * Redraw layers ('main' or 'background') with repaintLayer(layerName);
+     repaint everything with repaintAllLayers(). Removed repaint().
+   * getImage() allows rendering drawing at any scale clipped to any rect. Old
+     canvasForExport() and canvasWithBackground() are deprecated.
+   * setPan() and setZoom() can set position and zoom values directly, in
+     addition to the old pan() and zoom() that move them by relative values.
+   * getContentBounds() returns the bounding rect of all shapes
+ * LC.util functions
+   * sizeToContainer() removed in favor of matchElementSize()
+   * renderShapes() renders any list of shapes to a canvas, without having to
+      instantiate LiterallyCanvas
+   * getBoundingRect(listOfRects)
+ * Reorganized top-level API on window.LC or require('literallycanvas')
+   LC.init()
+   LC.registerJQueryPlugin()
+   LC.util
+   LC.tools
+   LC.defineOptionsSTyle()
+   LC.defineShape()
+   LC.createShape()
+   LC.JSONToShape()
+   LC.shapeToJSON()
+
 v0.3:
  * LiterallyCanvas.canvasWithBackground() renders the current drawing over a
    background image
