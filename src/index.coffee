@@ -25,8 +25,12 @@ tools =
   ToolWithStroke: baseTools.ToolWithStroke
 
 
+defaultImageURLPrefix = 'lib/img'
+setDefaultImageURLPrefix = (newDefault) -> defaultImageURLPrefix = newDefault
+
+
 init = (el, opts = {}) ->
-  opts.imageURLPrefix ?= 'lib/img'
+  opts.imageURLPrefix ?= defaultImageURLPrefix
 
   opts.primaryColor ?= '#000'
   opts.secondaryColor ?= '#fff'
@@ -114,6 +118,7 @@ if window.$
 
 module.exports = {
   init, registerJQueryPlugin, util, tools, defineOptionsStyle,
+  setDefaultImageURLPrefix,
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
