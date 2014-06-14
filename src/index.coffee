@@ -37,7 +37,6 @@ init = (el, opts = {}) ->
   opts.backgroundColor ?= 'transparent'
 
   opts.keyboardShortcuts ?= true
-  opts.preserveCanvasContents ?= false
 
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
@@ -53,17 +52,6 @@ init = (el, opts = {}) ->
       tools.Pan,
       tools.Eyedropper,
     ]
-
-  canvases = el.getElementsByTagName('canvas')
-  backgroundImage = null
-  if opts.preserveCanvasContents
-    oldCanvas = if canvases.length then canvases[0] else null
-    unless oldCanvas
-      throw "Can't preserve old canvas if there isn't one"
-    backgroundImage = new Image()
-    backgroundImage.src = oldCanvas.toDataURL()
-    opts.backgroundShapes.unshift(
-      shapes.createShape('Image', {x: 0, y: 0, image: backgroundImage}))
 
   ### henceforth, all pre-existing DOM children shall be destroyed ###
 
@@ -91,9 +79,6 @@ init = (el, opts = {}) ->
   ### and get to work ###
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
-
-  if backgroundImage
-    backgroundImage.onload = => lc.repaintLayer('background')
 
   initReact(pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
 

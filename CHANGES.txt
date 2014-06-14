@@ -10,6 +10,9 @@ v0.4:
  * Backgrounds and watermarks are no longer affected by the eraser
  * No DOM is preserved inside the container div at all
  * LiterallyCanvas class API
+   * Removed preserveCanvasContents option
+   * watermarkScale option
+   * 'toolClasses' option has been replace with 'tools' option
    * Constructor takes (containerElement, opts) instead of (canvas, opts)
    * API for subscribing/unsubscribing event listeners has changed (see #130)
    * Redraw layers ('main' or 'background') with repaintLayer(layerName);
