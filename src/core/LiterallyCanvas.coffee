@@ -81,23 +81,26 @@ module.exports = class LiterallyCanvas
     @trigger('toolChange', {tool})
 
   begin: (x, y) ->
-    newPos = @clientCoordsToDrawingCoords(x, y)
-    @tool.begin newPos.x, newPos.y, this
-    @isDragging = true
-    @trigger("drawStart", {tool: @tool})
+    util.requestAnimationFrame () =>
+      newPos = @clientCoordsToDrawingCoords(x, y)
+      @tool.begin newPos.x, newPos.y, this
+      @isDragging = true
+      @trigger("drawStart", {tool: @tool})
 
   continue: (x, y) ->
-    newPos = @clientCoordsToDrawingCoords(x, y)
-    if @isDragging
-      @tool.continue newPos.x, newPos.y, this
-      @trigger("drawContinue", {tool: @tool})
+    util.requestAnimationFrame () =>
+      newPos = @clientCoordsToDrawingCoords(x, y)
+      if @isDragging
+        @tool.continue newPos.x, newPos.y, this
+        @trigger("drawContinue", {tool: @tool})
 
   end: (x, y) ->
-    newPos = @clientCoordsToDrawingCoords(x, y)
-    if @isDragging
-      @tool.end newPos.x, newPos.y, this
-      @isDragging = false
-      @trigger("drawEnd", {tool: @tool})
+    util.requestAnimationFrame () =>
+      newPos = @clientCoordsToDrawingCoords(x, y)
+      if @isDragging
+        @tool.end newPos.x, newPos.y, this
+        @isDragging = false
+        @trigger("drawEnd", {tool: @tool})
 
   setColor: (name, color) ->
     @colors[name] = color
