@@ -58,6 +58,8 @@
           }
         });
 
+        LC.setDefaultImageURLPrefix('/lib/img');
+
         // you can preserve the canvas contents
         var ctx = $('.literally.one canvas').get(0).getContext('2d');
         ctx.fillStyle = 'rgb(255,255,0)';
@@ -75,7 +77,6 @@
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100})
           ],
-          imageURLPrefix: '/lib/img',
           preserveCanvasContents: true,
           watermarkImage: watermarkImage,
           onInit: function(lc) {
