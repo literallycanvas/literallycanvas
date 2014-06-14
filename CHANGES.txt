@@ -34,6 +34,7 @@ v0.4:
    LC.createShape()
    LC.JSONToShape()
    LC.shapeToJSON()
+   LC.setDefaultImageURLPrefix()
 
 v0.3:
  * LiterallyCanvas.canvasWithBackground() renders the current drawing over a
