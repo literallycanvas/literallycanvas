@@ -88,7 +88,8 @@ module.exports = class LiterallyCanvas
       @trigger("drawStart", {tool: @tool})
 
   continue: (x, y) ->
-    util.requestAnimationFrame () =>
+    util.cancelAnimationFrame(@continueAnimationID)
+    @continueAnimationID = util.requestAnimationFrame () =>
       newPos = @clientCoordsToDrawingCoords(x, y)
       if @isDragging
         @tool.continue newPos.x, newPos.y, this
