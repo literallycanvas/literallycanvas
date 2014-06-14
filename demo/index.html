@@ -60,11 +60,6 @@
 
         LC.setDefaultImageURLPrefix('/lib/img');
 
-        // you can preserve the canvas contents
-        var ctx = $('.literally.one canvas').get(0).getContext('2d');
-        ctx.fillStyle = 'rgb(255,255,0)';
-        ctx.fillRect(0, 0, 300, 300);
-
         var backgroundImage = new Image();
         backgroundImage.src = '/demo/bear.png';
 
@@ -72,28 +67,26 @@
         watermarkImage.src = '/demo/watermark.png';
 
         // the only LC-specific thing we have to do
-        $('.literally.one').literallycanvas({
+        var containerOne = document.getElementsByClassName('literally one')[0];
+        var lc = LC.init(containerOne, {
           backgroundShapes: [
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100})
           ],
-          preserveCanvasContents: true,
           watermarkImage: watermarkImage,
-          onInit: function(lc) {
-            window.demoLC = lc;
-            lc.loadSnapshotJSON(localStorage.getItem('drawing'));
+        });
+        window.demoLC = lc;
+        lc.loadSnapshotJSON(localStorage.getItem('drawing'));
 
-            lc.on('drawingChange', function() {
-              localStorage.setItem('drawing', lc.getSnapshotJSON());
-            });
+        lc.on('drawingChange', function() {
+          localStorage.setItem('drawing', lc.getSnapshotJSON());
+        });
 
-            $("#open-image").click(function() {
-              window.open(lc.getImage({
-                // rect: {x: 0, y: 0, width: 100, height: 100}
-                scale: 2
-              }).toDataURL());
-            });
-          }
+        $("#open-image").click(function() {
+          window.open(lc.getImage({
+            // rect: {x: 0, y: 0, width: 100, height: 100}
+            scale: 2
+          }).toDataURL());
         });
       });
     </script>
