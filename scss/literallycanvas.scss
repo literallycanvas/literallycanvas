@@ -66,6 +66,7 @@ $optionsHeight: 60px;
 }
 
 .literally .lc-picker {
+  z-index: 1;
   border-right: $basicBorder;
 
   .toolbar-button {
@@ -165,6 +166,7 @@ $optionsHeight: 60px;
 }
 
 .literally .lc-options {
+  z-index: 1;
   border-top: $basicBorder;
 
   .lc-stroke-widths {
