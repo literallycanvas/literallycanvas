@@ -61,10 +61,8 @@ module.exports = class LiterallyCanvas
   on: (name, fn) ->
     wrapper = (e) -> fn e.detail
     @canvas.addEventListener(name, wrapper)
-    wrapper
-
-  removeEventListener: (name, wrapper) ->
-    @canvas.removeEventListener(name, wrapper)
+    =>
+      @canvas.removeEventListener(name, wrapper)
 
   # actual ratio of drawing-space pixels to perceived pixels, accounting for
   # both zoom and displayPixelWidth. use this when converting between
