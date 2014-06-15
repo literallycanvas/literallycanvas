@@ -152,7 +152,7 @@ defineShape 'Line',
   fromJSON: (data) -> createShape('Line', data)
 
 
-linePathFuncs = 
+linePathFuncs =
   constructor: (args={}) ->
     points = args.points or []
     @order = args.order or 3
@@ -288,7 +288,7 @@ defineShape 'Text',
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
     @boundingBoxHeight = 0 # set by random shit; double ugh
-  draw: (ctx) -> 
+  draw: (ctx) ->
     ctx.font  = @font
     ctx.fillStyle = @color
     ctx.fillText(@text, @x, @y)
