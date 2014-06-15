@@ -310,6 +310,7 @@ module.exports = class LiterallyCanvas
       shape = JSONToShape(shapeRepr)
       @execute(new actions.AddShapeAction(this, shape)) if shape
     @repaintAllLayers()
+    @trigger('snapshotLoad')
     @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->
