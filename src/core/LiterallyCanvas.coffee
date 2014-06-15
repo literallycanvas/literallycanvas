@@ -66,6 +66,9 @@ module.exports = class LiterallyCanvas
   removeEventListener: (name, wrapper) ->
     @canvas.removeEventListener(name, wrapper)
 
+  # actual ratio of drawing-space pixels to perceived pixels, accounting for
+  # both zoom and displayPixelWidth. use this when converting between
+  # drawing-space and screen-space.
   getRenderScale: -> @scale * @backingScale
 
   clientCoordsToDrawingCoords: (x, y) ->
@@ -104,7 +107,6 @@ module.exports = class LiterallyCanvas
 
   setColor: (name, color) ->
     @colors[name] = color
-    @trigger "#{name}ColorChange", @colors[name]
     switch name
       when 'background'
         @containerEl.style.backgroundColor = @colors.background
@@ -113,6 +115,7 @@ module.exports = class LiterallyCanvas
         @repaintLayer('main')
       when 'secondary'
         @repaintLayer('main')
+    @trigger "#{name}ColorChange", @colors[name]
     @trigger "drawingChange" if name == 'background'
 
   getColor: (name) -> @colors[name]
@@ -120,9 +123,7 @@ module.exports = class LiterallyCanvas
   saveShape: (shape) ->
     @execute(new actions.AddShapeAction(this, shape))
     @trigger('shapeSave', {shape: shape})
-    @trigger('drawingChange', {shape: shape})
-
-  numShapes: -> @shapes.length
+    @trigger('drawingChange')
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
