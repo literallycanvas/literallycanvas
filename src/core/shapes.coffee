@@ -287,7 +287,6 @@ defineShape 'Text',
     @text = args.text or ''
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
-    @boundingBoxHeight = 0 # set by random shit; double ugh
   draw: (ctx) ->
     ctx.font  = @font
     ctx.fillStyle = @color
