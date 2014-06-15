@@ -6,7 +6,7 @@ module.exports = class Eyedropper extends Tool
 
   name: 'Eyedropper'
   iconName: 'eyedropper'
-    
+
   readColor: (x, y, lc) ->
     newColor = lc.getPixel(x, y)
     lc.setColor('primary', newColor or lc.getColor('background'))
