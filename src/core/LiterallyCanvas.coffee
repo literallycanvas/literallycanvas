@@ -52,8 +52,8 @@ module.exports = class LiterallyCanvas
     util.matchElementSize(
       @containerEl, [@canvas], @backingScale, => @repaintLayer('main'))
 
-    width = opts.imageSize.width
-    height = opts.imageSize.height
+    width = if opts.imageSize then opts.imageSize.width else undefined
+    height = if opts.imageSize then opts.imageSize.height else undefined
 
     # TODO: DRY these up
     if width == 'infinite' or not width
