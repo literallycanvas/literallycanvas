@@ -10,7 +10,7 @@ $basicBorder: 1px solid black;
     background-color: rgba(0, 0, 0, 0.2);
   }
 
-  &.disabled {
+  &.disabled * {
     opacity: 0.5;
     cursor: default;
 
