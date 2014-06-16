@@ -15,20 +15,20 @@ class ClearAction
 
 class AddShapeAction
 
-  constructor: (@lc, @shape, @afterShapeId=null) ->
+  constructor: (@lc, @shape, @previousShapeId=null) ->
 
   do: ->
     # common case: just add it to the end
     if (not @lc.shapes.length or
-        @lc.shapes[@lc.shapes.length-1].id == @afterShapeId or
-        @afterShapeId == null)
+        @lc.shapes[@lc.shapes.length-1].id == @previousShapeId or
+        @previousShapeId == null)
       @lc.shapes.push(@shape)
     # uncommon case: insert it somewhere
     else
       newShapes = []
       for shape in @lc.shapes
         newShapes.push(shape)
-        if shape.id == @afterShapeId
+        if shape.id == @previousShapeId
           newShapes.push(@shape)
       @lc.shapes = newShapes
     @lc.repaintLayer('main')
