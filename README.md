@@ -34,7 +34,7 @@ First, [download the tarball](https://github.com/literallycanvas/literallycanvas
 or install with bower (`bower install literallycanvas`). Then do this:
 
 ```html
-<link href="/static/css/literally.css" rel="stylesheet">
+<link href="/static/css/literallycanvas.css" rel="stylesheet">
 <div class="literally"><canvas></canvas></div>
 <script>$('.literally').literallycanvas();</script>
 ```

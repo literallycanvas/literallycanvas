@@ -70,4 +70,6 @@ util =
     return 1 unless window.devicePixelRatio > 1
     return window.devicePixelRatio
 
+  requestAnimationFrame: (window.requestAnimationFrame or window.setTimeout).bind(window)
+
 module.exports = util

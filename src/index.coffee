@@ -25,18 +25,22 @@ tools =
   ToolWithStroke: baseTools.ToolWithStroke
 
 
+defaultImageURLPrefix = 'lib/img'
+setDefaultImageURLPrefix = (newDefault) -> defaultImageURLPrefix = newDefault
+
+
 init = (el, opts = {}) ->
-  opts.imageURLPrefix ?= 'lib/img'
+  opts.imageURLPrefix ?= defaultImageURLPrefix
 
   opts.primaryColor ?= '#000'
   opts.secondaryColor ?= '#fff'
   opts.backgroundColor ?= 'transparent'
 
   opts.keyboardShortcuts ?= true
-  opts.preserveCanvasContents ?= false
 
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
+  opts.watermarkScale ?= 1
 
   unless 'tools' of opts
     opts.tools = [
@@ -48,17 +52,6 @@ init = (el, opts = {}) ->
       tools.Pan,
       tools.Eyedropper,
     ]
-
-  canvases = el.getElementsByTagName('canvas')
-  backgroundImage = null
-  if opts.preserveCanvasContents
-    oldCanvas = if canvases.length then canvases[0] else null
-    unless oldCanvas
-      throw "Can't preserve old canvas if there isn't one"
-    backgroundImage = new Image()
-    backgroundImage.src = oldCanvas.toDataURL()
-    opts.backgroundShapes.unshift(
-      shapes.createShape('Image', {x: 0, y: 0, image: backgroundImage}))
 
   ### henceforth, all pre-existing DOM children shall be destroyed ###
 
@@ -87,9 +80,6 @@ init = (el, opts = {}) ->
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
 
-  if backgroundImage
-    backgroundImage.onload = => lc.repaintLayer('background')
-
   initReact(pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
@@ -113,6 +103,7 @@ if window.$
 
 module.exports = {
   init, registerJQueryPlugin, util, tools, defineOptionsStyle,
+  setDefaultImageURLPrefix,
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,

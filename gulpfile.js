@@ -9,7 +9,7 @@ var uglify = require('gulp-uglify');
 
 
 gulp.task('sass', function() {
-  return gulp.src('scss/literally.scss')
+  return gulp.src('scss/literallycanvas.scss')
     .pipe(sass({ style: 'compressed' }))
     .pipe(gulp.dest('lib/css'))
     .pipe(connect.reload())

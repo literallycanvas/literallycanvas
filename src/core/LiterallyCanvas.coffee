@@ -15,14 +15,8 @@ module.exports = class LiterallyCanvas
       secondary: opts.secondaryColor or '#fff'
       background: opts.backgroundColor or 'transparent'
 
-    if opts.watermarkImage
-      watermarkEl = document.createElement('div')
-
-      watermarkEl.style['background-image'] = "url(#{opts.watermarkImage.src})"
-      watermarkEl.style['background-repeat'] = 'no-repeat'
-      watermarkEl.style['background-position'] = 'center center'
-      @containerEl.appendChild(watermarkEl)
-      util.matchElementSize(@containerEl, [watermarkEl])
+    @watermarkImage = opts.watermarkImage
+    @watermarkScale = opts.watermarkScale or 1
 
     @backgroundCanvas = document.createElement('canvas')
     @backgroundCtx = @backgroundCanvas.getContext('2d')
@@ -30,9 +24,11 @@ module.exports = class LiterallyCanvas
     @backgroundShapes = opts.backgroundShapes || []
 
     @canvas = document.createElement('canvas')
+    @canvas.style['background-color'] = 'transparent'
     @containerEl.appendChild(@canvas)
 
     @buffer = document.createElement('canvas')
+    @buffer.style['background-color'] = 'transparent'
     @ctx = @canvas.getContext('2d')
     @bufferCtx = @buffer.getContext('2d')
 
@@ -80,11 +76,12 @@ module.exports = class LiterallyCanvas
   on: (name, fn) ->
     wrapper = (e) -> fn e.detail
     @canvas.addEventListener(name, wrapper)
-    wrapper
+    =>
+      @canvas.removeEventListener(name, wrapper)
 
-  removeEventListener: (name, wrapper) ->
-    @canvas.removeEventListener(name, wrapper)
-
+  # actual ratio of drawing-space pixels to perceived pixels, accounting for
+  # both zoom and displayPixelWidth. use this when converting between
+  # drawing-space and screen-space.
   getRenderScale: -> @scale * @backingScale
 
   clientCoordsToDrawingCoords: (x, y) ->
@@ -100,34 +97,38 @@ module.exports = class LiterallyCanvas
     @trigger('toolChange', {tool})
 
   begin: (x, y) ->
-    newPos = @clientCoordsToDrawingCoords(x, y)
-    @tool.begin newPos.x, newPos.y, this
-    @isDragging = true
-    @trigger("drawStart", {tool: @tool})
+    util.requestAnimationFrame () =>
+      newPos = @clientCoordsToDrawingCoords(x, y)
+      @tool.begin newPos.x, newPos.y, this
+      @isDragging = true
+      @trigger("drawStart", {tool: @tool})
 
   continue: (x, y) ->
-    newPos = @clientCoordsToDrawingCoords(x, y)
-    if @isDragging
-      @tool.continue newPos.x, newPos.y, this
-      @trigger("drawContinue", {tool: @tool})
+    util.requestAnimationFrame () =>
+      newPos = @clientCoordsToDrawingCoords(x, y)
+      if @isDragging
+        @tool.continue newPos.x, newPos.y, this
+        @trigger("drawContinue", {tool: @tool})
 
   end: (x, y) ->
-    newPos = @clientCoordsToDrawingCoords(x, y)
-    if @isDragging
-      @tool.end newPos.x, newPos.y, this
-      @isDragging = false
-      @trigger("drawEnd", {tool: @tool})
+    util.requestAnimationFrame () =>
+      newPos = @clientCoordsToDrawingCoords(x, y)
+      if @isDragging
+        @tool.end newPos.x, newPos.y, this
+        @isDragging = false
+        @trigger("drawEnd", {tool: @tool})
 
   setColor: (name, color) ->
     @colors[name] = color
-    @trigger "#{name}ColorChange", @colors[name]
     switch name
       when 'background'
         @containerEl.style.backgroundColor = @colors.background
+        @repaintLayer('background')
       when 'primary'
         @repaintLayer('main')
       when 'secondary'
         @repaintLayer('main')
+    @trigger "#{name}ColorChange", @colors[name]
     @trigger "drawingChange" if name == 'background'
 
   getColor: (name) -> @colors[name]
@@ -135,9 +136,7 @@ module.exports = class LiterallyCanvas
   saveShape: (shape) ->
     @execute(new actions.AddShapeAction(this, shape))
     @trigger('shapeSave', {shape: shape})
-    @trigger('drawingChange', {shape: shape})
-
-  numShapes: -> @shapes.length
+    @trigger('drawingChange')
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
@@ -195,6 +194,7 @@ module.exports = class LiterallyCanvas
       when 'background'
         @backgroundCtx.clearRect(
           0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
+        @_renderWatermark() if @watermarkImage
         retryCallback = => @repaintLayer('background')
         @draw(@backgroundShapes, @backgroundCtx, retryCallback)
       when 'main'
@@ -214,6 +214,16 @@ module.exports = class LiterallyCanvas
           ), @ctx
 
     @trigger('repaint', {layerKey: repaintLayerKey})
+
+  _renderWatermark: ->
+    @backgroundCtx.save()
+    @backgroundCtx.translate(
+      @backgroundCanvas.width / 2, @backgroundCanvas.height / 2)
+    @backgroundCtx.scale(
+      @watermarkScale * @backingScale, @watermarkScale * @backingScale)
+    @backgroundCtx.drawImage(
+      @watermarkImage, -@watermarkImage.width / 2, -@watermarkImage.height / 2)
+    @backgroundCtx.restore()
 
   # Redraws the back buffer to the screen in its current state
   # then draws the given shape translated and scaled on top of that.
@@ -315,12 +325,9 @@ module.exports = class LiterallyCanvas
     util.getBoundingRect @width, @height, @shapes.map((s) -> s.getBoundingRect())
 
   getImage: (opts={}) ->
-    # Image or canvas
-    opts.backgroundImage ?= null
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
     opts.scale ?= 1
-    opts.includeWatermark ?= false
     opts.scaleDownRetina ?= true
     opts.scale /= @backingScale if opts.scaleDownRetina
     @repaintLayer('main', true)
@@ -361,6 +368,7 @@ module.exports = class LiterallyCanvas
       shape = JSONToShape(shapeRepr)
       @execute(new actions.AddShapeAction(this, shape)) if shape
     @repaintAllLayers()
+    @trigger('snapshotLoad')
     @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->

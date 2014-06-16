@@ -11,11 +11,9 @@ ColorWell = React.createClass
 
   # our color state tracks lc's
   componentDidMount: ->
-    @subscriber = @props.lc.on "#{@props.colorName}ColorChange", =>
+    @unsubscribe = @props.lc.on "#{@props.colorName}ColorChange", =>
       @setState {color: @props.lc.colors[@props.colorName]}
-  componentWillUnmount: ->
-    @props.lc.removeEventListener(
-      "#{@props.colorName}ColorChange", @subscriber)
+  componentWillUnmount: -> @unsubscribe()
 
   togglePicker: -> @setState {isPickerVisible: not @state.isPickerVisible}
   closePicker: -> @setState {isPickerVisible: false}
