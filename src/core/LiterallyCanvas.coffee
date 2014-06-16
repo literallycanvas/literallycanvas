@@ -118,9 +118,14 @@ module.exports = class LiterallyCanvas
 
   getColor: (name) -> @colors[name]
 
-  saveShape: (shape) ->
-    @execute(new actions.AddShapeAction(this, shape))
-    @trigger('shapeSave', {shape: shape})
+  saveShape: (shape, triggerShapeSaveEvent=true, previousShapeId=null) ->
+    unless previousShapeId
+      previousShapeId = if @shapes.length \
+        then @shapes[@shapes.length-1].id \
+        else null
+    @execute(new actions.AddShapeAction(this, shape, previousShapeId))
+    if triggerShapeSaveEvent
+      @trigger('shapeSave', {shape, previousShapeId})
     @trigger('drawingChange')
 
   pan: (x, y) ->
