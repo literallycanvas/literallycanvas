@@ -155,6 +155,30 @@ defineShape 'Line',
   fromJSON: (data) -> createShape('Line', data)
 
 
+# returns false if no points because there are no points to share style
+_doAllPointsShareStyle = (points) ->
+  return false unless points.length
+  size = points[0].size
+  color = points[0].color
+  for point in points
+    return false unless point.size == size and point.color == color
+  return true
+
+
+_createLinePathFromData = (shapeName, data) ->
+  points = null
+  if data.points
+    points = (JSONToShape(pointData) for pointData in data.points)
+  else if data.pointCoordinatePairs
+    points = (JSONToShape({
+      className: 'Point',
+      data: {x: x, y: y, size: data.pointSize, color: data.pointColor}
+    }) for [x, y] in data.pointCoordinatePairs)
+  return null unless points[0]
+  createShape(
+    shapeName, {points, order: data.order, tailSize: data.tailSize})
+
+
 linePathFuncs =
   constructor: (args={}) ->
     points = args.points or []
@@ -179,17 +203,8 @@ linePathFuncs =
       height: p.size,
     }
 
-  # returns false if no points because there are no points to share style
-  doAllPointsShareStyle: ->
-    return false unless @points.length
-    size = @points[0].size
-    color = @points[0].color
-    for point in @points
-      return false unless point.size == size and point.color == color
-    return true
-
   toJSON: ->
-    if @doAllPointsShareStyle()
+    if _doAllPointsShareStyle(@points)
       {
         @order, @tailSize,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
@@ -199,18 +214,7 @@ linePathFuncs =
     else
       {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
 
-  fromJSON: (data) ->
-    points = null
-    if data.points
-      points = (JSONToShape(pointData) for pointData in data.points)
-    else if data.pointCoordinatePairs
-      points = (JSONToShape({
-        className: 'Point',
-        data: {x: x, y: y, size: data.pointSize, color: data.pointColor}
-      }) for [x, y] in data.pointCoordinatePairs)
-    return null unless points[0]
-    createShape(
-      'LinePath', {points, order: data.order, tailSize: data.tailSize})
+  fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
   draw: (ctx) ->
     @drawPoints(ctx, @smoothedPoints)
@@ -286,12 +290,7 @@ defineShape 'ErasedLinePath',
     ctx.restore()
     bufferCtx.restore()
 
-  # same as LinePah
-  fromJSON: (data) ->
-    points = (JSONToShape(pointData) for pointData in data.points)
-    return null unless points[0]
-    createShape(
-      'ErasedLinePath', {points, order: data.order, tailSize: data.tailSize})
+  fromJSON: (data) -> _createLinePathFromData('ErasedLinePath', data)
 
 
 # this is currently just used for LinePath/ErasedLinePath internal storage.

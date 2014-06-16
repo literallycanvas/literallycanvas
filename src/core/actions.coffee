@@ -26,10 +26,15 @@ class AddShapeAction
     # uncommon case: insert it somewhere
     else
       newShapes = []
+      found = false
       for shape in @lc.shapes
         newShapes.push(shape)
         if shape.id == @previousShapeId
           newShapes.push(@shape)
+          found = true
+      unless found
+        # given ID doesn't exist, just shove it on top
+        newShapes.push(@shape)
       @lc.shapes = newShapes
     @lc.repaintLayer('main')
 
