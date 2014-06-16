@@ -43,7 +43,7 @@ util =
     canvas
 
   # [{x, y, width, height}]
-  getBoundingRect: (width, height, rects) ->
+  getBoundingRect: (rects, width, height) ->
     return {x: 0, y: 0, width: 0 or width, height: 0 or height} unless rects.length
 
     # Calculate the bounds for infinite canvas
