@@ -1,28 +1,48 @@
-$basicBorder: 1px solid black;
-
-@mixin hover-selected-and-disabled {
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-
-  &.selected {
-    cursor: default;
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-
-  &.disabled * {
-    opacity: 0.5;
-    cursor: default;
-
-    &:hover {
-      background-color: transparent;
-    }
-  }
-}
+$basicBorder: 1px solid #555;
 
 $pickerWidth: 60px;
 $pickerButtonSize: 30px;
 $optionsHeight: 60px;
+
+@mixin vertical-gradient($top, $bottom) {
+  background: $top;
+  background-image: -webkit-linear-gradient(top, $top, $bottom);
+  background-image: -moz-linear-gradient(top, $top, $bottom);
+  background-image: -ms-linear-gradient(top, $top, $bottom);
+  background-image: -o-linear-gradient(top, $top, $bottom);
+  background-image: linear-gradient(to bottom, $top, $bottom);
+}
+
+@mixin button-style-1 {
+  $plainTop: #f5f5f5;
+  $plainBottom: #d6d6d6;
+  $hoverTop: #3cb0fd;
+  $hoverBottom: #3498db;
+  & {
+    @include vertical-gradient($plainTop, $plainBottom);
+    text-decoration: none;
+  }
+
+  &.selected:not(.disabled) {
+    @include vertical-gradient(
+      lighten(desaturate($hoverTop, 20%), 10%),
+      lighten(desaturate($hoverBottom, 20%), 10%));
+  }
+  &:hover:not(.disabled) {
+    @include vertical-gradient($hoverTop, $hoverBottom);
+  }
+  &:active:not(.disabled) {
+    @include vertical-gradient($hoverBottom, $hoverTop);
+  }
+  &.disabled {
+    cursor: default;
+    background-image: none;
+    background-color: #ddd;
+    & * {
+      opacity: 0.5;
+    }
+  }
+}
 
 .literally {
   position: relative;
@@ -48,7 +68,7 @@ $optionsHeight: 60px;
   }
 
   .lc-picker {
-    top: 0; left: 0; bottom: 0; width: $pickerWidth;
+    top: 0; left: 0; bottom: 0; width: $pickerWidth; background-color: #aaa;
   }
 
   .lc-drawing {
@@ -63,6 +83,7 @@ $optionsHeight: 60px;
 
   .lc-options {
     right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
+    background-color: #aaa;
   }
 }
 
@@ -77,7 +98,7 @@ $optionsHeight: 60px;
     cursor: pointer;
     text-align: center;
 
-    @include hover-selected-and-disabled;
+    @include button-style-1;
   }
 
   .thin-button {
@@ -102,11 +123,17 @@ $optionsHeight: 60px;
   }
 
   .color-well-label {
-    @include hover-selected-and-disabled;
+    @include button-style-1;
+    border-bottom :$basicBorder;
+    padding-bottom: 4px;
     font-size: 10px;
     text-align: center;
     line-height: 1.2em;
     height: auto;
+
+    label {
+      margin-bottom: 2px;
+    }
   }
 
   .color-well-container {
@@ -174,7 +201,10 @@ $optionsHeight: 60px;
     margin: 0;
     padding: 0;
     li {
-      @include hover-selected-and-disabled;
+      @include button-style-1;
+      border-top: none;
+      border-bottom: none;
+      border-left: none;
 
       list-style-type: none;
       display: inline-block;
