@@ -2,7 +2,7 @@ $basicBorder: 1px solid #555;
 
 $pickerWidth: 60px;
 $pickerButtonSize: 30px;
-$optionsHeight: 60px;
+$optionsHeight: 65px;
 
 @mixin vertical-gradient($top, $bottom) {
   background: $top;
@@ -18,9 +18,11 @@ $optionsHeight: 60px;
   $plainBottom: #d6d6d6;
   $hoverTop: #3cb0fd;
   $hoverBottom: #3498db;
+
   & {
     @include vertical-gradient($plainTop, $plainBottom);
     text-decoration: none;
+    cursor: pointer;
   }
 
   &.selected:not(.disabled) {
@@ -137,6 +139,7 @@ $optionsHeight: 60px;
   }
 
   .color-well-container {
+    z-index: 2;
     width: $pickerButtonSize;
     height: $pickerButtonSize;
     border: $basicBorder;
@@ -200,22 +203,21 @@ $optionsHeight: 60px;
   .lc-stroke-widths {
     margin: 0;
     padding: 0;
+
     li {
-      @include button-style-1;
-      border-top: none;
-      border-bottom: none;
-      border-left: none;
-
+      height: $optionsHeight - 1px;
+      padding: 0 0 0 10px;
       list-style-type: none;
-      display: inline-block;
-      border-right: $basicBorder;
-
-      width: $optionsHeight;
-      height: $optionsHeight;
-
       display: table-cell;
       text-align: center;
-      vertical-align: middle;
+      vertical-align: bottom;
+
+      .stroke-width-button {
+        border: $basicBorder;
+        @include button-style-1;
+        margin: 0 0 5px 0;
+        padding: 5px 5px 4px 5px;
+      }
     }
   }
 
