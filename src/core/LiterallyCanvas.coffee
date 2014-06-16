@@ -267,7 +267,6 @@ module.exports = class LiterallyCanvas
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
     opts.scale ?= 1
-    opts.includeWatermark ?= false
     opts.scaleDownRetina ?= true
     opts.scale /= @backingScale if opts.scaleDownRetina
     @repaintLayer('main', true)
