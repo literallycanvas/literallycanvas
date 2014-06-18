@@ -16,14 +16,14 @@ defineOptionsStyle 'stroke-width', React.createClass
 
     (ul {className: 'lc-stroke-widths'},
       strokeWidths.map((strokeWidth, ix) =>
-        className = React.addons.classSet
-          'lc-stroke-width': true
+        buttonClassName = React.addons.classSet
+          'stroke-width-button': true
           'selected': strokeWidth == @state.strokeWidth
         buttonSize = 40
-        (li {className, key: strokeWidth},
+        (li {className: 'lc-stroke-width', key: strokeWidth},
           (div \
             {
-              className: 'stroke-width-button',
+              className: buttonClassName,
               onClick: =>
                 @props.tool.strokeWidth = strokeWidth
                 @setState @getState()
