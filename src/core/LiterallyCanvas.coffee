@@ -5,6 +5,8 @@ math = require './math'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
+INFINITE = 'infinite'
+
 module.exports = class LiterallyCanvas
 
   constructor: (@containerEl, opts) ->
@@ -55,16 +57,10 @@ module.exports = class LiterallyCanvas
     width = if opts.imageSize then opts.imageSize.width else undefined
     height = if opts.imageSize then opts.imageSize.height else undefined
 
-    # TODO: DRY these up
-    if width == 'infinite' or not width
-      @width = undefined
-    else
-      @width = width
-
-    if height == 'infinite' or not height
-      @height = undefined
-    else
-      @height = height
+    @width = (
+      if opts.imageSize.width then opts.imageSize.width else INFINITE)
+    @height = (
+      if opts.imageSize.height then opts.imageSize.height else INFINITE)
 
     # This will ensure that we are zoomed to @scale, panned to @position, and
     # that all layers are repainted.
@@ -145,14 +141,13 @@ module.exports = class LiterallyCanvas
   setPan: (x, y) ->
     renderScale = @getRenderScale()
 
-    # TODO: DRY these up
-    if @width
+    if @width != INFINITE
       if @canvas.width > @width * renderScale
         x = (@canvas.width - @width * renderScale) / 2
       else
         x = Math.max(Math.min(0, x), @canvas.width - @width * renderScale)
 
-    if @height
+    if @height != INFINITE
       if @canvas.height > @height * renderScale
         y = (@canvas.height - @height * renderScale) / 2
       else
@@ -251,10 +246,14 @@ module.exports = class LiterallyCanvas
   # The context is restored to its original state before returning.
   # This should not be called inside an @transformed block.
   clipped: (fn, contexts...) ->
-    x = if @width then @position.x else 0
-    y = if @height then @position.y else 0
-    width = if @width then @width * @getRenderScale() else @canvas.width
-    height = if @height then @height * @getRenderScale() else @canvas.height
+    x = if @width == INFINITE then 0 else @position.x
+    y = if @height == INFINITE then 0 else @position.y
+    width = switch @width
+      when INFINITE then @canvas.width
+      else @width * @getRenderScale()
+    height = switch @height
+      when INFINITE then @canvas.height
+      else @height * @getRenderScale()
 
     for ctx in contexts
       ctx.save()
@@ -322,7 +321,10 @@ module.exports = class LiterallyCanvas
       null
 
   getContentBounds: ->
-    util.getBoundingRect @shapes.map((s) -> s.getBoundingRect()), @width, @height
+    util.getBoundingRect(
+      @shapes.map((s) -> s.getBoundingRect()),
+      if @width == INFINITE then 0 else @width,
+      if @height == INFINITE then 0 else @height)
 
   getImage: (opts={}) ->
     # {x, y, width, height}

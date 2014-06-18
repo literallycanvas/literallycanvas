@@ -38,6 +38,8 @@ init = (el, opts = {}) ->
 
   opts.keyboardShortcuts ?= true
 
+  opts.imageSize ?= {width: 'infinite', height: 'infinite'}
+
   opts.backgroundShapes ?= []
   opts.watermarkImage ?= null
   opts.watermarkScale ?= 1
