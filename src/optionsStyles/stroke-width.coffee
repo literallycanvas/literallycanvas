@@ -19,7 +19,7 @@ defineOptionsStyle 'stroke-width', React.createClass
         className = React.addons.classSet
           'lc-stroke-width': true
           'selected': strokeWidth == @state.strokeWidth
-        buttonSize = Math.max(Math.ceil(strokeWidth / 2) * 2, 2)
+        buttonSize = 40
         (li {className, key: strokeWidth},
           (div \
             {
@@ -37,8 +37,8 @@ defineOptionsStyle 'stroke-width', React.createClass
                 xmlns: "http://www.w3.org/2000/svg"
               },
               (circle {
-                cx: Math.ceil(strokeWidth/2),
-                cy: Math.ceil(strokeWidth/2),
+                cx: Math.ceil(buttonSize/2),
+                cy: Math.ceil(buttonSize/2),
                 r: strokeWidth/2
               })
             )
