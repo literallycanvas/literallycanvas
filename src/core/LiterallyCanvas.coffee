@@ -47,23 +47,18 @@ module.exports = class LiterallyCanvas
     # something really simple
     @tool = new Pencil()
 
+    @width = opts.imageSize.width or INFINITE
+    @height = opts.imageSize.height or INFINITE
+
+    # This will ensure that we are zoomed to @scale, panned to @position, and
+    # that all layers are repainted.
+    @setZoom(@scale)
+
     util.matchElementSize(
       @containerEl, [@backgroundCanvas, @canvas], @backingScale, =>
         # pan here
         @repaintAllLayers()
     )
-
-    width = if opts.imageSize then opts.imageSize.width else undefined
-    height = if opts.imageSize then opts.imageSize.height else undefined
-
-    @width = (
-      if opts.imageSize.width then opts.imageSize.width else INFINITE)
-    @height = (
-      if opts.imageSize.height then opts.imageSize.height else INFINITE)
-
-    # This will ensure that we are zoomed to @scale, panned to @position, and
-    # that all layers are repainted.
-    @setZoom(@scale)
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
