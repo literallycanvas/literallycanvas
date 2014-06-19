@@ -48,11 +48,10 @@ module.exports = class LiterallyCanvas
     @tool = new Pencil()
 
     util.matchElementSize(
-      @containerEl, [@backgroundCanvas], @backingScale,
-      => @repaintLayer('background'))
-
-    util.matchElementSize(
-      @containerEl, [@canvas], @backingScale, => @repaintLayer('main'))
+      @containerEl, [@backgroundCanvas, @canvas], @backingScale, =>
+        # pan here
+        @repaintAllLayers()
+    )
 
     width = if opts.imageSize then opts.imageSize.width else undefined
     height = if opts.imageSize then opts.imageSize.height else undefined
