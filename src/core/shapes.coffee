@@ -226,7 +226,7 @@ linePathFuncs =
       segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
       drawStart = if segmentStart < @segmentSize * 2 then 0 else segmentStart
       drawEnd = segmentStart + @segmentSize + 1
-      @drawPoints(bufferCtx,@smoothedPoints.slice(drawStart, drawEnd))
+      @drawPoints(bufferCtx, @smoothedPoints.slice(drawStart, drawEnd))
 
   addPoint: (point) ->
     @points.push(point)
@@ -258,7 +258,7 @@ linePathFuncs =
     ctx.moveTo(points[0].x, points[0].y)
 
     for point in points.slice(1)
-        ctx.lineTo(point.x, point.y)
+      ctx.lineTo(point.x, point.y)
 
     ctx.stroke()
 

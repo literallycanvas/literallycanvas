@@ -5,6 +5,8 @@ math = require './math'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
+INFINITE = 'infinite'
+
 module.exports = class LiterallyCanvas
 
   constructor: (@containerEl, opts) ->
@@ -52,8 +54,17 @@ module.exports = class LiterallyCanvas
     util.matchElementSize(
       @containerEl, [@canvas], @backingScale, => @repaintLayer('main'))
 
-    @repaintLayer('background')
-    @repaintLayer('main')
+    width = if opts.imageSize then opts.imageSize.width else undefined
+    height = if opts.imageSize then opts.imageSize.height else undefined
+
+    @width = (
+      if opts.imageSize.width then opts.imageSize.width else INFINITE)
+    @height = (
+      if opts.imageSize.height then opts.imageSize.height else INFINITE)
+
+    # This will ensure that we are zoomed to @scale, panned to @position, and
+    # that all layers are repainted.
+    @setZoom(@scale)
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
@@ -133,6 +144,20 @@ module.exports = class LiterallyCanvas
     @setPan(@position.x - x, @position.y - y)
 
   setPan: (x, y) ->
+    renderScale = @getRenderScale()
+
+    if @width != INFINITE
+      if @canvas.width > @width * renderScale
+        x = (@canvas.width - @width * renderScale) / 2
+      else
+        x = Math.max(Math.min(0, x), @canvas.width - @width * renderScale)
+
+    if @height != INFINITE
+      if @canvas.height > @height * renderScale
+        y = (@canvas.height - @height * renderScale) / 2
+      else
+        y = Math.max(Math.min(0, y), @canvas.height - @height * renderScale)
+
     @position = {x, y}
     @trigger('pan', {x: @position.x, y: @position.y})
 
@@ -164,6 +189,10 @@ module.exports = class LiterallyCanvas
   # If dirty is true then all saved shapes are completely redrawn,
   # otherwise the back buffer is simply copied to the screen as is.
   repaintLayer: (repaintLayerKey, dirty=(repaintLayerKey == 'main')) ->
+
+    # Centers the image if it's smaller than the canvas.
+    @setPan(@position.x, @position.y)
+
     switch repaintLayerKey
       when 'background'
         @backgroundCtx.clearRect(
@@ -180,7 +209,13 @@ module.exports = class LiterallyCanvas
           @draw(@shapes, @bufferCtx, retryCallback)
         @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
         if @canvas.width > 0 and @canvas.height > 0
-          @ctx.drawImage @buffer, 0, 0
+          @ctx.fillStyle = '#ccc'
+          @ctx.fillRect(0, 0, @canvas.width, @canvas.height)
+          @clipped (=>
+            @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+            @ctx.drawImage @buffer, 0, 0
+          ), @ctx
+
     @trigger('repaint', {layerKey: repaintLayerKey})
 
   _renderWatermark: ->
@@ -200,7 +235,11 @@ module.exports = class LiterallyCanvas
   # The context is restored to its original state before returning.
   update: (shape) ->
     @repaintLayer('main', false)
-    @transformed (=> shape.update(@ctx, @bufferCtx)), @ctx, @bufferCtx
+    @clipped (=>
+      @transformed (=>
+        shape.update(@ctx, @bufferCtx)
+      ), @ctx, @bufferCtx
+    ), @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
@@ -209,7 +248,31 @@ module.exports = class LiterallyCanvas
     drawShapes = =>
       for shape in shapes
         shape.draw(ctx, retryCallback)
-    @transformed(drawShapes, ctx)
+    @clipped (=> @transformed(drawShapes, ctx)), ctx
+
+  # Executes the given function after clipping the canvas to the image size.
+  # The context is restored to its original state before returning.
+  # This should not be called inside an @transformed block.
+  clipped: (fn, contexts...) ->
+    x = if @width == INFINITE then 0 else @position.x
+    y = if @height == INFINITE then 0 else @position.y
+    width = switch @width
+      when INFINITE then @canvas.width
+      else @width * @getRenderScale()
+    height = switch @height
+      when INFINITE then @canvas.height
+      else @height * @getRenderScale()
+
+    for ctx in contexts
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(x, y, width, height)
+      ctx.clip()
+
+    fn()
+
+    for ctx in contexts
+      ctx.restore()
 
   # Executes the given function after translating and scaling the context.
   # The context is restored to its original state before returning.
@@ -266,7 +329,10 @@ module.exports = class LiterallyCanvas
       null
 
   getContentBounds: ->
-    util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
+    util.getBoundingRect(
+      @shapes.map((s) -> s.getBoundingRect()),
+      if @width == INFINITE then 0 else @width,
+      if @height == INFINITE then 0 else @height)
 
   getImage: (opts={}) ->
     # {x, y, width, height}

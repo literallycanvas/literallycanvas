@@ -43,8 +43,10 @@ util =
     canvas
 
   # [{x, y, width, height}]
-  getBoundingRect: (rects) ->
-    return {x: 0, y: 0, width: 0, height: 0} unless rects.length
+  getBoundingRect: (rects, width, height) ->
+    return {x: 0, y: 0, width: 0 or width, height: 0 or height} unless rects.length
+
+    # Calculate the bounds for infinite canvas
     minX = rects[0].x
     minY = rects[0].y
     maxX = rects[0].x + rects[0].width
@@ -54,6 +56,13 @@ util =
       minY = Math.floor Math.min(rect.y, minY)
       maxX = Math.ceil Math.max(maxX, rect.x + rect.width)
       maxY = Math.ceil Math.max(maxY, rect.y + rect.height)
+
+    # Use the image size bounds if they exist
+    minX = if width then 0 else minX
+    minY = if height then 0 else minY
+    maxX = width or maxX
+    maxY = height or maxY
+
     {x: minX, y: minY, width: maxX - minX, height: maxY - minY}
 
   getBackingScale: (context) ->
