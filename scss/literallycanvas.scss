@@ -124,12 +124,22 @@ $optionsHeight: 65px;
     border-bottom: $basicBorder;
   }
 
+
+  .lc-pick-tool {
+    img {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0;
+      margin: auto;
+      width: 80%;
+    }
+  }
+}
+
+.literally .lc-picker {
   .color-well-label {
-    @include button-style-1;
     border-bottom :$basicBorder;
     padding-bottom: 4px;
     font-size: 10px;
-    text-align: center;
     line-height: 1.2em;
     height: auto;
 
@@ -139,6 +149,7 @@ $optionsHeight: 65px;
   }
 
   .color-well-container {
+    position: relative;
     z-index: 2;
     width: $pickerButtonSize;
     height: $pickerButtonSize;
@@ -163,8 +174,8 @@ $optionsHeight: 65px;
   .color-picker-popup {
     position: absolute;
     z-index: 1;
-    left: 110%;
-    top: -100px;
+    left: $pickerWidth * 0.65;
+    bottom: -30px;
     background-color: white;
     border: $basicBorder;
 
@@ -175,23 +186,18 @@ $optionsHeight: 65px;
         cursor: pointer;
         width: 20px;
         height: 20px;
+        line-height: 20px;
         float: left;
 
         &:hover, &.selected {
           border: $basicBorder;
+          line-height: 18px;
+        }
+
+        &.transparent-cell {
+          width: 100%;
         }
       }
-    }
-  }
-
-
-
-  .lc-pick-tool {
-    img {
-      position: absolute;
-      top: 0; right: 0; bottom: 0; left: 0;
-      margin: auto;
-      width: 80%;
     }
   }
 }
