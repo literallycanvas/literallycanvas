@@ -231,7 +231,7 @@ module.exports = class LiterallyCanvas
     @repaintLayer('main', false)
     @clipped (=>
       @transformed (=>
-        shape.update(@ctx, @bufferCtx)
+        shape.drawLatest(@ctx, @bufferCtx)
       ), @ctx, @bufferCtx
     ), @ctx, @bufferCtx
 
