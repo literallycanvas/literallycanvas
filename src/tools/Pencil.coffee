@@ -13,7 +13,7 @@ module.exports = class Pencil extends ToolWithStroke
 
   continue: (x, y, lc) ->
     @currentShape.addPoint(@makePoint(x, y, lc))
-    lc.update(@currentShape)
+    lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
     lc.saveShape(@currentShape)
