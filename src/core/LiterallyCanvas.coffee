@@ -56,7 +56,7 @@ module.exports = class LiterallyCanvas
 
     util.matchElementSize(
       @containerEl, [@backgroundCanvas, @canvas], @backingScale, =>
-        # pan here
+        @keepPanInImageBounds()
         @repaintAllLayers()
     )
 
@@ -137,8 +137,9 @@ module.exports = class LiterallyCanvas
     # Subtract because we are moving the viewport
     @setPan(@position.x - x, @position.y - y)
 
-  setPan: (x, y) ->
+  keepPanInImageBounds: ->
     renderScale = @getRenderScale()
+    {x, y} = @position
 
     if @width != INFINITE
       if @canvas.width > @width * renderScale
@@ -153,6 +154,11 @@ module.exports = class LiterallyCanvas
         y = Math.max(Math.min(0, y), @canvas.height - @height * renderScale)
 
     @position = {x, y}
+
+  setPan: (x, y) ->
+    @position = {x, y}
+    @keepPanInImageBounds()
+    @repaintAllLayers()
     @trigger('pan', {x: @position.x, y: @position.y})
 
   zoom: (factor) ->
@@ -170,6 +176,7 @@ module.exports = class LiterallyCanvas
       @position.x, @canvas.width, oldScale, @scale)
     @position.y = math.scalePositionScalar(
       @position.y, @canvas.height, oldScale, @scale)
+    @keepPanInImageBounds()
 
     @repaintAllLayers()
     @trigger('zoom', {oldScale: oldScale, newScale: @scale})
@@ -183,10 +190,6 @@ module.exports = class LiterallyCanvas
   # If dirty is true then all saved shapes are completely redrawn,
   # otherwise the back buffer is simply copied to the screen as is.
   repaintLayer: (repaintLayerKey, dirty=(repaintLayerKey == 'main')) ->
-
-    # Centers the image if it's smaller than the canvas.
-    @setPan(@position.x, @position.y)
-
     switch repaintLayerKey
       when 'background'
         @backgroundCtx.clearRect(
