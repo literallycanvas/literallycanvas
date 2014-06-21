@@ -9,7 +9,7 @@ defineShape = (name, props) ->
     this
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
-  Shape.prototype.update = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
+  Shape.prototype.drawLatest = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
 
   for k of props
     if k != 'fromJSON'
@@ -219,7 +219,7 @@ linePathFuncs =
   draw: (ctx) ->
     @drawPoints(ctx, @smoothedPoints)
 
-  update: (ctx, bufferCtx) ->
+  drawLatest: (ctx, bufferCtx) ->
     @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
 
     if @tail
@@ -279,13 +279,13 @@ defineShape 'ErasedLinePath',
     linePathFuncs.draw.call(this, ctx)
     ctx.restore()
 
-  update: (ctx, bufferCtx) ->
+  drawLatest: (ctx, bufferCtx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
     bufferCtx.save()
     bufferCtx.globalCompositeOperation = "destination-out"
 
-    linePathFuncs.update.call(this, ctx, bufferCtx)
+    linePathFuncs.drawLatest.call(this, ctx, bufferCtx)
 
     ctx.restore()
     bufferCtx.restore()

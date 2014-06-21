@@ -227,11 +227,11 @@ module.exports = class LiterallyCanvas
   # This is used for updating a shape while it is being drawn
   # without doing a full repaint.
   # The context is restored to its original state before returning.
-  update: (shape) ->
+  drawShapeInProgress: (shape) ->
     @repaintLayer('main', false)
     @clipped (=>
       @transformed (=>
-        shape.update(@ctx, @bufferCtx)
+        shape.drawLatest(@ctx, @bufferCtx)
       ), @ctx, @bufferCtx
     ), @ctx, @bufferCtx
 

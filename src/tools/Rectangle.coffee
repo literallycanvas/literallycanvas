@@ -16,7 +16,7 @@ module.exports = class Rectangle extends ToolWithStroke
   continue: (x, y, lc) ->
     @currentShape.width = x - @currentShape.x
     @currentShape.height = y - @currentShape.y
-    lc.update(@currentShape)
+    lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
     lc.saveShape(@currentShape)
