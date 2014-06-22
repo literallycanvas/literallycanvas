@@ -5,6 +5,7 @@ ColorWell = require './ColorWell'
 UndoRedoButtons = require './UndoRedoButtons'
 ZoomButtons = require './ZoomButtons'
 
+{_} = require '../core/localization'
 
 ColorPickers = React.createClass
   displayName: 'ColorPickers'
@@ -12,9 +13,9 @@ ColorPickers = React.createClass
     {lc} = @props
     {div} = React.DOM
     (div {className: 'lc-color-pickers'},
-      (ColorWell {lc, colorName: 'background', label: 'background'})
-      (ColorWell {lc, colorName: 'primary', label: 'stroke'})
-      (ColorWell {lc, colorName: 'secondary', label: 'fill'})
+      (ColorWell {lc, colorName: 'background', label: _('background')})
+      (ColorWell {lc, colorName: 'primary', label: _('stroke')})
+      (ColorWell {lc, colorName: 'secondary', label: _('fill')})
     )
 
 

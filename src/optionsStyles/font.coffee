@@ -1,5 +1,5 @@
 {defineOptionsStyle} = require './optionsStyles'
-
+{_} = require '../core/localization'
 
 defineOptionsStyle 'font', React.createClass
   displayName: 'FontOptions'
@@ -14,15 +14,18 @@ defineOptionsStyle 'font', React.createClass
 
   getFontSizes: -> [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288]
 
-  getFamilies: -> [
-    {name: 'Sans-serif', value: '"Helvetica Neue",Helvetica,Arial,sans-serif'},
-    {name: 'Serif', value: (
-      'Garamond,Baskerville,"Baskerville Old Face",'
-      '"Hoefler Text","Times New Roman",serif')}
-    {name: 'Typewriter', value: (
-      '"Courier New",Courier,"Lucida Sans Typewriter",'
-      '"Lucida Typewriter",monospace')},
-  ]
+  getFamilies: ->
+    lc = @props.lc
+
+    [
+      {name: _('Sans-serif'), value: '"Helvetica Neue",Helvetica,Arial,sans-serif'},
+      {name: _('Serif'), value: (
+        'Garamond,Baskerville,"Baskerville Old Face",'
+        '"Hoefler Text","Times New Roman",serif')}
+      {name: _('Typewriter'), value: (
+        '"Courier New",Courier,"Lucida Sans Typewriter",'
+        '"Lucida Typewriter",monospace')},
+    ]
 
   # LC's text tool API is a little funky: it just has a 'font' string you can
   # set.
@@ -65,22 +68,24 @@ defineOptionsStyle 'font', React.createClass
   componentDidMount: -> @updateTool()
 
   render: ->
+    lc = @props.lc
+
     {div, input, select, option, br, label, span} = React.DOM
 
     (div {className: 'lc-font-settings'},
       (input \
         {
           type: 'text'
-          placeholder: 'Enter text here'
+          placeholder: _('Enter text here')
           value: @state.text
           onChange: @handleText
         }
       )
-      (span {className: 'instructions'}, "Click and hold to place text.")
+      (span {className: 'instructions'}, _("Click and hold to place text."))
 
       (br())
 
-      "Size: "
+      _("Size: ")
       (select {value: @state.fontSizeIndex, onChange: @handleFontSize},
         @getFontSizes().map((size, ix) =>
           (option {value: ix, key: ix}, size)
@@ -99,7 +104,7 @@ defineOptionsStyle 'font', React.createClass
             checked: @state.isItalic,
             onChange: @handleItalic
           },
-          "italic"
+          _("italic")
         )
       )
       (label {htmlFor: 'bold'},
@@ -110,7 +115,7 @@ defineOptionsStyle 'font', React.createClass
             checked: @state.isBold,
             onChange: @handleBold,
           },
-          "bold"
+          _("bold")
         )
       )
     )
