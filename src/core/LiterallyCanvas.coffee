@@ -334,6 +334,10 @@ module.exports = class LiterallyCanvas
   getImage: (opts={}) ->
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
+
+    if not (opts.rect.width and opts.rect.height)
+      return
+
     opts.scale ?= 1
     opts.scaleDownRetina ?= true
     opts.scale /= @backingScale if opts.scaleDownRetina
