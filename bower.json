@@ -17,7 +17,8 @@
   ],
   "license": "BSD",
   "dependencies": {
-    "jquery": "*"
+    "jquery": "*",
+    "react": "0.10.0"
   },
   "ignore": [
     "**/.*",
