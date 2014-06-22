@@ -1,6 +1,6 @@
 coordsForTouchEvent = (el, e) ->
-  tx = e.changedTouches[0].pageX
-  ty = e.changedTouches[0].pageY
+  tx = e.changedTouches[0].clientX
+  ty = e.changedTouches[0].clientY
   p = el.getBoundingClientRect()
   return [tx - p.left, ty - p.top]
 
