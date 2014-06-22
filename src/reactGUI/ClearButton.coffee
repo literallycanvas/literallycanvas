@@ -1,5 +1,6 @@
 React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
+{_} = require '../core/localization'
 
 ClearButton = React.createClass
   displayName: 'ClearButton'
@@ -18,7 +19,7 @@ ClearButton = React.createClass
       'disabled': not @state.isEnabled
     onClick = if lc.canUndo() then (=> lc.clear()) else ->
 
-    (div {className, onClick}, 'Clear')
+    (div {className, onClick}, _('Clear'))
 
 
 module.exports = ClearButton

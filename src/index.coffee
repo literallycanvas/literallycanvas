@@ -4,6 +4,8 @@ initReact = require './reactGUI/init'
 shapes = require './core/shapes'
 util = require './core/util'
 
+{localize} = require './core/localization'
+
 
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
@@ -111,4 +113,6 @@ module.exports = {
   createShape: shapes.createShape,
   JSONToShape: shapes.JSONToShape,
   shapeToJSON: shapes.shapeToJSON,
+
+  localize: localize
 }
