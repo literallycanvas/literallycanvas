@@ -15,7 +15,6 @@
       .fs-container {
         /* width: 768px; */
         width: 100%;
-        height: 500px;
         margin: auto;
         margin-top: 50px;
       }
@@ -74,6 +73,7 @@
               'Image', {image: backgroundImage, x: 100, y: 100})
           ],
           watermarkImage: watermarkImage,
+          imageSize: {width: 500, height: 300}
         });
         window.demoLC = lc;
         lc.loadSnapshotJSON(localStorage.getItem('drawing'));
@@ -82,13 +82,21 @@
           localStorage.setItem('drawing', lc.getSnapshotJSON());
         });
 
+        // lc.setPan(100, 100);
+
         $("#open-image").click(function() {
           window.open(lc.getImage({
             // rect: {x: 0, y: 0, width: 100, height: 100}
             scale: 2
           }).toDataURL());
         });
+
+        /* demo of inserting a shape below another
+        var newShape = LC.JSONToShape({"className":"Rectangle","data":{"x":238,"y":168,"width":122,"height":112,"strokeWidth":5,"strokeColor":"hsl(0, 100%, 42%)","fillColor":"#0f0"},"id":"4764db7c-9d6d-1e7f-f304-3904fa464e6b"})
+        lc.saveShape(newShape, false, "e97d582e-6c88-f01e-6ba0-6a9344b5594c")
+        */
       });
+
     </script>
 
     <!--

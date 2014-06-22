@@ -15,15 +15,12 @@ module.exports = class Pencil extends ToolWithStroke
     @lastEventTime = Date.now()
 
   continue: (x, y, lc) ->
-    lastPoint = @currentShape.points[@currentShape.points.length - 1]
-    newPoint = @makePoint(x, y, lc)
-
     timeDiff = Date.now() - @lastEventTime
 
     if timeDiff > @eventTimeThreshold
       @lastEventTime += timeDiff
-      @currentShape.addPoint(newPoint)
-      lc.update(@currentShape)
+      @currentShape.addPoint(@makePoint(x, y, lc))
+      lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
     lc.saveShape(@currentShape)

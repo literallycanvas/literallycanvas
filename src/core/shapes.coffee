@@ -9,7 +9,7 @@ defineShape = (name, props) ->
     this
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
-  Shape.prototype.update = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
+  Shape.prototype.drawLatest = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
 
   for k of props
     if k != 'fromJSON'
@@ -20,13 +20,16 @@ defineShape = (name, props) ->
 
 
 createShape = (name, args...) ->
-  new shapes[name](args...)
+  s = new shapes[name](args...)
+  s.id = util.getGUID()
+  s
 
 
-JSONToShape = ({className, data}) ->
+JSONToShape = ({className, data, id}) ->
   if className of shapes
     shape = shapes[className].fromJSON(data)
     if shape
+      shape.id = id if id
       return shape
     else
       console.log 'Unreadable shape:', className, data
@@ -37,7 +40,7 @@ JSONToShape = ({className, data}) ->
 
 
 shapeToJSON = (shape) ->
-  {className: shape.className, data: shape.toJSON()}
+  {className: shape.className, data: shape.toJSON(), id: shape.id}
 
 
 # this fn depends on Point, but LinePathShape depends on it, so it can't be
@@ -152,6 +155,30 @@ defineShape 'Line',
   fromJSON: (data) -> createShape('Line', data)
 
 
+# returns false if no points because there are no points to share style
+_doAllPointsShareStyle = (points) ->
+  return false unless points.length
+  size = points[0].size
+  color = points[0].color
+  for point in points
+    return false unless point.size == size and point.color == color
+  return true
+
+
+_createLinePathFromData = (shapeName, data) ->
+  points = null
+  if data.points
+    points = (JSONToShape(pointData) for pointData in data.points)
+  else if data.pointCoordinatePairs
+    points = (JSONToShape({
+      className: 'Point',
+      data: {x: x, y: y, size: data.pointSize, color: data.pointColor}
+    }) for [x, y] in data.pointCoordinatePairs)
+  return null unless points[0]
+  createShape(
+    shapeName, {points, order: data.order, tailSize: data.tailSize})
+
+
 linePathFuncs =
   constructor: (args={}) ->
     points = args.points or []
@@ -177,26 +204,29 @@ linePathFuncs =
     }
 
   toJSON: ->
-    # TODO: make point storage more efficient
-    {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
+    if _doAllPointsShareStyle(@points)
+      {
+        @order, @tailSize,
+        pointCoordinatePairs: ([point.x, point.y] for point in @points),
+        pointSize: @points[0].size,
+        pointColor: @points[0].color
+      }
+    else
+      {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
 
-  fromJSON: (data) ->
-    points = (JSONToShape(pointData) for pointData in data.points)
-    return null unless points[0]
-    createShape(
-      'LinePath', {points, order: data.order, tailSize: data.tailSize})
+  fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
   draw: (ctx) ->
     @drawPoints(ctx, @smoothedPoints)
 
-  update: (ctx, bufferCtx) ->
+  drawLatest: (ctx, bufferCtx) ->
     @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
 
     if @tail
       segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
       drawStart = if segmentStart < @segmentSize * 2 then 0 else segmentStart
       drawEnd = segmentStart + @segmentSize + 1
-      @drawPoints(bufferCtx,@smoothedPoints.slice(drawStart, drawEnd))
+      @drawPoints(bufferCtx, @smoothedPoints.slice(drawStart, drawEnd))
 
   addPoint: (point) ->
     @points.push(point)
@@ -228,7 +258,7 @@ linePathFuncs =
     ctx.moveTo(points[0].x, points[0].y)
 
     for point in points.slice(1)
-        ctx.lineTo(point.x, point.y)
+      ctx.lineTo(point.x, point.y)
 
     ctx.stroke()
 
@@ -249,25 +279,21 @@ defineShape 'ErasedLinePath',
     linePathFuncs.draw.call(this, ctx)
     ctx.restore()
 
-  update: (ctx, bufferCtx) ->
+  drawLatest: (ctx, bufferCtx) ->
     ctx.save()
     ctx.globalCompositeOperation = "destination-out"
     bufferCtx.save()
     bufferCtx.globalCompositeOperation = "destination-out"
 
-    linePathFuncs.update.call(this, ctx, bufferCtx)
+    linePathFuncs.drawLatest.call(this, ctx, bufferCtx)
 
     ctx.restore()
     bufferCtx.restore()
 
-  # same as LinePah
-  fromJSON: (data) ->
-    points = (JSONToShape(pointData) for pointData in data.points)
-    return null unless points[0]
-    createShape(
-      'ErasedLinePath', {points, order: data.order, tailSize: data.tailSize})
+  fromJSON: (data) -> _createLinePathFromData('ErasedLinePath', data)
 
 
+# this is currently just used for LinePath/ErasedLinePath internal storage.
 defineShape 'Point',
   constructor: (args={}) ->
     @x = args.x or 0

@@ -5,6 +5,8 @@ math = require './math'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
+INFINITE = 'infinite'
+
 module.exports = class LiterallyCanvas
 
   constructor: (@containerEl, opts) ->
@@ -45,15 +47,18 @@ module.exports = class LiterallyCanvas
     # something really simple
     @tool = new Pencil()
 
-    util.matchElementSize(
-      @containerEl, [@backgroundCanvas], @backingScale,
-      => @repaintLayer('background'))
+    @width = opts.imageSize.width or INFINITE
+    @height = opts.imageSize.height or INFINITE
+
+    # This will ensure that we are zoomed to @scale, panned to @position, and
+    # that all layers are repainted.
+    @setZoom(@scale)
 
     util.matchElementSize(
-      @containerEl, [@canvas], @backingScale, => @repaintLayer('main'))
-
-    @repaintLayer('background')
-    @repaintLayer('main')
+      @containerEl, [@backgroundCanvas, @canvas], @backingScale, =>
+        @keepPanInImageBounds()
+        @repaintAllLayers()
+    )
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
@@ -118,17 +123,42 @@ module.exports = class LiterallyCanvas
 
   getColor: (name) -> @colors[name]
 
-  saveShape: (shape) ->
-    @execute(new actions.AddShapeAction(this, shape))
-    @trigger('shapeSave', {shape: shape})
+  saveShape: (shape, triggerShapeSaveEvent=true, previousShapeId=null) ->
+    unless previousShapeId
+      previousShapeId = if @shapes.length \
+        then @shapes[@shapes.length-1].id \
+        else null
+    @execute(new actions.AddShapeAction(this, shape, previousShapeId))
+    if triggerShapeSaveEvent
+      @trigger('shapeSave', {shape, previousShapeId})
     @trigger('drawingChange')
 
   pan: (x, y) ->
     # Subtract because we are moving the viewport
     @setPan(@position.x - x, @position.y - y)
 
+  keepPanInImageBounds: ->
+    renderScale = @getRenderScale()
+    {x, y} = @position
+
+    if @width != INFINITE
+      if @canvas.width > @width * renderScale
+        x = (@canvas.width - @width * renderScale) / 2
+      else
+        x = Math.max(Math.min(0, x), @canvas.width - @width * renderScale)
+
+    if @height != INFINITE
+      if @canvas.height > @height * renderScale
+        y = (@canvas.height - @height * renderScale) / 2
+      else
+        y = Math.max(Math.min(0, y), @canvas.height - @height * renderScale)
+
+    @position = {x, y}
+
   setPan: (x, y) ->
     @position = {x, y}
+    @keepPanInImageBounds()
+    @repaintAllLayers()
     @trigger('pan', {x: @position.x, y: @position.y})
 
   zoom: (factor) ->
@@ -146,6 +176,7 @@ module.exports = class LiterallyCanvas
       @position.x, @canvas.width, oldScale, @scale)
     @position.y = math.scalePositionScalar(
       @position.y, @canvas.height, oldScale, @scale)
+    @keepPanInImageBounds()
 
     @repaintAllLayers()
     @trigger('zoom', {oldScale: oldScale, newScale: @scale})
@@ -175,7 +206,13 @@ module.exports = class LiterallyCanvas
           @draw(@shapes, @bufferCtx, retryCallback)
         @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
         if @canvas.width > 0 and @canvas.height > 0
-          @ctx.drawImage @buffer, 0, 0
+          @ctx.fillStyle = '#ccc'
+          @ctx.fillRect(0, 0, @canvas.width, @canvas.height)
+          @clipped (=>
+            @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+            @ctx.drawImage @buffer, 0, 0
+          ), @ctx
+
     @trigger('repaint', {layerKey: repaintLayerKey})
 
   _renderWatermark: ->
@@ -193,9 +230,13 @@ module.exports = class LiterallyCanvas
   # This is used for updating a shape while it is being drawn
   # without doing a full repaint.
   # The context is restored to its original state before returning.
-  update: (shape) ->
+  drawShapeInProgress: (shape) ->
     @repaintLayer('main', false)
-    @transformed (=> shape.update(@ctx, @bufferCtx)), @ctx, @bufferCtx
+    @clipped (=>
+      @transformed (=>
+        shape.drawLatest(@ctx, @bufferCtx)
+      ), @ctx, @bufferCtx
+    ), @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
@@ -204,7 +245,31 @@ module.exports = class LiterallyCanvas
     drawShapes = =>
       for shape in shapes
         shape.draw(ctx, retryCallback)
-    @transformed(drawShapes, ctx)
+    @clipped (=> @transformed(drawShapes, ctx)), ctx
+
+  # Executes the given function after clipping the canvas to the image size.
+  # The context is restored to its original state before returning.
+  # This should not be called inside an @transformed block.
+  clipped: (fn, contexts...) ->
+    x = if @width == INFINITE then 0 else @position.x
+    y = if @height == INFINITE then 0 else @position.y
+    width = switch @width
+      when INFINITE then @canvas.width
+      else @width * @getRenderScale()
+    height = switch @height
+      when INFINITE then @canvas.height
+      else @height * @getRenderScale()
+
+    for ctx in contexts
+      ctx.save()
+      ctx.beginPath()
+      ctx.rect(x, y, width, height)
+      ctx.clip()
+
+    fn()
+
+    for ctx in contexts
+      ctx.restore()
 
   # Executes the given function after translating and scaling the context.
   # The context is restored to its original state before returning.
@@ -261,7 +326,10 @@ module.exports = class LiterallyCanvas
       null
 
   getContentBounds: ->
-    util.getBoundingRect @shapes.map((s) -> s.getBoundingRect())
+    util.getBoundingRect(
+      @shapes.map((s) -> s.getBoundingRect()),
+      if @width == INFINITE then 0 else @width,
+      if @height == INFINITE then 0 else @height)
 
   getImage: (opts={}) ->
     # {x, y, width, height}

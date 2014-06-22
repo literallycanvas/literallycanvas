@@ -25,6 +25,7 @@ ColorWell = React.createClass
       {
         className: 'toolbar-button color-well-label'
         onMouseLeave: @closePicker
+        onClick: @togglePicker
       },
       (label {style: {display: 'block', clear: 'both'}}, @props.label),
       (div \
@@ -32,11 +33,7 @@ ColorWell = React.createClass
           className: React.addons.classSet
             'color-well-container': true
             'selected': @state.isPickerVisible
-          onClick: @togglePicker
-          style: {
-            backgroundColor: 'white'
-            position: 'relative'
-          }
+          style: {backgroundColor: 'white'}
         },
         (div {className: 'color-well-checker'}),
         (div \
@@ -56,13 +53,32 @@ ColorWell = React.createClass
     {div} = React.DOM
     return null unless @state.isPickerVisible
 
-    rows = [("hsl(0, 0%, #{i}%)" for i in [0..100] by 10)]
+    renderTransparentCell = =>
+      (div \
+        {className: 'color-row', key: 0, style: {height: 20}},
+        (div \
+          {
+            className: React.addons.classSet(
+              'color-cell transparent-cell': true,
+              'selected': @state.color == 'transparent'
+            )
+            onClick: => @setColor('transparent')
+          },
+          'transparent'
+        )
+      )
+
+    rows = []
+    rows.push 'transparent' if @props.colorName == 'background'
+    rows.push ("hsl(0, 0%, #{i}%)" for i in [0..100] by 10)
     for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
       rows.push("hsl(#{hue}, 100%, #{i}%)" for i in [10..90] by 8)
 
     (div {className: 'color-picker-popup'},
       rows.map((row, ix) =>
-        (div {className: 'color-row', key: ix, style: {width: 20 * row.length}},
+        return renderTransparentCell() if row == 'transparent'
+        return (div \
+          {className: 'color-row', key: ix, style: {width: 20 * row.length}},
           row.map((cellColor, ix2) =>
             className = React.addons.classSet
               'color-cell': true

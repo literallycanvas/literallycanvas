@@ -11,8 +11,8 @@ position = (e) ->
   else
     p = e.target.getBoundingClientRect()
     {
-      left: e.pageX - p.left,
-      top: e.pageY - p.top,
+      left: e.clientX - p.left,
+      top: e.clientY - p.top,
     }
 
 

@@ -19,7 +19,7 @@ module.exports = class Text extends Tool
   continue:(x, y, lc) ->
     @currentShape.x = x
     @currentShape.y = y
-    lc.update(@currentShape)
+    lc.drawShapeInProgress(@currentShape)
 
   end:(x, y, lc) ->
     lc.saveShape(@currentShape)

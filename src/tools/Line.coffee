@@ -15,7 +15,7 @@ module.exports = class Line extends ToolWithStroke
   continue: (x, y, lc) ->
     @currentShape.x2 = x
     @currentShape.y2 = y
-    lc.update(@currentShape)
+    lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
     lc.saveShape(@currentShape)
