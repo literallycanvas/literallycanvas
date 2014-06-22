@@ -5,11 +5,11 @@ coordsForTouchEvent = (el, e) ->
   return [tx - p.left, ty - p.top]
 
 
-position = (e) ->
+position = (el, e) ->
   if e.offsetX?
     {left: e.offsetX, top: e.offsetY}
   else
-    p = e.target.getBoundingClientRect()
+    p = el.getBoundingClientRect()
     {
       left: e.clientX - p.left,
       top: e.clientY - p.top,
@@ -29,27 +29,18 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     down = true
     e.preventDefault()
     document.onselectstart = -> false # disable selection while dragging
-    p = position(e)
+    p = position(canvas, e)
     lc.begin(p.left, p.top)
 
-  canvas.addEventListener 'mousemove', (e) =>
+  document.addEventListener 'mousemove', (e) =>
     e.preventDefault()
-    p = position(e)
+    p = position(canvas, e)
     lc.continue(p.left, p.top)
 
-  canvas.addEventListener 'mouseup', (e) =>
+  document.addEventListener 'mouseup', (e) =>
     e.preventDefault()
     document.onselectstart = -> true # enable selection while dragging
-    p = position(e)
-    lc.end(p.left, p.top)
-
-  canvas.addEventListener 'mouseenter', (e) =>
-    p = position(e)
-    if buttonIsDown(e)
-      lc.begin(p.left, p.top)
-
-  canvas.addEventListener 'mouseout', (e) =>
-    p = position(e)
+    p = position(canvas, e)
     lc.end(p.left, p.top)
 
   canvas.addEventListener 'touchstart', (e) ->
@@ -65,12 +56,10 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
 
   canvas.addEventListener 'touchend', (e) ->
     e.preventDefault()
-    return unless e.touches.length == 0
     lc.end(coordsForTouchEvent(canvas, e)...)
 
   canvas.addEventListener 'touchcancel', (e) ->
     e.preventDefault()
-    return unless e.touches.length == 0
     lc.end(coordsForTouchEvent(canvas, e)...)
 
   if panWithKeyboard
