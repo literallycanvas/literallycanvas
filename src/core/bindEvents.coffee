@@ -65,12 +65,12 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
 
   canvas.addEventListener 'touchend', (e) ->
     e.preventDefault()
-    return unless e.originalEvent.touches.length == 0
+    return unless e.touches.length == 0
     lc.end(coordsForTouchEvent(canvas, e)...)
 
   canvas.addEventListener 'touchcancel', (e) ->
     e.preventDefault()
-    return unless e.originalEvent.touches.length == 0
+    return unless e.touches.length == 0
     lc.end(coordsForTouchEvent(canvas, e)...)
 
   if panWithKeyboard
