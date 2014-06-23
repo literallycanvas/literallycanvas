@@ -2,9 +2,7 @@ Literally Canvas v0.4
 =====================
 
 Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
-widget. Its only dependency is `React.js`_.
-
-.. _React.js: http://facebook.github.io/react/
+widget. Its only dependency is [React.js](http://facebook.github.io/react/).
 
 Get help on our mailing list:
 [literallycanvas@librelist.com](literallycanvas@librelist.com) (just send it a
