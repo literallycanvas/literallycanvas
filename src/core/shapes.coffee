@@ -127,6 +127,47 @@ defineShape 'Rectangle',
   fromJSON: (data) -> createShape('Rectangle', data)
 
 
+# this is pretty similar to the Rectangle shape. maybe consolidate somehow.
+defineShape 'Ellipse',
+  constructor: (args={}) ->
+    @x = args.x or 0
+    @y = args.y or 0
+    @width = args.width or 0
+    @height = args.height or 0
+    @strokeWidth = args.strokeWidth or 1
+    @strokeColor = args.strokeColor or 'black'
+    @fillColor = args.fillColor or 'transparent'
+
+  draw: (ctx) ->
+    ctx.save()
+    halfWidth = Math.floor(@width / 2)
+    halfHeight = Math.floor(@height / 2)
+    centerX = @x + halfWidth
+    centerY = @y + halfHeight
+
+    ctx.translate(centerX, centerY)
+    ctx.scale(1, Math.abs(@height / @width))
+    ctx.beginPath()
+    ctx.arc(0, 0, Math.abs(halfWidth), 0, Math.PI * 2)
+    ctx.closePath()
+    ctx.restore()
+
+    ctx.fillStyle = @fillColor
+    ctx.fill()
+    ctx.lineWidth = @strokeWidth
+    ctx.strokeStyle = @strokeColor
+    ctx.stroke()
+
+  getBoundingRect: -> {
+    x: @x - @strokeWidth / 2,
+    y: @y - @strokeWidth / 2,
+    width: @width + @strokeWidth,
+    height: @height + @strokeWidth,
+  }
+  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
+  fromJSON: (data) -> createShape('Ellipse', data)
+
+
 defineShape 'Line',
   constructor: (args={}) ->
     @x1 = args.x1 or 0
