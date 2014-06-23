@@ -10,6 +10,20 @@ message to subscribe)
 
 [Full documentation](http://literallycanvas.com)
 
+This is all it takes:
+
+```javascript
+<div class="literally with-jquery"></div>
+<script>
+  $('.literally.with-jquery').literallycanvas();
+</script>
+
+<div class="literally without-jquery"></div>
+<script>
+  LC.init(document.getElementsByClassName('literally without-jquery')[0]);
+</script>
+```
+
 Developing
 ----------
 
