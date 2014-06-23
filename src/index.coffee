@@ -19,6 +19,7 @@ tools =
   Eraser: require './tools/Eraser'
   Line: require './tools/Line'
   Rectangle: require './tools/Rectangle'
+  Ellipse: require './tools/Ellipse'
   Text: require './tools/Text'
   Pan: require './tools/Pan'
   Eyedropper: require './tools/Eyedropper'
@@ -52,6 +53,7 @@ init = (el, opts = {}) ->
       tools.Eraser,
       tools.Line,
       tools.Rectangle,
+      tools.Ellipse,
       tools.Text,
       tools.Pan,
       tools.Eyedropper,
