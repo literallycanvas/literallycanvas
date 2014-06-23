@@ -578,7 +578,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":28,"./actions":3,"./bindEvents":4,"./math":6,"./shapes":7,"./util":8}],3:[function(_dereq_,module,exports){
+},{"../tools/Pencil":29,"./actions":3,"./bindEvents":4,"./math":6,"./shapes":7,"./util":8}],3:[function(_dereq_,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -672,7 +672,7 @@ coordsForTouchEvent = function(el, e) {
   return [tx - p.left, ty - p.top];
 };
 
-position = function(e) {
+position = function(el, e) {
   var p;
   if (e.offsetX != null) {
     return {
@@ -680,7 +680,7 @@ position = function(e) {
       top: e.offsetY
     };
   } else {
-    p = e.target.getBoundingClientRect();
+    p = el.getBoundingClientRect();
     return {
       left: e.clientX - p.left,
       top: e.clientY - p.top
@@ -708,42 +708,26 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
       document.onselectstart = function() {
         return false;
       };
-      p = position(e);
+      p = position(canvas, e);
       return lc.begin(p.left, p.top);
     };
   })(this));
-  canvas.addEventListener('mousemove', (function(_this) {
+  document.addEventListener('mousemove', (function(_this) {
     return function(e) {
       var p;
       e.preventDefault();
-      p = position(e);
+      p = position(canvas, e);
       return lc["continue"](p.left, p.top);
     };
   })(this));
-  canvas.addEventListener('mouseup', (function(_this) {
+  document.addEventListener('mouseup', (function(_this) {
     return function(e) {
       var p;
       e.preventDefault();
       document.onselectstart = function() {
         return true;
       };
-      p = position(e);
-      return lc.end(p.left, p.top);
-    };
-  })(this));
-  canvas.addEventListener('mouseenter', (function(_this) {
-    return function(e) {
-      var p;
-      p = position(e);
-      if (buttonIsDown(e)) {
-        return lc.begin(p.left, p.top);
-      }
-    };
-  })(this));
-  canvas.addEventListener('mouseout', (function(_this) {
-    return function(e) {
-      var p;
-      p = position(e);
+      p = position(canvas, e);
       return lc.end(p.left, p.top);
     };
   })(this));
@@ -761,16 +745,10 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
   });
   canvas.addEventListener('touchend', function(e) {
     e.preventDefault();
-    if (e.touches.length !== 0) {
-      return;
-    }
     return lc.end.apply(lc, coordsForTouchEvent(canvas, e));
   });
   canvas.addEventListener('touchcancel', function(e) {
     e.preventDefault();
-    if (e.touches.length !== 0) {
-      return;
-    }
     return lc.end.apply(lc, coordsForTouchEvent(canvas, e));
   });
   if (panWithKeyboard) {
@@ -1104,6 +1082,62 @@ defineShape('Rectangle', {
   },
   fromJSON: function(data) {
     return createShape('Rectangle', data);
+  }
+});
+
+defineShape('Ellipse', {
+  constructor: function(args) {
+    if (args == null) {
+      args = {};
+    }
+    this.x = args.x || 0;
+    this.y = args.y || 0;
+    this.width = args.width || 0;
+    this.height = args.height || 0;
+    this.strokeWidth = args.strokeWidth || 1;
+    this.strokeColor = args.strokeColor || 'black';
+    return this.fillColor = args.fillColor || 'transparent';
+  },
+  draw: function(ctx) {
+    var centerX, centerY, halfHeight, halfWidth;
+    ctx.save();
+    halfWidth = Math.floor(this.width / 2);
+    halfHeight = Math.floor(this.height / 2);
+    centerX = this.x + halfWidth;
+    centerY = this.y + halfHeight;
+    ctx.translate(centerX, centerY);
+    ctx.scale(1, Math.abs(this.height / this.width));
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.abs(halfWidth), 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.restore();
+    ctx.fillStyle = this.fillColor;
+    ctx.fill();
+    ctx.lineWidth = this.strokeWidth;
+    ctx.strokeStyle = this.strokeColor;
+    return ctx.stroke();
+  },
+  getBoundingRect: function() {
+    return {
+      x: this.x - this.strokeWidth / 2,
+      y: this.y - this.strokeWidth / 2,
+      width: this.width + this.strokeWidth,
+      height: this.height + this.strokeWidth
+    };
+  },
+  toJSON: function() {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height,
+      strokeWidth: this.strokeWidth,
+      strokeColor: this.strokeColor,
+      fillColor: this.fillColor
+    };
+  },
+  fromJSON: function(data) {
+    return createShape('Ellipse', data);
   }
 });
 
@@ -1579,6 +1613,7 @@ tools = {
   Eraser: _dereq_('./tools/Eraser'),
   Line: _dereq_('./tools/Line'),
   Rectangle: _dereq_('./tools/Rectangle'),
+  Ellipse: _dereq_('./tools/Ellipse'),
   Text: _dereq_('./tools/Text'),
   Pan: _dereq_('./tools/Pan'),
   Eyedropper: _dereq_('./tools/Eyedropper'),
@@ -1628,7 +1663,7 @@ init = function(el, opts) {
     opts.watermarkScale = 1;
   }
   if (!('tools' in opts)) {
-    opts.tools = [tools.Pencil, tools.Eraser, tools.Line, tools.Rectangle, tools.Text, tools.Pan, tools.Eyedropper];
+    opts.tools = [tools.Pencil, tools.Eraser, tools.Line, tools.Rectangle, tools.Ellipse, tools.Text, tools.Pan, tools.Eyedropper];
   }
 
   /* henceforth, all pre-existing DOM children shall be destroyed */
@@ -1698,7 +1733,7 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":2,"./core/localization":5,"./core/shapes":7,"./core/util":8,"./optionsStyles/font":10,"./optionsStyles/null":11,"./optionsStyles/optionsStyles":12,"./optionsStyles/stroke-width":13,"./reactGUI/init":23,"./tools/Eraser":24,"./tools/Eyedropper":25,"./tools/Line":26,"./tools/Pan":27,"./tools/Pencil":28,"./tools/Rectangle":29,"./tools/Text":30,"./tools/base":31}],10:[function(_dereq_,module,exports){
+},{"./core/LiterallyCanvas":2,"./core/localization":5,"./core/shapes":7,"./core/util":8,"./optionsStyles/font":10,"./optionsStyles/null":11,"./optionsStyles/optionsStyles":12,"./optionsStyles/stroke-width":13,"./reactGUI/init":23,"./tools/Ellipse":24,"./tools/Eraser":25,"./tools/Eyedropper":26,"./tools/Line":27,"./tools/Pan":28,"./tools/Pencil":29,"./tools/Rectangle":30,"./tools/Text":31,"./tools/base":32}],10:[function(_dereq_,module,exports){
 var defineOptionsStyle, _;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -2571,6 +2606,51 @@ module.exports = init;
 
 
 },{"./Options":16,"./Picker":17,"./React-shim":18,"./createToolButton":22}],24:[function(_dereq_,module,exports){
+var Ellipse, ToolWithStroke, createShape,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+ToolWithStroke = _dereq_('./base').ToolWithStroke;
+
+createShape = _dereq_('../core/shapes').createShape;
+
+module.exports = Ellipse = (function(_super) {
+  __extends(Ellipse, _super);
+
+  function Ellipse() {
+    return Ellipse.__super__.constructor.apply(this, arguments);
+  }
+
+  Ellipse.prototype.name = 'Ellipse';
+
+  Ellipse.prototype.iconName = 'ellipse';
+
+  Ellipse.prototype.begin = function(x, y, lc) {
+    return this.currentShape = createShape('Ellipse', {
+      x: x,
+      y: y,
+      strokeWidth: this.strokeWidth,
+      strokeColor: lc.getColor('primary'),
+      fillColor: lc.getColor('secondary')
+    });
+  };
+
+  Ellipse.prototype["continue"] = function(x, y, lc) {
+    this.currentShape.width = x - this.currentShape.x;
+    this.currentShape.height = y - this.currentShape.y;
+    return lc.drawShapeInProgress(this.currentShape);
+  };
+
+  Ellipse.prototype.end = function(x, y, lc) {
+    return lc.saveShape(this.currentShape);
+  };
+
+  return Ellipse;
+
+})(ToolWithStroke);
+
+
+},{"../core/shapes":7,"./base":32}],25:[function(_dereq_,module,exports){
 var Eraser, Pencil, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2608,7 +2688,7 @@ module.exports = Eraser = (function(_super) {
 })(Pencil);
 
 
-},{"../core/shapes":7,"./Pencil":28}],25:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./Pencil":29}],26:[function(_dereq_,module,exports){
 var Eyedropper, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2647,7 +2727,7 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":7,"./base":31}],26:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./base":32}],27:[function(_dereq_,module,exports){
 var Line, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2693,7 +2773,7 @@ module.exports = Line = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":7,"./base":31}],27:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./base":32}],28:[function(_dereq_,module,exports){
 var Pan, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2734,7 +2814,7 @@ module.exports = Pan = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":7,"./base":31}],28:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./base":32}],29:[function(_dereq_,module,exports){
 var Pencil, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2796,7 +2876,7 @@ module.exports = Pencil = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":7,"./base":31}],29:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./base":32}],30:[function(_dereq_,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2841,7 +2921,7 @@ module.exports = Rectangle = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":7,"./base":31}],30:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./base":32}],31:[function(_dereq_,module,exports){
 var Text, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2894,7 +2974,7 @@ module.exports = Text = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":7,"./base":31}],31:[function(_dereq_,module,exports){
+},{"../core/shapes":7,"./base":32}],32:[function(_dereq_,module,exports){
 var Tool, ToolWithStroke, tools,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
