@@ -3,6 +3,9 @@ v0.4:
  * Simplified color picker
  * Removed jQuery dependency, though the plugin works if jQuery is present
  * Performance improvements
+   * Line path adds points in constant time
+   * Line path throttles mouse events
+   * requestAnimationFrame is used
  * Retina display rendering is the correct size instead of being scaled up
    half-resolution
  * Code is browserified; can still be used as a standalone script
@@ -38,6 +41,10 @@ v0.4:
    LC.JSONToShape()
    LC.shapeToJSON()
    LC.setDefaultImageURLPrefix()
+ * Support for fixed size drawing area
+ * Basic localization support
+ * Added ellipse tool
+ * Event handling bug fixes
 
 v0.3:
  * LiterallyCanvas.canvasWithBackground() renders the current drawing over a
