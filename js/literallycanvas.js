@@ -2,6 +2,7 @@
 
 },{}],2:[function(_dereq_,module,exports){
 var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, shapeToJSON, util, _ref,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __slice = [].slice;
 
 actions = _dereq_('./actions');
@@ -21,6 +22,7 @@ INFINITE = 'infinite';
 module.exports = LiterallyCanvas = (function() {
   function LiterallyCanvas(containerEl, opts) {
     this.containerEl = containerEl;
+    this.setImageSize = __bind(this.setImageSize, this);
     bindEvents(this, this.containerEl, opts.keyboardShortcuts);
     this.colors = {
       primary: opts.primaryColor || '#000',
@@ -97,6 +99,18 @@ module.exports = LiterallyCanvas = (function() {
       x: x * this.getRenderScale() + this.position.x,
       y: y * this.getRenderScale() + this.position.y
     };
+  };
+
+  LiterallyCanvas.prototype.setImageSize = function(width, height) {
+    this.width = width || INFINITE;
+    this.height = height || INFINITE;
+    this.keepPanInImageBounds();
+    this.repaintAllLayers();
+    this.trigger('imageSizeChange', {
+      width: this.width,
+      height: this.height
+    });
+    return console.log(this);
   };
 
   LiterallyCanvas.prototype.setTool = function(tool) {
