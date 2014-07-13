@@ -39,6 +39,8 @@
         <canvas id="original-canvas"></canvas>
       </div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
+      <br>
+      <a href="javascript:void(0);" id="change-size">Change size</a>
 
       <!--
       <br><br>
@@ -92,6 +94,10 @@
             // rect: {x: 0, y: 0, width: 100, height: 100}
             scale: 2
           }).toDataURL());
+        });
+
+        $("#change-size").click(function() {
+          lc.setImageSize(null, 200)
         });
 
         /* demo of inserting a shape below another
