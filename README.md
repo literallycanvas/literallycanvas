@@ -30,3 +30,6 @@ Developing
 Setup: `npm install`
 
 Watching and serving: `gulp dev`
+
+Browse to `localhost:8000/demo` and modify `demo/index.html` to test code
+in progress.
