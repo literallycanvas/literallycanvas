@@ -8,7 +8,7 @@ Get help on our mailing list:
 [literallycanvas@librelist.com](literallycanvas@librelist.com) (just send it a
 message to subscribe)
 
-[Full documentation](http://literallycanvas.com)
+### [Full documentation](http://literallycanvas.com)
 
 This is all it takes:
 
