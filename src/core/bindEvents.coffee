@@ -6,14 +6,11 @@ coordsForTouchEvent = (el, e) ->
 
 
 position = (el, e) ->
-  if e.offsetX?
-    {left: e.offsetX, top: e.offsetY}
-  else
-    p = el.getBoundingClientRect()
-    {
-      left: e.clientX - p.left,
-      top: e.clientY - p.top,
-    }
+  p = el.getBoundingClientRect()
+  {
+    left: e.clientX - p.left,
+    top: e.clientY - p.top,
+  }
 
 
 buttonIsDown = (e) ->
