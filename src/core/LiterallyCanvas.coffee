@@ -348,7 +348,7 @@ module.exports = class LiterallyCanvas
 
     opts.scale ?= 1
     opts.scaleDownRetina ?= true
-    opts.scale /= @backingScale if opts.scaleDownRetina
+    opts.scale *= @backingScale unless opts.scaleDownRetina
     @repaintLayer('main', true)
 
     rectArgs =
