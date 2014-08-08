@@ -125,7 +125,7 @@ $optionsHeight: 65px;
   }
 
 
-  .lc-pick-tool {
+  .lc-pick-tool, .lc-undo, .lc-redo, .lc-zoom-in, .lc-zoom-out {
     img {
       position: absolute;
       top: 0; right: 0; bottom: 0; left: 0;

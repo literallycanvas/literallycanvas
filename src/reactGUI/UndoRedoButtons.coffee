@@ -20,8 +20,9 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
   mixins: [createSetStateOnEventMixin('drawingChange')]
 
   render: ->
-    {div} = React.DOM
-    {lc} = @props
+    {div, img} = React.DOM
+    {lc, imageURLPrefix} = @props
+    title = if undoOrRedo == 'undo' then 'Undo' else 'Redo'
 
     className = "lc-#{undoOrRedo} " + React.addons.classSet
       'toolbar-button': true
@@ -32,8 +33,8 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
       when undoOrRedo == 'undo' then -> lc.undo()
       when undoOrRedo == 'redo' then -> lc.redo()
 
-    (div {className, onClick, dangerouslySetInnerHTML: {
-      __html: if undoOrRedo == 'undo' then "&larr;" else "&rarr;"}})
+    (div {className, onClick, title},
+      (img {src: "#{imageURLPrefix}/#{undoOrRedo}.png"}))
 
 
 UndoButton = createUndoRedoButtonComponent('undo')
@@ -42,7 +43,6 @@ UndoRedoButtons = React.createClass
   displayName: 'UndoRedoButtons'
   render: ->
     {div} = React.DOM
-    {lc} = @props
-    (div {className: 'lc-undo-redo'}, UndoButton({lc}), RedoButton({lc}))
+    (div {className: 'lc-undo-redo'}, UndoButton(@props), RedoButton(@props))
 
 module.exports = UndoRedoButtons
