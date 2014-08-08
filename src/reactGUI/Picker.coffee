@@ -41,7 +41,7 @@ Picker = React.createClass
       if toolButtonComponents.length % 2 != 0
         (div {className: 'toolbar-button thin-button disabled'})
       UndoRedoButtons({lc, imageURLPrefix}),
-      ZoomButtons({lc})
+      ZoomButtons({lc, imageURLPrefix})
       ClearButton({lc})
       ColorPickers({lc})
     )

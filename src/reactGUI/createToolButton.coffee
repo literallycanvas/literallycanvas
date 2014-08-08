@@ -21,7 +21,7 @@ createToolButton = ({displayName, getTool, imageName}) ->
         'toolbar-button': true
         'thin-button': true
         'selected': isSelected
-      (div {className, onClick: -> onSelect(tool)},
+      (div {className, onClick: (-> onSelect(tool)), title: displayName},
         (img \
           {
             className: 'lc-tool-icon',

@@ -13,8 +13,9 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
   mixins: [createSetStateOnEventMixin('zoom')]
 
   render: ->
-    {div} = React.DOM
-    {lc} = @props
+    {div, img} = React.DOM
+    {lc, imageURLPrefix} = @props
+    title = if inOrOut == 'in' then 'Zoom in' else 'Zoom out'
 
     className = "lc-zoom-#{inOrOut} " + React.addons.classSet
       'toolbar-button': true
@@ -25,9 +26,8 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
       when inOrOut == 'in' then -> lc.zoom(0.2)
       when inOrOut == 'out' then -> lc.zoom(-0.2)
 
-    (div {className, onClick}, switch
-      when inOrOut == 'in' then '+'
-      when inOrOut == 'out' then '-'
+    (div {className, onClick, title},
+      (img {src: "#{imageURLPrefix}/zoom-#{inOrOut}.png"})
     )
 
 
@@ -37,8 +37,7 @@ ZoomButtons = React.createClass
   displayName: 'ZoomButtons'
   render: ->
     {div} = React.DOM
-    {lc} = @props
-    (div {className: 'lc-zoom'}, ZoomOutButton({lc}), ZoomInButton({lc}))
+    (div {className: 'lc-zoom'}, ZoomOutButton(@props), ZoomInButton(@props))
 
 
 module.exports = ZoomButtons
