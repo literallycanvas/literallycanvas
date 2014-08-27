@@ -1,15 +1,21 @@
-{ToolWithStroke} = require './base'
+{Tool} = require './base'
 {createShape} = require '../core/shapes'
 
 
-module.exports = class Line extends ToolWithStroke
+module.exports = class Line extends Tool
 
   name: 'Line'
   iconName: 'line'
 
+  constructor: -> @strokeWidth = 5
+  optionsStyle: 'line-options-and-stroke-width'
+
   begin: (x, y, lc) ->
     @currentShape = createShape('Line', {
       x1: x, y1: y, x2: x, y2: y, @strokeWidth,
+      dash: switch
+        when @isDashed then [@strokeWidth * 2, @strokeWidth * 4]
+        else null
       color: lc.getColor('primary')})
 
   continue: (x, y, lc) ->

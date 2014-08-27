@@ -189,6 +189,7 @@ defineShape 'Line',
     ctx.moveTo(@x1, @y1)
     ctx.lineTo(@x2, @y2)
     ctx.stroke()
+    ctx.setLineDash([]) if @dash
 
   getBoundingRect: -> {
     x: Math.min(@x1, @x2) - @strokeWidth / 2,
