@@ -176,11 +176,15 @@ defineShape 'Line',
     @y2 = args.y2 or 0
     @strokeWidth = args.strokeWidth or 1
     @color = args.color or 'black'
+    @strokeStyle = args.strokeStyle or null
+    @capStyle = args.capStyle or 'round'
+    @dash = args.dash or null
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
     ctx.strokeStyle = @color
-    ctx.lineCap = 'round'
+    ctx.lineCap = @capStyle
+    ctx.setLineDash(@dash) if @dash
     ctx.beginPath()
     ctx.moveTo(@x1, @y1)
     ctx.lineTo(@x2, @y2)
@@ -192,7 +196,7 @@ defineShape 'Line',
     width: Math.abs(@x2 - @x1) + @strokeWidth / 2,
     height: Math.abs(@y2 - @y1) + @strokeWidth / 2,
   }
-  toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color}
+  toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash}
   fromJSON: (data) -> createShape('Line', data)
 
 
