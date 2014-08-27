@@ -205,7 +205,8 @@ defineShape 'Line',
     width: Math.abs(@x2 - @x1) + @strokeWidth / 2,
     height: Math.abs(@y2 - @y1) + @strokeWidth / 2,
   }
-  toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash}
+  toJSON: ->
+    {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
   fromJSON: (data) -> createShape('Line', data)
 
 
