@@ -13,10 +13,10 @@ module.exports = React.createClass
 
     getItem = (strokeWidth) =>
 
-    (ul {className: 'lc-stroke-widths'},
+    (ul {className: 'button-row'},
       strokeWidths.map((strokeWidth, ix) =>
         buttonClassName = React.addons.classSet
-          'stroke-width-button': true
+          'basic-button': true
           'selected': strokeWidth == @state.strokeWidth
         buttonSize = 30
         (li {className: 'lc-stroke-width', key: strokeWidth},

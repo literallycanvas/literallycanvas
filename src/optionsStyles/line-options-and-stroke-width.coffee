@@ -10,18 +10,20 @@ defineOptionsStyle 'line-options-and-stroke-width', React.createClass
   mixins: [createSetStateOnEventMixin('toolChange')]
 
   render: ->
-    {div, input, label, br} = React.DOM
-    updateIsDashed = (e) =>
+    {div, ul, li, img} = React.DOM
+    toggleIsDashed = =>
       @props.tool.isDashed = !@props.tool.isDashed
       @setState @getState()
+    dashButtonClass = React.addons.classSet
+      'basic-button square-button': true
+      'selected': @state.isDashed
     (div {},
-      (div {className: 'quick-ui', style: {float: 'left'}},
-        (label {},
-          (input {
-            type: 'checkbox', onChange: updateIsDashed,
-            checked: @state.isDashed
-          }),
-          "Dashed line"),
+      (ul {className: 'button-row', style: {float: 'left', marginRight: 20}},
+        (li {},
+          (div {className: dashButtonClass, onClick: toggleIsDashed},
+            (img {src: "#{@props.imageURLPrefix}/dashed-line.png"})
+          )
+        )
       ),
       (StrokeWidthPicker {tool: @props.tool, lc: @props.lc})
     )
