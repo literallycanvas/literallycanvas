@@ -88,7 +88,6 @@ module.exports = class LiterallyCanvas
     @keepPanInImageBounds()
     @repaintAllLayers()
     @trigger('imageSizeChange', {@width, @height})
-    console.log this
 
   setTool: (tool) ->
     @tool = tool
