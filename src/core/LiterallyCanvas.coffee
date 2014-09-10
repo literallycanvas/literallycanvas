@@ -201,7 +201,7 @@ module.exports = class LiterallyCanvas
       when 'background'
         @backgroundCtx.clearRect(
           0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
-        @_renderWatermark() if @watermarkImage
+        @_renderWatermark(@backgroundCtx) if @watermarkImage
         retryCallback = => @repaintLayer('background')
         @draw(@backgroundShapes, @backgroundCtx, retryCallback)
       when 'main'
@@ -222,15 +222,14 @@ module.exports = class LiterallyCanvas
 
     @trigger('repaint', {layerKey: repaintLayerKey})
 
-  _renderWatermark: ->
-    @backgroundCtx.save()
-    @backgroundCtx.translate(
-      @backgroundCanvas.width / 2, @backgroundCanvas.height / 2)
-    @backgroundCtx.scale(
-      @watermarkScale * @backingScale, @watermarkScale * @backingScale)
-    @backgroundCtx.drawImage(
+  _renderWatermark: (ctx, worryAboutRetina=true) ->
+    ctx.save()
+    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
+    ctx.scale(@watermarkScale, @watermarkScale)
+    ctx.scale(@backingScale, @backingScale) if worryAboutRetina
+    ctx.drawImage(
       @watermarkImage, -@watermarkImage.width / 2, -@watermarkImage.height / 2)
-    @backgroundCtx.restore()
+    ctx.restore()
 
   # Redraws the back buffer to the screen in its current state
   # then draws the given shape translated and scaled on top of that.
@@ -347,22 +346,24 @@ module.exports = class LiterallyCanvas
 
     opts.scale ?= 1
     opts.scaleDownRetina ?= true
+    opts.includeWatermark ?= @watermarkImage and true
+
     opts.scale *= @backingScale unless opts.scaleDownRetina
     @repaintLayer('main', true)
 
-    rectArgs =
-      x: opts.rect.x
-      y: opts.rect.y
-      width: opts.rect.width
-      height: opts.rect.height
-      fillColor: @colors.background
-      strokeColor: 'transparent'
-      strokeWidth: 0
+    watermarkCanvas = document.createElement('canvas')
+    watermarkCanvas.width = opts.rect.width * opts.scale
+    watermarkCanvas.height = opts.rect.height * opts.scale
+    watermarkCtx = watermarkCanvas.getContext('2d')
+    watermarkCtx.fillStyle = @colors.background
+    watermarkCtx.fillRect(0, 0, watermarkCanvas.width, watermarkCanvas.height)
+
+    if opts.includeWatermark
+      @_renderWatermark(watermarkCtx, false)
 
     util.combineCanvases(
-      util.renderShapes(
-        [createShape('Rectangle', rectArgs)].concat(@backgroundShapes),
-        opts.rect, opts.scale),
+      watermarkCanvas,
+      util.renderShapes(@backgroundShapes, opts.rect, opts.scale),
       util.renderShapes(@shapes, opts.rect, opts.scale))
 
   canvasForExport: ->
