@@ -378,6 +378,8 @@ module.exports = class LiterallyCanvas
   loadSnapshot: (snapshot) ->
     return unless snapshot
 
+    snapshot.colors ?= @colors
+
     for k in ['primary', 'secondary', 'background']
       @setColor(k, snapshot.colors[k])
 
