@@ -22,13 +22,18 @@ util =
     window.addEventListener 'orientationchange', resize
     resize()
 
-  combineCanvases: (a, b) ->
+  combineCanvases: (canvases...) ->
     c = document.createElement('canvas')
-    c.width = Math.max(a.width, b.width)
-    c.height = Math.max(a.height, b.height)
+    c.width = canvases[0].width
+    c.height = canvases[0].height
+    for canvas in canvases
+      c.width = Math.max(canvas.width, c.width)
+      c.height = Math.max(canvas.height, c.height)
     ctx = c.getContext('2d')
-    ctx.drawImage(a, 0, 0)
-    ctx.drawImage(b, 0, 0)
+
+    for canvas in canvases
+      ctx.drawImage(canvas, 0, 0)
+      ctx.drawImage(canvas, 0, 0)
     c
 
   renderShapes: (shapes, bounds, scale=1, canvas=null) ->
