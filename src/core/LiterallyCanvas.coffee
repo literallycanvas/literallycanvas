@@ -60,7 +60,8 @@ module.exports = class LiterallyCanvas
         @repaintAllLayers()
     )
 
-    @watermarkImage.onload = => @repaintLayer('background')
+    if @watermarkImage
+      @watermarkImage.onload = => @repaintLayer('background')
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
