@@ -35,7 +35,7 @@ v0.4:
    LC.registerJQueryPlugin()
    LC.util
    LC.tools
-   LC.defineOptionsSTyle()
+   LC.defineOptionsStyle()
    LC.defineShape()
    LC.createShape()
    LC.JSONToShape()

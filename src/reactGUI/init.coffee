@@ -15,7 +15,7 @@ init = (pickerElement, optionsElement, lc, tools, imageURLPrefix) ->
 
   React.renderComponent(Picker(
     {lc, toolButtonComponents, imageURLPrefix}), pickerElement)
-  React.renderComponent(Options({lc}), optionsElement)
+  React.renderComponent(Options({lc, imageURLPrefix}), optionsElement)
 
 
 module.exports = init

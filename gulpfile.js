@@ -18,16 +18,20 @@ gulp.task('sass', function() {
 
 gulp.task('browserify', function() {
   var bundleStream = browserify({
-      basedir: 'src', extensions: ['.js', '.coffee']
+      basedir: 'src', extensions: ['.js', '.coffee'], debug: true
   }).add('./index.coffee')
     .external('React/addons')
     .external('React')
     .transform('coffeeify')
     .bundle({standalone: 'LC'})
+    .on('error', function (err) {
+      if (err) {
+        console.error(err.toString());
+      }
+    });
 
   return bundleStream
     .pipe(source('./src/index.coffee'))
-    //.pipe(streamify(uglify()))
     .pipe(rename('literallycanvas.js'))
     .pipe(gulp.dest('./lib/js/'))
     .pipe(connect.reload());

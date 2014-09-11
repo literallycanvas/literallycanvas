@@ -33,3 +33,6 @@ Watching and serving: `gulp dev`
 
 Browse to `localhost:8000/demo` and modify `demo/index.html` to test code
 in progress.
+
+To generate a production-ready `.js` file, run `gulp` and pull out either
+`lib/js/literallycanvas.js` or `lib/js/literallycanvas.min.js`.

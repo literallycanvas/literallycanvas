@@ -206,7 +206,28 @@ $optionsHeight: 65px;
   z-index: 1;
   border-top: $basicBorder;
 
-  .lc-stroke-widths {
+  .basic-button {
+    border: $basicBorder;
+    @include button-style-1;
+    margin: 0 0 5px 0;
+    padding: 5px 5px 4px 5px;
+  }
+
+  .square-button {
+    border: $basicBorder;
+    @include button-style-1;
+    margin: 0 0 5px 0;
+    padding: 5px 5px 4px 5px;
+    width: 44px;
+    height: 44px;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+
+  .button-row {
     margin: 0;
     padding: 0;
 
@@ -217,13 +238,6 @@ $optionsHeight: 65px;
       display: table-cell;
       text-align: center;
       vertical-align: bottom;
-
-      .stroke-width-button {
-        border: $basicBorder;
-        @include button-style-1;
-        margin: 0 0 5px 0;
-        padding: 5px 5px 4px 5px;
-      }
     }
   }
 
