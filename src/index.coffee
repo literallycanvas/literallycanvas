@@ -9,6 +9,7 @@ util = require './core/util'
 
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
+require './optionsStyles/line-options-and-stroke-width'
 require './optionsStyles/null'
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
 

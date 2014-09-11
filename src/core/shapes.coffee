@@ -1,4 +1,5 @@
 util = require './util'
+lineEndCapShapes = require '../core/lineEndCapShapes.coffee'
 
 shapes = {}
 
@@ -175,16 +176,28 @@ defineShape 'Line',
     @x2 = args.x2 or 0
     @y2 = args.y2 or 0
     @strokeWidth = args.strokeWidth or 1
+    @strokeStyle = args.strokeStyle or null
     @color = args.color or 'black'
+    @capStyle = args.capStyle or 'round'
+    @endCapShapes = args.endCapShapes or [null, null]
+    @dash = args.dash or null
 
   draw: (ctx) ->
     ctx.lineWidth = @strokeWidth
     ctx.strokeStyle = @color
-    ctx.lineCap = 'round'
+    ctx.lineCap = @capStyle
+    ctx.setLineDash(@dash) if @dash
     ctx.beginPath()
     ctx.moveTo(@x1, @y1)
     ctx.lineTo(@x2, @y2)
     ctx.stroke()
+    ctx.setLineDash([]) if @dash
+    if @endCapShapes[0]
+      lineEndCapShapes[@endCapShapes[0]](
+        ctx, @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), {@color})
+    if @endCapShapes[1]
+      lineEndCapShapes[@endCapShapes[1]](
+        ctx, @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), {@color})
 
   getBoundingRect: -> {
     x: Math.min(@x1, @x2) - @strokeWidth / 2,
@@ -192,7 +205,8 @@ defineShape 'Line',
     width: Math.abs(@x2 - @x1) + @strokeWidth / 2,
     height: Math.abs(@y2 - @y1) + @strokeWidth / 2,
   }
-  toJSON: -> {@x1, @y1, @x2, @y2, @strokeWidth, @color}
+  toJSON: ->
+    {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
   fromJSON: (data) -> createShape('Line', data)
 
 

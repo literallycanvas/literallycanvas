@@ -68,7 +68,9 @@
         backgroundImage.src = '/demo/bear.png';
 
         var watermarkImage = new Image();
-        watermarkImage.src = '/demo/watermark.png';
+        //watermarkImage.src = '/demo/watermark.png';
+        // for testing watermark loading bug:
+        watermarkImage.src = 'http://literallycanvas.com/_static/watermark.png'
 
         // the only LC-specific thing we have to do
         var containerOne = document.getElementsByClassName('literally one')[0];
