@@ -262,13 +262,13 @@ linePathFuncs =
   toJSON: ->
     if _doAllPointsShareStyle(@points)
       {
-        @order, @tailSize,
+        @order, @tailSize, @interpolate,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
         pointSize: @points[0].size,
         pointColor: @points[0].color
       }
     else
-      {@order, @tailSize, points: (shapeToJSON(p) for p in @points)}
+      {@order, @tailSize, @interpolate, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
