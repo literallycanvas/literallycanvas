@@ -239,6 +239,7 @@ linePathFuncs =
     points = args.points or []
     @order = args.order or 3
     @tailSize = args.tailSize or 3
+    @interpolate = if 'interpolate' of args then args.interpolate else true
 
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
@@ -285,6 +286,8 @@ linePathFuncs =
 
   addPoint: (point) ->
     @points.push(point)
+
+    return @smoothedPoints = @points if !@interpolate
 
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = bspline(@points, @order)
