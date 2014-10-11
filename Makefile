@@ -19,7 +19,7 @@ release-files: all
 
 release-branch: release-files
 	cp bower_release.json literallycanvas/bower.json
-	ghp-import -p -r lc -b release literallycanvas -m "Release"
+	ghp-import -r lc -b release literallycanvas -m "Release"
 
 release-bower:
 	git push lc-bower release:master -f
