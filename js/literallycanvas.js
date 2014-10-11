@@ -62,6 +62,13 @@ module.exports = LiterallyCanvas = (function() {
         return _this.repaintAllLayers();
       };
     })(this));
+    if (this.watermarkImage) {
+      this.watermarkImage.onload = (function(_this) {
+        return function() {
+          return _this.repaintLayer('background');
+        };
+      })(this);
+    }
   }
 
   LiterallyCanvas.prototype.trigger = function(name, data) {
@@ -106,11 +113,10 @@ module.exports = LiterallyCanvas = (function() {
     this.height = height || INFINITE;
     this.keepPanInImageBounds();
     this.repaintAllLayers();
-    this.trigger('imageSizeChange', {
+    return this.trigger('imageSizeChange', {
       width: this.width,
       height: this.height
     });
-    return console.log(this);
   };
 
   LiterallyCanvas.prototype.setTool = function(tool) {
@@ -291,7 +297,7 @@ module.exports = LiterallyCanvas = (function() {
       case 'background':
         this.backgroundCtx.clearRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
         if (this.watermarkImage) {
-          this._renderWatermark();
+          this._renderWatermark(this.backgroundCtx);
         }
         retryCallback = (function(_this) {
           return function() {
@@ -329,12 +335,18 @@ module.exports = LiterallyCanvas = (function() {
     });
   };
 
-  LiterallyCanvas.prototype._renderWatermark = function() {
-    this.backgroundCtx.save();
-    this.backgroundCtx.translate(this.backgroundCanvas.width / 2, this.backgroundCanvas.height / 2);
-    this.backgroundCtx.scale(this.watermarkScale * this.backingScale, this.watermarkScale * this.backingScale);
-    this.backgroundCtx.drawImage(this.watermarkImage, -this.watermarkImage.width / 2, -this.watermarkImage.height / 2);
-    return this.backgroundCtx.restore();
+  LiterallyCanvas.prototype._renderWatermark = function(ctx, worryAboutRetina) {
+    if (worryAboutRetina == null) {
+      worryAboutRetina = true;
+    }
+    ctx.save();
+    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+    ctx.scale(this.watermarkScale, this.watermarkScale);
+    if (worryAboutRetina) {
+      ctx.scale(this.backingScale, this.backingScale);
+    }
+    ctx.drawImage(this.watermarkImage, -this.watermarkImage.width / 2, -this.watermarkImage.height / 2);
+    return ctx.restore();
   };
 
   LiterallyCanvas.prototype.drawShapeInProgress = function(shape) {
@@ -497,7 +509,7 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.getImage = function(opts) {
-    var rectArgs;
+    var watermarkCanvas, watermarkCtx;
     if (opts == null) {
       opts = {};
     }
@@ -513,20 +525,23 @@ module.exports = LiterallyCanvas = (function() {
     if (opts.scaleDownRetina == null) {
       opts.scaleDownRetina = true;
     }
-    if (opts.scaleDownRetina) {
-      opts.scale /= this.backingScale;
+    if (opts.includeWatermark == null) {
+      opts.includeWatermark = this.watermarkImage && true;
+    }
+    if (!opts.scaleDownRetina) {
+      opts.scale *= this.backingScale;
     }
     this.repaintLayer('main', true);
-    rectArgs = {
-      x: opts.rect.x,
-      y: opts.rect.y,
-      width: opts.rect.width,
-      height: opts.rect.height,
-      fillColor: this.colors.background,
-      strokeColor: 'transparent',
-      strokeWidth: 0
-    };
-    return util.combineCanvases(util.renderShapes([createShape('Rectangle', rectArgs)].concat(this.backgroundShapes), opts.rect, opts.scale), util.renderShapes(this.shapes, opts.rect, opts.scale));
+    watermarkCanvas = document.createElement('canvas');
+    watermarkCanvas.width = opts.rect.width * opts.scale;
+    watermarkCanvas.height = opts.rect.height * opts.scale;
+    watermarkCtx = watermarkCanvas.getContext('2d');
+    watermarkCtx.fillStyle = this.colors.background;
+    watermarkCtx.fillRect(0, 0, watermarkCanvas.width, watermarkCanvas.height);
+    if (opts.includeWatermark) {
+      this._renderWatermark(watermarkCtx, false);
+    }
+    return util.combineCanvases(watermarkCanvas, util.renderShapes(this.backgroundShapes, opts.rect, opts.scale), util.renderShapes(this.shapes, opts.rect, opts.scale));
   };
 
   LiterallyCanvas.prototype.canvasForExport = function() {
@@ -564,6 +579,9 @@ module.exports = LiterallyCanvas = (function() {
     if (!snapshot) {
       return;
     }
+    if (snapshot.colors == null) {
+      snapshot.colors = this.colors;
+    }
     _ref1 = ['primary', 'secondary', 'background'];
     for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
       k = _ref1[_i];
@@ -592,7 +610,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":29,"./actions":3,"./bindEvents":4,"./math":6,"./shapes":7,"./util":8}],3:[function(_dereq_,module,exports){
+},{"../tools/Pencil":32,"./actions":3,"./bindEvents":4,"./math":7,"./shapes":8,"./util":9}],3:[function(_dereq_,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -688,18 +706,11 @@ coordsForTouchEvent = function(el, e) {
 
 position = function(el, e) {
   var p;
-  if (e.offsetX != null) {
-    return {
-      left: e.offsetX,
-      top: e.offsetY
-    };
-  } else {
-    p = el.getBoundingClientRect();
-    return {
-      left: e.clientX - p.left,
-      top: e.clientY - p.top
-    };
-  }
+  p = el.getBoundingClientRect();
+  return {
+    left: e.clientX - p.left,
+    top: e.clientY - p.top
+  };
 };
 
 buttonIsDown = function(e) {
@@ -787,6 +798,33 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
 
 
 },{}],5:[function(_dereq_,module,exports){
+module.exports = {
+  arrow: function(ctx, x, y, angle, opts) {
+    if (opts == null) {
+      opts = {};
+    }
+    if (opts.width == null) {
+      opts.width = Math.max(ctx.lineWidth * 2.2, 5);
+    }
+    if (opts.length == null) {
+      opts.length = opts.width;
+    }
+    if (opts.color == null) {
+      opts.color = ctx.strokeStyle;
+    }
+    ctx.fillStyle = opts.color;
+    ctx.lineWidth = 0;
+    ctx.strokeStyle = 'transparent';
+    ctx.beginPath();
+    ctx.moveTo(x + Math.cos(angle + Math.PI / 2) * opts.width / 2, y + Math.sin(angle + Math.PI / 2) * opts.width / 2);
+    ctx.lineTo(x + Math.cos(angle) * opts.length, y + Math.sin(angle) * opts.length);
+    ctx.lineTo(x + Math.cos(angle - Math.PI / 2) * opts.width / 2, y + Math.sin(angle - Math.PI / 2) * opts.width / 2);
+    return ctx.fill();
+  }
+};
+
+
+},{}],6:[function(_dereq_,module,exports){
 var localize, strings, _;
 
 strings = {};
@@ -807,7 +845,7 @@ module.exports = {
 };
 
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 var Point, math, normals, unit, util, _slope;
 
 Point = _dereq_('./shapes').Point;
@@ -896,11 +934,13 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
 module.exports = math;
 
 
-},{"./shapes":7,"./util":8}],7:[function(_dereq_,module,exports){
-var JSONToShape, LinePath, bspline, createShape, defineShape, linePathFuncs, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _refine,
+},{"./shapes":8,"./util":9}],8:[function(_dereq_,module,exports){
+var JSONToShape, LinePath, bspline, createShape, defineShape, lineEndCapShapes, linePathFuncs, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _refine,
   __slice = [].slice;
 
 util = _dereq_('./util');
+
+lineEndCapShapes = _dereq_('../core/lineEndCapShapes.coffee');
 
 shapes = {};
 
@@ -1165,16 +1205,36 @@ defineShape('Line', {
     this.x2 = args.x2 || 0;
     this.y2 = args.y2 || 0;
     this.strokeWidth = args.strokeWidth || 1;
-    return this.color = args.color || 'black';
+    this.strokeStyle = args.strokeStyle || null;
+    this.color = args.color || 'black';
+    this.capStyle = args.capStyle || 'round';
+    this.endCapShapes = args.endCapShapes || [null, null];
+    return this.dash = args.dash || null;
   },
   draw: function(ctx) {
     ctx.lineWidth = this.strokeWidth;
     ctx.strokeStyle = this.color;
-    ctx.lineCap = 'round';
+    ctx.lineCap = this.capStyle;
+    if (this.dash) {
+      ctx.setLineDash(this.dash);
+    }
     ctx.beginPath();
     ctx.moveTo(this.x1, this.y1);
     ctx.lineTo(this.x2, this.y2);
-    return ctx.stroke();
+    ctx.stroke();
+    if (this.dash) {
+      ctx.setLineDash([]);
+    }
+    if (this.endCapShapes[0]) {
+      lineEndCapShapes[this.endCapShapes[0]](ctx, this.x1, this.y1, Math.atan2(this.y1 - this.y2, this.x1 - this.x2), {
+        color: this.color
+      });
+    }
+    if (this.endCapShapes[1]) {
+      return lineEndCapShapes[this.endCapShapes[1]](ctx, this.x2, this.y2, Math.atan2(this.y2 - this.y1, this.x2 - this.x1), {
+        color: this.color
+      });
+    }
   },
   getBoundingRect: function() {
     return {
@@ -1191,7 +1251,10 @@ defineShape('Line', {
       x2: this.x2,
       y2: this.y2,
       strokeWidth: this.strokeWidth,
-      color: this.color
+      color: this.color,
+      capStyle: this.capStyle,
+      dash: this.dash,
+      endCapShapes: this.endCapShapes
     };
   },
   fromJSON: function(data) {
@@ -1268,6 +1331,7 @@ linePathFuncs = {
     points = args.points || [];
     this.order = args.order || 3;
     this.tailSize = args.tailSize || 3;
+    this.interpolate = 'interpolate' in args ? args.interpolate : true;
     this.segmentSize = Math.pow(2, this.order);
     this.sampleSize = this.tailSize + 1;
     this.points = [];
@@ -1294,6 +1358,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
+        interpolate: this.interpolate,
         pointCoordinatePairs: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1311,6 +1376,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
+        interpolate: this.interpolate,
         points: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1342,6 +1408,9 @@ linePathFuncs = {
   },
   addPoint: function(point) {
     this.points.push(point);
+    if (!this.interpolate) {
+      return this.smoothedPoints = this.points;
+    }
     if (!this.smoothedPoints || this.points.length < this.sampleSize) {
       return this.smoothedPoints = bspline(this.points, this.order);
     } else {
@@ -1472,8 +1541,9 @@ module.exports = {
 };
 
 
-},{"./util":8}],8:[function(_dereq_,module,exports){
-var slice, util;
+},{"../core/lineEndCapShapes.coffee":5,"./util":9}],9:[function(_dereq_,module,exports){
+var slice, util,
+  __slice = [].slice;
 
 slice = Array.prototype.slice;
 
@@ -1513,14 +1583,23 @@ util = {
     window.addEventListener('orientationchange', resize);
     return resize();
   },
-  combineCanvases: function(a, b) {
-    var c, ctx;
+  combineCanvases: function() {
+    var c, canvas, canvases, ctx, _i, _j, _len, _len1;
+    canvases = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     c = document.createElement('canvas');
-    c.width = Math.max(a.width, b.width);
-    c.height = Math.max(a.height, b.height);
+    c.width = canvases[0].width;
+    c.height = canvases[0].height;
+    for (_i = 0, _len = canvases.length; _i < _len; _i++) {
+      canvas = canvases[_i];
+      c.width = Math.max(canvas.width, c.width);
+      c.height = Math.max(canvas.height, c.height);
+    }
     ctx = c.getContext('2d');
-    ctx.drawImage(a, 0, 0);
-    ctx.drawImage(b, 0, 0);
+    for (_j = 0, _len1 = canvases.length; _j < _len1; _j++) {
+      canvas = canvases[_j];
+      ctx.drawImage(canvas, 0, 0);
+      ctx.drawImage(canvas, 0, 0);
+    }
     return c;
   },
   renderShapes: function(shapes, bounds, scale, canvas) {
@@ -1599,7 +1678,7 @@ util = {
 module.exports = util;
 
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var LiterallyCanvas, baseTools, defaultImageURLPrefix, defineOptionsStyle, init, initReact, localize, registerJQueryPlugin, setDefaultImageURLPrefix, shapes, tools, util;
 
 LiterallyCanvas = _dereq_('./core/LiterallyCanvas');
@@ -1615,6 +1694,8 @@ localize = _dereq_('./core/localization').localize;
 _dereq_('./optionsStyles/font');
 
 _dereq_('./optionsStyles/stroke-width');
+
+_dereq_('./optionsStyles/line-options-and-stroke-width');
 
 _dereq_('./optionsStyles/null');
 
@@ -1747,7 +1828,7 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":2,"./core/localization":5,"./core/shapes":7,"./core/util":8,"./optionsStyles/font":10,"./optionsStyles/null":11,"./optionsStyles/optionsStyles":12,"./optionsStyles/stroke-width":13,"./reactGUI/init":23,"./tools/Ellipse":24,"./tools/Eraser":25,"./tools/Eyedropper":26,"./tools/Line":27,"./tools/Pan":28,"./tools/Pencil":29,"./tools/Rectangle":30,"./tools/Text":31,"./tools/base":32}],10:[function(_dereq_,module,exports){
+},{"./core/LiterallyCanvas":2,"./core/localization":6,"./core/shapes":8,"./core/util":9,"./optionsStyles/font":11,"./optionsStyles/line-options-and-stroke-width":12,"./optionsStyles/null":13,"./optionsStyles/optionsStyles":14,"./optionsStyles/stroke-width":15,"./reactGUI/init":26,"./tools/Ellipse":27,"./tools/Eraser":28,"./tools/Eyedropper":29,"./tools/Line":30,"./tools/Pan":31,"./tools/Pencil":32,"./tools/Rectangle":33,"./tools/Text":34,"./tools/base":35}],11:[function(_dereq_,module,exports){
 var defineOptionsStyle, _;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -1905,7 +1986,78 @@ defineOptionsStyle('font', React.createClass({
 module.exports = {};
 
 
-},{"../core/localization":5,"./optionsStyles":12}],11:[function(_dereq_,module,exports){
+},{"../core/localization":6,"./optionsStyles":14}],12:[function(_dereq_,module,exports){
+var StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
+
+defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
+
+StrokeWidthPicker = _dereq_('../reactGUI/StrokeWidthPicker');
+
+createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
+
+defineOptionsStyle('line-options-and-stroke-width', React.createClass({
+  displayName: 'LineOptionsAndStrokeWidth',
+  getState: function() {
+    return {
+      strokeWidth: this.props.tool.strokeWidth,
+      isDashed: this.props.tool.isDashed,
+      hasEndArrow: this.props.tool.hasEndArrow
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolChange')],
+  render: function() {
+    var arrowButtonClass, dashButtonClass, div, img, li, toggleIsDashed, togglehasEndArrow, ul, _ref;
+    _ref = React.DOM, div = _ref.div, ul = _ref.ul, li = _ref.li, img = _ref.img;
+    toggleIsDashed = (function(_this) {
+      return function() {
+        _this.props.tool.isDashed = !_this.props.tool.isDashed;
+        return _this.setState(_this.getState());
+      };
+    })(this);
+    togglehasEndArrow = (function(_this) {
+      return function() {
+        _this.props.tool.hasEndArrow = !_this.props.tool.hasEndArrow;
+        return _this.setState(_this.getState());
+      };
+    })(this);
+    dashButtonClass = React.addons.classSet({
+      'basic-button square-button': true,
+      'selected': this.state.isDashed
+    });
+    arrowButtonClass = React.addons.classSet({
+      'basic-button square-button': true,
+      'selected': this.state.hasEndArrow
+    });
+    return div({}, ul({
+      className: 'button-row',
+      style: {
+        float: 'left',
+        marginRight: 20
+      }
+    }, li({}, div({
+      className: dashButtonClass,
+      onClick: toggleIsDashed
+    }, img({
+      src: "" + this.props.imageURLPrefix + "/dashed-line.png"
+    }))), li({}, div({
+      className: arrowButtonClass,
+      onClick: togglehasEndArrow
+    }, img({
+      src: "" + this.props.imageURLPrefix + "/line-with-arrow.png"
+    })))), StrokeWidthPicker({
+      tool: this.props.tool,
+      lc: this.props.lc
+    }));
+  }
+}));
+
+module.exports = {};
+
+
+},{"../reactGUI/StrokeWidthPicker":21,"../reactGUI/createSetStateOnEventMixin":24,"./optionsStyles":14}],13:[function(_dereq_,module,exports){
 var defineOptionsStyle;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -1920,7 +2072,7 @@ defineOptionsStyle('null', React.createClass({
 module.exports = {};
 
 
-},{"./optionsStyles":12}],12:[function(_dereq_,module,exports){
+},{"./optionsStyles":14}],14:[function(_dereq_,module,exports){
 var defineOptionsStyle, optionsStyles;
 
 optionsStyles = {};
@@ -1935,71 +2087,19 @@ module.exports = {
 };
 
 
-},{}],13:[function(_dereq_,module,exports){
-var createSetStateOnEventMixin, defineOptionsStyle;
-
-createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
+},{}],15:[function(_dereq_,module,exports){
+var StrokeWidthPicker, defineOptionsStyle;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
 
-defineOptionsStyle('stroke-width', React.createClass({
-  displayName: 'StrokeWidths',
-  getState: function() {
-    var _ref;
-    return {
-      strokeWidth: (_ref = this.props.lc.tool) != null ? _ref.strokeWidth : void 0
-    };
-  },
-  getInitialState: function() {
-    return this.getState();
-  },
-  mixins: [createSetStateOnEventMixin('toolChange')],
-  render: function() {
-    var circle, div, getItem, li, strokeWidths, svg, ul, _ref;
-    _ref = React.DOM, ul = _ref.ul, li = _ref.li, svg = _ref.svg, circle = _ref.circle, div = _ref.div;
-    strokeWidths = [1, 2, 5, 10, 20, 30];
-    getItem = (function(_this) {
-      return function(strokeWidth) {};
-    })(this);
-    return ul({
-      className: 'lc-stroke-widths'
-    }, strokeWidths.map((function(_this) {
-      return function(strokeWidth, ix) {
-        var buttonClassName, buttonSize;
-        buttonClassName = React.addons.classSet({
-          'stroke-width-button': true,
-          'selected': strokeWidth === _this.state.strokeWidth
-        });
-        buttonSize = 40;
-        return li({
-          className: 'lc-stroke-width',
-          key: strokeWidth
-        }, div({
-          className: buttonClassName,
-          onClick: function() {
-            _this.props.tool.strokeWidth = strokeWidth;
-            return _this.setState(_this.getState());
-          }
-        }, svg({
-          width: buttonSize,
-          height: buttonSize,
-          viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
-          version: "1.1",
-          xmlns: "http://www.w3.org/2000/svg"
-        }, circle({
-          cx: Math.ceil(buttonSize / 2),
-          cy: Math.ceil(buttonSize / 2),
-          r: strokeWidth / 2
-        }))));
-      };
-    })(this)));
-  }
-}));
+StrokeWidthPicker = _dereq_('../reactGUI/StrokeWidthPicker');
+
+defineOptionsStyle('stroke-width', StrokeWidthPicker);
 
 module.exports = {};
 
 
-},{"../reactGUI/createSetStateOnEventMixin":21,"./optionsStyles":12}],14:[function(_dereq_,module,exports){
+},{"../reactGUI/StrokeWidthPicker":21,"./optionsStyles":14}],16:[function(_dereq_,module,exports){
 var ClearButton, React, createSetStateOnEventMixin, _;
 
 React = _dereq_('./React-shim');
@@ -2044,7 +2144,7 @@ ClearButton = React.createClass({
 module.exports = ClearButton;
 
 
-},{"../core/localization":5,"./React-shim":18,"./createSetStateOnEventMixin":21}],15:[function(_dereq_,module,exports){
+},{"../core/localization":6,"./React-shim":20,"./createSetStateOnEventMixin":24}],17:[function(_dereq_,module,exports){
 var ColorWell, React;
 
 React = _dereq_('./React-shim');
@@ -2207,7 +2307,7 @@ ColorWell = React.createClass({
 module.exports = ColorWell;
 
 
-},{"./React-shim":18}],16:[function(_dereq_,module,exports){
+},{"./React-shim":20}],18:[function(_dereq_,module,exports){
 var Options, React, createSetStateOnEventMixin, optionsStyles;
 
 React = _dereq_('./React-shim');
@@ -2234,7 +2334,8 @@ Options = React.createClass({
     style = "" + this.state.style;
     return optionsStyles[style]({
       lc: this.props.lc,
-      tool: this.state.tool
+      tool: this.state.tool,
+      imageURLPrefix: this.props.imageURLPrefix
     });
   }
 });
@@ -2242,7 +2343,7 @@ Options = React.createClass({
 module.exports = Options;
 
 
-},{"../optionsStyles/optionsStyles":12,"./React-shim":18,"./createSetStateOnEventMixin":21}],17:[function(_dereq_,module,exports){
+},{"../optionsStyles/optionsStyles":14,"./React-shim":20,"./createSetStateOnEventMixin":24}],19:[function(_dereq_,module,exports){
 var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
 
 React = _dereq_('./React-shim');
@@ -2315,7 +2416,8 @@ Picker = React.createClass({
       lc: lc,
       imageURLPrefix: imageURLPrefix
     }), ZoomButtons({
-      lc: lc
+      lc: lc,
+      imageURLPrefix: imageURLPrefix
     }), ClearButton({
       lc: lc
     }), ColorPickers({
@@ -2327,7 +2429,7 @@ Picker = React.createClass({
 module.exports = Picker;
 
 
-},{"../core/localization":5,"./ClearButton":14,"./ColorWell":15,"./React-shim":18,"./UndoRedoButtons":19,"./ZoomButtons":20}],18:[function(_dereq_,module,exports){
+},{"../core/localization":6,"./ClearButton":16,"./ColorWell":17,"./React-shim":20,"./UndoRedoButtons":22,"./ZoomButtons":23}],20:[function(_dereq_,module,exports){
 var React;
 
 try {
@@ -2343,7 +2445,66 @@ if ((React != null ? React.addons : void 0) == null) {
 module.exports = React;
 
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
+var createSetStateOnEventMixin;
+
+createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
+
+module.exports = React.createClass({
+  displayName: 'StrokeWidthPicker',
+  getState: function() {
+    return {
+      strokeWidth: this.props.tool.strokeWidth
+    };
+  },
+  getInitialState: function() {
+    return this.getState();
+  },
+  mixins: [createSetStateOnEventMixin('toolChange')],
+  render: function() {
+    var circle, div, getItem, li, strokeWidths, svg, ul, _ref;
+    _ref = React.DOM, ul = _ref.ul, li = _ref.li, svg = _ref.svg, circle = _ref.circle, div = _ref.div;
+    strokeWidths = [1, 2, 5, 10, 20, 30];
+    getItem = (function(_this) {
+      return function(strokeWidth) {};
+    })(this);
+    return ul({
+      className: 'button-row'
+    }, strokeWidths.map((function(_this) {
+      return function(strokeWidth, ix) {
+        var buttonClassName, buttonSize;
+        buttonClassName = React.addons.classSet({
+          'basic-button': true,
+          'selected': strokeWidth === _this.state.strokeWidth
+        });
+        buttonSize = 30;
+        return li({
+          className: 'lc-stroke-width',
+          key: strokeWidth
+        }, div({
+          className: buttonClassName,
+          onClick: function() {
+            _this.props.tool.strokeWidth = strokeWidth;
+            return _this.setState(_this.getState());
+          }
+        }, svg({
+          width: buttonSize,
+          height: buttonSize,
+          viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
+          version: "1.1",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, circle({
+          cx: Math.ceil(buttonSize / 2),
+          cy: Math.ceil(buttonSize / 2),
+          r: strokeWidth / 2
+        }))));
+      };
+    })(this)));
+  }
+});
+
+
+},{"../reactGUI/createSetStateOnEventMixin":24}],22:[function(_dereq_,module,exports){
 var React, RedoButton, UndoButton, UndoRedoButtons, createSetStateOnEventMixin, createUndoRedoButtonComponent;
 
 React = _dereq_('./React-shim');
@@ -2370,9 +2531,10 @@ createUndoRedoButtonComponent = function(undoOrRedo) {
     },
     mixins: [createSetStateOnEventMixin('drawingChange')],
     render: function() {
-      var className, div, lc, onClick;
-      div = React.DOM.div;
-      lc = this.props.lc;
+      var className, div, imageURLPrefix, img, lc, onClick, title, _ref, _ref1;
+      _ref = React.DOM, div = _ref.div, img = _ref.img;
+      _ref1 = this.props, lc = _ref1.lc, imageURLPrefix = _ref1.imageURLPrefix;
+      title = undoOrRedo === 'undo' ? 'Undo' : 'Redo';
       className = ("lc-" + undoOrRedo + " ") + React.addons.classSet({
         'toolbar-button': true,
         'thin-button': true,
@@ -2395,10 +2557,10 @@ createUndoRedoButtonComponent = function(undoOrRedo) {
       return div({
         className: className,
         onClick: onClick,
-        dangerouslySetInnerHTML: {
-          __html: undoOrRedo === 'undo' ? "&larr;" : "&rarr;"
-        }
-      });
+        title: title
+      }, img({
+        src: "" + imageURLPrefix + "/" + undoOrRedo + ".png"
+      }));
     }
   });
 };
@@ -2410,23 +2572,18 @@ RedoButton = createUndoRedoButtonComponent('redo');
 UndoRedoButtons = React.createClass({
   displayName: 'UndoRedoButtons',
   render: function() {
-    var div, lc;
+    var div;
     div = React.DOM.div;
-    lc = this.props.lc;
     return div({
       className: 'lc-undo-redo'
-    }, UndoButton({
-      lc: lc
-    }), RedoButton({
-      lc: lc
-    }));
+    }, UndoButton(this.props), RedoButton(this.props));
   }
 });
 
 module.exports = UndoRedoButtons;
 
 
-},{"./React-shim":18,"./createSetStateOnEventMixin":21}],20:[function(_dereq_,module,exports){
+},{"./React-shim":20,"./createSetStateOnEventMixin":24}],23:[function(_dereq_,module,exports){
 var React, ZoomButtons, ZoomInButton, ZoomOutButton, createSetStateOnEventMixin, createZoomButtonComponent;
 
 React = _dereq_('./React-shim');
@@ -2453,9 +2610,10 @@ createZoomButtonComponent = function(inOrOut) {
     },
     mixins: [createSetStateOnEventMixin('zoom')],
     render: function() {
-      var className, div, lc, onClick;
-      div = React.DOM.div;
-      lc = this.props.lc;
+      var className, div, imageURLPrefix, img, lc, onClick, title, _ref, _ref1;
+      _ref = React.DOM, div = _ref.div, img = _ref.img;
+      _ref1 = this.props, lc = _ref1.lc, imageURLPrefix = _ref1.imageURLPrefix;
+      title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
       className = ("lc-zoom-" + inOrOut + " ") + React.addons.classSet({
         'toolbar-button': true,
         'thin-button': true,
@@ -2477,15 +2635,11 @@ createZoomButtonComponent = function(inOrOut) {
       }).call(this);
       return div({
         className: className,
-        onClick: onClick
-      }, (function() {
-        switch (false) {
-          case inOrOut !== 'in':
-            return '+';
-          case inOrOut !== 'out':
-            return '-';
-        }
-      })());
+        onClick: onClick,
+        title: title
+      }, img({
+        src: "" + imageURLPrefix + "/zoom-" + inOrOut + ".png"
+      }));
     }
   });
 };
@@ -2497,23 +2651,18 @@ ZoomInButton = createZoomButtonComponent('in');
 ZoomButtons = React.createClass({
   displayName: 'ZoomButtons',
   render: function() {
-    var div, lc;
+    var div;
     div = React.DOM.div;
-    lc = this.props.lc;
     return div({
       className: 'lc-zoom'
-    }, ZoomOutButton({
-      lc: lc
-    }), ZoomInButton({
-      lc: lc
-    }));
+    }, ZoomOutButton(this.props), ZoomInButton(this.props));
   }
 });
 
 module.exports = ZoomButtons;
 
 
-},{"./React-shim":18,"./createSetStateOnEventMixin":21}],21:[function(_dereq_,module,exports){
+},{"./React-shim":20,"./createSetStateOnEventMixin":24}],24:[function(_dereq_,module,exports){
 var React, createSetStateOnEventMixin;
 
 React = _dereq_('./React-shim');
@@ -2534,7 +2683,7 @@ module.exports = createSetStateOnEventMixin = function(eventName) {
 };
 
 
-},{"./React-shim":18}],22:[function(_dereq_,module,exports){
+},{"./React-shim":20}],25:[function(_dereq_,module,exports){
 var React, createToolButton;
 
 React = _dereq_('./React-shim');
@@ -2568,9 +2717,10 @@ createToolButton = function(_arg) {
       });
       return div({
         className: className,
-        onClick: function() {
+        onClick: (function() {
           return onSelect(tool);
-        }
+        }),
+        title: displayName
       }, img({
         className: 'lc-tool-icon',
         src: "" + imageURLPrefix + "/" + imageName + ".png"
@@ -2582,7 +2732,7 @@ createToolButton = function(_arg) {
 module.exports = createToolButton;
 
 
-},{"./React-shim":18}],23:[function(_dereq_,module,exports){
+},{"./React-shim":20}],26:[function(_dereq_,module,exports){
 var Options, Picker, React, createToolButton, init;
 
 React = _dereq_('./React-shim');
@@ -2612,14 +2762,15 @@ init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
     imageURLPrefix: imageURLPrefix
   }), pickerElement);
   return React.renderComponent(Options({
-    lc: lc
+    lc: lc,
+    imageURLPrefix: imageURLPrefix
   }), optionsElement);
 };
 
 module.exports = init;
 
 
-},{"./Options":16,"./Picker":17,"./React-shim":18,"./createToolButton":22}],24:[function(_dereq_,module,exports){
+},{"./Options":18,"./Picker":19,"./React-shim":20,"./createToolButton":25}],27:[function(_dereq_,module,exports){
 var Ellipse, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2664,7 +2815,7 @@ module.exports = Ellipse = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":7,"./base":32}],25:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":35}],28:[function(_dereq_,module,exports){
 var Eraser, Pencil, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2702,7 +2853,7 @@ module.exports = Eraser = (function(_super) {
 })(Pencil);
 
 
-},{"../core/shapes":7,"./Pencil":29}],26:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./Pencil":32}],29:[function(_dereq_,module,exports){
 var Eyedropper, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2741,25 +2892,27 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":7,"./base":32}],27:[function(_dereq_,module,exports){
-var Line, ToolWithStroke, createShape,
+},{"../core/shapes":8,"./base":35}],30:[function(_dereq_,module,exports){
+var Line, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-ToolWithStroke = _dereq_('./base').ToolWithStroke;
+Tool = _dereq_('./base').Tool;
 
 createShape = _dereq_('../core/shapes').createShape;
 
 module.exports = Line = (function(_super) {
   __extends(Line, _super);
 
-  function Line() {
-    return Line.__super__.constructor.apply(this, arguments);
-  }
-
   Line.prototype.name = 'Line';
 
   Line.prototype.iconName = 'line';
+
+  function Line() {
+    this.strokeWidth = 5;
+  }
+
+  Line.prototype.optionsStyle = 'line-options-and-stroke-width';
 
   Line.prototype.begin = function(x, y, lc) {
     return this.currentShape = createShape('Line', {
@@ -2768,6 +2921,15 @@ module.exports = Line = (function(_super) {
       x2: x,
       y2: y,
       strokeWidth: this.strokeWidth,
+      dash: (function() {
+        switch (false) {
+          case !this.isDashed:
+            return [this.strokeWidth * 2, this.strokeWidth * 4];
+          default:
+            return null;
+        }
+      }).call(this),
+      endCapShapes: this.hasEndArrow ? [null, 'arrow'] : null,
       color: lc.getColor('primary')
     });
   };
@@ -2784,10 +2946,10 @@ module.exports = Line = (function(_super) {
 
   return Line;
 
-})(ToolWithStroke);
+})(Tool);
 
 
-},{"../core/shapes":7,"./base":32}],28:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":35}],31:[function(_dereq_,module,exports){
 var Pan, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2828,7 +2990,7 @@ module.exports = Pan = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":7,"./base":32}],29:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":35}],32:[function(_dereq_,module,exports){
 var Pencil, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2890,7 +3052,7 @@ module.exports = Pencil = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":7,"./base":32}],30:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":35}],33:[function(_dereq_,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2935,7 +3097,7 @@ module.exports = Rectangle = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":7,"./base":32}],31:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":35}],34:[function(_dereq_,module,exports){
 var Text, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2988,7 +3150,7 @@ module.exports = Text = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":7,"./base":32}],32:[function(_dereq_,module,exports){
+},{"../core/shapes":8,"./base":35}],35:[function(_dereq_,module,exports){
 var Tool, ToolWithStroke, tools,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3030,6 +3192,6 @@ tools.ToolWithStroke = ToolWithStroke = (function(_super) {
 module.exports = tools;
 
 
-},{}]},{},[9])
-(9)
+},{}]},{},[10])
+(10)
 });
