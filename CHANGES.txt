@@ -3,7 +3,7 @@ v0.4.1:
    getImage({includeWatermark: true})
  * Line tool allows dashes, arrows
  * LinePathShape can be used without smoothing; set
-   {interpolate: false}
+   {smooth: false}
  * New icons for undo/redo
  * Tooltips everywhere
  * getImage() scales for retina correctly

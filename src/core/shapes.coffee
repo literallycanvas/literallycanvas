@@ -239,7 +239,7 @@ linePathFuncs =
     points = args.points or []
     @order = args.order or 3
     @tailSize = args.tailSize or 3
-    @interpolate = if 'interpolate' of args then args.interpolate else true
+    @smooth = if 'smooth' of args then args.smooth else true
 
     # The number of smoothed points generated for each point added
     @segmentSize = Math.pow(2, @order)
@@ -262,13 +262,13 @@ linePathFuncs =
   toJSON: ->
     if _doAllPointsShareStyle(@points)
       {
-        @order, @tailSize, @interpolate,
+        @order, @tailSize, @smooth,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
         pointSize: @points[0].size,
         pointColor: @points[0].color
       }
     else
-      {@order, @tailSize, @interpolate, points: (shapeToJSON(p) for p in @points)}
+      {@order, @tailSize, @smooth, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
@@ -287,7 +287,7 @@ linePathFuncs =
   addPoint: (point) ->
     @points.push(point)
 
-    return @smoothedPoints = @points if !@interpolate
+    return @smoothedPoints = @points if !@smooth
 
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = bspline(@points, @order)
