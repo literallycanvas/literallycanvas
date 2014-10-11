@@ -1,3 +1,15 @@
+v0.4.1:
+ * Watermark can be included in image output with
+   getImage({includeWatermark: true})
+ * Line tool allows dashes, arrows
+ * New icons for undo/redo
+ * Tooltips everywhere
+ * getImage() scales for retina correctly
+ * Watermark no longer requires user input to render if image isn't
+   loaded at init time
+ * Dragging off the canvas while drawing no longer results in a crazy
+   line
+
 v0.4:
  * New GUI using React.js
  * Simplified color picker
