@@ -216,6 +216,8 @@ _doAllPointsShareStyle = (points) ->
   size = points[0].size
   color = points[0].color
   for point in points
+    unless point.size == size and point.color == color
+      console.log size, color, point.size, point.color
     return false unless point.size == size and point.color == color
   return true
 
@@ -227,11 +229,15 @@ _createLinePathFromData = (shapeName, data) ->
   else if data.pointCoordinatePairs
     points = (JSONToShape({
       className: 'Point',
-      data: {x: x, y: y, size: data.pointSize, color: data.pointColor}
+      data: {
+        x: x, y: y, size: data.pointSize, color: data.pointColor
+        smooth: data.smooth
+      }
     }) for [x, y] in data.pointCoordinatePairs)
   return null unless points[0]
-  createShape(
-    shapeName, {points, order: data.order, tailSize: data.tailSize})
+  createShape(shapeName, {
+    points, order: data.order, tailSize: data.tailSize, smooth: data.smooth
+  })
 
 
 linePathFuncs =
