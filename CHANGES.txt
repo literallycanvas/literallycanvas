@@ -2,6 +2,8 @@ v0.4.1:
  * Watermark can be included in image output with
    getImage({includeWatermark: true})
  * Line tool allows dashes, arrows
+ * LinePathShape can be used without smoothing; set
+   {interpolate: false}
  * New icons for undo/redo
  * Tooltips everywhere
  * getImage() scales for retina correctly
