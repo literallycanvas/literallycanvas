@@ -1272,6 +1272,9 @@ _doAllPointsShareStyle = function(points) {
   for (_i = 0, _len = points.length; _i < _len; _i++) {
     point = points[_i];
     if (!(point.size === size && point.color === color)) {
+      console.log(size, color, point.size, point.color);
+    }
+    if (!(point.size === size && point.color === color)) {
       return false;
     }
   }
@@ -1305,7 +1308,8 @@ _createLinePathFromData = function(shapeName, data) {
             x: x,
             y: y,
             size: data.pointSize,
-            color: data.pointColor
+            color: data.pointColor,
+            smooth: data.smooth
           }
         }));
       }
@@ -1318,7 +1322,8 @@ _createLinePathFromData = function(shapeName, data) {
   return createShape(shapeName, {
     points: points,
     order: data.order,
-    tailSize: data.tailSize
+    tailSize: data.tailSize,
+    smooth: data.smooth
   });
 };
 
@@ -1331,7 +1336,7 @@ linePathFuncs = {
     points = args.points || [];
     this.order = args.order || 3;
     this.tailSize = args.tailSize || 3;
-    this.interpolate = 'interpolate' in args ? args.interpolate : true;
+    this.smooth = 'smooth' in args ? args.smooth : true;
     this.segmentSize = Math.pow(2, this.order);
     this.sampleSize = this.tailSize + 1;
     this.points = [];
@@ -1358,7 +1363,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
-        interpolate: this.interpolate,
+        smooth: this.smooth,
         pointCoordinatePairs: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1376,7 +1381,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
-        interpolate: this.interpolate,
+        smooth: this.smooth,
         points: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1408,7 +1413,7 @@ linePathFuncs = {
   },
   addPoint: function(point) {
     this.points.push(point);
-    if (!this.interpolate) {
+    if (!this.smooth) {
       return this.smoothedPoints = this.points;
     }
     if (!this.smoothedPoints || this.points.length < this.sampleSize) {
