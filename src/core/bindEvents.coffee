@@ -25,18 +25,18 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
   canvas.addEventListener 'mousedown', (e) =>
     down = true
     e.preventDefault()
-    document.onselectstart = -> false # disable selection while dragging
+    canvas.onselectstart = -> false # disable selection while dragging
     p = position(canvas, e)
     lc.begin(p.left, p.top)
 
-  document.addEventListener 'mousemove', (e) =>
+  canvas.addEventListener 'mousemove', (e) =>
     e.preventDefault()
     p = position(canvas, e)
     lc.continue(p.left, p.top)
 
-  document.addEventListener 'mouseup', (e) =>
+  canvas.addEventListener 'mouseup', (e) =>
     e.preventDefault()
-    document.onselectstart = -> true # enable selection while dragging
+    canvas.onselectstart = -> true # enable selection while dragging
     p = position(canvas, e)
     lc.end(p.left, p.top)
 
