@@ -24,6 +24,25 @@ This is all it takes:
 </script>
 ```
 
+State of the Project
+--------------------
+
+I, Steve, am the only major contributor to this project. I don't currently
+use it for anything, so it isn't high on my list of things to work on. As
+such, major bugs may go unfixed for unacceptable amounts of time if you
+assume I'll take care of them.
+
+If you are truly in need of a bug-free, feature-rich HTML5 drawing widget, it
+is in your best interest to get up to date on the source code and start
+sending pull requests. I'm more than happy to help you learn.
+
+I started this project entirely for fun. People have come to rely on it, but
+there hasn't been a corresponding increase in contributions. At this point I
+can't keep supporting people's products for free.
+
+That said, I'm available to work as a contractor to add features to the
+library. My email address is in the commits.
+
 Developing
 ----------
 
