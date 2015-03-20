@@ -10,7 +10,7 @@ class ClearAction
 
   undo: ->
     @lc.shapes = @oldShapes
-    @lc.repaintLaye('main')
+    @lc.repaintLayer('main')
 
 
 class AddShapeAction
