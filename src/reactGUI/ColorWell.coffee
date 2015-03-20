@@ -69,7 +69,7 @@ ColorWell = React.createClass
       )
 
     rows = []
-    rows.push 'transparent' if @props.colorName == 'background'
+    rows.push 'transparent'
     rows.push ("hsl(0, 0%, #{i}%)" for i in [0..100] by 10)
     for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
       rows.push("hsl(#{hue}, 100%, #{i}%)" for i in [10..90] by 8)
