@@ -379,6 +379,23 @@ module.exports = class LiterallyCanvas
   getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
 
+  getSVGString: (opts={}) ->
+    # {x, y, width, height}
+    opts.rect ?= @getContentBounds()
+
+    {x, y, width, height} = opts.rect
+    "
+      <svg width='#{width}' height='#{height}'
+          viewBox='0 0 #{width} #{height}'>
+        <rect width=#{width} height=#{height} x=0 y=0
+          fill='#{@colors.background}' />
+        <g transform='translate(#{-x}, #{-y})'>
+          #{@backgroundShapes.map((s) -> s.toSVG()).join('')}
+          #{@shapes.map((s) -> s.toSVG()).join('')}
+        </g>
+      </svg>
+    "
+
   loadSnapshot: (snapshot) ->
     return unless snapshot
 
