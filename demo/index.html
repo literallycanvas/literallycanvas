@@ -18,7 +18,7 @@
         /* width: 768px; */
         width: 100%;
         margin: auto;
-        margin-top: 50px;
+        /* margin-top: 50px; */
       }
 
       .literally {
@@ -41,6 +41,13 @@
       <a href="javascript:void(0);" id="open-image">Open image</a>
       <br>
       <a href="javascript:void(0);" id="change-size">Change size</a>
+
+      <br>
+      <div class="svg-container"
+          style="display: inline-block; border: 1px solid yellow"></div>
+      <span style="font-size: 80px; vertical-align: top; color: white;">
+        &larr; SVG
+      </span>
 
       <!--
       <br><br>
@@ -101,6 +108,10 @@
         $("#change-size").click(function() {
           lc.setImageSize(null, 200)
         });
+
+        backgroundImage.onload = function() {
+          $('.svg-container')[0].innerHTML = lc.getSVGString()
+        }
 
         /* demo of inserting a shape below another
         var newShape = LC.JSONToShape({"className":"Rectangle","data":{"x":238,"y":168,"width":122,"height":112,"strokeWidth":5,"strokeColor":"hsl(0, 100%, 42%)","fillColor":"#0f0"},"id":"4764db7c-9d6d-1e7f-f304-3904fa464e6b"})

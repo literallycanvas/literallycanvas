@@ -8,6 +8,7 @@ defineShape = (name, props) ->
   Shape = (args...) ->
     props.constructor.call(this, args...)
     this
+  props.toSVG ?= -> ''
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
   Shape.prototype.drawLatest = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
@@ -100,6 +101,13 @@ defineShape 'Image',
     img.src = data.imageSrc
     createShape('Image', {x: data.x, x: data.y, image: img})
 
+  toSVG: ->
+    "
+      <image x=#{@x} y=#{@y}
+        width=#{@image.naturalWidth} height=#{@image.naturalHeight}
+        xlink:href=#{@image.src} />
+    "
+
 
 defineShape 'Rectangle',
   constructor: (args={}) ->
@@ -126,6 +134,13 @@ defineShape 'Rectangle',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Rectangle', data)
+
+  toSVG: ->
+    "
+      <rect x=#{@x} y=#{@y} width=#{@width} height=#{@height}
+        stroke='#{@strokeColor}' fill='#{@fillColor}'
+        stroke-width=#{@strokeWidth} />
+    "
 
 
 # this is pretty similar to the Rectangle shape. maybe consolidate somehow.
@@ -168,6 +183,17 @@ defineShape 'Ellipse',
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Ellipse', data)
 
+  toSVG: ->
+    halfWidth = Math.floor(@width / 2)
+    halfHeight = Math.floor(@height / 2)
+    centerX = @x + halfWidth
+    centerY = @y + halfHeight
+    "
+      <ellipse cx=#{centerX} cy=#{centerY} rx=#{halfWidth} ry=#{halfHeight}
+        stroke='#{@strokeColor}' fill='#{@fillColor}'
+        stroke-width=#{@strokeWidth} />
+    "
+
 
 defineShape 'Line',
   constructor: (args={}) ->
@@ -192,12 +218,14 @@ defineShape 'Line',
     ctx.lineTo(@x2, @y2)
     ctx.stroke()
     ctx.setLineDash([]) if @dash
+
+    arrowWidth = Math.max(@strokeWidth * 2.2, 5)
     if @endCapShapes[0]
-      lineEndCapShapes[@endCapShapes[0]](
-        ctx, @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), {@color})
+      lineEndCapShapes[@endCapShapes[0]].drawToCanvas(
+        ctx, @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), arrowWidth, @color)
     if @endCapShapes[1]
-      lineEndCapShapes[@endCapShapes[1]](
-        ctx, @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), {@color})
+      lineEndCapShapes[@endCapShapes[1]].drawToCanvas(
+        ctx, @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), arrowWidth, @color)
 
   getBoundingRect: -> {
     x: Math.min(@x1, @x2) - @strokeWidth / 2,
@@ -208,6 +236,25 @@ defineShape 'Line',
   toJSON: ->
     {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
   fromJSON: (data) -> createShape('Line', data)
+
+  toSVG: ->
+    dashString = if @dash then "stroke-dasharray='#{@dash.join(', ')}'" else ''
+    capString = ''
+    arrowWidth = Math.max(@strokeWidth * 2.2, 5)
+    if @endCapShapes[0]
+      capString += lineEndCapShapes[@endCapShapes[0]].svg(
+        @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), arrowWidth, @color)
+    if @endCapShapes[1]
+      capString += lineEndCapShapes[@endCapShapes[1]].svg(
+        @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), arrowWidth, @color)
+    "
+      <g>
+        <line x1=#{@x1} y1=#{@y1} x2=#{@x2} y2=#{@y2} #{dashString}
+          stroke-linecap='#{@capStyle}'
+          stroke='#{@color}'stroke-width=#{@strokeWidth} />
+        #{capString}
+      <g>
+    "
 
 
 # returns false if no points because there are no points to share style
@@ -277,6 +324,14 @@ linePathFuncs =
       {@order, @tailSize, @smooth, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
+
+  toSVG: ->
+    "
+      <polyline
+        fill='none'
+        points='#{@smoothedPoints.map((p) -> "#{p.x},#{p.y}").join(' ')}'
+        stroke='#{@points[0].color}' stroke-width=#{@points[0].size} />
+    "
 
   draw: (ctx) ->
     @drawPoints(ctx, @smoothedPoints)
