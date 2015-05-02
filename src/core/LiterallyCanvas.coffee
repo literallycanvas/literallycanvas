@@ -17,6 +17,8 @@ module.exports = class LiterallyCanvas
       secondary: opts.secondaryColor or '#fff'
       background: opts.backgroundColor or 'transparent'
 
+    @containerEl.style['background-color'] = @colors.background
+
     @watermarkImage = opts.watermarkImage
     @watermarkScale = opts.watermarkScale or 1
 
