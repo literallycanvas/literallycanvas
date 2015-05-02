@@ -2,6 +2,8 @@ v0.4.2 (dev):
  * lc.getSVGString()
  * LC.setTool() is part of the public API
  * Improved behavior when dragging outside the LC div while drawing
+ * backgroundColor initialization option works
+ * Event handlers rewritten to handle drawing outside element bounds better
 
 v0.4.1:
  * Watermark can be included in image output with
