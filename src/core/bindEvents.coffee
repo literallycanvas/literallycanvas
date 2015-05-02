@@ -21,6 +21,18 @@ buttonIsDown = (e) ->
 
 
 module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
+  mouseMoveListener = (e) =>
+    e.preventDefault()
+    p = position(canvas, e)
+    lc.continue(p.left, p.top)
+
+  mouseUpListener = (e) =>
+    e.preventDefault()
+    canvas.onselectstart = -> true # enable selection while dragging
+    p = position(canvas, e)
+    lc.end(p.left, p.top)
+    document.removeEventListener 'mousemove', mouseMoveListener
+    document.removeEventListener 'mouseup', mouseUpListener
 
   canvas.addEventListener 'mousedown', (e) =>
     down = true
@@ -29,35 +41,30 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     p = position(canvas, e)
     lc.begin(p.left, p.top)
 
-  canvas.addEventListener 'mousemove', (e) =>
-    e.preventDefault()
-    p = position(canvas, e)
-    lc.continue(p.left, p.top)
+    document.addEventListener 'mousemove', mouseMoveListener
+    document.addEventListener 'mouseup', mouseUpListener
 
-  canvas.addEventListener 'mouseup', (e) =>
+
+  touchMoveListener = (e) ->
     e.preventDefault()
-    canvas.onselectstart = -> true # enable selection while dragging
-    p = position(canvas, e)
-    lc.end(p.left, p.top)
+    lc.continue(coordsForTouchEvent(canvas, e)...)
+
+  touchEndListener = (e) ->
+    e.preventDefault()
+    lc.end(coordsForTouchEvent(canvas, e)...)
+    document.removeEventListener 'touchmove', touchMoveListener
+    document.removeEventListener 'touchend', touchEndListener
+    document.removeEventListener 'touchcancel', touchEndListener
 
   canvas.addEventListener 'touchstart', (e) ->
     e.preventDefault()
     if e.touches.length == 1
       lc.begin(coordsForTouchEvent(canvas, e)...)
+      document.addEventListener 'touchmove', touchMoveListener
+      document.addEventListener 'touchend', touchEndListener
+      document.addEventListener 'touchcancel', touchEndListener
     else
       lc.continue(coordsForTouchEvent(canvas, e)...)
-
-  canvas.addEventListener 'touchmove', (e) ->
-    e.preventDefault()
-    lc.continue(coordsForTouchEvent(canvas, e)...)
-
-  canvas.addEventListener 'touchend', (e) ->
-    e.preventDefault()
-    lc.end(coordsForTouchEvent(canvas, e)...)
-
-  canvas.addEventListener 'touchcancel', (e) ->
-    e.preventDefault()
-    lc.end(coordsForTouchEvent(canvas, e)...)
 
   if panWithKeyboard
     document.addEventListener 'keydown', (e) ->
