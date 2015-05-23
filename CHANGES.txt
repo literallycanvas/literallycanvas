@@ -3,6 +3,7 @@ v0.4.2 (dev):
  * LC.setTool() is part of the public API
  * Improved behavior when dragging outside the LC div while drawing
  * backgroundColor initialization option works
+ * Allow transparent stroke and fill colors
 
 v0.4.1:
  * Watermark can be included in image output with
