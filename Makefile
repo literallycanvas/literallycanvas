@@ -28,11 +28,7 @@ release-bower:
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
 	git update-index --assume-unchanged lib/js/literallycanvas.min.js
-	git update-index --assume-unchanged lib/js/literallycanvas.jquery.js
-	git update-index --assume-unchanged lib/js/literallycanvas.jquery.min.js
 
 no-ignore-js:
 	git update-index --no-assume-unchanged lib/js/literallycanvas.js
 	git update-index --no-assume-unchanged lib/js/literallycanvas.min.js
-	git update-index --no-assume-unchanged lib/js/literallycanvas.jquery.js
-	git update-index --no-assume-unchanged lib/js/literallycanvas.jquery.min.js
