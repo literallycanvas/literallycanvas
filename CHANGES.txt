@@ -1,4 +1,4 @@
-v0.4.2 (dev):
+v0.4.2:
  * lc.getSVGString()
  * LC.setTool() is part of the public API
  * Improved behavior when dragging outside the LC div while drawing
