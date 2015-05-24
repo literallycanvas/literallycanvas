@@ -29,6 +29,7 @@ module.exports = LiterallyCanvas = (function() {
       secondary: opts.secondaryColor || '#fff',
       background: opts.backgroundColor || 'transparent'
     };
+    this.containerEl.style['background-color'] = this.colors.background;
     this.watermarkImage = opts.watermarkImage;
     this.watermarkScale = opts.watermarkScale || 1;
     this.backgroundCanvas = document.createElement('canvas');
@@ -574,6 +575,22 @@ module.exports = LiterallyCanvas = (function() {
     return JSON.stringify(this.getSnapshot());
   };
 
+  LiterallyCanvas.prototype.getSVGString = function(opts) {
+    var height, width, x, y, _ref1;
+    if (opts == null) {
+      opts = {};
+    }
+    if (opts.rect == null) {
+      opts.rect = this.getContentBounds();
+    }
+    _ref1 = opts.rect, x = _ref1.x, y = _ref1.y, width = _ref1.width, height = _ref1.height;
+    return "<svg width='" + width + "' height='" + height + "' viewBox='0 0 " + width + " " + height + "'> <rect width=" + width + " height=" + height + " x=0 y=0 fill='" + this.colors.background + "' /> <g transform='translate(" + (-x) + ", " + (-y) + ")'> " + (this.backgroundShapes.map(function(s) {
+      return s.toSVG();
+    }).join('')) + " " + (this.shapes.map(function(s) {
+      return s.toSVG();
+    }).join('')) + " </g> </svg>";
+  };
+
   LiterallyCanvas.prototype.loadSnapshot = function(snapshot) {
     var k, shape, shapeRepr, _i, _j, _len, _len1, _ref1, _ref2;
     if (!snapshot) {
@@ -627,7 +644,7 @@ ClearAction = (function() {
 
   ClearAction.prototype.undo = function() {
     this.lc.shapes = this.oldShapes;
-    return this.lc.repaintLaye('main');
+    return this.lc.repaintLayer('main');
   };
 
   return ClearAction;
@@ -722,59 +739,66 @@ buttonIsDown = function(e) {
 };
 
 module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
+  var mouseMoveListener, mouseUpListener, touchEndListener, touchMoveListener;
   if (panWithKeyboard == null) {
     panWithKeyboard = false;
   }
-  canvas.addEventListener('mousedown', (function(_this) {
-    return function(e) {
-      var down, p;
-      down = true;
-      e.preventDefault();
-      document.onselectstart = function() {
-        return false;
-      };
-      p = position(canvas, e);
-      return lc.begin(p.left, p.top);
-    };
-  })(this));
-  document.addEventListener('mousemove', (function(_this) {
+  mouseMoveListener = (function(_this) {
     return function(e) {
       var p;
       e.preventDefault();
       p = position(canvas, e);
       return lc["continue"](p.left, p.top);
     };
-  })(this));
-  document.addEventListener('mouseup', (function(_this) {
+  })(this);
+  mouseUpListener = (function(_this) {
     return function(e) {
       var p;
       e.preventDefault();
-      document.onselectstart = function() {
+      canvas.onselectstart = function() {
         return true;
       };
       p = position(canvas, e);
-      return lc.end(p.left, p.top);
+      lc.end(p.left, p.top);
+      document.removeEventListener('mousemove', mouseMoveListener);
+      return document.removeEventListener('mouseup', mouseUpListener);
+    };
+  })(this);
+  canvas.addEventListener('mousedown', (function(_this) {
+    return function(e) {
+      var down, p;
+      down = true;
+      e.preventDefault();
+      canvas.onselectstart = function() {
+        return false;
+      };
+      p = position(canvas, e);
+      lc.begin(p.left, p.top);
+      document.addEventListener('mousemove', mouseMoveListener);
+      return document.addEventListener('mouseup', mouseUpListener);
     };
   })(this));
+  touchMoveListener = function(e) {
+    e.preventDefault();
+    return lc["continue"].apply(lc, coordsForTouchEvent(canvas, e));
+  };
+  touchEndListener = function(e) {
+    e.preventDefault();
+    lc.end.apply(lc, coordsForTouchEvent(canvas, e));
+    document.removeEventListener('touchmove', touchMoveListener);
+    document.removeEventListener('touchend', touchEndListener);
+    return document.removeEventListener('touchcancel', touchEndListener);
+  };
   canvas.addEventListener('touchstart', function(e) {
     e.preventDefault();
     if (e.touches.length === 1) {
-      return lc.begin.apply(lc, coordsForTouchEvent(canvas, e));
+      lc.begin.apply(lc, coordsForTouchEvent(canvas, e));
+      document.addEventListener('touchmove', touchMoveListener);
+      document.addEventListener('touchend', touchEndListener);
+      return document.addEventListener('touchcancel', touchEndListener);
     } else {
       return lc["continue"].apply(lc, coordsForTouchEvent(canvas, e));
     }
-  });
-  canvas.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-    return lc["continue"].apply(lc, coordsForTouchEvent(canvas, e));
-  });
-  canvas.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    return lc.end.apply(lc, coordsForTouchEvent(canvas, e));
-  });
-  canvas.addEventListener('touchcancel', function(e) {
-    e.preventDefault();
-    return lc.end.apply(lc, coordsForTouchEvent(canvas, e));
   });
   if (panWithKeyboard) {
     return document.addEventListener('keydown', function(e) {
@@ -799,28 +823,52 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
 
 },{}],5:[function(_dereq_,module,exports){
 module.exports = {
-  arrow: function(ctx, x, y, angle, opts) {
-    if (opts == null) {
-      opts = {};
-    }
-    if (opts.width == null) {
-      opts.width = Math.max(ctx.lineWidth * 2.2, 5);
-    }
-    if (opts.length == null) {
-      opts.length = opts.width;
-    }
-    if (opts.color == null) {
-      opts.color = ctx.strokeStyle;
-    }
-    ctx.fillStyle = opts.color;
-    ctx.lineWidth = 0;
-    ctx.strokeStyle = 'transparent';
-    ctx.beginPath();
-    ctx.moveTo(x + Math.cos(angle + Math.PI / 2) * opts.width / 2, y + Math.sin(angle + Math.PI / 2) * opts.width / 2);
-    ctx.lineTo(x + Math.cos(angle) * opts.length, y + Math.sin(angle) * opts.length);
-    ctx.lineTo(x + Math.cos(angle - Math.PI / 2) * opts.width / 2, y + Math.sin(angle - Math.PI / 2) * opts.width / 2);
-    return ctx.fill();
-  }
+  arrow: (function() {
+    var getPoints;
+    getPoints = function(x, y, angle, width, length) {
+      return [
+        {
+          x: x + Math.cos(angle + Math.PI / 2) * width / 2,
+          y: y + Math.sin(angle + Math.PI / 2) * width / 2
+        }, {
+          x: x + Math.cos(angle) * length,
+          y: y + Math.sin(angle) * length
+        }, {
+          x: x + Math.cos(angle - Math.PI / 2) * width / 2,
+          y: y + Math.sin(angle - Math.PI / 2) * width / 2
+        }
+      ];
+    };
+    return {
+      drawToCanvas: function(ctx, x, y, angle, width, color, length) {
+        var points;
+        if (length == null) {
+          length = 0;
+        }
+        length = length || width;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 0;
+        ctx.strokeStyle = 'transparent';
+        ctx.beginPath();
+        points = getPoints(x, y, angle, width, length);
+        ctx.moveTo(points[0].x, points[0].y);
+        ctx.lineTo(points[1].x, points[1].y);
+        ctx.lineTo(points[2].x, points[2].y);
+        return ctx.fill();
+      },
+      svg: function(x, y, angle, width, color, length) {
+        var points;
+        if (length == null) {
+          length = 0;
+        }
+        length = length || width;
+        points = getPoints(x, y, angle, width, length);
+        return "<polygon fill='" + color + "' stroke='none' points='" + (points.map(function(p) {
+          return "" + p.x + "," + p.y;
+        })) + "' />";
+      }
+    };
+  })()
 };
 
 
@@ -952,6 +1000,11 @@ defineShape = function(name, props) {
     (_ref = props.constructor).call.apply(_ref, [this].concat(__slice.call(args)));
     return this;
   };
+  if (props.toSVG == null) {
+    props.toSVG = function() {
+      return '';
+    };
+  }
   Shape.prototype.className = name;
   Shape.fromJSON = props.fromJSON;
   Shape.prototype.drawLatest = function(ctx, bufferCtx) {
@@ -1092,6 +1145,9 @@ defineShape('Image', {
       x: data.y,
       image: img
     });
+  },
+  toSVG: function() {
+    return "<image x=" + this.x + " y=" + this.y + " width=" + this.image.naturalWidth + " height=" + this.image.naturalHeight + " xlink:href=" + this.image.src + " />";
   }
 });
 
@@ -1136,6 +1192,9 @@ defineShape('Rectangle', {
   },
   fromJSON: function(data) {
     return createShape('Rectangle', data);
+  },
+  toSVG: function() {
+    return "<rect x=" + this.x + " y=" + this.y + " width=" + this.width + " height=" + this.height + " stroke='" + this.strokeColor + "' fill='" + this.fillColor + "' stroke-width=" + this.strokeWidth + " />";
   }
 });
 
@@ -1192,6 +1251,14 @@ defineShape('Ellipse', {
   },
   fromJSON: function(data) {
     return createShape('Ellipse', data);
+  },
+  toSVG: function() {
+    var centerX, centerY, halfHeight, halfWidth;
+    halfWidth = Math.floor(this.width / 2);
+    halfHeight = Math.floor(this.height / 2);
+    centerX = this.x + halfWidth;
+    centerY = this.y + halfHeight;
+    return "<ellipse cx=" + centerX + " cy=" + centerY + " rx=" + halfWidth + " ry=" + halfHeight + " stroke='" + this.strokeColor + "' fill='" + this.fillColor + "' stroke-width=" + this.strokeWidth + " />";
   }
 });
 
@@ -1212,6 +1279,7 @@ defineShape('Line', {
     return this.dash = args.dash || null;
   },
   draw: function(ctx) {
+    var arrowWidth;
     ctx.lineWidth = this.strokeWidth;
     ctx.strokeStyle = this.color;
     ctx.lineCap = this.capStyle;
@@ -1225,15 +1293,12 @@ defineShape('Line', {
     if (this.dash) {
       ctx.setLineDash([]);
     }
+    arrowWidth = Math.max(this.strokeWidth * 2.2, 5);
     if (this.endCapShapes[0]) {
-      lineEndCapShapes[this.endCapShapes[0]](ctx, this.x1, this.y1, Math.atan2(this.y1 - this.y2, this.x1 - this.x2), {
-        color: this.color
-      });
+      lineEndCapShapes[this.endCapShapes[0]].drawToCanvas(ctx, this.x1, this.y1, Math.atan2(this.y1 - this.y2, this.x1 - this.x2), arrowWidth, this.color);
     }
     if (this.endCapShapes[1]) {
-      return lineEndCapShapes[this.endCapShapes[1]](ctx, this.x2, this.y2, Math.atan2(this.y2 - this.y1, this.x2 - this.x1), {
-        color: this.color
-      });
+      return lineEndCapShapes[this.endCapShapes[1]].drawToCanvas(ctx, this.x2, this.y2, Math.atan2(this.y2 - this.y1, this.x2 - this.x1), arrowWidth, this.color);
     }
   },
   getBoundingRect: function() {
@@ -1259,6 +1324,19 @@ defineShape('Line', {
   },
   fromJSON: function(data) {
     return createShape('Line', data);
+  },
+  toSVG: function() {
+    var arrowWidth, capString, dashString;
+    dashString = this.dash ? "stroke-dasharray='" + (this.dash.join(', ')) + "'" : '';
+    capString = '';
+    arrowWidth = Math.max(this.strokeWidth * 2.2, 5);
+    if (this.endCapShapes[0]) {
+      capString += lineEndCapShapes[this.endCapShapes[0]].svg(this.x1, this.y1, Math.atan2(this.y1 - this.y2, this.x1 - this.x2), arrowWidth, this.color);
+    }
+    if (this.endCapShapes[1]) {
+      capString += lineEndCapShapes[this.endCapShapes[1]].svg(this.x2, this.y2, Math.atan2(this.y2 - this.y1, this.x2 - this.x1), arrowWidth, this.color);
+    }
+    return "<g> <line x1=" + this.x1 + " y1=" + this.y1 + " x2=" + this.x2 + " y2=" + this.y2 + " " + dashString + " stroke-linecap='" + this.capStyle + "' stroke='" + this.color + "'stroke-width=" + this.strokeWidth + " /> " + capString + " <g>";
   }
 });
 
@@ -1271,6 +1349,9 @@ _doAllPointsShareStyle = function(points) {
   color = points[0].color;
   for (_i = 0, _len = points.length; _i < _len; _i++) {
     point = points[_i];
+    if (!(point.size === size && point.color === color)) {
+      console.log(size, color, point.size, point.color);
+    }
     if (!(point.size === size && point.color === color)) {
       return false;
     }
@@ -1305,7 +1386,8 @@ _createLinePathFromData = function(shapeName, data) {
             x: x,
             y: y,
             size: data.pointSize,
-            color: data.pointColor
+            color: data.pointColor,
+            smooth: data.smooth
           }
         }));
       }
@@ -1318,7 +1400,8 @@ _createLinePathFromData = function(shapeName, data) {
   return createShape(shapeName, {
     points: points,
     order: data.order,
-    tailSize: data.tailSize
+    tailSize: data.tailSize,
+    smooth: data.smooth
   });
 };
 
@@ -1331,7 +1414,7 @@ linePathFuncs = {
     points = args.points || [];
     this.order = args.order || 3;
     this.tailSize = args.tailSize || 3;
-    this.interpolate = 'interpolate' in args ? args.interpolate : true;
+    this.smooth = 'smooth' in args ? args.smooth : true;
     this.segmentSize = Math.pow(2, this.order);
     this.sampleSize = this.tailSize + 1;
     this.points = [];
@@ -1358,7 +1441,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
-        interpolate: this.interpolate,
+        smooth: this.smooth,
         pointCoordinatePairs: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1376,7 +1459,7 @@ linePathFuncs = {
       return {
         order: this.order,
         tailSize: this.tailSize,
-        interpolate: this.interpolate,
+        smooth: this.smooth,
         points: (function() {
           var _i, _len, _ref, _results;
           _ref = this.points;
@@ -1393,6 +1476,11 @@ linePathFuncs = {
   fromJSON: function(data) {
     return _createLinePathFromData('LinePath', data);
   },
+  toSVG: function() {
+    return "<polyline fill='none' points='" + (this.smoothedPoints.map(function(p) {
+      return "" + p.x + "," + p.y;
+    }).join(' ')) + "' stroke='" + this.points[0].color + "' stroke-width=" + this.points[0].size + " />";
+  },
   draw: function(ctx) {
     return this.drawPoints(ctx, this.smoothedPoints);
   },
@@ -1408,7 +1496,7 @@ linePathFuncs = {
   },
   addPoint: function(point) {
     this.points.push(point);
-    if (!this.interpolate) {
+    if (!this.smooth) {
       return this.smoothedPoints = this.points;
     }
     if (!this.smoothedPoints || this.points.length < this.sampleSize) {
@@ -2246,9 +2334,7 @@ ColorWell = React.createClass({
       };
     })(this);
     rows = [];
-    if (this.props.colorName === 'background') {
-      rows.push('transparent');
-    }
+    rows.push('transparent');
     rows.push((function() {
       var _i, _results;
       _results = [];
