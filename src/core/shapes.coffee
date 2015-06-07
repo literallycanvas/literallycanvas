@@ -1,5 +1,6 @@
 util = require './util'
 lineEndCapShapes = require '../core/lineEndCapShapes.coffee'
+require './fontmetrics.js'
 
 shapes = {}
 
@@ -432,15 +433,43 @@ defineShape 'Text',
     @text = args.text or ''
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
+
+  _getMetrics: (ctx) ->
+    fontItems = @font.split(' ')
+    fontSize = parseInt(fontItems[0].replace("px", ""), 10)
+
+    remainingFontString = @font.substring(fontItems[0].length + 1)
+      .replace('bold ', '')
+      .replace('italic ', '')
+      .replace('underline ', '')
+
+    fontFamily = remainingFontString
+    @metrics = ctx.measureText2(@text, fontSize, fontFamily)
+    @boundingBoxWidth = Math.ceil(@metrics.width)
+
   draw: (ctx) ->
     ctx.font  = @font
     ctx.fillStyle = @color
     ctx.fillText(@text, @x, @y)
-    @boundingBoxWidth = Math.ceil ctx.measureText(@text).width
+    @_getMetrics(ctx) unless @metrics
+
   getBoundingRect: ->
-    {@x, @y, width: @boundingBoxWidth, height: 18} # we don't know height :-(
+    @_getMetrics(ctx) unless @metrics
+    {
+      x: @x - @metrics.bounds.minx,
+      y: @y - @metrics.bounds.miny - @metrics.bounds.maxy,
+      width: @metrics.bounds.maxx,
+      height: @metrics.bounds.maxy + @metrics.descent,
+    }
   toJSON: -> {@x, @y, @text, @color, @font}
   fromJSON: (data) -> createShape('Text', data)
+
+  toSVG: ->
+    "
+    <text x='#{@x}' y='#{@y}' style='font: #{@font}'>
+      #{@text}
+    </text>
+    "
 
 
 module.exports = {defineShape, createShape, JSONToShape, shapeToJSON}
