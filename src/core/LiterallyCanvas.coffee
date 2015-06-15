@@ -27,6 +27,8 @@ module.exports = class LiterallyCanvas
     @containerEl.appendChild(@backgroundCanvas)
     @backgroundShapes = opts.backgroundShapes || []
 
+    @_shapesInProgress = []
+
     @canvas = document.createElement('canvas')
     @canvas.style['background-color'] = 'transparent'
     @containerEl.appendChild(@canvas)
@@ -97,6 +99,8 @@ module.exports = class LiterallyCanvas
   setTool: (tool) ->
     @tool = tool
     @trigger('toolChange', {tool})
+
+  setShapesInProgress: (newVal) -> @_shapesInProgress = newVal
 
   begin: (x, y) ->
     util.requestAnimationFrame () =>
@@ -224,6 +228,13 @@ module.exports = class LiterallyCanvas
             @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
             @ctx.drawImage @buffer, 0, 0
           ), @ctx
+
+          @clipped (=>
+            @transformed (=>
+              for shape in @_shapesInProgress
+                shape.drawLatest(@ctx, @bufferCtx)
+            ), @ctx, @bufferCtx
+          ), @ctx, @bufferCtx
 
     @trigger('repaint', {layerKey: repaintLayerKey})
 
@@ -378,7 +389,9 @@ module.exports = class LiterallyCanvas
   canvasWithBackground: (backgroundImageOrCanvas) ->
     util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
-  getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
+  getSnapshot: -> {
+    shapes: (shapeToJSON(shape) for shape in @shapes),
+    @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
 
   getSVGString: (opts={}) ->

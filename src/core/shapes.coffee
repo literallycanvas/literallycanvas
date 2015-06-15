@@ -7,6 +7,7 @@ shapes = {}
 
 defineShape = (name, props) ->
   Shape = (args...) ->
+    this.isForJSON = true
     props.constructor.call(this, args...)
     this
   props.toSVG ?= -> ''
@@ -433,6 +434,9 @@ defineShape 'Text',
     @text = args.text or ''
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
+    @forcedWidth = args.forcedWidth or null
+    @forcedHeight = args.forcedHeight or null
+    @isResizable = true
 
   _getMetrics: (ctx) ->
     fontItems = @font.split(' ')
@@ -447,21 +451,33 @@ defineShape 'Text',
     @metrics = ctx.measureText2(@text, fontSize, fontFamily)
     @boundingBoxWidth = Math.ceil(@metrics.width)
 
-  draw: (ctx) ->
+  draw: (ctx, bufferCtx) ->
     ctx.font  = @font
     ctx.fillStyle = @color
-    ctx.fillText(@text, @x, @y)
     @_getMetrics(ctx) unless @metrics
+    ctx.fillText(@text, @x, @y)
+
+  setPosition: (x, y) ->
+    @_getMetrics(ctx) unless @metrics
+    @x = x + @metrics.bounds.minx
+    @y = y + (@metrics.bounds.miny - @metrics.bounds.maxy)
+
+  setSize: (forcedWidth, forcedHeight) ->
+    @forcedWidth = Math.max(forcedWidth, 0)
+    @forcedHeight = Math.max(forcedHeight, 0)
+    @reflowText()
+
+  reflowText: ->
 
   getBoundingRect: ->
-    @_getMetrics(ctx) unless @metrics
+    return {x: 0, y: 0, width: 0, height: 0} unless @metrics
     {
       x: @x - @metrics.bounds.minx,
       y: @y - @metrics.bounds.miny - @metrics.bounds.maxy,
-      width: @metrics.bounds.maxx,
-      height: @metrics.bounds.maxy + @metrics.descent,
+      width: @forcedWidth or @metrics.bounds.maxx,
+      height: @forcedHeight or (@metrics.bounds.maxy + @metrics.descent)
     }
-  toJSON: -> {@x, @y, @text, @color, @font}
+  toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight}
   fromJSON: (data) -> createShape('Text', data)
 
   toSVG: ->
@@ -470,6 +486,71 @@ defineShape 'Text',
       #{@text}
     </text>
     "
+
+
+HANDLE_SIZE = 10
+MARGIN = 4
+handles = [
+  {}
+]
+defineShape 'SelectionBox',
+  constructor: (args={}) ->
+    @shape = args.shape
+    @isForJSON = false
+    @_br = @shape.getBoundingRect()
+
+  draw: (ctx) ->
+    @_br = @shape.getBoundingRect()
+    ctx.lineWidth = 1
+    ctx.strokeStyle = '#000'
+    ctx.setLineDash([2, 4])
+    ctx.strokeRect(
+      @_br.x - MARGIN, @_br.y - MARGIN,
+      @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
+
+    ctx.setLineDash([])
+    @_drawHandle(ctx, @getTopLeftHandleRect())
+    @_drawHandle(ctx, @getTopRightHandleRect())
+    @_drawHandle(ctx, @getBottomLeftHandleRect())
+    @_drawHandle(ctx, @getBottomRightHandleRect())
+
+  _drawHandle: (ctx, {x, y}) ->
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(x, y, HANDLE_SIZE, HANDLE_SIZE)
+    ctx.strokeStyle = '#000'
+    ctx.strokeRect(x, y, HANDLE_SIZE, HANDLE_SIZE)
+
+  getTopLeftHandleRect: ->
+    {
+      x: @_br.x - HANDLE_SIZE - MARGIN, y: @_br.y - HANDLE_SIZE - MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getBottomLeftHandleRect: ->
+    {
+      x: @_br.x - HANDLE_SIZE - MARGIN, y: @_br.y + @_br.height + MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getTopRightHandleRect: ->
+    {
+      x: @_br.x + @_br.width + MARGIN, y: @_br.y - HANDLE_SIZE - MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getBottomRightHandleRect: ->
+    {
+      x: @_br.x + @_br.width + MARGIN, y: @_br.y + @_br.height + MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getBoundingRect: ->
+    {
+      x: @_br.x - MARGIN, y: @_br.y - MARGIN,
+      width: @_br.width + MARGIN * 2, height: @_br.height + MARGIN * 2
+    }
+
+  toSVG: -> ""
 
 
 module.exports = {defineShape, createShape, JSONToShape, shapeToJSON}
