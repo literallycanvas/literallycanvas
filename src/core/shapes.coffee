@@ -431,6 +431,7 @@ defineShape 'Text',
   constructor: (args={}) ->
     @x = args.x or 0
     @y = args.y or 0
+    @v = args.v or 0  # version (<1 needs position repaired)
     @text = args.text or ''
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
@@ -451,16 +452,23 @@ defineShape 'Text',
     @metrics = ctx.measureText2(@text, fontSize, fontFamily)
     @boundingBoxWidth = Math.ceil(@metrics.width)
 
+    console.log @metrics
+    if @v < 1
+      console.log 'repairing baseline'
+      @v = 1
+      @x -= @metrics.bounds.minx
+      @y -= @metrics.leading - @metrics.descent
+
   draw: (ctx, bufferCtx) ->
     ctx.font  = @font
     ctx.fillStyle = @color
     @_getMetrics(ctx) unless @metrics
+    ctx.textBaseline = 'top'
     ctx.fillText(@text, @x, @y)
 
   setPosition: (x, y) ->
-    @_getMetrics(ctx) unless @metrics
-    @x = x + @metrics.bounds.minx
-    @y = y + (@metrics.bounds.miny - @metrics.bounds.maxy)
+    @x = x
+    @y = y
 
   setSize: (forcedWidth, forcedHeight) ->
     @forcedWidth = Math.max(forcedWidth, 0)
@@ -472,12 +480,11 @@ defineShape 'Text',
   getBoundingRect: ->
     return {x: 0, y: 0, width: 0, height: 0} unless @metrics
     {
-      x: @x - @metrics.bounds.minx,
-      y: @y - @metrics.bounds.miny - @metrics.bounds.maxy,
+      @x, @y,
       width: @forcedWidth or @metrics.bounds.maxx,
-      height: @forcedHeight or (@metrics.bounds.maxy + @metrics.descent)
+      height: @forcedHeight or @metrics.height
     }
-  toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight}
+  toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)
 
   toSVG: ->
@@ -507,6 +514,7 @@ defineShape 'SelectionBox',
     ctx.strokeRect(
       @_br.x - MARGIN, @_br.y - MARGIN,
       @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
+    #ctx.strokeRect(@_br.x, @_br.y, @_br.width, @_br.height)
 
     ctx.setLineDash([])
     @_drawHandle(ctx, @getTopLeftHandleRect())

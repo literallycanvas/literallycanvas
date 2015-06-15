@@ -15,14 +15,16 @@ module.exports = class Text extends Tool
   name: 'Text'
   iconName: 'text'
 
-  constructor: (@text = 'TEXT', @font = 'bold 18px sans-serif') ->
-    @isSelected = false
+  constructor: (@text = 'TÉXTq', @font = 'bold 18px sans-serif') ->
+    @currentShapeState = null
+    @initialShapeBoundingRect = null
 
   setText: (text) ->
     @text = text
 
   commit: (lc) ->
-    @isSelected = false
+    @initialShapeBoundingRect = null
+    @currentShapeState = null
     lc.saveShape(@currentShape)
     lc.setShapesInProgress([])
     lc.repaintLayer('main')
@@ -31,30 +33,39 @@ module.exports = class Text extends Tool
 
   begin:(x, y, lc) ->
     @dragAction = 'none'
-    if @isSelected
+
+    if @currentShapeState == 'selected'
+      br = @currentShape.getBoundingRect()
       selectionShape = @_getSelectionShape()
       selectionBox = selectionShape.getBoundingRect()
-      shapeBox = @currentShape.getBoundingRect()
       point = {x, y}
-      if getIsPointInBox(point, shapeBox)
+      if getIsPointInBox(point, br)
         @dragAction = 'move'
-        @dragOffset = {
-          x: x - selectionBox.x,
-          y: y - (selectionBox.y + selectionBox.height)
-        }
       if getIsPointInBox(point, selectionShape.getBottomRightHandleRect())
         @dragAction = 'resizeBottomRight'
+      if getIsPointInBox(point, selectionShape.getTopLeftHandleRect())
+        @dragAction = 'resizeTopLeft'
+      if getIsPointInBox(point, selectionShape.getBottomLeftHandleRect())
+        @dragAction = 'resizeBottomLeft'
+      if getIsPointInBox(point, selectionShape.getTopRightHandleRect())
+        @dragAction = 'resizeTopRight'
     else
       @color = lc.getColor('primary')
-      @currentShape = createShape('Text', {x, y, @text, @color, @font})
+      @currentShape = createShape('Text', {x, y, @text, @color, @font, v: 1})
       @dragAction = 'place'
-      @isSelected = true
+      @currentShapeState = 'selected'
 
     if @dragAction == 'none'
       @commit(lc)
       return
 
-    if @isSelected
+    @initialShapeBoundingRect = @currentShape.getBoundingRect()
+    @dragOffset = {
+      x: x - @initialShapeBoundingRect.x,
+      y: y - @initialShapeBoundingRect.y
+    }
+
+    if @currentShapeState == 'selected'
       lc.setShapesInProgress(
         [@currentShape, @_getSelectionShape()])
     else
@@ -66,7 +77,9 @@ module.exports = class Text extends Tool
     if @dragAction == 'none'
       return
 
-    br = @currentShape.getBoundingRect()
+    br = @initialShapeBoundingRect
+    brRight = br.x + br.width
+    brBottom = br.y + br.height
     switch @dragAction
       when 'place'
         @currentShape.x = x
@@ -75,9 +88,26 @@ module.exports = class Text extends Tool
         @currentShape.x = x - @dragOffset.x
         @currentShape.y = y - @dragOffset.y
       when 'resizeBottomRight'
-        @currentShape.setSize(x - br.x, y - br.y)
+        @currentShape.setSize(
+          x - (@dragOffset.x - @initialShapeBoundingRect.width) - br.x,
+          y - (@dragOffset.y - @initialShapeBoundingRect.height) - br.y)
+      when 'resizeTopLeft'
+        @currentShape.setSize(
+          brRight - x + @dragOffset.x,
+          brBottom - y + @dragOffset.y)
+        @currentShape.setPosition(x - @dragOffset.x, y - @dragOffset.y)
+      when 'resizeBottomLeft'
+        @currentShape.setSize(
+          brRight - x + @dragOffset.x,
+          y - (@dragOffset.y - @initialShapeBoundingRect.height) - br.y)
+        @currentShape.setPosition(x - @dragOffset.x, @currentShape. y)
+      when 'resizeTopRight'
+        @currentShape.setSize(
+          x - (@dragOffset.x - @initialShapeBoundingRect.width) - br.x,
+          brBottom - y + @dragOffset.y)
+        @currentShape.setPosition(@currentShape.x, y - @dragOffset.y)
 
-    if @isSelected
+    if @currentShapeState == 'selected'
       lc.setShapesInProgress(
         [@currentShape, @_getSelectionShape()])
     else
