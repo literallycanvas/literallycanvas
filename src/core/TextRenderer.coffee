@@ -15,24 +15,58 @@ parseFontString = (font) ->
   {fontSize, fontFamily}
 
 
-getLinesToRender = (ctx, text, forcedWidth) ->
-  n = 0
-  return [text] unless forcedWidth
+getNextLine = (ctx, text, forcedWidth) ->
+  if !text.length
+    return ['', '']
+
   endIndex = 0
-  remainingText = text
+  lastGoodIndex = 0
+  lastOkayIndex = 0
+  wasInWord = false
+
+  while true
+    endIndex += 1
+    isEndOfString = endIndex >= text.length
+
+    isWhitespace = (not isEndOfString) and text[endIndex].match(/\s/)
+    isNonWord = isWhitespace or isEndOfString
+
+    textToHere = text.substring(0, endIndex)
+    doesSubstringFit = ctx.measureTextWidth(textToHere).width <= forcedWidth
+
+    if doesSubstringFit
+      lastOkayIndex = endIndex
+
+    # word -> non-word
+    if isNonWord and wasInWord
+      wasInWord = false
+      if doesSubstringFit
+        lastGoodIndex = endIndex
+
+    wasInWord = !isWhitespace
+
+    if isEndOfString or !doesSubstringFit
+      if doesSubstringFit
+        return [text, '']
+      else if lastGoodIndex > 0
+        nextWordStartIndex = lastGoodIndex + 1
+        while nextWordStartIndex < text.length and text[nextWordStartIndex].match('/\s/')
+          nextWordStartIndex += 1
+        return [
+          text.substring(0, lastGoodIndex), text.substring(nextWordStartIndex)]
+      else
+        return [
+          text.substring(0, lastOkayIndex), text.substring(lastOkayIndex)]
+
+
+getLinesToRender = (ctx, text, forcedWidth) ->
+  return [text] unless forcedWidth
+
   lines = []
-  while remainingText.length
-    n += 1
-    throw "?" unless n < 30
-    maybeText = remainingText.substring(0, endIndex + 1)
-    hasText = maybeText.length == endIndex + 1
-    doesFit = ctx.measureTextWidth(maybeText).width <= forcedWidth
-    if hasText and (doesFit or endIndex == 0)
-      endIndex += 1
-    else
-      lines.push remainingText.substring(0, endIndex)
-      remainingText = remainingText.substring(endIndex)
-      endIndex = 0
+  [nextLine, remainingText] = getNextLine(ctx, text, forcedWidth)
+  while nextLine
+    lines.push(nextLine)
+    [nextLine, remainingText] = getNextLine(ctx, remainingText, forcedWidth)
   return lines
 
 
@@ -46,7 +80,6 @@ class TextRenderer
     @boundingBoxWidth = Math.ceil(@metrics.width)
 
     @lines = getLinesToRender(ctx, text, @forcedWidth)
-    console.log @lines
 
   draw: (ctx, x, y) ->
     ctx.textBaseline = 'top'
