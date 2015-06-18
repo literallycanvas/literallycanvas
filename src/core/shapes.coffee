@@ -1,6 +1,6 @@
 util = require './util'
 lineEndCapShapes = require '../core/lineEndCapShapes.coffee'
-require './fontmetrics.js'
+TextRenderer = require './TextRenderer'
 
 shapes = {}
 
@@ -439,32 +439,24 @@ defineShape 'Text',
     @forcedHeight = args.forcedHeight or null
     @isResizable = true
 
-  _getMetrics: (ctx) ->
-    fontItems = @font.split(' ')
-    fontSize = parseInt(fontItems[0].replace("px", ""), 10)
-
-    remainingFontString = @font.substring(fontItems[0].length + 1)
-      .replace('bold ', '')
-      .replace('italic ', '')
-      .replace('underline ', '')
-
-    fontFamily = remainingFontString
-    @metrics = ctx.measureText2(@text, fontSize, fontFamily)
-    @boundingBoxWidth = Math.ceil(@metrics.width)
-
-    console.log @metrics
-    if @v < 1
-      console.log 'repairing baseline'
-      @v = 1
-      @x -= @metrics.bounds.minx
-      @y -= @metrics.leading - @metrics.descent
-
   draw: (ctx, bufferCtx) ->
-    ctx.font  = @font
+    unless @renderer
+      @renderer = new TextRenderer(
+        ctx, @text, @font, @forcedWidth, @forcedHeight)
+
+      console.log @renderer.metrics
+      if @v < 1
+        console.log 'repairing baseline'
+        @v = 1
+        @x -= @renderer.metrics.bounds.minx
+        @y -= @renderer.metrics.leading - @renderer.metrics.descent
+
     ctx.fillStyle = @color
-    @_getMetrics(ctx) unless @metrics
-    ctx.textBaseline = 'top'
-    ctx.fillText(@text, @x, @y)
+    @renderer.draw(ctx, @x, @y)
+
+  setText: (text) ->
+    @text = text
+    @renderer = null
 
   setPosition: (x, y) ->
     @x = x
@@ -473,16 +465,12 @@ defineShape 'Text',
   setSize: (forcedWidth, forcedHeight) ->
     @forcedWidth = Math.max(forcedWidth, 0)
     @forcedHeight = Math.max(forcedHeight, 0)
-    @reflowText()
-
-  reflowText: ->
+    @renderer = null
 
   getBoundingRect: ->
-    return {x: 0, y: 0, width: 0, height: 0} unless @metrics
+    return {x: 0, y: 0, width: 0, height: 0} unless @renderer
     {
-      @x, @y,
-      width: @forcedWidth or @metrics.bounds.maxx,
-      height: @forcedHeight or @metrics.height
+      @x, @y, width: @renderer.getWidth(), height: @renderer.getHeight()
     }
   toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)

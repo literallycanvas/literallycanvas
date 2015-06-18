@@ -15,7 +15,7 @@ module.exports = class Text extends Tool
   name: 'Text'
   iconName: 'text'
 
-  constructor: (@text = 'TÉXTq', @font = 'bold 18px sans-serif') ->
+  constructor: (@text = 'one two three', @font = 'bold 18px sans-serif') ->
     @currentShapeState = null
     @initialShapeBoundingRect = null
 
@@ -115,6 +115,8 @@ module.exports = class Text extends Tool
     lc.repaintLayer('main')
 
   end:(x, y, lc) ->
+    # use auto height once user lets go of selection corner
+    @currentShape.setSize(@currentShape.forcedWidth, 0)
     lc.repaintLayer('main')
 
   optionsStyle: 'font'
