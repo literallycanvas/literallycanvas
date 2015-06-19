@@ -15,28 +15,46 @@ module.exports = class Text extends Tool
   name: 'Text'
   iconName: 'text'
 
-  constructor: (@text = 'one two three', @font = 'bold 18px sans-serif') ->
+  constructor: (@text = '', @font = 'bold 18px sans-serif') ->
+    @currentShape = null
     @currentShapeState = null
     @initialShapeBoundingRect = null
+    @dragAction = null
+    @didDrag = false
 
   setText: (text) ->
     @text = text
 
   commit: (lc) ->
+    console.log 'commit'
     @initialShapeBoundingRect = null
     @currentShapeState = null
     lc.saveShape(@currentShape)
     lc.setShapesInProgress([])
     lc.repaintLayer('main')
 
-  _getSelectionShape: -> createShape('SelectionBox', {shape: @currentShape})
+  _getSelectionShape: (ctx) ->
+    console.log 'getting selection shape'
+    createShape('SelectionBox', {
+      shape: @currentShape, ctx: lc.ctx
+    })
+
+  _setShapesInProgress: (lc) ->
+    switch @currentShapeState
+      when 'selected'
+        lc.setShapesInProgress([@currentShape, @_getSelectionShape(lc.ctx)])
+      when 'editing'
+        lc.setShapesInProgress([@_getSelectionShape(lc.ctx)])
+      else
+        lc.setShapesInProgress([@currentShape])
 
   begin:(x, y, lc) ->
     @dragAction = 'none'
+    @didDrag = false
 
-    if @currentShapeState == 'selected'
-      br = @currentShape.getBoundingRect()
-      selectionShape = @_getSelectionShape()
+    if (@currentShapeState == 'selected' or @currentShapeState == 'editing')
+      br = @currentShape.getBoundingRect(lc.ctx)
+      selectionShape = @_getSelectionShape(lc.ctx)
       selectionBox = selectionShape.getBoundingRect()
       point = {x, y}
       if getIsPointInBox(point, br)
@@ -49,6 +67,10 @@ module.exports = class Text extends Tool
         @dragAction = 'resizeBottomLeft'
       if getIsPointInBox(point, selectionShape.getTopRightHandleRect())
         @dragAction = 'resizeTopRight'
+
+      if @dragAction == 'none' and @currentShapeState == 'editing'
+        @dragAction = 'stop-editing'
+        @_exitEditingState(lc)
     else
       @color = lc.getColor('primary')
       @currentShape = createShape('Text', {x, y, @text, @color, @font, v: 1})
@@ -59,18 +81,13 @@ module.exports = class Text extends Tool
       @commit(lc)
       return
 
-    @initialShapeBoundingRect = @currentShape.getBoundingRect()
+    @initialShapeBoundingRect = @currentShape.getBoundingRect(lc.ctx)
     @dragOffset = {
       x: x - @initialShapeBoundingRect.x,
       y: y - @initialShapeBoundingRect.y
     }
 
-    if @currentShapeState == 'selected'
-      lc.setShapesInProgress(
-        [@currentShape, @_getSelectionShape()])
-    else
-      lc.setShapesInProgress([@currentShape])
-
+    @_setShapesInProgress(lc)
     lc.repaintLayer('main')
 
   continue:(x, y, lc) ->
@@ -84,9 +101,11 @@ module.exports = class Text extends Tool
       when 'place'
         @currentShape.x = x
         @currentShape.y = y
+        @didDrag = true
       when 'move'
         @currentShape.x = x - @dragOffset.x
         @currentShape.y = y - @dragOffset.y
+        @didDrag = true
       when 'resizeBottomRight'
         @currentShape.setSize(
           x - (@dragOffset.x - @initialShapeBoundingRect.width) - br.x,
@@ -107,16 +126,82 @@ module.exports = class Text extends Tool
           brBottom - y + @dragOffset.y)
         @currentShape.setPosition(@currentShape.x, y - @dragOffset.y)
 
-    if @currentShapeState == 'selected'
-      lc.setShapesInProgress(
-        [@currentShape, @_getSelectionShape()])
-    else
-      lc.setShapesInProgress([@currentShape])
+    @_setShapesInProgress(lc)
     lc.repaintLayer('main')
+
+    @_updateInputEl(lc)
 
   end:(x, y, lc) ->
     # use auto height once user lets go of selection corner
     @currentShape.setSize(@currentShape.forcedWidth, 0)
+
+    if @currentShapeState == 'selected'
+      if @dragAction == 'place' or (@dragAction == 'move' and not @didDrag)
+        @_enterEditingState(lc)
+
+    console.log 'ending in state', @currentShapeState
+    @_setShapesInProgress(lc)
     lc.repaintLayer('main')
+    @_updateInputEl(lc)
+
+  _enterEditingState: (lc) ->
+    console.log 'edit begin'
+    @currentShapeState = 'editing'
+
+    throw "State error" if @inputEl
+
+    @inputEl = document.createElement('textarea')
+    @inputEl.style.position = 'absolute'
+    @inputEl.style.transformOrigin = '0px 0px'
+    @inputEl.style.backgroundColor = 'transparent'
+    @inputEl.style.border = '1px solid #00f'
+    @inputEl.style.margin = '0'
+    @inputEl.style.padding = '4px'
+    @inputEl.style.zIndex = '1000'
+    @inputEl.style.overflow = 'hidden'
+    @inputEl.style.resize = 'none'
+
+    @inputEl.value = @currentShape.text
+
+    @inputEl.addEventListener 'mousedown', (e) -> e.stopPropagation()
+    @inputEl.addEventListener 'touchstart', (e) -> e.stopPropagation()
+
+    onChange = (e) =>
+      @currentShape.setText(e.target.value)
+      @_setShapesInProgress(lc)
+      lc.repaintLayer('main')
+      @_updateInputEl(lc)
+      e.stopPropagation()
+
+    @inputEl.addEventListener 'keyup', onChange
+    @inputEl.addEventListener 'change', onChange
+
+    @_updateInputEl(lc)
+
+    lc.containerEl.appendChild(@inputEl)
+    @inputEl.focus()
+
+    @_setShapesInProgress(lc)
+
+  _exitEditingState: (lc) ->
+    console.log 'edit end'
+    @currentShapeState = 'selected'
+    lc.containerEl.removeChild(@inputEl)
+    @inputEl = null
+
+    @_setShapesInProgress(lc)
+    lc.repaintLayer('main')
+
+  _updateInputEl: (lc) ->
+    return unless @inputEl
+    br = @currentShape.getBoundingRect(lc.ctx)
+    @inputEl.style.font = @currentShape.font
+    @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 5}px"
+    @inputEl.style.top = "#{lc.position.y / lc.getRenderScale() + br.y - 5}px"
+    @inputEl.style.width =
+      "#{br.width + 10 + @currentShape.renderer.emDashWidth}px"
+    @inputEl.style.height = "#{br.height + 10}px"
+    scalePercent = "#{lc.scale * 100}%"
+    @inputEl.style.transformScale = "#{scalePercent} #{scalePercent}"
 
   optionsStyle: 'font'

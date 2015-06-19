@@ -32,7 +32,10 @@ getNextLine = (ctx, text, forcedWidth) ->
     isNonWord = isWhitespace or isEndOfString
 
     textToHere = text.substring(0, endIndex)
-    doesSubstringFit = ctx.measureTextWidth(textToHere).width <= forcedWidth
+    doesSubstringFit = if forcedWidth
+      ctx.measureTextWidth(textToHere).width <= forcedWidth
+    else
+      true
 
     if doesSubstringFit
       lastOkayIndex = endIndex
@@ -60,13 +63,18 @@ getNextLine = (ctx, text, forcedWidth) ->
 
 
 getLinesToRender = (ctx, text, forcedWidth) ->
-  return [text] unless forcedWidth
+  textSplitOnLines = text.split(/\r\n|\r|\n/g)
 
   lines = []
-  [nextLine, remainingText] = getNextLine(ctx, text, forcedWidth)
-  while nextLine
-    lines.push(nextLine)
-    [nextLine, remainingText] = getNextLine(ctx, remainingText, forcedWidth)
+  for textLine in textSplitOnLines
+    [nextLine, remainingText] = getNextLine(ctx, textLine, forcedWidth)
+    if nextLine
+      while nextLine
+        lines.push(nextLine)
+        [nextLine, remainingText] = getNextLine(
+          ctx, remainingText, forcedWidth)
+    else
+      lines.push(textLine)
   return lines
 
 
@@ -76,10 +84,30 @@ class TextRenderer
 
     ctx.font  = @font
     ctx.textBaseline = 'baseline'
-    @metrics = ctx.measureText2(@text or 'X', fontSize, fontFamily)
-    @boundingBoxWidth = Math.ceil(@metrics.width)
+    @emDashWidth = ctx.measureTextWidth('—', fontSize, fontFamily).width
 
     @lines = getLinesToRender(ctx, text, @forcedWidth)
+
+    # we need to get metrics line by line and combine them. :-(
+    @metricses = @lines.map (line) ->
+      ctx.measureText2(line or 'X', fontSize, fontFamily)
+
+    @metrics = {
+      ascent: Math.max(@metricses.map(({ascent}) -> ascent)...)
+      descent: Math.max(@metricses.map(({descent}) -> descent)...)
+      fontsize: Math.max(@metricses.map(({fontsize}) -> fontsize)...)
+      leading: Math.max(@metricses.map(({leading}) -> leading)...)
+      width: Math.max(@metricses.map(({width}) -> width)...)
+      height: Math.max(@metricses.map(({height}) -> height)...)
+      bounds: {
+        minx: Math.min(@metricses.map(({bounds}) -> bounds.minx)...)
+        miny: Math.min(@metricses.map(({bounds}) -> bounds.miny)...)
+        maxx: Math.max(@metricses.map(({bounds}) -> bounds.maxx)...)
+        maxy: Math.max(@metricses.map(({bounds}) -> bounds.maxy)...)
+      }
+    }
+
+    @boundingBoxWidth = Math.ceil(@metrics.width)
 
   draw: (ctx, x, y) ->
     ctx.textBaseline = 'top'

@@ -439,18 +439,18 @@ defineShape 'Text',
     @forcedHeight = args.forcedHeight or null
     @isResizable = true
 
+  _makeRenderer: (ctx) ->
+    @renderer = new TextRenderer(
+      ctx, @text, @font, @forcedWidth, @forcedHeight)
+
+    if @v < 1
+      console.log 'repairing baseline'
+      @v = 1
+      @x -= @renderer.metrics.bounds.minx
+      @y -= @renderer.metrics.leading - @renderer.metrics.descent
+
   draw: (ctx, bufferCtx) ->
-    unless @renderer
-      @renderer = new TextRenderer(
-        ctx, @text, @font, @forcedWidth, @forcedHeight)
-
-      console.log @renderer.metrics
-      if @v < 1
-        console.log 'repairing baseline'
-        @v = 1
-        @x -= @renderer.metrics.bounds.minx
-        @y -= @renderer.metrics.leading - @renderer.metrics.descent
-
+    @_makeRenderer(ctx) unless @renderer
     ctx.fillStyle = @color
     @renderer.draw(ctx, @x, @y)
 
@@ -467,8 +467,12 @@ defineShape 'Text',
     @forcedHeight = Math.max(forcedHeight, 0)
     @renderer = null
 
-  getBoundingRect: ->
-    return {x: 0, y: 0, width: 0, height: 0} unless @renderer
+  getBoundingRect: (ctx) ->
+    unless @renderer
+      if ctx
+        @_makeRenderer(ctx)
+      else
+        throw "Must pass ctx if text hasn't been rendered yet"
     {
       @x, @y, width: @renderer.getWidth(), height: @renderer.getHeight()
     }
@@ -492,10 +496,9 @@ defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
     @isForJSON = false
-    @_br = @shape.getBoundingRect()
+    @_br = @shape.getBoundingRect(args.ctx)
 
   draw: (ctx) ->
-    @_br = @shape.getBoundingRect()
     ctx.lineWidth = 1
     ctx.strokeStyle = '#000'
     ctx.setLineDash([2, 4])
