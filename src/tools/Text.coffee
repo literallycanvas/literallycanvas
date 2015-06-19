@@ -26,25 +26,24 @@ module.exports = class Text extends Tool
     @text = text
 
   commit: (lc) ->
-    console.log 'commit'
     @initialShapeBoundingRect = null
     @currentShapeState = null
     lc.saveShape(@currentShape)
     lc.setShapesInProgress([])
     lc.repaintLayer('main')
+    @currentShape = null
 
-  _getSelectionShape: (ctx) ->
-    console.log 'getting selection shape'
+  _getSelectionShape: (ctx, backgroundColor=null) ->
     createShape('SelectionBox', {
-      shape: @currentShape, ctx: lc.ctx
+      shape: @currentShape, ctx: lc.ctx, backgroundColor
     })
 
   _setShapesInProgress: (lc) ->
     switch @currentShapeState
       when 'selected'
-        lc.setShapesInProgress([@currentShape, @_getSelectionShape(lc.ctx)])
+        lc.setShapesInProgress([@_getSelectionShape(lc.ctx), @currentShape])
       when 'editing'
-        lc.setShapesInProgress([@_getSelectionShape(lc.ctx)])
+        lc.setShapesInProgress([@_getSelectionShape(lc.ctx, '#fff')])
       else
         lc.setShapesInProgress([@currentShape])
 
@@ -132,6 +131,8 @@ module.exports = class Text extends Tool
     @_updateInputEl(lc)
 
   end:(x, y, lc) ->
+    return unless @currentShape  # we may have committed at start time
+
     # use auto height once user lets go of selection corner
     @currentShape.setSize(@currentShape.forcedWidth, 0)
 
@@ -139,22 +140,22 @@ module.exports = class Text extends Tool
       if @dragAction == 'place' or (@dragAction == 'move' and not @didDrag)
         @_enterEditingState(lc)
 
-    console.log 'ending in state', @currentShapeState
     @_setShapesInProgress(lc)
     lc.repaintLayer('main')
     @_updateInputEl(lc)
 
   _enterEditingState: (lc) ->
-    console.log 'edit begin'
     @currentShapeState = 'editing'
 
     throw "State error" if @inputEl
 
     @inputEl = document.createElement('textarea')
+    @inputEl.className = 'text-tool-input'
     @inputEl.style.position = 'absolute'
     @inputEl.style.transformOrigin = '0px 0px'
     @inputEl.style.backgroundColor = 'transparent'
-    @inputEl.style.border = '1px solid #00f'
+    @inputEl.style.border = 'none'
+    @inputEl.style.outline = 'none'
     @inputEl.style.margin = '0'
     @inputEl.style.padding = '4px'
     @inputEl.style.zIndex = '1000'
@@ -173,6 +174,7 @@ module.exports = class Text extends Tool
       @_updateInputEl(lc)
       e.stopPropagation()
 
+    @inputEl.addEventListener 'keydown', => @_updateInputEl(lc, true)
     @inputEl.addEventListener 'keyup', onChange
     @inputEl.addEventListener 'change', onChange
 
@@ -184,7 +186,6 @@ module.exports = class Text extends Tool
     @_setShapesInProgress(lc)
 
   _exitEditingState: (lc) ->
-    console.log 'edit end'
     @currentShapeState = 'selected'
     lc.containerEl.removeChild(@inputEl)
     @inputEl = null
@@ -192,15 +193,19 @@ module.exports = class Text extends Tool
     @_setShapesInProgress(lc)
     lc.repaintLayer('main')
 
-  _updateInputEl: (lc) ->
+  _updateInputEl: (lc, withMargin=false) ->
     return unless @inputEl
     br = @currentShape.getBoundingRect(lc.ctx)
     @inputEl.style.font = @currentShape.font
-    @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 5}px"
-    @inputEl.style.top = "#{lc.position.y / lc.getRenderScale() + br.y - 5}px"
-    @inputEl.style.width =
-      "#{br.width + 10 + @currentShape.renderer.emDashWidth}px"
-    @inputEl.style.height = "#{br.height + 10}px"
+    @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 4}px"
+    @inputEl.style.top = "#{lc.position.y / lc.getRenderScale() + br.y - 4}px"
+    if withMargin
+      @inputEl.style.width =
+        "#{br.width + 10 + @currentShape.renderer.emDashWidth}px"
+    else
+      @inputEl.style.width = "#{br.width + 10}px"
+    @inputEl.style.height =
+      "#{br.height + 10 + @currentShape.renderer.metrics.leading}px"
     scalePercent = "#{lc.scale * 100}%"
     @inputEl.style.transformScale = "#{scalePercent} #{scalePercent}"
 

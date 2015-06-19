@@ -495,10 +495,16 @@ handles = [
 defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
+    @backgroundColor = args.backgroundColor or null
     @isForJSON = false
     @_br = @shape.getBoundingRect(args.ctx)
 
   draw: (ctx) ->
+    if @backgroundColor
+      ctx.fillStyle = @backgroundColor
+      ctx.fillRect(
+        @_br.x - MARGIN, @_br.y - MARGIN,
+        @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
     ctx.lineWidth = 1
     ctx.strokeStyle = '#000'
     ctx.setLineDash([2, 4])
