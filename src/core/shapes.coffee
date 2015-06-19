@@ -457,6 +457,10 @@ defineShape 'Text',
     @text = text
     @renderer = null
 
+  setFont: (font) ->
+    @font = font
+    @renderer = null
+
   setPosition: (x, y) ->
     @x = x
     @y = y

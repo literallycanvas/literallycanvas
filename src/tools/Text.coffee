@@ -46,9 +46,11 @@ module.exports = class Text extends Tool
       @_updateInputEl(lc)
       lc.repaintLayer('main')
 
-    unsubscribeFuncs.push lc.on 'optionsStyleEvent', ({font}) =>
+    unsubscribeFuncs.push lc.on 'setFont', (font) =>
       return unless @currentShape
-      @currentShape.font = font
+      @font = font
+      @currentShape.setFont(font)
+      @_setShapesInProgress(lc)
       @_updateInputEl(lc)
       lc.repaintLayer('main')
 
@@ -247,10 +249,11 @@ module.exports = class Text extends Tool
     if withMargin
       @inputEl.style.width =
         "#{br.width + 10 + @currentShape.renderer.emDashWidth}px"
+      @inputEl.style.height =
+        "#{br.height + 10 + @currentShape.renderer.metrics.leading}px"
     else
       @inputEl.style.width = "#{br.width + 10}px"
-    @inputEl.style.height =
-      "#{br.height + 10 + @currentShape.renderer.metrics.leading}px"
+      @inputEl.style.height = "#{br.height + 10}px"
     scalePercent = "#{lc.scale * 100}%"
     @inputEl.style.transformScale = "#{scalePercent} #{scalePercent}"
 
