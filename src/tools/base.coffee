@@ -20,6 +20,9 @@ tools.Tool = class Tool
   # kind of options GUI to display
   optionsStyle: null
 
+  didBecomeActive: (lc) ->
+  willBecomeInactive: (lc) ->
+
 
 tools.ToolWithStroke = class ToolWithStroke extends Tool
 

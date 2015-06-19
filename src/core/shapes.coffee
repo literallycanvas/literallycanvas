@@ -437,7 +437,6 @@ defineShape 'Text',
     @font  = args.font or '18px sans-serif'
     @forcedWidth = args.forcedWidth or null
     @forcedHeight = args.forcedHeight or null
-    @isResizable = true
 
   _makeRenderer: (ctx) ->
     @renderer = new TextRenderer(

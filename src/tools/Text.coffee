@@ -22,16 +22,60 @@ module.exports = class Text extends Tool
     @dragAction = null
     @didDrag = false
 
+  didBecomeActive: (lc) ->
+    unsubscribeFuncs = []
+    @unsubscribe = =>
+      for func in unsubscribeFuncs
+        func()
+
+    switchAway = =>
+      @_ensureNotEditing(lc)
+      @_clearCurrentShape(lc)
+      lc.repaintLayer('main')
+
+    unsubscribeFuncs.push lc.on 'undo', switchAway
+    unsubscribeFuncs.push lc.on 'redo', switchAway
+    unsubscribeFuncs.push lc.on 'imageSizeChange', => @_updateInputEl(lc)
+    unsubscribeFuncs.push lc.on 'snapshotLoad', =>
+      @_clearCurrentShape(lc)
+      lc.repaintLayer('main')
+
+    unsubscribeFuncs.push lc.on 'primaryColorChange', (newColor) =>
+      return unless @currentShape
+      @currentShape.color = newColor
+      @_updateInputEl(lc)
+      lc.repaintLayer('main')
+
+    unsubscribeFuncs.push lc.on 'optionsStyleEvent', ({font}) =>
+      return unless @currentShape
+      @currentShape.font = font
+      @_updateInputEl(lc)
+      lc.repaintLayer('main')
+
+  willBecomeInactive: (lc) ->
+    if @currentShape
+      @_ensureNotEditing(lc)
+      @commit(lc)
+    @unsubscribe()
+
   setText: (text) ->
     @text = text
 
-  commit: (lc) ->
+  _ensureNotEditing: (lc) ->
+    if @currentShapeState == 'editing'
+      @_exitEditingState(lc)
+
+  _clearCurrentShape: (lc) ->
+    @currentShape = null
     @initialShapeBoundingRect = null
     @currentShapeState = null
-    lc.saveShape(@currentShape)
     lc.setShapesInProgress([])
+
+  commit: (lc) ->
+    throw "?" unless @currentShape
+    lc.saveShape(@currentShape)
+    @_clearCurrentShape(lc)
     lc.repaintLayer('main')
-    @currentShape = null
 
   _getSelectionShape: (ctx, backgroundColor=null) ->
     createShape('SelectionBox', {
@@ -197,6 +241,7 @@ module.exports = class Text extends Tool
     return unless @inputEl
     br = @currentShape.getBoundingRect(lc.ctx)
     @inputEl.style.font = @currentShape.font
+    @inputEl.style.color = @currentShape.color
     @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 4}px"
     @inputEl.style.top = "#{lc.position.y / lc.getRenderScale() + br.y - 4}px"
     if withMargin

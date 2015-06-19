@@ -97,8 +97,10 @@ module.exports = class LiterallyCanvas
     @trigger('imageSizeChange', {@width, @height})
 
   setTool: (tool) ->
+    @tool.willBecomeInactive(this)
     @tool = tool
     @trigger('toolChange', {tool})
+    tool.didBecomeActive(this)
 
   setShapesInProgress: (newVal) -> @_shapesInProgress = newVal
 
