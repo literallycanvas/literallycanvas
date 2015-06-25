@@ -3,7 +3,14 @@ require './fontmetrics.js'
 
 parseFontString = (font) ->
   fontItems = font.split(' ')
-  fontSize = parseInt(fontItems[0].replace("px", ""), 10)
+
+  fontSize = 0
+
+  for item in fontItems
+    maybeSize = parseInt(item.replace("px", ""), 10)
+    unless isNaN(maybeSize)
+      fontSize = maybeSize
+  throw "Font size not found" unless fontSize
 
   remainingFontString = font.substring(fontItems[0].length + 1)
     .replace('bold ', '')
@@ -82,15 +89,15 @@ class TextRenderer
   constructor: (ctx, @text, @font, @forcedWidth, @forcedHeight) ->
     {fontFamily, fontSize} = parseFontString(@font)
 
-    ctx.font  = @font
+    ctx.font = @font
     ctx.textBaseline = 'baseline'
     @emDashWidth = ctx.measureTextWidth('—', fontSize, fontFamily).width
 
     @lines = getLinesToRender(ctx, text, @forcedWidth)
 
     # we need to get metrics line by line and combine them. :-(
-    @metricses = @lines.map (line) ->
-      ctx.measureText2(line or 'X', fontSize, fontFamily)
+    @metricses = @lines.map (line) =>
+      ctx.measureText2(line or 'X', fontSize, @font)
 
     @metrics = {
       ascent: Math.max(@metricses.map(({ascent}) -> ascent)...)

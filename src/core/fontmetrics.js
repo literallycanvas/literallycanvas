@@ -11,7 +11,7 @@
     2012-01-21 - Whitespace handling added by Joe Turner
                  (https://github.com/oampo)
 
-    2015-06-08 - Font size fallback added by Steve Johnson
+    2015-06-08 - Various hacks added by Steve Johnson
 
 ** -----------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@
    * The new text metrics function
    */
   CanvasRenderingContext2D.prototype.measureText2 = function(
-      textstring, fontSize, fontFamily) {
+      textstring, fontSize, fontString) {
     var metrics = this.measureTextWidth(textstring),
         isSpace = !(/\S/.test(textstring));
     metrics.fontsize = fontSize;
@@ -98,7 +98,7 @@
     var leadDiv = document.createElement("div");
     leadDiv.style.position = "absolute";
     leadDiv.style.opacity = 0;
-    leadDiv.style.font = fontSize + "px " + fontFamily;
+    leadDiv.style.font = fontString;
     leadDiv.innerHTML = textstring + "<br/>" + textstring;
     document.body.appendChild(leadDiv);
 
@@ -119,10 +119,9 @@
         canvas.width = metrics.width + padding;
         canvas.height = 3*fontSize;
         canvas.style.opacity = 1;
-        canvas.style.fontFamily = fontFamily;
-        canvas.style.fontSize = fontSize;
+        canvas.style.font = fontString;
         var ctx = canvas.getContext("2d");
-        ctx.font = fontSize + "px " + fontFamily;
+        ctx.font = fontString;
 
         var w = canvas.width,
             h = canvas.height,
