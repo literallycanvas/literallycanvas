@@ -246,14 +246,19 @@ module.exports = class Text extends Tool
     @inputEl.style.color = @currentShape.color
     @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 4}px"
     @inputEl.style.top = "#{lc.position.y / lc.getRenderScale() + br.y - 4}px"
-    if withMargin
+
+    if withMargin and not @currentShape.forcedWidth
       @inputEl.style.width =
         "#{br.width + 10 + @currentShape.renderer.emDashWidth}px"
+    else
+      @inputEl.style.width = "#{br.width + 11}px"
+
+    if withMargin
       @inputEl.style.height =
         "#{br.height + 10 + @currentShape.renderer.metrics.leading}px"
     else
-      @inputEl.style.width = "#{br.width + 10}px"
       @inputEl.style.height = "#{br.height + 10}px"
+
     scalePercent = "#{lc.scale * 100}%"
     @inputEl.style.transformScale = "#{scalePercent} #{scalePercent}"
 

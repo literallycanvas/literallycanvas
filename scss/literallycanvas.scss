@@ -248,7 +248,8 @@ $optionsHeight: 65px;
   }
 
   .lc-font-settings {
-    line-height: $optionsHeight/2;
+    height: $optionsHeight;
+    line-height: $optionsHeight;
     padding-left: 4px;
     background-color: #f5f5f5;
 
