@@ -470,14 +470,15 @@ defineShape 'Text',
     @forcedHeight = Math.max(forcedHeight, 0)
     @renderer = null
 
-  getBoundingRect: (ctx) ->
+  getBoundingRect: (ctx, isEditing=false) ->
+    # if isEditing == true, add X padding to account for carat
     unless @renderer
       if ctx
         @_makeRenderer(ctx)
       else
         throw "Must pass ctx if text hasn't been rendered yet"
     {
-      @x, @y, width: @renderer.getWidth(), height: @renderer.getHeight()
+      @x, @y, width: @renderer.getWidth(true), height: @renderer.getHeight()
     }
   toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)

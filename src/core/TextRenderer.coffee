@@ -92,6 +92,7 @@ class TextRenderer
     ctx.font = @font
     ctx.textBaseline = 'baseline'
     @emDashWidth = ctx.measureTextWidth('—', fontSize, fontFamily).width
+    @caratWidth = ctx.measureTextWidth('|', fontSize, fontFamily).width
 
     @lines = getLinesToRender(ctx, text, @forcedWidth)
 
@@ -124,7 +125,15 @@ class TextRenderer
       ctx.fillText(line, x, y + i * @metrics.leading)
       i += 1
 
-  getWidth: -> @forcedWidth or @metrics.bounds.maxx,
+  getWidth: (isEditing=false) ->
+    # if isEditing == true, add X padding to account for carat
+    if @forcedWidth
+      return @forcedWidth
+    else
+      if isEditing
+        return @metrics.bounds.maxx + @caratWidth
+      else
+        return @metrics.bounds.maxx
   getHeight: -> @forcedHeight or (@metrics.leading * @lines.length)
 
 

@@ -241,7 +241,7 @@ module.exports = class Text extends Tool
 
   _updateInputEl: (lc, withMargin=false) ->
     return unless @inputEl
-    br = @currentShape.getBoundingRect(lc.ctx)
+    br = @currentShape.getBoundingRect(lc.ctx, true)
     @inputEl.style.font = @currentShape.font
     @inputEl.style.color = @currentShape.color
     @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 4}px"
@@ -251,7 +251,7 @@ module.exports = class Text extends Tool
       @inputEl.style.width =
         "#{br.width + 10 + @currentShape.renderer.emDashWidth}px"
     else
-      @inputEl.style.width = "#{br.width + 11}px"
+      @inputEl.style.width = "#{br.width + 12}px"
 
     if withMargin
       @inputEl.style.height =
