@@ -7,7 +7,6 @@ shapes = {}
 
 defineShape = (name, props) ->
   Shape = (args...) ->
-    this.isForJSON = true
     props.constructor.call(this, args...)
     this
   props.toSVG ?= -> ''
@@ -439,6 +438,7 @@ defineShape 'Text',
     @forcedHeight = args.forcedHeight or null
 
   _makeRenderer: (ctx) ->
+    ctx.lineHeight = 1.2
     @renderer = new TextRenderer(
       ctx, @text, @font, @forcedWidth, @forcedHeight)
 
@@ -484,9 +484,19 @@ defineShape 'Text',
   fromJSON: (data) -> createShape('Text', data)
 
   toSVG: ->
+    widthString = if @forcedWidth then "width='#{@forcedWidth}px'" else ""
+    heightString = if @forcedHeight then "height='#{@forcedHeight}px'" else ""
+    textSplitOnLines = @text.split(/\r\n|\r|\n/g)
+
     "
-    <text x='#{@x}' y='#{@y}' style='font: #{@font}'>
-      #{@text}
+    <text x='#{@x}' y='#{@y}'
+          #{widthString} #{heightString}
+          fill='#{@color}'
+          style='font: #{@font};'>
+      #{textSplitOnLines.map((line, i) =>
+        dy = if i == 0 then 0 else '1.2em'
+        return "<tspan x='#{@x}' dy='#{dy}' alignment-baseline='text-before-edge'>#{line}</tspan>"
+      ).join('')}
     </text>
     "
 
@@ -500,7 +510,6 @@ defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
     @backgroundColor = args.backgroundColor or null
-    @isForJSON = false
     @_br = @shape.getBoundingRect(args.ctx)
 
   draw: (ctx) ->

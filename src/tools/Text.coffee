@@ -74,8 +74,7 @@ module.exports = class Text extends Tool
     lc.setShapesInProgress([])
 
   commit: (lc) ->
-    throw "?" unless @currentShape
-    lc.saveShape(@currentShape)
+    lc.saveShape(@currentShape) if @currentShape.text
     @_clearCurrentShape(lc)
     lc.repaintLayer('main')
 
