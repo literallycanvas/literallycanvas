@@ -212,8 +212,9 @@ module.exports = class LiterallyCanvas
       when 'background'
         @backgroundCtx.clearRect(
           0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
-        @_renderWatermark(@backgroundCtx) if @watermarkImage
         retryCallback = => @repaintLayer('background')
+        if @watermarkImage
+          @_renderWatermark(@backgroundCtx, true, retryCallback)
         @draw(@backgroundShapes, @backgroundCtx, retryCallback)
       when 'main'
         retryCallback = => @repaintLayer('main', true)
@@ -240,7 +241,11 @@ module.exports = class LiterallyCanvas
 
     @trigger('repaint', {layerKey: repaintLayerKey})
 
-  _renderWatermark: (ctx, worryAboutRetina=true) ->
+  _renderWatermark: (ctx, worryAboutRetina=true, retryCallback) ->
+    unless @watermarkImage.width
+      @watermarkImage.onload = retryCallback
+      return
+
     ctx.save()
     ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
     ctx.scale(@watermarkScale, @watermarkScale)
