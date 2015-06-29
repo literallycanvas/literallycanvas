@@ -33,9 +33,12 @@ module.exports = class Text extends Tool
       @_clearCurrentShape(lc)
       lc.repaintLayer('main')
 
+    updateInputEl = => @_updateInputEl(lc)
+
     unsubscribeFuncs.push lc.on 'undo', switchAway
     unsubscribeFuncs.push lc.on 'redo', switchAway
-    unsubscribeFuncs.push lc.on 'imageSizeChange', => @_updateInputEl(lc)
+    unsubscribeFuncs.push lc.on 'zoom', updateInputEl
+    unsubscribeFuncs.push lc.on 'imageSizeChange', updateInputEl
     unsubscribeFuncs.push lc.on 'snapshotLoad', =>
       @_clearCurrentShape(lc)
       lc.repaintLayer('main')
@@ -243,8 +246,8 @@ module.exports = class Text extends Tool
     br = @currentShape.getBoundingRect(lc.ctx, true)
     @inputEl.style.font = @currentShape.font
     @inputEl.style.color = @currentShape.color
-    @inputEl.style.left = "#{lc.position.x / lc.getRenderScale() + br.x - 4}px"
-    @inputEl.style.top = "#{lc.position.y / lc.getRenderScale() + br.y - 4}px"
+    @inputEl.style.left = "#{lc.position.x / lc.backingScale + br.x * lc.scale - 4}px"
+    @inputEl.style.top = "#{lc.position.y / lc.backingScale + br.y * lc.scale - 4}px"
 
     if withMargin and not @currentShape.forcedWidth
       @inputEl.style.width =
@@ -258,7 +261,11 @@ module.exports = class Text extends Tool
     else
       @inputEl.style.height = "#{br.height + 10}px"
 
-    scalePercent = "#{lc.scale * 100}%"
-    @inputEl.style.transformScale = "#{scalePercent} #{scalePercent}"
+    transformString = "scale(#{lc.scale})"
+    @inputEl.style.transform = transformString
+    @inputEl.style.webkitTransform= transformString
+    @inputEl.style.MozTransform= transformString
+    @inputEl.style.msTransform= transformString
+    @inputEl.style.OTransform= transformString
 
   optionsStyle: 'font'
