@@ -470,6 +470,20 @@ defineShape 'Text',
     @forcedHeight = Math.max(forcedHeight, 0)
     @renderer = null
 
+  enforceMaxBoundingRect: (lc) ->
+    br = @getBoundingRect(lc.ctx)
+    lcBoundingRect = {
+      x: -lc.position.x / lc.scale,
+      y: -lc.position.y / lc.scale,
+      width: lc.canvas.width / lc.scale,
+      height: lc.canvas.height / lc.scale
+    }
+    # really just enforce max width
+    if br.x + br.width > lcBoundingRect.x + lcBoundingRect.width
+      dx = br.x - lcBoundingRect.x
+      @forcedWidth = lcBoundingRect.width - dx - 10
+      @renderer = null
+
   getBoundingRect: (ctx, isEditing=false) ->
     # if isEditing == true, add X padding to account for carat
     unless @renderer

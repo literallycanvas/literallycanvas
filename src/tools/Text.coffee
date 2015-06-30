@@ -217,6 +217,7 @@ module.exports = class Text extends Tool
 
     onChange = (e) =>
       @currentShape.setText(e.target.value)
+      @currentShape.enforceMaxBoundingRect(lc)
       @_setShapesInProgress(lc)
       lc.repaintLayer('main')
       @_updateInputEl(lc)
@@ -246,8 +247,10 @@ module.exports = class Text extends Tool
     br = @currentShape.getBoundingRect(lc.ctx, true)
     @inputEl.style.font = @currentShape.font
     @inputEl.style.color = @currentShape.color
-    @inputEl.style.left = "#{lc.position.x / lc.backingScale + br.x * lc.scale - 4}px"
-    @inputEl.style.top = "#{lc.position.y / lc.backingScale + br.y * lc.scale - 4}px"
+    @inputEl.style.left =
+      "#{lc.position.x / lc.backingScale + br.x * lc.scale - 4}px"
+    @inputEl.style.top =
+      "#{lc.position.y / lc.backingScale + br.y * lc.scale - 4}px"
 
     if withMargin and not @currentShape.forcedWidth
       @inputEl.style.width =
