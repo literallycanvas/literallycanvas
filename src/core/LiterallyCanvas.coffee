@@ -406,6 +406,9 @@ module.exports = class LiterallyCanvas
     opts.rect ?= @getContentBounds()
 
     {x, y, width, height} = opts.rect
+    if not (opts.rect.width and opts.rect.height)
+      return
+
     "
       <svg
           xmlns='http://www.w3.org/2000/svg'
