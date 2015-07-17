@@ -7,7 +7,7 @@ v0.4.3:
    Positions are updated automatically.
  * Text bounds are correctly accounted for when exporting to SVG. Text wrapping
    may be incorrect unless you render the text to the canvas first.
- * SVG export produces valid XML with the correct namespace
+ * SVG export produces valid XML with the correct namespace and no newlines
 
 v0.4.2:
  * lc.getSVGString()

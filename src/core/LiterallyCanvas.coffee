@@ -418,7 +418,7 @@ module.exports = class LiterallyCanvas
           #{@shapes.map((s) -> s.toSVG()).join('')}
         </g>
       </svg>
-    "
+    ".replace(/(\r\n|\n|\r)/gm,"")
 
   loadSnapshot: (snapshot) ->
     return unless snapshot
