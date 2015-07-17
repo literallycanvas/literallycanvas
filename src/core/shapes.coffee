@@ -498,9 +498,13 @@ defineShape 'Text',
   fromJSON: (data) -> createShape('Text', data)
 
   toSVG: ->
+    # fallback: don't worry about auto-wrapping
     widthString = if @forcedWidth then "width='#{@forcedWidth}px'" else ""
     heightString = if @forcedHeight then "height='#{@forcedHeight}px'" else ""
     textSplitOnLines = @text.split(/\r\n|\r|\n/g)
+
+    if @renderer
+      textSplitOnLines = @renderer.lines
 
     "
     <text x='#{@x}' y='#{@y}'
@@ -517,9 +521,6 @@ defineShape 'Text',
 
 HANDLE_SIZE = 10
 MARGIN = 4
-handles = [
-  {}
-]
 defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
