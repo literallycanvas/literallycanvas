@@ -2,7 +2,7 @@ $basicBorder: 1px solid #555;
 
 $pickerWidth: 60px;
 $pickerButtonSize: 30px;
-$optionsHeight: 65px;
+$optionsHeight: 55px;
 
 @mixin vertical-gradient($top, $bottom) {
   background: $top;
@@ -244,6 +244,10 @@ $optionsHeight: 65px;
       display: table-cell;
       text-align: center;
       vertical-align: bottom;
+
+      &:first-child {
+        padding-left: 6px;
+      }
     }
   }
 
