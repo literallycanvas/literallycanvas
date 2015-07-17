@@ -93,7 +93,7 @@ defineShape 'Image',
   draw: (ctx, retryCallback) ->
     if @image.width
       ctx.drawImage(@image, @x, @y)
-    else
+    else if retryCallback
       @image.onload = retryCallback
   getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height}
   toJSON: -> {@x, @y, imageSrc: @image.src}
