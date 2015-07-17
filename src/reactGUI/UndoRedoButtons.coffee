@@ -32,9 +32,10 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
       when !@state.isEnabled then ->
       when undoOrRedo == 'undo' then -> lc.undo()
       when undoOrRedo == 'redo' then -> lc.redo()
+    src = "#{imageURLPrefix}/#{undoOrRedo}.png"
+    style = {backgroundImage: "url(#{src})"}
 
-    (div {className, onClick, title},
-      (img {src: "#{imageURLPrefix}/#{undoOrRedo}.png"}))
+    (div {className, onClick, title, style})
 
 
 UndoButton = createUndoRedoButtonComponent('undo')

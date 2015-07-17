@@ -25,10 +25,10 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
       when !@state.isEnabled then ->
       when inOrOut == 'in' then -> lc.zoom(0.2)
       when inOrOut == 'out' then -> lc.zoom(-0.2)
+    src = "#{imageURLPrefix}/zoom-#{inOrOut}.png"
+    style = {backgroundImage: "url(#{src})"}
 
-    (div {className, onClick, title},
-      (img {src: "#{imageURLPrefix}/zoom-#{inOrOut}.png"})
-    )
+    (div {className, onClick, title, style})
 
 
 ZoomOutButton = createZoomButtonComponent('out')

@@ -23,7 +23,7 @@ ColorWell = React.createClass
     {div, label} = React.DOM
     (div \
       {
-        className: 'toolbar-button color-well-label'
+        className: 'toolbar-button color-well-label fat-button'
         onMouseLeave: @closePicker
         onClick: @togglePicker
       },

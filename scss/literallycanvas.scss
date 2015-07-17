@@ -1,54 +1,40 @@
 $basicBorder: 1px solid #555;
 
-$pickerWidth: 60px;
+$pickerWidth: 61px;
 $pickerButtonSize: 30px;
 $optionsHeight: 55px;
 
-@mixin vertical-gradient($top, $bottom) {
-  background: $top;
-  background-image: -webkit-linear-gradient(top, $top, $bottom);
-  background-image: -moz-linear-gradient(top, $top, $bottom);
-  background-image: -ms-linear-gradient(top, $top, $bottom);
-  background-image: -o-linear-gradient(top, $top, $bottom);
-  background-image: linear-gradient(to bottom, $top, $bottom);
-}
+$canvasBackground: #ddd;
+$toolbarBackground: rgb(230, 230, 230);
 
 @mixin button-style-1 {
-  $plainTop: #f5f5f5;
-  $plainBottom: #d6d6d6;
-  $hoverTop: #3cb0fd;
-  $hoverBottom: #3498db;
+  $selected: lighten(#3cb0fd, 20%);
+
+  border: 2px solid transparent;
+  border-radius: 3px;
 
   & {
-    @include vertical-gradient($plainTop, $plainBottom);
     text-decoration: none;
     cursor: pointer;
   }
 
   &.selected:not(.disabled) {
-    @include vertical-gradient(
-      lighten(desaturate($hoverTop, 20%), 10%),
-      lighten(desaturate($hoverBottom, 20%), 10%));
+    background-color: $selected;
   }
   &:hover:not(.disabled) {
-    @include vertical-gradient($hoverTop, $hoverBottom);
+    border: 2px solid $selected;
   }
   &:active:not(.disabled) {
-    @include vertical-gradient($hoverBottom, $hoverTop);
   }
   &.disabled {
     cursor: default;
-    background-image: none;
-    background-color: #ddd;
-    & * {
-      opacity: 0.5;
-    }
+    opacity: 0.3;
   }
 }
 
 .literally {
   position: relative;
-  background-color: #ddd;
+  background-color: $canvasBackground;
   min-height: 400px;
 
   -webkit-touch-callout: none;
@@ -70,7 +56,8 @@ $optionsHeight: 55px;
   }
 
   .lc-picker {
-    top: 0; left: 0; bottom: 0; width: $pickerWidth; background-color: #aaa;
+    top: 0; left: 0; bottom: 0; width: $pickerWidth;
+    background-color: $toolbarBackground;
   }
 
   .lc-drawing {
@@ -91,7 +78,7 @@ $optionsHeight: 55px;
 
   .lc-options {
     right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
-    background-color: #aaa;
+    background-color: $toolbarBackground;
   }
 }
 
@@ -99,9 +86,14 @@ $optionsHeight: 55px;
   z-index: 2;
   border-right: $basicBorder;
 
+  $buttonMargin: 2px;
+  $buttonActualSize: $pickerButtonSize - $buttonMargin * 2;
+
   .toolbar-button {
-    height: $pickerButtonSize;
-    line-height: $pickerButtonSize;
+    width: $buttonActualSize;
+    height: $buttonActualSize;
+    line-height: $buttonActualSize;
+    margin: $buttonMargin;
     padding: 0;
     cursor: pointer;
     text-align: center;
@@ -110,40 +102,26 @@ $optionsHeight: 55px;
   }
 
   .thin-button {
-    width: $pickerWidth / 2;
-    height: $pickerButtonSize;
-    border-bottom: $basicBorder;
-    border-right: $basicBorder;
     cursor: pointer;
     float: left;
     position: relative;
-
-    &:nth-child(2n) {
-      border-right: none;
-      width: $pickerWidth / 2 - 1px;
-    }
   }
 
   .fat-button {
     clear: both;
-    width: 100%;
-    border-bottom: $basicBorder;
+    width: $pickerWidth - 1 - $buttonMargin * 2;
   }
 
 
   .lc-pick-tool, .lc-undo, .lc-redo, .lc-zoom-in, .lc-zoom-out {
-    img {
-      position: absolute;
-      top: 0; right: 0; bottom: 0; left: 0;
-      margin: auto;
-      width: 80%;
-    }
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center center;
   }
 }
 
 .literally .lc-picker {
   .color-well-label {
-    border-bottom :$basicBorder;
     padding-bottom: 4px;
     font-size: 10px;
     line-height: 1.2em;
@@ -151,6 +129,10 @@ $optionsHeight: 55px;
 
     label {
       margin-bottom: 2px;
+    }
+
+    &:first-child {
+      margin-top: 10px;
     }
   }
 

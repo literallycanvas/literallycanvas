@@ -21,14 +21,11 @@ createToolButton = ({displayName, getTool, imageName}) ->
         'toolbar-button': true
         'thin-button': true
         'selected': isSelected
-      (div {className, onClick: (-> onSelect(tool)), title: displayName},
-        (img \
-          {
-            className: 'lc-tool-icon',
-            src: "#{imageURLPrefix}/#{imageName}.png"
-          }
-        )
-      )
+      src = "#{imageURLPrefix}/#{imageName}.png"
+      (div {
+        className,
+        style: {'backgroundImage': "url(#{src})"}
+        onClick: (-> onSelect(tool)), title: displayName})
 
 
 module.exports = createToolButton
