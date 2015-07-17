@@ -10,6 +10,7 @@ v0.4.3:
  * SVG export produces valid XML with the correct namespace and no newlines
  * Better-ish visual style
  * getImage() content bounds detection includes background shapes
+ * Fixed one class of image-not-displaying bugs
 
 v0.4.2:
  * lc.getSVGString()
