@@ -16,9 +16,9 @@ release-files: all
 	mkdir literallycanvas
 	cp -r lib/* literallycanvas/
 	cp README_release.txt literallycanvas/README.txt
+	cp bower_release.json literallycanvas/bower.json
 
 release-branch: release-files
-	cp bower_release.json literallycanvas/bower.json
 	git fetch lc
 	ghp-import -p -r lc -b release literallycanvas -m "Release"
 
