@@ -1,10 +1,12 @@
-v0.4.3-dev:
+v0.4.3:
  * User-friendly text tool
  * lc.setShapesInProgress(shapes), a better way to draw shapes in progress
  * Tool.willBecomeActive(lc) and Tool.didBecomeActive(lc)
  * Include IE shims for CustomEvent and ctx.setLineDash()
  * Text shapes are now anchored at the top left instead of baseline left.
    Positions are updated automatically.
+ * Text bounds are correctly accounted for when exporting to SVG. Text wrapping
+   may be incorrect unless you render the text to the canvas first.
 
 v0.4.2:
  * lc.getSVGString()
