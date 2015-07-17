@@ -1,4 +1,4 @@
-Literally Canvas v0.4.2
+Literally Canvas v0.4.3
 =======================
 
 Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
@@ -41,7 +41,9 @@ there hasn't been a corresponding increase in contributions. At this point I
 can't keep supporting people's products for free.
 
 That said, I'm available to work as a contractor to add features to the
-library. My email address is in the commits.
+library. My email address is in the commits. You can also put bounties on
+issues at
+[Bountysource](https://www.bountysource.com/teams/literallycanvas/issues).
 
 Developing
 ----------
