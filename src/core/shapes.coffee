@@ -104,8 +104,8 @@ defineShape 'Image',
 
   toSVG: ->
     "
-      <image x=#{@x} y=#{@y}
-        width=#{@image.naturalWidth} height=#{@image.naturalHeight}
+      <image x='#{@x}' y='#{@y}'
+        width='#{@image.naturalWidth}' height='#{@image.naturalHeight}'
         xlink:href=#{@image.src} />
     "
 
@@ -138,9 +138,9 @@ defineShape 'Rectangle',
 
   toSVG: ->
     "
-      <rect x=#{@x} y=#{@y} width=#{@width} height=#{@height}
+      <rect x='#{@x}' y='#{@y}' width='#{@width}' height='#{@height}'
         stroke='#{@strokeColor}' fill='#{@fillColor}'
-        stroke-width=#{@strokeWidth} />
+        stroke-width='#{@strokeWidth}' />
     "
 
 
@@ -190,9 +190,10 @@ defineShape 'Ellipse',
     centerX = @x + halfWidth
     centerY = @y + halfHeight
     "
-      <ellipse cx=#{centerX} cy=#{centerY} rx=#{halfWidth} ry=#{halfHeight}
+      <ellipse cx='#{centerX}' cy='#{centerY}' rx='#{halfWidth}'
+        ry='#{halfHeight}'
         stroke='#{@strokeColor}' fill='#{@fillColor}'
-        stroke-width=#{@strokeWidth} />
+        stroke-width='#{@strokeWidth}' />
     "
 
 
@@ -250,9 +251,9 @@ defineShape 'Line',
         @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), arrowWidth, @color)
     "
       <g>
-        <line x1=#{@x1} y1=#{@y1} x2=#{@x2} y2=#{@y2} #{dashString}
+        <line x1='#{@x1}' y1='#{@y1}' x2='#{@x2}' y2='#{@y2}' #{dashString}
           stroke-linecap='#{@capStyle}'
-          stroke='#{@color}'stroke-width=#{@strokeWidth} />
+          stroke='#{@color}'stroke-width='#{@strokeWidth}' />
         #{capString}
       <g>
     "
@@ -331,7 +332,7 @@ linePathFuncs =
       <polyline
         fill='none'
         points='#{@smoothedPoints.map((p) -> "#{p.x},#{p.y}").join(' ')}'
-        stroke='#{@points[0].color}' stroke-width=#{@points[0].size} />
+        stroke='#{@points[0].color}' stroke-width='#{@points[0].size}' />
     "
 
   draw: (ctx) ->
