@@ -283,9 +283,21 @@ _createLinePathFromData = (shapeName, data) ->
         smooth: data.smooth
       }
     }) for [x, y] in data.pointCoordinatePairs)
+
+  smoothedPoints = null
+  if data.smoothedPointCoordinatePairs
+    smoothedPoints = (JSONToShape({
+      className: 'Point',
+      data: {
+        x: x, y: y, size: data.pointSize, color: data.pointColor
+        smooth: data.smooth
+      }
+    }) for [x, y] in data.pointCoordinatePairs)
+
   return null unless points[0]
   createShape(shapeName, {
-    points, order: data.order, tailSize: data.tailSize, smooth: data.smooth
+    points, smoothedPoints,
+    order: data.order, tailSize: data.tailSize, smooth: data.smooth
   })
 
 
@@ -302,9 +314,13 @@ linePathFuncs =
     # The number of points used to calculate the bspline to the newest point
     @sampleSize = @tailSize + 1
 
-    @points = []
-    for point in points
-      @addPoint(point)
+    if args.smoothedPoints
+      @points = args.points
+      @smoothedPoints = args.smoothedPoints
+    else
+      @points = []
+      for point in points
+        @addPoint(point)
 
   getBoundingRect: ->
     util.getBoundingRect @points.map (p) -> {
@@ -319,6 +335,8 @@ linePathFuncs =
       {
         @order, @tailSize, @smooth,
         pointCoordinatePairs: ([point.x, point.y] for point in @points),
+        smoothedPointCoordinatePairs: (
+          [point.x, point.y] for point in @smoothedPoints),
         pointSize: @points[0].size,
         pointColor: @points[0].color
       }
@@ -350,7 +368,9 @@ linePathFuncs =
   addPoint: (point) ->
     @points.push(point)
 
-    return @smoothedPoints = @points if !@smooth
+    if !@smooth
+      @smoothedPoints = @points
+      return
 
     if not @smoothedPoints or @points.length < @sampleSize
       @smoothedPoints = bspline(@points, @order)

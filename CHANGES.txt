@@ -11,6 +11,7 @@ v0.4.3:
  * Better-ish visual style
  * getImage() content bounds detection includes background shapes
  * Fixed one class of image-not-displaying bugs
+ * Line path reuses smoothed points instead of recalculating on load
 
 v0.4.2:
  * lc.getSVGString()
