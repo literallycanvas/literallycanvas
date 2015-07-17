@@ -106,7 +106,7 @@ defineShape 'Image',
     "
       <image x='#{@x}' y='#{@y}'
         width='#{@image.naturalWidth}' height='#{@image.naturalHeight}'
-        xlink:href=#{@image.src} />
+        xlink:href='#{@image.src}' />
     "
 
 
