@@ -356,7 +356,7 @@ module.exports = class LiterallyCanvas
 
   getContentBounds: ->
     util.getBoundingRect(
-      @shapes.map((s) -> s.getBoundingRect()),
+      (@shapes.concat(@backgroundShapes)).map((s) -> s.getBoundingRect()),
       if @width == INFINITE then 0 else @width,
       if @height == INFINITE then 0 else @height)
 
