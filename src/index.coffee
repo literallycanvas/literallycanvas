@@ -1,3 +1,6 @@
+require './ie_customevent'
+require './ie_setLineDash'
+
 LiterallyCanvas = require './core/LiterallyCanvas'
 initReact = require './reactGUI/init'
 

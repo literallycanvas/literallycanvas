@@ -81,6 +81,12 @@ $optionsHeight: 65px;
       position: absolute;
       top: 0; right: 0; bottom: 0; left: 0;
     }
+
+    .text-tool-input {
+      &:focus {
+        outline: none;
+      }
+    }
   }
 
   .lc-options {
@@ -242,7 +248,8 @@ $optionsHeight: 65px;
   }
 
   .lc-font-settings {
-    line-height: $optionsHeight/2;
+    height: $optionsHeight;
+    line-height: $optionsHeight;
     padding-left: 4px;
     background-color: #f5f5f5;
 

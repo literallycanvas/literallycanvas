@@ -1,5 +1,6 @@
 util = require './util'
 lineEndCapShapes = require '../core/lineEndCapShapes.coffee'
+TextRenderer = require './TextRenderer'
 
 shapes = {}
 
@@ -429,18 +430,160 @@ defineShape 'Text',
   constructor: (args={}) ->
     @x = args.x or 0
     @y = args.y or 0
+    @v = args.v or 0  # version (<1 needs position repaired)
     @text = args.text or ''
     @color = args.color or 'black'
     @font  = args.font or '18px sans-serif'
-  draw: (ctx) ->
-    ctx.font  = @font
+    @forcedWidth = args.forcedWidth or null
+    @forcedHeight = args.forcedHeight or null
+
+  _makeRenderer: (ctx) ->
+    ctx.lineHeight = 1.2
+    @renderer = new TextRenderer(
+      ctx, @text, @font, @forcedWidth, @forcedHeight)
+
+    if @v < 1
+      console.log 'repairing baseline'
+      @v = 1
+      @x -= @renderer.metrics.bounds.minx
+      @y -= @renderer.metrics.leading - @renderer.metrics.descent
+
+  draw: (ctx, bufferCtx) ->
+    @_makeRenderer(ctx) unless @renderer
     ctx.fillStyle = @color
-    ctx.fillText(@text, @x, @y)
-    @boundingBoxWidth = Math.ceil ctx.measureText(@text).width
-  getBoundingRect: ->
-    {@x, @y, width: @boundingBoxWidth, height: 18} # we don't know height :-(
-  toJSON: -> {@x, @y, @text, @color, @font}
+    @renderer.draw(ctx, @x, @y)
+
+  setText: (text) ->
+    @text = text
+    @renderer = null
+
+  setFont: (font) ->
+    @font = font
+    @renderer = null
+
+  setPosition: (x, y) ->
+    @x = x
+    @y = y
+
+  setSize: (forcedWidth, forcedHeight) ->
+    @forcedWidth = Math.max(forcedWidth, 0)
+    @forcedHeight = Math.max(forcedHeight, 0)
+    @renderer = null
+
+  enforceMaxBoundingRect: (lc) ->
+    br = @getBoundingRect(lc.ctx)
+    lcBoundingRect = {
+      x: -lc.position.x / lc.scale,
+      y: -lc.position.y / lc.scale,
+      width: lc.canvas.width / lc.scale,
+      height: lc.canvas.height / lc.scale
+    }
+    # really just enforce max width
+    if br.x + br.width > lcBoundingRect.x + lcBoundingRect.width
+      dx = br.x - lcBoundingRect.x
+      @forcedWidth = lcBoundingRect.width - dx - 10
+      @renderer = null
+
+  getBoundingRect: (ctx, isEditing=false) ->
+    # if isEditing == true, add X padding to account for carat
+    unless @renderer
+      if ctx
+        @_makeRenderer(ctx)
+      else
+        throw "Must pass ctx if text hasn't been rendered yet"
+    {
+      @x, @y, width: @renderer.getWidth(true), height: @renderer.getHeight()
+    }
+  toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)
+
+  toSVG: ->
+    # fallback: don't worry about auto-wrapping
+    widthString = if @forcedWidth then "width='#{@forcedWidth}px'" else ""
+    heightString = if @forcedHeight then "height='#{@forcedHeight}px'" else ""
+    textSplitOnLines = @text.split(/\r\n|\r|\n/g)
+
+    if @renderer
+      textSplitOnLines = @renderer.lines
+
+    "
+    <text x='#{@x}' y='#{@y}'
+          #{widthString} #{heightString}
+          fill='#{@color}'
+          style='font: #{@font};'>
+      #{textSplitOnLines.map((line, i) =>
+        dy = if i == 0 then 0 else '1.2em'
+        return "<tspan x='#{@x}' dy='#{dy}' alignment-baseline='text-before-edge'>#{line}</tspan>"
+      ).join('')}
+    </text>
+    "
+
+
+HANDLE_SIZE = 10
+MARGIN = 4
+defineShape 'SelectionBox',
+  constructor: (args={}) ->
+    @shape = args.shape
+    @backgroundColor = args.backgroundColor or null
+    @_br = @shape.getBoundingRect(args.ctx)
+
+  draw: (ctx) ->
+    if @backgroundColor
+      ctx.fillStyle = @backgroundColor
+      ctx.fillRect(
+        @_br.x - MARGIN, @_br.y - MARGIN,
+        @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
+    ctx.lineWidth = 1
+    ctx.strokeStyle = '#000'
+    ctx.setLineDash([2, 4])
+    ctx.strokeRect(
+      @_br.x - MARGIN, @_br.y - MARGIN,
+      @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
+    #ctx.strokeRect(@_br.x, @_br.y, @_br.width, @_br.height)
+
+    ctx.setLineDash([])
+    @_drawHandle(ctx, @getTopLeftHandleRect())
+    @_drawHandle(ctx, @getTopRightHandleRect())
+    @_drawHandle(ctx, @getBottomLeftHandleRect())
+    @_drawHandle(ctx, @getBottomRightHandleRect())
+
+  _drawHandle: (ctx, {x, y}) ->
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(x, y, HANDLE_SIZE, HANDLE_SIZE)
+    ctx.strokeStyle = '#000'
+    ctx.strokeRect(x, y, HANDLE_SIZE, HANDLE_SIZE)
+
+  getTopLeftHandleRect: ->
+    {
+      x: @_br.x - HANDLE_SIZE - MARGIN, y: @_br.y - HANDLE_SIZE - MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getBottomLeftHandleRect: ->
+    {
+      x: @_br.x - HANDLE_SIZE - MARGIN, y: @_br.y + @_br.height + MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getTopRightHandleRect: ->
+    {
+      x: @_br.x + @_br.width + MARGIN, y: @_br.y - HANDLE_SIZE - MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getBottomRightHandleRect: ->
+    {
+      x: @_br.x + @_br.width + MARGIN, y: @_br.y + @_br.height + MARGIN,
+      width: HANDLE_SIZE, height: HANDLE_SIZE
+    }
+
+  getBoundingRect: ->
+    {
+      x: @_br.x - MARGIN, y: @_br.y - MARGIN,
+      width: @_br.width + MARGIN * 2, height: @_br.height + MARGIN * 2
+    }
+
+  toSVG: -> ""
 
 
 module.exports = {defineShape, createShape, JSONToShape, shapeToJSON}

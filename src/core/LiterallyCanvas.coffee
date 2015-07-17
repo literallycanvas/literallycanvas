@@ -27,6 +27,8 @@ module.exports = class LiterallyCanvas
     @containerEl.appendChild(@backgroundCanvas)
     @backgroundShapes = opts.backgroundShapes || []
 
+    @_shapesInProgress = []
+
     @canvas = document.createElement('canvas')
     @canvas.style['background-color'] = 'transparent'
     @containerEl.appendChild(@canvas)
@@ -95,8 +97,12 @@ module.exports = class LiterallyCanvas
     @trigger('imageSizeChange', {@width, @height})
 
   setTool: (tool) ->
+    @tool.willBecomeInactive(this)
     @tool = tool
     @trigger('toolChange', {tool})
+    tool.didBecomeActive(this)
+
+  setShapesInProgress: (newVal) -> @_shapesInProgress = newVal
 
   begin: (x, y) ->
     util.requestAnimationFrame () =>
@@ -206,8 +212,9 @@ module.exports = class LiterallyCanvas
       when 'background'
         @backgroundCtx.clearRect(
           0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
-        @_renderWatermark(@backgroundCtx) if @watermarkImage
         retryCallback = => @repaintLayer('background')
+        if @watermarkImage
+          @_renderWatermark(@backgroundCtx, true, retryCallback)
         @draw(@backgroundShapes, @backgroundCtx, retryCallback)
       when 'main'
         retryCallback = => @repaintLayer('main', true)
@@ -225,9 +232,20 @@ module.exports = class LiterallyCanvas
             @ctx.drawImage @buffer, 0, 0
           ), @ctx
 
+          @clipped (=>
+            @transformed (=>
+              for shape in @_shapesInProgress
+                shape.drawLatest(@ctx, @bufferCtx)
+            ), @ctx, @bufferCtx
+          ), @ctx, @bufferCtx
+
     @trigger('repaint', {layerKey: repaintLayerKey})
 
-  _renderWatermark: (ctx, worryAboutRetina=true) ->
+  _renderWatermark: (ctx, worryAboutRetina=true, retryCallback) ->
+    unless @watermarkImage.width
+      @watermarkImage.onload = retryCallback
+      return
+
     ctx.save()
     ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
     ctx.scale(@watermarkScale, @watermarkScale)
@@ -378,7 +396,9 @@ module.exports = class LiterallyCanvas
   canvasWithBackground: (backgroundImageOrCanvas) ->
     util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
-  getSnapshot: -> {shapes: (shapeToJSON(shape) for shape in @shapes), @colors}
+  getSnapshot: -> {
+    shapes: (shapeToJSON(shape) for shape in @shapes),
+    @colors}
   getSnapshotJSON: -> JSON.stringify(@getSnapshot())
 
   getSVGString: (opts={}) ->

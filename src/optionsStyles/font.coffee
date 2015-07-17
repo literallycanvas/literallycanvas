@@ -3,9 +3,7 @@
 
 defineOptionsStyle 'font', React.createClass
   displayName: 'FontOptions'
-  getText: -> @props.lc.tool?.text
   getInitialState: -> {
-    text: @getText()
     isItalic: false
     isBold: false
     fontFamilyIndex: 0
@@ -40,10 +38,7 @@ defineOptionsStyle 'font', React.createClass
     items.push("#{fontSize}px")
     items.push(@getFamilies()[newState.fontFamilyIndex].value)
     @props.lc.tool.font = items.join(' ')
-
-  handleText: (event) ->
-    @props.lc.tool.text = event.target.value
-    @setState {text: @getText()}
+    @props.lc.trigger 'setFont', items.join(' ')
 
   handleFontSize: (event) ->
     newState = {fontSizeIndex: event.target.value}
@@ -73,18 +68,6 @@ defineOptionsStyle 'font', React.createClass
     {div, input, select, option, br, label, span} = React.DOM
 
     (div {className: 'lc-font-settings'},
-      (input \
-        {
-          type: 'text'
-          placeholder: _('Enter text here')
-          value: @state.text
-          onChange: @handleText
-        }
-      )
-      (span {className: 'instructions'}, _("Click and hold to place text."))
-
-      (br())
-
       _("Size: ")
       (select {value: @state.fontSizeIndex, onChange: @handleFontSize},
         @getFontSizes().map((size, ix) =>
