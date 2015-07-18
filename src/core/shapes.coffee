@@ -292,7 +292,7 @@ _createLinePathFromData = (shapeName, data) ->
         x: x, y: y, size: data.pointSize, color: data.pointColor
         smooth: data.smooth
       }
-    }) for [x, y] in data.pointCoordinatePairs)
+    }) for [x, y] in data.smoothedPointCoordinatePairs)
 
   return null unless points[0]
   createShape(shapeName, {
