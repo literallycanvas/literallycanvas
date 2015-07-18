@@ -1823,7 +1823,7 @@ _createLinePathFromData = function(shapeName, data) {
   if (data.smoothedPointCoordinatePairs) {
     smoothedPoints = (function() {
       var _i, _len, _ref, _ref1, _results;
-      _ref = data.pointCoordinatePairs;
+      _ref = data.smoothedPointCoordinatePairs;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         _ref1 = _ref[_i], x = _ref1[0], y = _ref1[1];
