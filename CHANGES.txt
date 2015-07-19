@@ -1,3 +1,6 @@
+v0.4.4:
+ * Fix idiotic text tool exception
+
 v0.4.3:
  * User-friendly text tool
  * lc.setShapesInProgress(shapes), a better way to draw shapes in progress
