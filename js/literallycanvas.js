@@ -3963,7 +3963,7 @@ module.exports = Text = (function(_super) {
     }
     return createShape('SelectionBox', {
       shape: this.currentShape,
-      ctx: lc.ctx,
+      ctx: ctx,
       backgroundColor: backgroundColor
     });
   };
