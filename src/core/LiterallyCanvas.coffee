@@ -104,27 +104,41 @@ module.exports = class LiterallyCanvas
 
   setShapesInProgress: (newVal) -> @_shapesInProgress = newVal
 
-  begin: (x, y) ->
+  pointerDown: (x, y) ->
     util.requestAnimationFrame () =>
-      newPos = @clientCoordsToDrawingCoords(x, y)
-      @tool.begin newPos.x, newPos.y, this
-      @isDragging = true
-      @trigger("drawStart", {tool: @tool})
+      if @tool.usesSimpleAPI
+        newPos = @clientCoordsToDrawingCoords(x, y)
+        @tool.begin newPos.x, newPos.y, this
+        @isDragging = true
+        @trigger("drawStart", {tool: @tool})
+      else
+        @isDragging = true
+        @trigger("pointerdown", {tool: @tool, x, y})
 
-  continue: (x, y) ->
+  pointerMove: (x, y) ->
     util.requestAnimationFrame () =>
-      newPos = @clientCoordsToDrawingCoords(x, y)
-      if @isDragging
-        @tool.continue newPos.x, newPos.y, this
-        @trigger("drawContinue", {tool: @tool})
+      if @tool.usesSimpleAPI
+        newPos = @clientCoordsToDrawingCoords(x, y)
+        if @isDragging
+          @tool.continue newPos.x, newPos.y, this
+          @trigger("drawContinue", {tool: @tool})
+      else
+        if @isDragging
+          @trigger("pointerdrag", {tool: @tool, x, y})
+        else
+          @trigger("pointermove", {tool: @tool, x, y})
 
-  end: (x, y) ->
+  pointerUp: (x, y) ->
     util.requestAnimationFrame () =>
-      newPos = @clientCoordsToDrawingCoords(x, y)
-      if @isDragging
-        @tool.end newPos.x, newPos.y, this
+      if @tool.usesSimpleAPI
+        newPos = @clientCoordsToDrawingCoords(x, y)
+        if @isDragging
+          @tool.end newPos.x, newPos.y, this
+          @isDragging = false
+          @trigger("drawEnd", {tool: @tool})
+      else
         @isDragging = false
-        @trigger("drawEnd", {tool: @tool})
+        @trigger("pointerup", {tool: @tool, x, y})
 
   setColor: (name, color) ->
     @colors[name] = color
@@ -181,7 +195,7 @@ module.exports = class LiterallyCanvas
 
   zoom: (factor) ->
     newScale = @scale + factor
-    newScale = Math.max(newScale, 0.6)
+    newScale = Math.max(newScale, 0.2)
     newScale = Math.min(newScale, 4.0)
     newScale = Math.round(newScale * 100) / 100
     @setZoom(newScale)

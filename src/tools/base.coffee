@@ -8,6 +8,8 @@ tools.Tool = class Tool
   # {imageURLPrefix}/{iconName}.png
   iconName: null
 
+  usesSimpleAPI: true
+
   # called when the user starts dragging
   begin: (x, y, lc) ->
 
