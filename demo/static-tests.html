@@ -118,74 +118,94 @@
 
       var shapes = [
         LC.createShape('Image', {image: img, x: 0, y: 0}),
-        LC.createShape('Rectangle', {
-          x: 10, y: 10, width: 80, height: 80,
-          strokeColor: '#000', fillColor: 'red'
+        LC.createShape('Polygon', {
+          strokeColor: '#080', fillColor: 'red', strokeWidth: 1,
+          points: [
+            LC.createShape('Point', {x: 10, y: 10}),
+            LC.createShape('Point', {x: 10, y: 90}),
+            LC.createShape('Point', {x: 50, y: 50}),
+            LC.createShape('Point', {x: 90, y: 90}),
+            LC.createShape('Point', {x: 90, y: 10})
+          ]
+        }),
+        LC.createShape('Polygon', {
+          strokeColor: '#080', fillColor: 'red', strokeWidth: 4,
+          points: [
+            LC.createShape('Point', {x: 10, y: 10}),
+            LC.createShape('Point', {x: 10, y: 90}),
+            LC.createShape('Point', {x: 50, y: 50}),
+            LC.createShape('Point', {x: 90, y: 90}),
+            LC.createShape('Point', {x: 90, y: 10})
+          ]
         }),
         LC.createShape('Rectangle', {
           x: 10, y: 10, width: 80, height: 80,
-          strokeColor: '#000', fillColor: 'red', strokeWidth: 2
+          strokeColor: '#080', fillColor: 'red'
+        }),
+        LC.createShape('Rectangle', {
+          x: 10, y: 10, width: 80, height: 80,
+          strokeColor: '#080', fillColor: 'red', strokeWidth: 2
         }),
         LC.createShape('Ellipse', {
           x: 10, y: 10, width: 80, height: 80,
-          strokeColor: '#000', fillColor: 'red'
+          strokeColor: '#080', fillColor: 'red'
         }),
         LC.createShape('Line', {
           x1: 10, y1: 10, x2: 90, y2: 90,
-          strokeColor: '#000', strokeWidth: 1
+          strokeColor: '#080', strokeWidth: 1
         }),
         LC.createShape('Line', {
           x1: 10, y1: 10, x2: 10, y2: 90,
-          strokeColor: '#000', strokeWidth: 1
+          strokeColor: '#080', strokeWidth: 1
         }),
         LC.createShape('Line', {
           x1: 10, y1: 10, x2: 10, y2: 90,
-          strokeColor: '#000', strokeWidth: 2
+          strokeColor: '#080', strokeWidth: 2
         }),
         LC.createShape('Line', {
           x1: 10, y1: 10, x2: 90, y2: 90,
-          strokeColor: '#000', strokeWidth: 1,
+          strokeColor: '#080', strokeWidth: 1,
           dash: [2, 4], endCapShapes: ['arrow', 'arrow']
         }),
         LC.createShape('Line', {
           x1: 10, y1: 10, x2: 90, y2: 90,
-          strokeColor: '#000', strokeWidth: 5,
+          strokeColor: '#080', strokeWidth: 5,
           dash: [10, 20], endCapShapes: ['arrow', 'arrow']
         }),
         LC.createShape('LinePath', {
           points: [
-            LC.createShape('Point', {x: 10, y: 10, size: 1, color: '#000'}),
-            LC.createShape('Point', {x: 10, y: 90, size: 1, color: '#000'}),
-            LC.createShape('Point', {x: 90, y: 90, size: 1, color: '#000'}),
-            LC.createShape('Point', {x: 90, y: 10, size: 1, color: '#000'})
+            LC.createShape('Point', {x: 10, y: 10, size: 1, color: '#080'}),
+            LC.createShape('Point', {x: 10, y: 90, size: 1, color: '#080'}),
+            LC.createShape('Point', {x: 90, y: 90, size: 1, color: '#080'}),
+            LC.createShape('Point', {x: 90, y: 10, size: 1, color: '#080'})
           ]
         }),
         LC.createShape('LinePath', {
           points: [
-            LC.createShape('Point', {x: 10, y: 10, size: 2, color: '#000'}),
-            LC.createShape('Point', {x: 10, y: 90, size: 2, color: '#000'}),
-            LC.createShape('Point', {x: 90, y: 90, size: 2, color: '#000'}),
-            LC.createShape('Point', {x: 90, y: 10, size: 2, color: '#000'})
+            LC.createShape('Point', {x: 10, y: 10, size: 2, color: '#080'}),
+            LC.createShape('Point', {x: 10, y: 90, size: 2, color: '#080'}),
+            LC.createShape('Point', {x: 90, y: 90, size: 2, color: '#080'}),
+            LC.createShape('Point', {x: 90, y: 10, size: 2, color: '#080'})
           ]
         }),
         LC.createShape('ErasedLinePath', {
           points: [
-            LC.createShape('Point', {x: 10, y: 10, size: 1, color: '#000'}),
-            LC.createShape('Point', {x: 10, y: 90, size: 1, color: '#000'}),
-            LC.createShape('Point', {x: 90, y: 90, size: 1, color: '#000'}),
-            LC.createShape('Point', {x: 90, y: 10, size: 1, color: '#000'})
+            LC.createShape('Point', {x: 10, y: 10, size: 1, color: '#080'}),
+            LC.createShape('Point', {x: 10, y: 90, size: 1, color: '#080'}),
+            LC.createShape('Point', {x: 90, y: 90, size: 1, color: '#080'}),
+            LC.createShape('Point', {x: 90, y: 10, size: 1, color: '#080'})
           ]
         }),
         LC.createShape('Text', {
           x: 0, y: 0, v: 1,
           text: "one\ntwo three four five",
-          color: '#000', font: '18px bold Helvetica',
+          color: '#080', font: '18px bold Helvetica',
           forcedWidth: 100, forcedHeight: 100
         }),
         LC.createShape('Text', {
           x: 0, y: 24, v: 0,
           text: "one\ntwo three four five",
-          color: '#000', font: '18px bold Helvetica',
+          color: '#080', font: '18px bold Helvetica',
           forcedWidth: 100, forcedHeight: 100
         })
       ];

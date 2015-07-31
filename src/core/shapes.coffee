@@ -320,9 +320,39 @@ defineShape 'Point',
     @y = args.y or 0
     @size = args.size or 0
     @color = args.color or ''
-  lastPoint: -> this
+  getBoundingRect: ->
+    {x: @x - @size / 2, y: @y - @size / 2, width: @size, height: @size}
   toJSON: -> {@x, @y, @size, @color}
   fromJSON: (data) -> createShape('Point', data)
+
+
+defineShape 'Polygon',
+  constructor: (args={}) ->
+    @points = args.points
+    @fillColor = args.fillColor or 'white'
+    @strokeColor = args.strokeColor or 'black'
+    @strokeWidth = args.strokeWidth
+    @dash = args.dash or null
+
+    # ignore point values
+    for point in @points
+      point.color = @strokeColor
+      point.size = @strokeWidth
+
+  getBoundingRect: ->
+    return util.getBoundingRect(@points.map((p) -> p.getBoundingRect()))
+
+  toJSON: ->
+    {
+      @strokeWidth, @fillColor, @strokeColor, @dash,
+      pointCoordinatePairs: @points.map (p) -> [p.x, p.y]
+    }
+  fromJSON: (data) ->
+    data.points = data.pointCoordinatePairs.map ([x, y]) ->
+      createShape('Point', {
+        x, y, size: data.strokeWidth, color: data.strokeColor
+      })
+    createShape('Polygon', data)
 
 
 defineShape 'Text',
