@@ -1,5 +1,6 @@
 slice = Array.prototype.slice
 {renderShapeToContext} = require './canvasRenderer'
+{renderShapeToSVG} = require './svgRenderer'
 
 util =
   last: (array, n = null) ->
@@ -47,6 +48,20 @@ util =
     for shape in shapes
       renderShapeToContext(ctx, shape)
     canvas
+
+  renderShapesToSVG: (shapes, {x, y, width, height}, backgroundColor) ->
+    "
+      <svg
+          xmlns='http://www.w3.org/2000/svg'
+          width='#{width}' height='#{height}'
+          viewBox='0 0 #{width} #{height}'>
+        <rect width='#{width}' height='#{height}' x='0' y='0'
+          fill='#{backgroundColor}' />
+        <g transform='translate(#{-x}, #{-y})'>
+          #{shapes.map(renderShapeToSVG).join('')}
+        </g>
+      </svg>
+    ".replace(/(\r\n|\n|\r)/gm,"")
 
   # [{x, y, width, height}]
   getBoundingRect: (rects, width, height) ->

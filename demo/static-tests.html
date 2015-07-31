@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Literally Canvas static tests</title>
+	    <link href="/lib/css/literallycanvas.css" rel="stylesheet">
+      <style>
+        table {
+          width: 303px;
+          border-collapse: collapse;
+        }
+        td, th {
+          text-align: left;
+          border-bottom: 1px solid black;
+          margin: 0;
+        }
+        td {
+          padding: 2px;
+        }
+        td:first-child {
+          border-left: 1px solid black;
+        }
+        td:nth-child(1), td:nth-child(2), td:nth-child(3) {
+          padding: 0;
+          width: 100px;
+          border-right: 1px solid black;
+        }
+        td > * {
+          display: block;
+        }
+      </style>
+	</head>
+  <body>
+
+    <div style="float: left;">
+      <h1>Pre-image load</h1>
+      <table id="static-test-results">
+        <thead>
+          <tr>
+            <th>Original shape</th>
+            <th>After JSON round trip</th>
+            <th>SVG</th>
+          </tr>
+        </thead>
+        <tbody id="static-test-results-body">
+        </tbody>
+      </table>
+    </div>
+
+    <div style="float: left; margin-left: 20px;">
+      <h1>Post-image load</h1>
+      <table id="static-test-results-2">
+        <thead>
+          <tr>
+            <th>Original shape</th>
+            <th>After JSON round trip</th>
+            <th>SVG</th>
+          </tr>
+        </thead>
+        <tbody id="static-test-results-body-2">
+        </tbody>
+      </table>
+    </div>
+
+    <script src="/demo/react-0.10.0.js"></script>
+    <script src="/lib/js/literallycanvas.js"></script>
+    <script>
+      var img = new Image();
+      img.src = '/demo/bear.png';
+
+      function renderTestResults(tbodyId, shapes) {
+        var tbody = document.getElementById(tbodyId);
+        var makeCanvas = function(shapeClassName) {
+          var canvas = document.createElement('canvas');
+          canvas.width = 100;
+          canvas.height = 100;
+          canvas.style.backgroundColor = 'transnparent';
+          canvas.style.width = '100px';
+          canvas.style.height = '100px';
+
+          if (shapeClassName == 'ErasedLinePath') {
+            var ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#00f'
+            ctx.fillRect(0, 0, 100, 100);
+          }
+          return canvas;
+        }
+
+        shapes.map(function(shape) {
+          var canvas1 = makeCanvas(shape.className);
+          var canvas2 = makeCanvas(shape.className);
+          var render1 = function() {
+            LC.renderShapeToCanvas(canvas1, shape, {retryCallback: render1});
+          }
+          render1();
+
+          var shape2 = LC.JSONToShape(LC.shapeToJSON(shape));
+          var render2 = function() {
+            LC.renderShapeToCanvas(canvas2, shape2, {retryCallback: render2});
+          }
+          render2();
+
+          var svgString = LC.renderShapesToSVG(
+            [shape], {x: 0, y: 0, width: 100, height: 100}, 'transparent');
+
+          var td1 = document.createElement('td');
+          var td2 = document.createElement('td');
+          var td3 = document.createElement('td');
+          td1.appendChild(canvas1);
+          td2.appendChild(canvas2);
+          td3.innerHTML = svgString;
+          var tr = document.createElement('tr');
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+          tbody.appendChild(tr);
+        });
+      }
+
+      var shapes = [
+        LC.createShape('Image', {image: img, x: 0, y: 0}),
+        LC.createShape('Rectangle', {
+          x: 10, y: 10, width: 80, height: 80,
+          strokeColor: '#000', fillColor: 'red'
+        }),
+        LC.createShape('Rectangle', {
+          x: 10, y: 10, width: 80, height: 80,
+          strokeColor: '#000', fillColor: 'red', strokeWidth: 2
+        }),
+        LC.createShape('Ellipse', {
+          x: 10, y: 10, width: 80, height: 80,
+          strokeColor: '#000', fillColor: 'red'
+        }),
+        LC.createShape('Line', {
+          x1: 10, y1: 10, x2: 90, y2: 90,
+          strokeColor: '#000', strokeWidth: 1
+        }),
+        LC.createShape('Line', {
+          x1: 10, y1: 10, x2: 10, y2: 90,
+          strokeColor: '#000', strokeWidth: 1
+        }),
+        LC.createShape('Line', {
+          x1: 10, y1: 10, x2: 10, y2: 90,
+          strokeColor: '#000', strokeWidth: 2
+        }),
+        LC.createShape('Line', {
+          x1: 10, y1: 10, x2: 90, y2: 90,
+          strokeColor: '#000', strokeWidth: 1,
+          dash: [2, 4], endCapShapes: ['arrow', 'arrow']
+        }),
+        LC.createShape('Line', {
+          x1: 10, y1: 10, x2: 90, y2: 90,
+          strokeColor: '#000', strokeWidth: 5,
+          dash: [10, 20], endCapShapes: ['arrow', 'arrow']
+        }),
+        LC.createShape('LinePath', {
+          points: [
+            LC.createShape('Point', {x: 10, y: 10, size: 1, color: '#000'}),
+            LC.createShape('Point', {x: 10, y: 90, size: 1, color: '#000'}),
+            LC.createShape('Point', {x: 90, y: 90, size: 1, color: '#000'}),
+            LC.createShape('Point', {x: 90, y: 10, size: 1, color: '#000'})
+          ]
+        }),
+        LC.createShape('LinePath', {
+          points: [
+            LC.createShape('Point', {x: 10, y: 10, size: 2, color: '#000'}),
+            LC.createShape('Point', {x: 10, y: 90, size: 2, color: '#000'}),
+            LC.createShape('Point', {x: 90, y: 90, size: 2, color: '#000'}),
+            LC.createShape('Point', {x: 90, y: 10, size: 2, color: '#000'})
+          ]
+        }),
+        LC.createShape('ErasedLinePath', {
+          points: [
+            LC.createShape('Point', {x: 10, y: 10, size: 1, color: '#000'}),
+            LC.createShape('Point', {x: 10, y: 90, size: 1, color: '#000'}),
+            LC.createShape('Point', {x: 90, y: 90, size: 1, color: '#000'}),
+            LC.createShape('Point', {x: 90, y: 10, size: 1, color: '#000'})
+          ]
+        }),
+        LC.createShape('Text', {
+          x: 0, y: 0, v: 1,
+          text: "one\ntwo three four five",
+          color: '#000', font: '18px bold Helvetica',
+          forcedWidth: 100, forcedHeight: 100
+        }),
+        LC.createShape('Text', {
+          x: 0, y: 24, v: 0,
+          text: "one\ntwo three four five",
+          color: '#000', font: '18px bold Helvetica',
+          forcedWidth: 100, forcedHeight: 100
+        })
+      ];
+      renderTestResults('static-test-results-body', shapes);
+
+      var oldImageOnload = img.onload;
+      img.onload = function() {
+        oldImageOnload();
+        renderTestResults('static-test-results-body-2', shapes);
+      }
+    </script>
+    <script src="//localhost:35728/livereload.js"></script>
+  </body>
+</html>

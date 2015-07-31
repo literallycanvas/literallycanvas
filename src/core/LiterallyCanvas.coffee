@@ -428,23 +428,11 @@ module.exports = class LiterallyCanvas
     # {x, y, width, height}
     opts.rect ?= @getContentBounds()
 
-    {x, y, width, height} = opts.rect
     if not (opts.rect.width and opts.rect.height)
       return
 
-    "
-      <svg
-          xmlns='http://www.w3.org/2000/svg'
-          width='#{width}' height='#{height}'
-          viewBox='0 0 #{width} #{height}'>
-        <rect width='#{width}' height='#{height}' x='0' y='0'
-          fill='#{@colors.background}' />
-        <g transform='translate(#{-x}, #{-y})'>
-          #{@backgroundShapes.map(renderShapeToSVG).join('')}
-          #{@shapes.map(renderShapeToSVG).join('')}
-        </g>
-      </svg>
-    ".replace(/(\r\n|\n|\r)/gm,"")
+    util.renderShapesToSVG(
+      @backgroundShapes.concat(@shapes), opts.rect, @colors.background)
 
   loadSnapshot: (snapshot) ->
     return unless snapshot

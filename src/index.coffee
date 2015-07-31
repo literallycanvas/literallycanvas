@@ -132,6 +132,7 @@ module.exports = {
 
   defineSVGRenderer: svgRenderer.defineSVGRenderer,
   renderShapeToSVG: svgRenderer.renderShapeToSVG,
+  renderShapesToSVG: util.renderShapesToSVG,
 
   localize: localize
 }

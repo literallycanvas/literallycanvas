@@ -20,8 +20,14 @@ renderShapeToSVG = (shape, opts={}) ->
 
 
 defineSVGRenderer 'Rectangle', (shape) ->
+  x = shape.x
+  y = shape.y
+  if shape.strokeWidth % 2 != 0
+    x += 0.5
+    y += 0.5
+
   "
-    <rect x='#{shape.x}' y='#{shape.y}'
+    <rect x='#{x}' y='#{y}'
       width='#{shape.width}' height='#{shape.height}'
       stroke='#{shape.strokeColor}' fill='#{shape.fillColor}'
       stroke-width='#{shape.strokeWidth}' />
@@ -55,17 +61,26 @@ defineSVGRenderer 'Line', (shape) ->
     if shape.dash then "stroke-dasharray='#{shape.dash.join(', ')}'" else ''
   capString = ''
   arrowWidth = Math.max(shape.strokeWidth * 2.2, 5)
+
+  x1 = shape.x1
+  x2 = shape.x2
+  y1 = shape.y1
+  y2 = shape.y2
+  if shape.strokeWidth % 2 != 0
+    x1 += 0.5
+    x2 += 0.5
+    y1 += 0.5
+    y2 += 0.5
+
   if shape.endCapShapes[0]
     capString += lineEndCapShapes[shape.endCapShapes[0]].svg(
-      shape.x1, shape.y1, Math.atan2(shape.y1 - shape.y2, shape.x1 - shape.x2),
-      arrowWidth, shape.color)
+      x1, y1, Math.atan2(y1 - y2, x1 - x2), arrowWidth, shape.color)
   if shape.endCapShapes[1]
     capString += lineEndCapShapes[shape.endCapShapes[1]].svg(
-      shape.x2, shape.y2, Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1),
-      arrowWidth, shape.color)
+      x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color)
   "
     <g>
-      <line x1='#{shape.x1}' y1='#{shape.y1}' x2='#{shape.x2}' y2='#{shape.y2}'
+      <line x1='#{x1}' y1='#{y1}' x2='#{x2}' y2='#{y2}'
         #{dashString}
         stroke-linecap='#{shape.capStyle}'
         stroke='#{shape.color}'stroke-width='#{shape.strokeWidth}' />
@@ -78,7 +93,10 @@ defineSVGRenderer 'LinePath', (shape) ->
   "
     <polyline
       fill='none'
-      points='#{shape.smoothedPoints.map((p) -> "#{p.x},#{p.y}").join(' ')}'
+      points='#{shape.smoothedPoints.map((p) ->
+        offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
+        "#{p.x+offset},#{p.y+offset}").join(' ')
+      }'
       stroke='#{shape.points[0].color}'
       stroke-width='#{shape.points[0].size}' />
   "
