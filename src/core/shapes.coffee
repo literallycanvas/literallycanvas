@@ -2,6 +2,7 @@ util = require './util'
 TextRenderer = require './TextRenderer'
 lineEndCapShapes = require './lineEndCapShapes.coffee'
 {defineCanvasRenderer, renderShapeToContext} = require './canvasRenderer'
+{defineSVGRenderer, renderShapeToSVG} = require './svgRenderer'
 
 shapes = {}
 
@@ -10,10 +11,10 @@ defineShape = (name, props) ->
   Shape = (args...) ->
     props.constructor.call(this, args...)
     this
-  props.toSVG ?= -> ''
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
 
+  # support old style of defining canvas drawing methods on shapes
   if props.draw
     legacyDrawFunc = props.draw
     legacyDrawLatestFunc = props.draw or (ctx, bufferCtx, retryCallback) ->
@@ -27,11 +28,20 @@ defineShape = (name, props) ->
 
     defineCanvasRenderer(name, drawFunc, drawLatestFunc)
 
+  # support old style of defining SVG drawing methods on shapes
+  if props.toSVG
+    legacySVGFunc = props.toSVG
+    svgFunc = (shape) -> legacySVGFunc.call(shape)
+    delete props.toSVG
+    defineSVGRenderer(name, svgFunc)
+
   Shape.prototype.draw = (ctx, retryCallback) ->
     renderShapeToContext(ctx, this, {retryCallback})
   Shape.prototype.drawLatest = (ctx, bufferCtx, retryCallback) ->
     renderShapeToContext(
       ctx, this, {retryCallback, bufferCtx, shouldOnlyDrawLatest: true})
+  Shape.prototype.toSVG = ->
+    renderShapeToSVG(this)
 
   for k of props
     if k != 'fromJSON'
@@ -116,13 +126,6 @@ defineShape 'Image',
     img.src = data.imageSrc
     createShape('Image', {x: data.x, x: data.y, image: img})
 
-  toSVG: ->
-    "
-      <image x='#{@x}' y='#{@y}'
-        width='#{@image.naturalWidth}' height='#{@image.naturalHeight}'
-        xlink:href='#{@image.src}' />
-    "
-
 
 defineShape 'Rectangle',
   constructor: (args={}) ->
@@ -142,13 +145,6 @@ defineShape 'Rectangle',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Rectangle', data)
-
-  toSVG: ->
-    "
-      <rect x='#{@x}' y='#{@y}' width='#{@width}' height='#{@height}'
-        stroke='#{@strokeColor}' fill='#{@fillColor}'
-        stroke-width='#{@strokeWidth}' />
-    "
 
 
 # this is pretty similar to the Rectangle shape. maybe consolidate somehow.
@@ -170,18 +166,6 @@ defineShape 'Ellipse',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Ellipse', data)
-
-  toSVG: ->
-    halfWidth = Math.floor(@width / 2)
-    halfHeight = Math.floor(@height / 2)
-    centerX = @x + halfWidth
-    centerY = @y + halfHeight
-    "
-      <ellipse cx='#{centerX}' cy='#{centerY}' rx='#{halfWidth}'
-        ry='#{halfHeight}'
-        stroke='#{@strokeColor}' fill='#{@fillColor}'
-        stroke-width='#{@strokeWidth}' />
-    "
 
 
 defineShape 'Line',
@@ -206,25 +190,6 @@ defineShape 'Line',
   toJSON: ->
     {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
   fromJSON: (data) -> createShape('Line', data)
-
-  toSVG: ->
-    dashString = if @dash then "stroke-dasharray='#{@dash.join(', ')}'" else ''
-    capString = ''
-    arrowWidth = Math.max(@strokeWidth * 2.2, 5)
-    if @endCapShapes[0]
-      capString += lineEndCapShapes[@endCapShapes[0]].svg(
-        @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), arrowWidth, @color)
-    if @endCapShapes[1]
-      capString += lineEndCapShapes[@endCapShapes[1]].svg(
-        @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), arrowWidth, @color)
-    "
-      <g>
-        <line x1='#{@x1}' y1='#{@y1}' x2='#{@x2}' y2='#{@y2}' #{dashString}
-          stroke-linecap='#{@capStyle}'
-          stroke='#{@color}'stroke-width='#{@strokeWidth}' />
-        #{capString}
-      <g>
-    "
 
 
 # returns false if no points because there are no points to share style
@@ -312,14 +277,6 @@ linePathFuncs =
       {@order, @tailSize, @smooth, points: (shapeToJSON(p) for p in @points)}
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
-
-  toSVG: ->
-    "
-      <polyline
-        fill='none'
-        points='#{@smoothedPoints.map((p) -> "#{p.x},#{p.y}").join(' ')}'
-        stroke='#{@points[0].color}' stroke-width='#{@points[0].size}' />
-    "
 
   addPoint: (point) ->
     @points.push(point)
@@ -433,27 +390,6 @@ defineShape 'Text',
     }
   toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)
-
-  toSVG: ->
-    # fallback: don't worry about auto-wrapping
-    widthString = if @forcedWidth then "width='#{@forcedWidth}px'" else ""
-    heightString = if @forcedHeight then "height='#{@forcedHeight}px'" else ""
-    textSplitOnLines = @text.split(/\r\n|\r|\n/g)
-
-    if @renderer
-      textSplitOnLines = @renderer.lines
-
-    "
-    <text x='#{@x}' y='#{@y}'
-          #{widthString} #{heightString}
-          fill='#{@color}'
-          style='font: #{@font};'>
-      #{textSplitOnLines.map((line, i) =>
-        dy = if i == 0 then 0 else '1.2em'
-        return "<tspan x='#{@x}' dy='#{dy}' alignment-baseline='text-before-edge'>#{line}</tspan>"
-      ).join('')}
-    </text>
-    "
 
 
 defineShape 'SelectionBox',

@@ -22,23 +22,21 @@ renderShapeToContext = (ctx, shape, opts={}) ->
     else
       renderers[shape.className].drawFunc(ctx, shape, opts.retryCallback)
   else if opts.ignoreUnsupportedShapes
-    console.warn "Can't render shape of type #{shape.className}"
+    console.warn "Can't render shape of type #{shape.className} to canvas"
   else
-    throw "Can't render shape of type #{shape.className}"
+    throw "Can't render shape of type #{shape.className} to canvas"
 
 
 renderShapeToCanvas = (canvas, shape, opts) ->
   renderShapeToContext(canvas.getContext('2d'), shape, opts)
 
 
-###
 defineCanvasRenderer 'Rectangle', (ctx, shape) ->
 	ctx.fillStyle = shape.fillColor
 	ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
 	ctx.lineWidth = shape.strokeWidth
 	ctx.strokeStyle = shape.strokeColor
 	ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
-###
 
 
 defineCanvasRenderer 'Ellipse', (ctx, shape) ->

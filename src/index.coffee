@@ -5,6 +5,7 @@ LiterallyCanvas = require './core/LiterallyCanvas'
 initReact = require './reactGUI/init'
 
 canvasRenderer = require './core/canvasRenderer'
+svgRenderer = require './core/svgRenderer'
 shapes = require './core/shapes'
 util = require './core/util'
 
@@ -128,6 +129,9 @@ module.exports = {
   defineCanvasRenderer:  canvasRenderer.defineCanvasRenderer,
   renderShapeToContext: canvasRenderer.renderShapeToContext,
   renderShapeToCanvas: canvasRenderer.renderShapeToCanvas,
+
+  defineSVGRenderer: svgRenderer.defineSVGRenderer,
+  renderShapeToSVG: svgRenderer.renderShapeToSVG,
 
   localize: localize
 }
