@@ -2,6 +2,8 @@ actions = require './actions'
 bindEvents = require './bindEvents'
 math = require './math'
 {createShape, shapeToJSON, JSONToShape} = require './shapes'
+{renderShapeToContext} = require './canvasRenderer'
+{renderShapeToSVG} = require './svgRenderer'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
@@ -254,7 +256,8 @@ module.exports = class LiterallyCanvas
           @clipped (=>
             @transformed (=>
               for shape in @_shapesInProgress
-                shape.drawLatest(@ctx, @bufferCtx)
+                renderShapeToContext(
+                  @ctx, shape, @bufferCtx, {shouldOnlyDrawLatest: true})
             ), @ctx, @bufferCtx
           ), @ctx, @bufferCtx
 
@@ -282,7 +285,8 @@ module.exports = class LiterallyCanvas
     @repaintLayer('main', false)
     @clipped (=>
       @transformed (=>
-        shape.drawLatest(@ctx, @bufferCtx)
+        renderShapeToContext(
+          @ctx, shape, @bufferCtx, {shouldOnlyDrawLatest: true})
       ), @ctx, @bufferCtx
     ), @ctx, @bufferCtx
 
@@ -292,7 +296,7 @@ module.exports = class LiterallyCanvas
     return unless shapes.length
     drawShapes = =>
       for shape in shapes
-        shape.draw(ctx, retryCallback)
+        renderShapeToContext(ctx, shape, {retryCallback})
     @clipped (=> @transformed(drawShapes, ctx)), ctx
 
   # Executes the given function after clipping the canvas to the image size.
@@ -436,8 +440,8 @@ module.exports = class LiterallyCanvas
         <rect width='#{width}' height='#{height}' x='0' y='0'
           fill='#{@colors.background}' />
         <g transform='translate(#{-x}, #{-y})'>
-          #{@backgroundShapes.map((s) -> s.toSVG()).join('')}
-          #{@shapes.map((s) -> s.toSVG()).join('')}
+          #{@backgroundShapes.map(renderShapeToSVG).join('')}
+          #{@shapes.map(renderShapeToSVG).join('')}
         </g>
       </svg>
     ".replace(/(\r\n|\n|\r)/gm,"")

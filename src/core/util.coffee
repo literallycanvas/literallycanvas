@@ -1,4 +1,5 @@
 slice = Array.prototype.slice
+{renderShapeToContext} = require './canvasRenderer'
 
 util =
   last: (array, n = null) ->
@@ -44,7 +45,7 @@ util =
     ctx.translate(-bounds.x * scale, -bounds.y * scale)
     ctx.scale(scale, scale)
     for shape in shapes
-      shape.draw(ctx)
+      renderShapeToContext(ctx, shape)
     canvas
 
   # [{x, y, width, height}]

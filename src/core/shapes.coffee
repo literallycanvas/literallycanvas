@@ -1,6 +1,8 @@
 util = require './util'
-lineEndCapShapes = require '../core/lineEndCapShapes.coffee'
 TextRenderer = require './TextRenderer'
+lineEndCapShapes = require './lineEndCapShapes.coffee'
+{defineCanvasRenderer, renderShapeToContext} = require './canvasRenderer'
+{defineSVGRenderer, renderShapeToSVG} = require './svgRenderer'
 
 shapes = {}
 
@@ -9,10 +11,37 @@ defineShape = (name, props) ->
   Shape = (args...) ->
     props.constructor.call(this, args...)
     this
-  props.toSVG ?= -> ''
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
-  Shape.prototype.drawLatest = (ctx, bufferCtx) -> @draw(ctx, bufferCtx)
+
+  # support old style of defining canvas drawing methods on shapes
+  if props.draw
+    legacyDrawFunc = props.draw
+    legacyDrawLatestFunc = props.draw or (ctx, bufferCtx, retryCallback) ->
+      @draw(ctx, bufferCtx, retryCallback)
+    drawFunc = (ctx, shape, retryCallback) ->
+      legacyDrawFunc.call(shape, ctx, retryCallback)
+    drawLatestFunc = (ctx, bufferCtx, shape, retryCallback) ->
+      legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback)
+    delete props.draw 
+    delete props.drawLatest if props.drawLatest
+
+    defineCanvasRenderer(name, drawFunc, drawLatestFunc)
+
+  # support old style of defining SVG drawing methods on shapes
+  if props.toSVG
+    legacySVGFunc = props.toSVG
+    svgFunc = (shape) -> legacySVGFunc.call(shape)
+    delete props.toSVG
+    defineSVGRenderer(name, svgFunc)
+
+  Shape.prototype.draw = (ctx, retryCallback) ->
+    renderShapeToContext(ctx, this, {retryCallback})
+  Shape.prototype.drawLatest = (ctx, bufferCtx, retryCallback) ->
+    renderShapeToContext(
+      ctx, this, {retryCallback, bufferCtx, shouldOnlyDrawLatest: true})
+  Shape.prototype.toSVG = ->
+    renderShapeToSVG(this)
 
   for k of props
     if k != 'fromJSON'
@@ -90,24 +119,12 @@ defineShape 'Image',
     @x = args.x or 0
     @y = args.y or 0
     @image = args.image or null
-  draw: (ctx, retryCallback) ->
-    if @image.width
-      ctx.drawImage(@image, @x, @y)
-    else if retryCallback
-      @image.onload = retryCallback
   getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height}
   toJSON: -> {@x, @y, imageSrc: @image.src}
   fromJSON: (data) ->
     img = new Image()
     img.src = data.imageSrc
     createShape('Image', {x: data.x, x: data.y, image: img})
-
-  toSVG: ->
-    "
-      <image x='#{@x}' y='#{@y}'
-        width='#{@image.naturalWidth}' height='#{@image.naturalHeight}'
-        xlink:href='#{@image.src}' />
-    "
 
 
 defineShape 'Rectangle',
@@ -120,13 +137,6 @@ defineShape 'Rectangle',
     @strokeColor = args.strokeColor or 'black'
     @fillColor = args.fillColor or 'transparent'
 
-  draw: (ctx) ->
-    ctx.fillStyle = @fillColor
-    ctx.fillRect(@x, @y, @width, @height)
-    ctx.lineWidth = @strokeWidth
-    ctx.strokeStyle = @strokeColor
-    ctx.strokeRect(@x, @y, @width, @height)
-
   getBoundingRect: -> {
     x: @x - @strokeWidth / 2,
     y: @y - @strokeWidth / 2,
@@ -135,13 +145,6 @@ defineShape 'Rectangle',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Rectangle', data)
-
-  toSVG: ->
-    "
-      <rect x='#{@x}' y='#{@y}' width='#{@width}' height='#{@height}'
-        stroke='#{@strokeColor}' fill='#{@fillColor}'
-        stroke-width='#{@strokeWidth}' />
-    "
 
 
 # this is pretty similar to the Rectangle shape. maybe consolidate somehow.
@@ -155,26 +158,6 @@ defineShape 'Ellipse',
     @strokeColor = args.strokeColor or 'black'
     @fillColor = args.fillColor or 'transparent'
 
-  draw: (ctx) ->
-    ctx.save()
-    halfWidth = Math.floor(@width / 2)
-    halfHeight = Math.floor(@height / 2)
-    centerX = @x + halfWidth
-    centerY = @y + halfHeight
-
-    ctx.translate(centerX, centerY)
-    ctx.scale(1, Math.abs(@height / @width))
-    ctx.beginPath()
-    ctx.arc(0, 0, Math.abs(halfWidth), 0, Math.PI * 2)
-    ctx.closePath()
-    ctx.restore()
-
-    ctx.fillStyle = @fillColor
-    ctx.fill()
-    ctx.lineWidth = @strokeWidth
-    ctx.strokeStyle = @strokeColor
-    ctx.stroke()
-
   getBoundingRect: -> {
     x: @x - @strokeWidth / 2,
     y: @y - @strokeWidth / 2,
@@ -183,18 +166,6 @@ defineShape 'Ellipse',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Ellipse', data)
-
-  toSVG: ->
-    halfWidth = Math.floor(@width / 2)
-    halfHeight = Math.floor(@height / 2)
-    centerX = @x + halfWidth
-    centerY = @y + halfHeight
-    "
-      <ellipse cx='#{centerX}' cy='#{centerY}' rx='#{halfWidth}'
-        ry='#{halfHeight}'
-        stroke='#{@strokeColor}' fill='#{@fillColor}'
-        stroke-width='#{@strokeWidth}' />
-    "
 
 
 defineShape 'Line',
@@ -210,29 +181,6 @@ defineShape 'Line',
     @endCapShapes = args.endCapShapes or [null, null]
     @dash = args.dash or null
 
-  draw: (ctx) ->
-    if @x1 == @x2 and @y1 == @y2
-      # browser behavior is not consistent for this case.
-      return
-
-    ctx.lineWidth = @strokeWidth
-    ctx.strokeStyle = @color
-    ctx.lineCap = @capStyle
-    ctx.setLineDash(@dash) if @dash
-    ctx.beginPath()
-    ctx.moveTo(@x1, @y1)
-    ctx.lineTo(@x2, @y2)
-    ctx.stroke()
-    ctx.setLineDash([]) if @dash
-
-    arrowWidth = Math.max(@strokeWidth * 2.2, 5)
-    if @endCapShapes[0]
-      lineEndCapShapes[@endCapShapes[0]].drawToCanvas(
-        ctx, @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), arrowWidth, @color)
-    if @endCapShapes[1]
-      lineEndCapShapes[@endCapShapes[1]].drawToCanvas(
-        ctx, @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), arrowWidth, @color)
-
   getBoundingRect: -> {
     x: Math.min(@x1, @x2) - @strokeWidth / 2,
     y: Math.min(@y1, @y2) - @strokeWidth / 2,
@@ -242,25 +190,6 @@ defineShape 'Line',
   toJSON: ->
     {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
   fromJSON: (data) -> createShape('Line', data)
-
-  toSVG: ->
-    dashString = if @dash then "stroke-dasharray='#{@dash.join(', ')}'" else ''
-    capString = ''
-    arrowWidth = Math.max(@strokeWidth * 2.2, 5)
-    if @endCapShapes[0]
-      capString += lineEndCapShapes[@endCapShapes[0]].svg(
-        @x1, @y1, Math.atan2(@y1 - @y2, @x1 - @x2), arrowWidth, @color)
-    if @endCapShapes[1]
-      capString += lineEndCapShapes[@endCapShapes[1]].svg(
-        @x2, @y2, Math.atan2(@y2 - @y1, @x2 - @x1), arrowWidth, @color)
-    "
-      <g>
-        <line x1='#{@x1}' y1='#{@y1}' x2='#{@x2}' y2='#{@y2}' #{dashString}
-          stroke-linecap='#{@capStyle}'
-          stroke='#{@color}'stroke-width='#{@strokeWidth}' />
-        #{capString}
-      <g>
-    "
 
 
 # returns false if no points because there are no points to share style
@@ -349,26 +278,6 @@ linePathFuncs =
 
   fromJSON: (data) -> _createLinePathFromData('LinePath', data)
 
-  toSVG: ->
-    "
-      <polyline
-        fill='none'
-        points='#{@smoothedPoints.map((p) -> "#{p.x},#{p.y}").join(' ')}'
-        stroke='#{@points[0].color}' stroke-width='#{@points[0].size}' />
-    "
-
-  draw: (ctx) ->
-    @drawPoints(ctx, @smoothedPoints)
-
-  drawLatest: (ctx, bufferCtx) ->
-    @drawPoints(ctx, if @tail then @tail else @smoothedPoints)
-
-    if @tail
-      segmentStart = @smoothedPoints.length - @segmentSize * @tailSize
-      drawStart = if segmentStart < @segmentSize * 2 then 0 else segmentStart
-      drawEnd = segmentStart + @segmentSize + 1
-      @drawPoints(bufferCtx, @smoothedPoints.slice(drawStart, drawEnd))
-
   addPoint: (point) ->
     @points.push(point)
 
@@ -391,22 +300,6 @@ linePathFuncs =
         0, @smoothedPoints.length - @segmentSize * (@tailSize - 1)
       ).concat(@tail)
 
-  drawPoints: (ctx, points) ->
-    return unless points.length
-
-    ctx.lineCap = 'round'
-
-    ctx.strokeStyle = points[0].color
-    ctx.lineWidth = points[0].size
-
-    ctx.beginPath()
-    ctx.moveTo(points[0].x, points[0].y)
-
-    for point in points.slice(1)
-      ctx.lineTo(point.x, point.y)
-
-    ctx.stroke()
-
 
 LinePath = defineShape 'LinePath', linePathFuncs
 
@@ -415,25 +308,7 @@ defineShape 'ErasedLinePath',
   constructor: linePathFuncs.constructor
   toJSON: linePathFuncs.toJSON
   addPoint: linePathFuncs.addPoint
-  drawPoints: linePathFuncs.drawPoints
   getBoundingRect: linePathFuncs.getBoundingRect
-
-  draw: (ctx) ->
-    ctx.save()
-    ctx.globalCompositeOperation = "destination-out"
-    linePathFuncs.draw.call(this, ctx)
-    ctx.restore()
-
-  drawLatest: (ctx, bufferCtx) ->
-    ctx.save()
-    ctx.globalCompositeOperation = "destination-out"
-    bufferCtx.save()
-    bufferCtx.globalCompositeOperation = "destination-out"
-
-    linePathFuncs.drawLatest.call(this, ctx, bufferCtx)
-
-    ctx.restore()
-    bufferCtx.restore()
 
   fromJSON: (data) -> _createLinePathFromData('ErasedLinePath', data)
 
@@ -446,7 +321,6 @@ defineShape 'Point',
     @size = args.size or 0
     @color = args.color or ''
   lastPoint: -> this
-  draw: (ctx) -> throw "not implemented"
   toJSON: -> {@x, @y, @size, @color}
   fromJSON: (data) -> createShape('Point', data)
 
@@ -472,11 +346,6 @@ defineShape 'Text',
       @v = 1
       @x -= @renderer.metrics.bounds.minx
       @y -= @renderer.metrics.leading - @renderer.metrics.descent
-
-  draw: (ctx, bufferCtx) ->
-    @_makeRenderer(ctx) unless @renderer
-    ctx.fillStyle = @color
-    @renderer.draw(ctx, @x, @y)
 
   setText: (text) ->
     @text = text
@@ -522,93 +391,44 @@ defineShape 'Text',
   toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)
 
-  toSVG: ->
-    # fallback: don't worry about auto-wrapping
-    widthString = if @forcedWidth then "width='#{@forcedWidth}px'" else ""
-    heightString = if @forcedHeight then "height='#{@forcedHeight}px'" else ""
-    textSplitOnLines = @text.split(/\r\n|\r|\n/g)
 
-    if @renderer
-      textSplitOnLines = @renderer.lines
-
-    "
-    <text x='#{@x}' y='#{@y}'
-          #{widthString} #{heightString}
-          fill='#{@color}'
-          style='font: #{@font};'>
-      #{textSplitOnLines.map((line, i) =>
-        dy = if i == 0 then 0 else '1.2em'
-        return "<tspan x='#{@x}' dy='#{dy}' alignment-baseline='text-before-edge'>#{line}</tspan>"
-      ).join('')}
-    </text>
-    "
-
-
-HANDLE_SIZE = 10
-MARGIN = 4
 defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
+    @handleSize = 10
+    @margin = 4
     @backgroundColor = args.backgroundColor or null
     @_br = @shape.getBoundingRect(args.ctx)
 
-  draw: (ctx) ->
-    if @backgroundColor
-      ctx.fillStyle = @backgroundColor
-      ctx.fillRect(
-        @_br.x - MARGIN, @_br.y - MARGIN,
-        @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
-    ctx.lineWidth = 1
-    ctx.strokeStyle = '#000'
-    ctx.setLineDash([2, 4])
-    ctx.strokeRect(
-      @_br.x - MARGIN, @_br.y - MARGIN,
-      @_br.width + MARGIN * 2, @_br.height + MARGIN * 2)
-    #ctx.strokeRect(@_br.x, @_br.y, @_br.width, @_br.height)
-
-    ctx.setLineDash([])
-    @_drawHandle(ctx, @getTopLeftHandleRect())
-    @_drawHandle(ctx, @getTopRightHandleRect())
-    @_drawHandle(ctx, @getBottomLeftHandleRect())
-    @_drawHandle(ctx, @getBottomRightHandleRect())
-
-  _drawHandle: (ctx, {x, y}) ->
-    ctx.fillStyle = '#fff'
-    ctx.fillRect(x, y, HANDLE_SIZE, HANDLE_SIZE)
-    ctx.strokeStyle = '#000'
-    ctx.strokeRect(x, y, HANDLE_SIZE, HANDLE_SIZE)
-
   getTopLeftHandleRect: ->
     {
-      x: @_br.x - HANDLE_SIZE - MARGIN, y: @_br.y - HANDLE_SIZE - MARGIN,
-      width: HANDLE_SIZE, height: HANDLE_SIZE
+      x: @_br.x - @handleSize - @margin, y: @_br.y - @handleSize - @margin,
+      width: @handleSize, height: @handleSize
     }
 
   getBottomLeftHandleRect: ->
     {
-      x: @_br.x - HANDLE_SIZE - MARGIN, y: @_br.y + @_br.height + MARGIN,
-      width: HANDLE_SIZE, height: HANDLE_SIZE
+      x: @_br.x - @handleSize - @margin, y: @_br.y + @_br.height + @margin,
+      width: @handleSize, height: @handleSize
     }
 
   getTopRightHandleRect: ->
     {
-      x: @_br.x + @_br.width + MARGIN, y: @_br.y - HANDLE_SIZE - MARGIN,
-      width: HANDLE_SIZE, height: HANDLE_SIZE
+      x: @_br.x + @_br.width + @margin, y: @_br.y - @handleSize - @margin,
+      width: @handleSize, height: @handleSize
     }
 
   getBottomRightHandleRect: ->
     {
-      x: @_br.x + @_br.width + MARGIN, y: @_br.y + @_br.height + MARGIN,
-      width: HANDLE_SIZE, height: HANDLE_SIZE
+      x: @_br.x + @_br.width + @margin, y: @_br.y + @_br.height + @margin,
+      width: @handleSize, height: @handleSize
     }
 
   getBoundingRect: ->
     {
-      x: @_br.x - MARGIN, y: @_br.y - MARGIN,
-      width: @_br.width + MARGIN * 2, height: @_br.height + MARGIN * 2
+      x: @_br.x - @margin, y: @_br.y - @margin,
+      width: @_br.width + @margin * 2, height: @_br.height + @margin * 2
     }
-
-  toSVG: -> ""
 
 
 module.exports = {defineShape, createShape, JSONToShape, shapeToJSON}
