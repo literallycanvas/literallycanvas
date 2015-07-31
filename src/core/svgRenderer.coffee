@@ -8,11 +8,11 @@ defineSVGRenderer = (shapeName, shapeToSVGFunc) ->
 
 
 renderShapeToSVG = (shape, opts={}) ->
-  opts.ignoreUnsupportedShapes ?= false
+  opts.shouldIgnoreUnsupportedShapes ?= false
 
   if renderers[shape.className]
     return renderers[shape.className](shape)
-  else if opts.ignoreUnsupportedShapes
+  else if opts.shouldIgnoreUnsupportedShapes
     console.warn "Can't render shape of type #{shape.className} to SVG"
     return ""
   else

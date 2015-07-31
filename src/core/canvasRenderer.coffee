@@ -10,7 +10,7 @@ defineCanvasRenderer = (shapeName, drawFunc, drawLatestFunc) ->
 
 noop = ->
 renderShapeToContext = (ctx, shape, opts={}) ->
-  opts.ignoreUnsupportedShapes ?= false
+  opts.shouldIgnoreUnsupportedShapes ?= false
   opts.retryCallback ?= noop
   opts.shouldOnlyDrawLatest = false
   opts.bufferCtx ?= null
@@ -21,7 +21,7 @@ renderShapeToContext = (ctx, shape, opts={}) ->
         ctx, bufferCtx, shape, opts.retryCallback)
     else
       renderers[shape.className].drawFunc(ctx, shape, opts.retryCallback)
-  else if opts.ignoreUnsupportedShapes
+  else if opts.shouldIgnoreUnsupportedShapes
     console.warn "Can't render shape of type #{shape.className} to canvas"
   else
     throw "Can't render shape of type #{shape.className} to canvas"
