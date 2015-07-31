@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Literally Canvas static tests</title>
+	    <link href="/lib/css/literallycanvas.css" rel="stylesheet">
+      <style>
+        table {
+          width: 303px;
+          border-collapse: collapse;
+        }
+        td, th {
+          text-align: left;
+          border-bottom: 1px solid black;
+          margin: 0;
+        }
+        td {
+          padding: 2px;
+        }
+        td:first-child {
+          border-left: 1px solid black;
+        }
+        td:nth-child(1), td:nth-child(2), td:nth-child(3) {
+          padding: 0;
+          width: 100px;
+          border-right: 1px solid black;
+        }
+        td > * {
+          display: block;
+        }
+      </style>
+	</head>
+  <body>
+
+    <div style="float: left;">
+      <h1>Pre-image load</h1>
+      <table id="static-test-results">
+        <thead>
+          <tr>
+            <th>Original shape</th>
+            <th>After JSON round trip</th>
+            <th>SVG</th>
+          </tr>
+        </thead>
+        <tbody id="static-test-results-body">
+        </tbody>
+      </table>
+    </div>
+
+    <div style="float: left; margin-left: 20px;">
+      <h1>Post-image load</h1>
+      <table id="static-test-results-2">
+        <thead>
+          <tr>
+            <th>Original shape</th>
+            <th>After JSON round trip</th>
+            <th>SVG</th>
+          </tr>
+        </thead>
+        <tbody id="static-test-results-body-2">
+        </tbody>
+      </table>
+    </div>
+
+    <script src="/demo/react-0.10.0.js"></script>
+    <script src="/lib/js/literallycanvas.js"></script>
+    <script>
+      var img = new Image();
+      img.src = '/demo/bear.png';
+
+      function renderTestResults(tbodyId, shapes) {
+        var tbody = document.getElementById(tbodyId);
+        var makeCanvas = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = 100;
+          canvas.height = 100;
+          canvas.style.backgroundColor = 'transnparent';
+          canvas.style.width = '100px';
+          canvas.style.height = '100px';
+          return canvas;
+        }
+
+        shapes.map(function(shape) {
+          var canvas1 = makeCanvas();
+          var canvas2 = makeCanvas();
+          var render1 = function() {
+            LC.renderShapeToCanvas(canvas1, shape, {retryCallback: render1});
+          }
+          render1();
+
+          var shape2 = LC.JSONToShape(LC.shapeToJSON(shape));
+          var render2 = function() {
+            LC.renderShapeToCanvas(canvas2, shape2, {retryCallback: render2});
+          }
+          render2();
+
+          var svgString = LC.renderShapesToSVG(
+            [shape], {x: 0, y: 0, width: 100, height: 100}, 'transparent');
+
+          var td1 = document.createElement('td');
+          var td2 = document.createElement('td');
+          var td3 = document.createElement('td');
+          td1.appendChild(canvas1);
+          td2.appendChild(canvas2);
+          td3.innerHTML = svgString;
+          var tr = document.createElement('tr');
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tr.appendChild(td3);
+          tbody.appendChild(tr);
+        });
+      }
+
+      var shapes = [
+        LC.createShape('Image', {image: img, x: 0, y: 0}),
+        LC.createShape('Rectangle', {
+          x: 10, y: 10, width: 80, height: 80,
+          strokeColor: '#000', fillColor: 'red'
+        }),
+        LC.createShape('Ellipse', {
+          x: 0, y: 0, width: 100, height: 100,
+          strokeColor: '#000', fillColor: 'red'
+        })
+      ];
+      renderTestResults('static-test-results-body', shapes);
+
+      var oldImageOnload = img.onload;
+      img.onload = function() {
+        oldImageOnload();
+        renderTestResults('static-test-results-body-2', shapes);
+      }
+    </script>
+    <script src="//localhost:35728/livereload.js"></script>
+  </body>
+</html>
