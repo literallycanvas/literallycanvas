@@ -138,6 +138,17 @@
             LC.createShape('Point', {x: 90, y: 10})
           ]
         }),
+        LC.createShape('Polygon', {
+          strokeColor: '#080', fillColor: 'red', strokeWidth: 4,
+          isClosed: false,
+          points: [
+            LC.createShape('Point', {x: 10, y: 10}),
+            LC.createShape('Point', {x: 10, y: 90}),
+            LC.createShape('Point', {x: 50, y: 50}),
+            LC.createShape('Point', {x: 90, y: 90}),
+            LC.createShape('Point', {x: 90, y: 10})
+          ]
+        }),
         LC.createShape('Rectangle', {
           x: 10, y: 10, width: 80, height: 80,
           strokeColor: '#080', fillColor: 'red'

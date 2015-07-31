@@ -334,17 +334,28 @@ defineShape 'Polygon',
     @strokeWidth = args.strokeWidth
     @dash = args.dash or null
 
+    args.isClosed ?= true
+    @isClosed = args.isClosed
+
     # ignore point values
     for point in @points
       point.color = @strokeColor
       point.size = @strokeWidth
+
+  addPoint: (x, y) ->
+    @points.push LC.createShape('Point', {x, y})
+
+  replaceLatestPoint: (x, y) ->
+    p = @points[@points.length - 1]
+    p.x = x
+    p.y = y
 
   getBoundingRect: ->
     return util.getBoundingRect(@points.map((p) -> p.getBoundingRect()))
 
   toJSON: ->
     {
-      @strokeWidth, @fillColor, @strokeColor, @dash,
+      @strokeWidth, @fillColor, @strokeColor, @dash, @isClosed
       pointCoordinatePairs: @points.map (p) -> [p.x, p.y]
     }
   fromJSON: (data) ->
