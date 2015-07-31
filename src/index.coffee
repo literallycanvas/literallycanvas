@@ -60,13 +60,13 @@ init = (el, opts = {}) ->
 
   unless 'tools' of opts
     opts.tools = [
-      tools.Polygon,
       tools.Pencil,
       tools.Eraser,
       tools.Line,
       tools.Rectangle,
       tools.Ellipse,
       tools.Text,
+      tools.Polygon,
       tools.Pan,
       tools.Eyedropper,
     ]
