@@ -4,6 +4,7 @@ require './ie_setLineDash'
 LiterallyCanvas = require './core/LiterallyCanvas'
 initReact = require './reactGUI/init'
 
+canvasRenderer = require './core/canvasRenderer'
 shapes = require './core/shapes'
 util = require './core/util'
 
@@ -123,6 +124,10 @@ module.exports = {
   createShape: shapes.createShape,
   JSONToShape: shapes.JSONToShape,
   shapeToJSON: shapes.shapeToJSON,
+
+  defineCanvasRenderer:  canvasRenderer.defineCanvasRenderer,
+  renderShapeToContext: canvasRenderer.renderShapeToContext,
+  renderShapeToCanvas: canvasRenderer.renderShapeToCanvas,
 
   localize: localize
 }
