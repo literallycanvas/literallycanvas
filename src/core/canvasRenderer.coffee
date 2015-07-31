@@ -32,11 +32,17 @@ renderShapeToCanvas = (canvas, shape, opts) ->
 
 
 defineCanvasRenderer 'Rectangle', (ctx, shape) ->
-	ctx.fillStyle = shape.fillColor
-	ctx.fillRect(shape.x + 0.5, shape.y + 0.5, shape.width, shape.height)
-	ctx.lineWidth = shape.strokeWidth
-	ctx.strokeStyle = shape.strokeColor
-	ctx.strokeRect(shape.x + 0.5, shape.y + 0.5, shape.width, shape.height)
+  x = shape.x
+  y = shape.y
+  if shape.strokeWidth % 2 != 0
+    x += 0.5
+    y += 0.5
+
+  ctx.fillStyle = shape.fillColor
+  ctx.fillRect(x, y, shape.width, shape.height)
+  ctx.lineWidth = shape.strokeWidth
+  ctx.strokeStyle = shape.strokeColor
+  ctx.strokeRect(x, y, shape.width, shape.height)
 
 
 defineCanvasRenderer 'Ellipse', (ctx, shape) ->
@@ -101,10 +107,15 @@ defineCanvasRenderer 'Line', (ctx, shape) ->
     # browser behavior is not consistent for this case.
     return
 
-  x1 = shape.x1 + 0.5
-  x2 = shape.x2 + 0.5
-  y1 = shape.y1 + 0.5
-  y2 = shape.y2 + 0.5
+  x1 = shape.x1
+  x2 = shape.x2
+  y1 = shape.y1
+  y2 = shape.y2
+  if shape.strokeWidth % 2 != 0
+    x1 += 0.5
+    x2 += 0.5
+    y1 += 0.5
+    y2 += 0.5
 
   ctx.lineWidth = shape.strokeWidth
   ctx.strokeStyle = shape.color
@@ -134,10 +145,17 @@ _drawRawLinePath = (ctx, points) ->
   ctx.lineWidth = points[0].size
 
   ctx.beginPath()
-  ctx.moveTo(points[0].x+0.5, points[0].y+0.5)
+
+  if points[0].size % 2 == 0
+    ctx.moveTo(points[0].x, points[0].y)
+  else
+    ctx.moveTo(points[0].x+0.5, points[0].y+0.5)
 
   for point in points.slice(1)
-    ctx.lineTo(point.x+0.5, point.y+0.5)
+    if points[0].size % 2 == 0
+      ctx.lineTo(point.x, point.y)
+    else
+      ctx.lineTo(point.x+0.5, point.y+0.5)
 
   ctx.stroke()
 

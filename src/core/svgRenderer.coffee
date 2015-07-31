@@ -20,8 +20,14 @@ renderShapeToSVG = (shape, opts={}) ->
 
 
 defineSVGRenderer 'Rectangle', (shape) ->
+  x = shape.x
+  y = shape.y
+  if shape.strokeWidth % 2 != 0
+    x += 0.5
+    y += 0.5
+
   "
-    <rect x='#{shape.x+0.5}' y='#{shape.y+0.5}'
+    <rect x='#{x}' y='#{y}'
       width='#{shape.width}' height='#{shape.height}'
       stroke='#{shape.strokeColor}' fill='#{shape.fillColor}'
       stroke-width='#{shape.strokeWidth}' />
@@ -56,10 +62,15 @@ defineSVGRenderer 'Line', (shape) ->
   capString = ''
   arrowWidth = Math.max(shape.strokeWidth * 2.2, 5)
 
-  x1 = shape.x1 + 0.5
-  x2 = shape.x2 + 0.5
-  y1 = shape.y1 + 0.5
-  y2 = shape.y2 + 0.5
+  x1 = shape.x1
+  x2 = shape.x2
+  y1 = shape.y1
+  y2 = shape.y2
+  if shape.strokeWidth % 2 != 0
+    x1 += 0.5
+    x2 += 0.5
+    y1 += 0.5
+    y2 += 0.5
 
   if shape.endCapShapes[0]
     capString += lineEndCapShapes[shape.endCapShapes[0]].svg(
@@ -83,7 +94,8 @@ defineSVGRenderer 'LinePath', (shape) ->
     <polyline
       fill='none'
       points='#{shape.smoothedPoints.map((p) ->
-        "#{p.x+0.5},#{p.y+0.5}").join(' ')
+        offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
+        "#{p.x+offset},#{p.y+offset}").join(' ')
       }'
       stroke='#{shape.points[0].color}'
       stroke-width='#{shape.points[0].size}' />
