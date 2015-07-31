@@ -33,10 +33,10 @@ renderShapeToCanvas = (canvas, shape, opts) ->
 
 defineCanvasRenderer 'Rectangle', (ctx, shape) ->
 	ctx.fillStyle = shape.fillColor
-	ctx.fillRect(shape.x, shape.y, shape.width, shape.height)
+	ctx.fillRect(shape.x + 0.5, shape.y + 0.5, shape.width, shape.height)
 	ctx.lineWidth = shape.strokeWidth
 	ctx.strokeStyle = shape.strokeColor
-	ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+	ctx.strokeRect(shape.x + 0.5, shape.y + 0.5, shape.width, shape.height)
 
 
 defineCanvasRenderer 'Ellipse', (ctx, shape) ->
@@ -101,29 +101,28 @@ defineCanvasRenderer 'Line', (ctx, shape) ->
     # browser behavior is not consistent for this case.
     return
 
+  x1 = shape.x1 + 0.5
+  x2 = shape.x2 + 0.5
+  y1 = shape.y1 + 0.5
+  y2 = shape.y2 + 0.5
+
   ctx.lineWidth = shape.strokeWidth
   ctx.strokeStyle = shape.color
   ctx.lineCap = shape.capStyle
   ctx.setLineDash(shape.dash) if shape.dash
   ctx.beginPath()
-  ctx.moveTo(shape.x1, shape.y1)
-  ctx.lineTo(shape.x2, shape.y2)
+  ctx.moveTo(x1, y1)
+  ctx.lineTo(x2, y2)
   ctx.stroke()
   ctx.setLineDash([]) if shape.dash
 
   arrowWidth = Math.max(shape.strokeWidth * 2.2, 5)
   if shape.endCapShapes[0]
     lineEndCapShapes[shape.endCapShapes[0]].drawToCanvas(
-      ctx,
-      shape.x1, shape.y1,
-      Math.atan2(shape.y1 - shape.y2, shape.x1 - shape.x2),
-      arrowWidth, shape.color)
+      ctx, x1, y1, Math.atan2(y1 - y2, x1 - x2), arrowWidth, shape.color)
   if shape.endCapShapes[1]
     lineEndCapShapes[shape.endCapShapes[1]].drawToCanvas(
-      ctx,
-      shape.x2, shape.y2,
-      Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1),
-      arrowWidth, shape.color)
+      ctx, x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color)
 
 
 _drawRawLinePath = (ctx, points) ->
@@ -135,10 +134,10 @@ _drawRawLinePath = (ctx, points) ->
   ctx.lineWidth = points[0].size
 
   ctx.beginPath()
-  ctx.moveTo(points[0].x, points[0].y)
+  ctx.moveTo(points[0].x+0.5, points[0].y+0.5)
 
   for point in points.slice(1)
-    ctx.lineTo(point.x, point.y)
+    ctx.lineTo(point.x+0.5, point.y+0.5)
 
   ctx.stroke()
 
