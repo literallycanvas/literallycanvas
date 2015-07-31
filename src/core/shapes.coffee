@@ -211,6 +211,10 @@ defineShape 'Line',
     @dash = args.dash or null
 
   draw: (ctx) ->
+    if @x1 == @x2 and @y1 == @y2
+      # browser behavior is not consistent for this case.
+      return
+
     ctx.lineWidth = @strokeWidth
     ctx.strokeStyle = @color
     ctx.lineCap = @capStyle

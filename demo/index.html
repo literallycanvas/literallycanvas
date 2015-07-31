@@ -61,6 +61,7 @@
     <script src="/lib/js/literallycanvas.js"></script>
 
     <script type="text/javascript">
+
       $(document).ready(function() {
         // disable scrolling on touch devices so we can actually draw
         $(document).bind('touchmove', function(e) {
@@ -81,7 +82,7 @@
 
         // the only LC-specific thing we have to do
         var containerOne = document.getElementsByClassName('literally one')[0];
-        var lc = window.lc = LC.init(containerOne, {
+        var lc = LC.init(containerOne, {
           backgroundShapes: [
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100}),

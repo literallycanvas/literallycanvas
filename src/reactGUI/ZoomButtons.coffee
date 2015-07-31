@@ -6,8 +6,8 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
 
   getState: -> {
     isEnabled: switch
-      when inOrOut == 'in' then @props.lc.scale < 4.0
-      when inOrOut == 'out' then  @props.lc.scale > 0.6
+      when inOrOut == 'in' then @props.lc.scale < @props.lc.config.zoomMax
+      when inOrOut == 'out' then  @props.lc.scale > @props.lc.config.zoomMin
   }
   getInitialState: -> @getState()
   mixins: [createSetStateOnEventMixin('zoom')]
@@ -23,8 +23,8 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
       'disabled': not @state.isEnabled
     onClick = switch
       when !@state.isEnabled then ->
-      when inOrOut == 'in' then -> lc.zoom(0.2)
-      when inOrOut == 'out' then -> lc.zoom(-0.2)
+      when inOrOut == 'in' then -> lc.zoom(lc.config.zoomStep)
+      when inOrOut == 'out' then -> lc.zoom(-lc.config.zoomStep)
     src = "#{imageURLPrefix}/zoom-#{inOrOut}.png"
     style = {backgroundImage: "url(#{src})"}
 

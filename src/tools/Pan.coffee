@@ -6,12 +6,24 @@ module.exports = class Pan extends Tool
 
   name: 'Pan'
   iconName: 'pan'
+  usesSimpleAPI: false
 
-  begin: (x, y, lc) -> @start = {x, y}
+  didBecomeActive: (lc) ->
+    unsubscribeFuncs = []
+    @unsubscribe = =>
+      for func in unsubscribeFuncs
+        func()
 
-  continue: (x, y, lc) ->
-    lc.pan @start.x - x, @start.y - y
-    lc.repaintAllLayers()
+    unsubscribeFuncs.push lc.on 'pointerdown', ({x, y}) =>
+      @oldPosition = lc.position
+      @pointerStart = {x, y}
 
-  end: (x, y, lc) ->
-    lc.repaintAllLayers()
+    unsubscribeFuncs.push lc.on 'pointerdrag', ({x, y}) =>
+      dp = {
+        x: (x - @pointerStart.x),
+        y: (y - @pointerStart.y)
+      }
+      lc.setPan(@oldPosition.x + dp.x, @oldPosition.y + dp.y)
+
+  willBecomeInactive: (lc) ->
+    @unsubscribe()

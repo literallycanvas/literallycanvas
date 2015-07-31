@@ -51,6 +51,10 @@ init = (el, opts = {}) ->
   opts.watermarkImage ?= null
   opts.watermarkScale ?= 1
 
+  opts.zoomMin ?= 0.2
+  opts.zoomMax ?= 4.0
+  opts.zoomStep ?= 0.2
+
   unless 'tools' of opts
     opts.tools = [
       tools.Pencil,
