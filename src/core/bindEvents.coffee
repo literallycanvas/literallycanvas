@@ -34,6 +34,8 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     document.removeEventListener 'mousemove', mouseMoveListener
     document.removeEventListener 'mouseup', mouseUpListener
 
+    canvas.addEventListener 'mousemove', mouseMoveListener
+
   canvas.addEventListener 'mousedown', (e) =>
     down = true
     e.preventDefault()
@@ -41,6 +43,7 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     p = position(canvas, e)
     lc.pointerDown(p.left, p.top)
 
+    canvas.removeEventListener 'mousemove', mouseMoveListener
     document.addEventListener 'mousemove', mouseMoveListener
     document.addEventListener 'mouseup', mouseUpListener
 

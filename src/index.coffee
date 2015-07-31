@@ -27,6 +27,7 @@ tools =
   Rectangle: require './tools/Rectangle'
   Ellipse: require './tools/Ellipse'
   Text: require './tools/Text'
+  Polygon: require './tools/Polygon'
   Pan: require './tools/Pan'
   Eyedropper: require './tools/Eyedropper'
 
@@ -65,6 +66,7 @@ init = (el, opts = {}) ->
       tools.Rectangle,
       tools.Ellipse,
       tools.Text,
+      tools.Polygon,
       tools.Pan,
       tools.Eyedropper,
     ]

@@ -136,10 +136,10 @@ defineCanvasRenderer 'Line', (ctx, shape) ->
       ctx, x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color)
 
 
-_drawRawLinePath = (ctx, points) ->
+_drawRawLinePath = (ctx, points, close=false, lineCap='round') ->
   return unless points.length
 
-  ctx.lineCap = 'round'
+  ctx.lineCap = lineCap
 
   ctx.strokeStyle = points[0].color
   ctx.lineWidth = points[0].size
@@ -157,11 +157,13 @@ _drawRawLinePath = (ctx, points) ->
     else
       ctx.lineTo(point.x+0.5, point.y+0.5)
 
-  ctx.stroke()
+  if close
+    ctx.closePath()
 
 
 drawLinePath = (ctx, shape) ->
   _drawRawLinePath(ctx, shape.smoothedPoints)
+  ctx.stroke()
 drawLinePathLatest = (ctx, bufferCtx, shape) ->
   _drawRawLinePath(
     ctx, if shape.tail then shape.tail else shape.smoothedPoints)
@@ -173,6 +175,7 @@ drawLinePathLatest = (ctx, bufferCtx, shape) ->
       if segmentStart < shape.segmentSize * 2 then 0 else segmentStart
     drawEnd = segmentStart + shape.segmentSize + 1
     _drawRawLinePath(bufferCtx, shape.smoothedPoints.slice(drawStart, drawEnd))
+    ctx.stroke()
 
 
 defineCanvasRenderer 'LinePath', drawLinePath, drawLinePathLatest
@@ -201,9 +204,16 @@ defineCanvasRenderer(
 
 
 defineCanvasRenderer 'Text', (ctx, shape) ->
-    shape._makeRenderer(ctx) unless shape.renderer
-    ctx.fillStyle = shape.color
-    shape.renderer.draw(ctx, shape.x, shape.y)
+  shape._makeRenderer(ctx) unless shape.renderer
+  ctx.fillStyle = shape.color
+  shape.renderer.draw(ctx, shape.x, shape.y)
+
+
+defineCanvasRenderer 'Polygon', (ctx, shape) ->
+  ctx.fillStyle = shape.fillColor
+  _drawRawLinePath(ctx, shape.points, shape.isClosed, 'butt')
+  ctx.fill() if shape.isClosed
+  ctx.stroke()
 
 
 module.exports = {

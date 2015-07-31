@@ -106,6 +106,31 @@ defineSVGRenderer 'LinePath', (shape) ->
 defineSVGRenderer 'ErasedLinePath', (shape) -> ""
 
 
+defineSVGRenderer 'Polygon', (shape) ->
+  if shape.isClosed
+    "
+      <polygon
+        fill='#{shape.fillColor}'
+        points='#{shape.points.map((p) ->
+          offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
+          "#{p.x+offset},#{p.y+offset}").join(' ')
+        }'
+        stroke='#{shape.strokeColor}'
+        stroke-width='#{shape.strokeWidth}' />
+    "
+  else
+    "
+      <polyline
+        fill='none'
+        points='#{shape.points.map((p) ->
+          offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
+          "#{p.x+offset},#{p.y+offset}").join(' ')
+        }'
+        stroke='#{shape.strokeColor}'
+        stroke-width='#{shape.strokeWidth}' />
+    "
+
+
 defineSVGRenderer 'Text', (shape) ->
   # fallback: don't worry about auto-wrapping
   widthString =
