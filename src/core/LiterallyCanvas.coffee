@@ -12,6 +12,11 @@ module.exports = class LiterallyCanvas
   constructor: (@containerEl, opts) ->
     bindEvents(this, @containerEl, opts.keyboardShortcuts)
 
+    @config =
+      zoomMin: opts.zoomMin or 0.2
+      zoomMax: opts.zoomMax or 4.0
+      zoomStep: opts.zoomStep or 0.2
+
     @colors =
       primary: opts.primaryColor or '#000'
       secondary: opts.secondaryColor or '#fff'
@@ -195,8 +200,8 @@ module.exports = class LiterallyCanvas
 
   zoom: (factor) ->
     newScale = @scale + factor
-    newScale = Math.max(newScale, 0.2)
-    newScale = Math.min(newScale, 4.0)
+    newScale = Math.max(newScale, @config.zoomMin)
+    newScale = Math.min(newScale, @config.zoomMax)
     newScale = Math.round(newScale * 100) / 100
     @setZoom(newScale)
 
