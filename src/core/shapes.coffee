@@ -345,11 +345,6 @@ defineShape 'Polygon',
   addPoint: (x, y) ->
     @points.push LC.createShape('Point', {x, y})
 
-  replaceLatestPoint: (x, y) ->
-    p = @points[@points.length - 1]
-    p.x = x
-    p.y = y
-
   getBoundingRect: ->
     return util.getBoundingRect(@points.map((p) -> p.getBoundingRect()))
 

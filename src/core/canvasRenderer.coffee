@@ -136,10 +136,10 @@ defineCanvasRenderer 'Line', (ctx, shape) ->
       ctx, x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color)
 
 
-_drawRawLinePath = (ctx, points, close=false) ->
+_drawRawLinePath = (ctx, points, close=false, lineCap='round') ->
   return unless points.length
 
-  ctx.lineCap = 'round'
+  ctx.lineCap = lineCap
 
   ctx.strokeStyle = points[0].color
   ctx.lineWidth = points[0].size
@@ -211,7 +211,7 @@ defineCanvasRenderer 'Text', (ctx, shape) ->
 
 defineCanvasRenderer 'Polygon', (ctx, shape) ->
   ctx.fillStyle = shape.fillColor
-  _drawRawLinePath(ctx, shape.points, shape.isClosed)
+  _drawRawLinePath(ctx, shape.points, shape.isClosed, 'butt')
   ctx.fill() if shape.isClosed
   ctx.stroke()
 
