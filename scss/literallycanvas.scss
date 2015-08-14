@@ -156,9 +156,18 @@ $toolbarBackground: rgb(230, 230, 230);
       background-color: black;
     }
 
+    .color-well-checker-top-left {
+      border-top-left-radius: 3px;
+    }
+
+    .color-well-checker-bottom-right {
+      border-bottom-right-radius: 3px;
+    }
+
     .color-well-color {
       position: absolute;
       top: 0; right: 0; bottom: 0; left: 0;
+      border-radius: 3px;
     }
   }
 

@@ -35,9 +35,11 @@ ColorWell = React.createClass
             'selected': @state.isPickerVisible
           style: {backgroundColor: 'white', float: 'left', margin: 1}
         },
-        (div {className: 'color-well-checker'}),
-        (div \
-          {className: 'color-well-checker', style: {left: '50%', top: '50%'}}),
+        (div {className: 'color-well-checker color-well-checker-top-left'}),
+        (div {
+          className: 'color-well-checker color-well-checker-bottom-right',
+          style: {left: '50%', top: '50%'}
+        }),
         (div \
           {
             className: 'color-well-color',

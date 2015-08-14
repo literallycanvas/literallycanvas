@@ -41,6 +41,20 @@ tools =
   ToolWithStroke: baseTools.ToolWithStroke
 
 
+defaultTools = [
+  tools.Pencil,
+  tools.Eraser,
+  tools.Line,
+  tools.Rectangle,
+  tools.Ellipse,
+  tools.Text,
+  tools.Polygon,
+
+  tools.Pan,
+  tools.Eyedropper,
+]
+
+
 defaultImageURLPrefix = 'lib/img'
 setDefaultImageURLPrefix = (newDefault) -> defaultImageURLPrefix = newDefault
 
@@ -67,18 +81,7 @@ init = (el, opts = {}) ->
   opts.zoomStep ?= 0.2
 
   unless 'tools' of opts
-    opts.tools = [
-      tools.Pencil,
-      tools.Eraser,
-      tools.Line,
-      tools.Rectangle,
-      tools.Ellipse,
-      tools.Text,
-      tools.Polygon,
-
-      tools.Pan,
-      tools.Eyedropper,
-    ]
+    opts.tools = defaultTools
 
   ### henceforth, all pre-existing DOM children shall be destroyed ###
 
@@ -136,7 +139,7 @@ if window.$
 
 module.exports = {
   init, registerJQueryPlugin, util, tools, defineOptionsStyle,
-  setDefaultImageURLPrefix,
+  setDefaultImageURLPrefix, defaultTools,
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
