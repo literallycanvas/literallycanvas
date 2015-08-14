@@ -257,7 +257,7 @@ module.exports = class LiterallyCanvas
             @transformed (=>
               for shape in @_shapesInProgress
                 renderShapeToContext(
-                  @ctx, shape, @bufferCtx, {shouldOnlyDrawLatest: true})
+                  @ctx, shape, {@bufferCtx, shouldOnlyDrawLatest: true})
             ), @ctx, @bufferCtx
           ), @ctx, @bufferCtx
 
@@ -286,7 +286,7 @@ module.exports = class LiterallyCanvas
     @clipped (=>
       @transformed (=>
         renderShapeToContext(
-          @ctx, shape, @bufferCtx, {shouldOnlyDrawLatest: true})
+          @ctx, shape, {@bufferCtx, shouldOnlyDrawLatest: true})
       ), @ctx, @bufferCtx
     ), @ctx, @bufferCtx
 

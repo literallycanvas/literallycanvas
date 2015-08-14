@@ -12,11 +12,12 @@ noop = ->
 renderShapeToContext = (ctx, shape, opts={}) ->
   opts.shouldIgnoreUnsupportedShapes ?= false
   opts.retryCallback ?= noop
-  opts.shouldOnlyDrawLatest = false
+  opts.shouldOnlyDrawLatest ?= false
   opts.bufferCtx ?= null
+  {bufferCtx} = opts
 
   if renderers[shape.className]
-    if opts.shouldOnlyDrawLatest and renderers[shape.className].drawLatest
+    if opts.shouldOnlyDrawLatest and renderers[shape.className].drawLatestFunc
       renderers[shape.className].drawLatestFunc(
         ctx, bufferCtx, shape, opts.retryCallback)
     else
@@ -165,9 +166,6 @@ drawLinePath = (ctx, shape) ->
   _drawRawLinePath(ctx, shape.smoothedPoints)
   ctx.stroke()
 drawLinePathLatest = (ctx, bufferCtx, shape) ->
-  _drawRawLinePath(
-    ctx, if shape.tail then shape.tail else shape.smoothedPoints)
-
   if shape.tail
     segmentStart =
       shape.smoothedPoints.length - shape.segmentSize * shape.tailSize
@@ -175,6 +173,9 @@ drawLinePathLatest = (ctx, bufferCtx, shape) ->
       if segmentStart < shape.segmentSize * 2 then 0 else segmentStart
     drawEnd = segmentStart + shape.segmentSize + 1
     _drawRawLinePath(bufferCtx, shape.smoothedPoints.slice(drawStart, drawEnd))
+    bufferCtx.stroke()
+  else
+    _drawRawLinePath(ctx, shape.smoothedPoints)
     ctx.stroke()
 
 
