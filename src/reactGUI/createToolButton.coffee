@@ -3,7 +3,7 @@ React = require './React-shim'
 
 createToolButton = ({displayName, getTool, imageName}) ->
   tool = getTool()
-  React.createClass
+  React.createFactory React.createClass
     displayName: displayName,
     getDefaultProps: -> {isSelected: false, lc: null}
     componentWillMount: ->

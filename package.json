@@ -37,6 +37,6 @@
     "gulp-connect": "~2.0.5"
   },
   "dependencies": {
-    "react": ">=0.10.0"
+    "react": ">=0.13.0"
   }
 }

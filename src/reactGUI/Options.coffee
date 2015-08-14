@@ -1,11 +1,11 @@
 React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {optionsStyles} = require '../optionsStyles/optionsStyles'
-ColorWell = require './ColorWell'
+ColorWell = React.createFactory require './ColorWell'
 
 {_} = require '../core/localization'
 
-ColorPickers = React.createClass
+ColorPickers = React.createFactory React.createClass
   displayName: 'ColorPickers'
   render: ->
     {lc} = @props
