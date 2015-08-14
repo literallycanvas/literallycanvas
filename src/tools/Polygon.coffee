@@ -17,7 +17,7 @@ module.exports = class Pencil extends ToolWithStroke
     @maybePoint = null
 
     onUp = =>
-      if @_getWillClose()
+      if @_getWillFinish()
         @_close(lc)
         return
 
@@ -50,23 +50,25 @@ module.exports = class Pencil extends ToolWithStroke
   willBecomeInactive: (lc) ->
     @unsubscribe()
 
+  _getArePointsClose: (a, b) ->
+    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y)) < 10
+
   _getWillClose: ->
-    return false unless @points and @points.length > 2
+    return false unless @points and @points.length > 1
     return false unless @maybePoint
-    firstPoint = @points[0]
-    lastPoint = @points[@points.length - 1]
-    for testPoint in [firstPoint, lastPoint]
-      mDist = (
-        Math.abs(@maybePoint.x - testPoint.x) +
-        Math.abs(@maybePoint.y - testPoint.y))
-      if mDist < 10
-        return true
-    return false
+    return @_getArePointsClose(@points[0], @maybePoint)
+
+  _getWillFinish: ->
+    return false unless @points and @points.length > 1
+    return false unless @maybePoint
+    return (
+      @_getArePointsClose(@points[0], @maybePoint) ||
+      @_getArePointsClose(@points[@points.length - 1], @maybePoint))
 
   _close: (lc) ->
-    @maybePoint = null
     lc.setShapesInProgress([])
     lc.saveShape(@_getShape(lc, false)) if @points.length > 2
+    @maybePoint = null
     @points = null
 
   _getShapes: (lc, isInProgress=true) ->
@@ -82,7 +84,7 @@ module.exports = class Pencil extends ToolWithStroke
       points.push(@maybePoint)
     if points.length > 1
       createShape('Polygon', {
-        isClosed: @_getWillClose() or (not isInProgress),
+        isClosed: @_getWillClose(),
         strokeColor: lc.getColor('primary'),
         fillColor: lc.getColor('secondary'),
         @strokeWidth,

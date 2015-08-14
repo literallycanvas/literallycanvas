@@ -121,6 +121,13 @@ defineSVGRenderer 'Polygon', (shape) ->
   else
     "
       <polyline
+        fill='#{shape.fillColor}'
+        points='#{shape.points.map((p) ->
+          offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
+          "#{p.x+offset},#{p.y+offset}").join(' ')
+        }'
+        stroke='none' />
+      <polyline
         fill='none'
         points='#{shape.points.map((p) ->
           offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
