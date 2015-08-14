@@ -1,8 +1,8 @@
 React = require './React-shim'
 
-ClearButton = require './ClearButton'
-UndoRedoButtons = require './UndoRedoButtons'
-ZoomButtons = require './ZoomButtons'
+ClearButton = React.createFactory require './ClearButton'
+UndoRedoButtons = React.createFactory require './UndoRedoButtons'
+ZoomButtons = React.createFactory require './ZoomButtons'
 
 
 Picker = React.createClass

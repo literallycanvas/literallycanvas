@@ -38,8 +38,8 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
     (div {className, onClick, title, style})
 
 
-UndoButton = createUndoRedoButtonComponent('undo')
-RedoButton = createUndoRedoButtonComponent('redo')
+UndoButton = React.createFactory createUndoRedoButtonComponent('undo')
+RedoButton = React.createFactory createUndoRedoButtonComponent('redo')
 UndoRedoButtons = React.createClass
   displayName: 'UndoRedoButtons'
   render: ->

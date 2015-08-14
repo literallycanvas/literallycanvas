@@ -31,8 +31,8 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
     (div {className, onClick, title, style})
 
 
-ZoomOutButton = createZoomButtonComponent('out')
-ZoomInButton = createZoomButtonComponent('in')
+ZoomOutButton = React.createFactory createZoomButtonComponent('out')
+ZoomInButton = React.createFactory createZoomButtonComponent('in')
 ZoomButtons = React.createClass
   displayName: 'ZoomButtons'
   render: ->
