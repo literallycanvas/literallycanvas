@@ -19,6 +19,12 @@ require './optionsStyles/null'
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
 
 
+conversion =
+  snapshotToShapes: (snapshot) ->
+    shapes.JSONToShape(shape) for shape in snapshot.shapes
+  snapshotJSONToShapes: (json) -> conversion.snapshotToShapes(JSON.parse(json))
+
+
 baseTools = require './tools/base'
 tools =
   Pencil: require './tools/Pencil'
@@ -145,6 +151,9 @@ module.exports = {
   defineSVGRenderer: svgRenderer.defineSVGRenderer,
   renderShapeToSVG: svgRenderer.renderShapeToSVG,
   renderShapesToSVG: util.renderShapesToSVG,
+
+  snapshotToShapes: conversion.snapshotToShapes
+  snapshotJSONToShapes: conversion.snapshotJSONToShapes
 
   localize: localize
 }

@@ -4,6 +4,8 @@ v0.4.5:
  * New option toolbarPosition: 'top'|'bottom'
  * LC.renderShapesToCanvas(shapes, rect, backgroundColor)
  * LC.renderShapesToSVG(shapes, rect, backgroundColor)
+ * LC.snapshotToShapes(snapshot) -> shapes
+ * LC.snapshotJSONToShapes(snapshotJSON) -> shapes
  * New rendering API
    * LC.defineCanvasRenderer shapeName, (ctx, shape) -> mutate ctx
    * LC.defineSVGRenderer shapeName, (shape) -> string
