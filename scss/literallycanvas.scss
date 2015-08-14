@@ -2,7 +2,7 @@ $basicBorder: 1px solid #555;
 
 $pickerWidth: 61px;
 $pickerButtonSize: 30px;
-$optionsHeight: 55px;
+$optionsHeight: 31px;
 
 $canvasBackground: #ddd;
 $toolbarBackground: rgb(230, 230, 230);
@@ -29,6 +29,23 @@ $toolbarBackground: rgb(230, 230, 230);
   &.disabled {
     cursor: default;
     opacity: 0.3;
+  }
+}
+.literally .button-style-1 { @include button-style-1; }
+
+.literally.toolbar-at-top {
+  .lc-drawing { bottom: 0; top: $optionsHeight; }
+  .lc-options {
+    top: 0;
+    border-bottom: $basicBorder;
+  }
+}
+
+.literally.toolbar-at-bottom {
+  .lc-drawing { bottom: $optionsHeight; top: 0; }
+  .lc-options {
+    bottom: 0;
+    border-top: $basicBorder;
   }
 }
 
@@ -61,7 +78,7 @@ $toolbarBackground: rgb(230, 230, 230);
   }
 
   .lc-drawing {
-    top: 0; right: 0; bottom: $optionsHeight; left: $pickerWidth;
+    right: 0; left: $pickerWidth;
     cursor: default;
 
     & > * {
@@ -74,11 +91,6 @@ $toolbarBackground: rgb(230, 230, 230);
         outline: none;
       }
     }
-  }
-
-  .lc-options {
-    right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
-    background-color: $toolbarBackground;
   }
 }
 
@@ -192,44 +204,19 @@ $toolbarBackground: rgb(230, 230, 230);
 
 .literally .lc-options {
   z-index: 1;
-  border-top: $basicBorder;
+  right: 0; left: $pickerWidth;
+  height: $optionsHeight;
+  background-color: $toolbarBackground;
 
-  .basic-button {
-    border: $basicBorder;
+  .square-toolbar-button {
     @include button-style-1;
-    margin: 0 0 5px 0;
-    padding: 5px 5px 4px 5px;
-  }
-
-  .square-button {
-    border: $basicBorder;
-    @include button-style-1;
-    margin: 0 0 5px 0;
-    padding: 5px 5px 4px 5px;
-    width: 44px;
-    height: 44px;
+    border: 1px solid #aaa;
+    width: 28px;
+    height: 28px;
 
     img {
       max-width: 100%;
       max-height: 100%;
-    }
-  }
-
-  .button-row {
-    margin: 0;
-    padding: 0;
-
-    li {
-      height: $optionsHeight - 1px;
-      padding: 0 0 0 10px;
-      list-style-type: none;
-      display: table-cell;
-      text-align: center;
-      vertical-align: bottom;
-
-      &:first-child {
-        padding-left: 6px;
-      }
     }
   }
 

@@ -46,6 +46,8 @@ init = (el, opts = {}) ->
   opts.secondaryColor ?= '#fff'
   opts.backgroundColor ?= 'transparent'
 
+  opts.toolbarPosition ?= 'top'
+
   opts.keyboardShortcuts ?= true
 
   opts.imageSize ?= {width: 'infinite', height: 'infinite'}
@@ -67,6 +69,7 @@ init = (el, opts = {}) ->
       tools.Ellipse,
       tools.Text,
       tools.Polygon,
+
       tools.Pan,
       tools.Eyedropper,
     ]
@@ -80,6 +83,12 @@ init = (el, opts = {}) ->
 
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
+
+  topOrBottomClassName = if opts.toolbarPosition == 'top'
+    'toolbar-at-top'
+  else
+    'toolbar-at-bottom'
+  el.className = el.className + ' ' + topOrBottomClassName
 
   pickerElement = document.createElement('div')
   pickerElement.className = 'lc-picker'

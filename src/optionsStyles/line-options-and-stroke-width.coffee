@@ -22,24 +22,19 @@ defineOptionsStyle 'line-options-and-stroke-width', React.createClass
       @setState @getState()
 
     dashButtonClass = React.addons.classSet
-      'basic-button square-button': true
+      'square-toolbar-button': true
       'selected': @state.isDashed
     arrowButtonClass = React.addons.classSet
-      'basic-button square-button': true
+      'square-toolbar-button': true
       'selected': @state.hasEndArrow
+    style = {float: 'left', margin: 1}
 
     (div {},
-      (ul {className: 'button-row', style: {float: 'left', marginRight: 20}},
-        (li {},
-          (div {className: dashButtonClass, onClick: toggleIsDashed},
-            (img {src: "#{@props.imageURLPrefix}/dashed-line.png"})
-          )
-        ),
-        (li {},
-          (div {className: arrowButtonClass, onClick: togglehasEndArrow},
-            (img {src: "#{@props.imageURLPrefix}/line-with-arrow.png"})
-          )
-        )
+      (div {className: dashButtonClass, onClick: toggleIsDashed, style},
+        (img {src: "#{@props.imageURLPrefix}/dashed-line.png"})
+      ),
+      (div {className: arrowButtonClass, onClick: togglehasEndArrow, style},
+        (img {src: "#{@props.imageURLPrefix}/line-with-arrow.png"})
       ),
       (StrokeWidthPicker {tool: @props.tool, lc: @props.lc})
     )
