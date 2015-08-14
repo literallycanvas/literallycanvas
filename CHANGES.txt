@@ -1,4 +1,5 @@
 v0.4.5:
+ * Require React v0.13+ (up from v0.10)
  * UI improvements
  * New option toolbarPosition: 'top'|'bottom'
  * LC.renderShapesToCanvas(shapes, rect, backgroundColor)
