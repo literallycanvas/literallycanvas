@@ -68,10 +68,9 @@ defineOptionsStyle 'font', React.createClass
     {div, input, select, option, br, label, span} = React.DOM
 
     (div {className: 'lc-font-settings'},
-      _("Size: ")
       (select {value: @state.fontSizeIndex, onChange: @handleFontSize},
         @getFontSizes().map((size, ix) =>
-          (option {value: ix, key: ix}, size)
+          (option {value: ix, key: ix}, "#{size}px")
         )
       )
       (select {value: @state.fontFamilyIndex, onChange: @handleFontFamily},

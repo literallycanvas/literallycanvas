@@ -2,7 +2,8 @@ $basicBorder: 1px solid #555;
 
 $pickerWidth: 61px;
 $pickerButtonSize: 30px;
-$optionsHeight: 55px;
+$optionsHeight: 31px;
+$optionsButtonSize: $optionsHeight - 3px;
 
 $canvasBackground: #ddd;
 $toolbarBackground: rgb(230, 230, 230);
@@ -22,13 +23,38 @@ $toolbarBackground: rgb(230, 230, 230);
     background-color: $selected;
   }
   &:hover:not(.disabled) {
-    border: 2px solid $selected;
+    border-color: $selected;
   }
   &:active:not(.disabled) {
   }
   &.disabled {
     cursor: default;
     opacity: 0.3;
+  }
+}
+.literally .button-style-1 { @include button-style-1; }
+
+.literally.toolbar-at-top {
+  .lc-drawing { bottom: 0; top: $optionsHeight; }
+  .lc-options {
+    top: 0;
+    border-bottom: $basicBorder;
+  }
+  .color-picker-popup {
+    top: $optionsButtonSize;
+    left: 0;
+  }
+}
+
+.literally.toolbar-at-bottom {
+  .lc-drawing { bottom: $optionsHeight; top: 0; }
+  .lc-options {
+    bottom: 0;
+    border-top: $basicBorder;
+  }
+  .color-picker-popup {
+    left: 0;
+    bottom: $optionsButtonSize;
   }
 }
 
@@ -61,7 +87,7 @@ $toolbarBackground: rgb(230, 230, 230);
   }
 
   .lc-drawing {
-    top: 0; right: 0; bottom: $optionsHeight; left: $pickerWidth;
+    right: 0; left: $pickerWidth;
     cursor: default;
 
     & > * {
@@ -74,11 +100,6 @@ $toolbarBackground: rgb(230, 230, 230);
         outline: none;
       }
     }
-  }
-
-  .lc-options {
-    right: 0; bottom: 0; left: $pickerWidth; height: $optionsHeight;
-    background-color: $toolbarBackground;
   }
 }
 
@@ -120,30 +141,12 @@ $toolbarBackground: rgb(230, 230, 230);
   }
 }
 
-.literally .lc-picker {
-  .color-well-label {
-    padding-bottom: 4px;
-    font-size: 10px;
-    line-height: 1.2em;
-    height: auto;
-
-    label {
-      margin-bottom: 2px;
-    }
-
-    &:first-child {
-      margin-top: 10px;
-    }
-  }
-
+.literally {
   .color-well-container {
+    @include button-style-1;
     position: relative;
-    z-index: 2;
-    width: $pickerButtonSize;
-    height: $pickerButtonSize;
-    border: $basicBorder;
-    clear: both;
-    margin: auto;
+    width: $optionsButtonSize;
+    height: $optionsButtonSize;
     overflow: visible;
 
     .color-well-checker {
@@ -162,8 +165,6 @@ $toolbarBackground: rgb(230, 230, 230);
   .color-picker-popup {
     position: absolute;
     z-index: 1;
-    left: $pickerWidth * 0.65;
-    bottom: -30px;
     background-color: white;
     border: $basicBorder;
 
@@ -192,44 +193,25 @@ $toolbarBackground: rgb(230, 230, 230);
 
 .literally .lc-options {
   z-index: 1;
-  border-top: $basicBorder;
+  right: 0; left: $pickerWidth;
+  height: $optionsHeight;
+  background-color: $toolbarBackground;
 
-  .basic-button {
-    border: $basicBorder;
-    @include button-style-1;
-    margin: 0 0 5px 0;
-    padding: 5px 5px 4px 5px;
+  label {
+    line-height: $optionsHeight - 1px;
+    margin: 0 0.5em 0 0.25em;
+    font-size: 12px;
   }
 
-  .square-button {
-    border: $basicBorder;
+  .square-toolbar-button {
     @include button-style-1;
-    margin: 0 0 5px 0;
-    padding: 5px 5px 4px 5px;
-    width: 44px;
-    height: 44px;
+    border: 1px solid #aaa;
+    width: $optionsButtonSize;
+    height: $optionsButtonSize;
 
     img {
       max-width: 100%;
       max-height: 100%;
-    }
-  }
-
-  .button-row {
-    margin: 0;
-    padding: 0;
-
-    li {
-      height: $optionsHeight - 1px;
-      padding: 0 0 0 10px;
-      list-style-type: none;
-      display: table-cell;
-      text-align: center;
-      vertical-align: bottom;
-
-      &:first-child {
-        padding-left: 6px;
-      }
     }
   }
 

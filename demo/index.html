@@ -83,6 +83,7 @@
         // the only LC-specific thing we have to do
         var containerOne = document.getElementsByClassName('literally one')[0];
         var lc = LC.init(containerOne, {
+          toolbarPosition: 'bottom',
           backgroundShapes: [
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100}),
