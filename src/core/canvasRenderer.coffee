@@ -212,7 +212,7 @@ defineCanvasRenderer 'Text', (ctx, shape) ->
 defineCanvasRenderer 'Polygon', (ctx, shape) ->
   ctx.fillStyle = shape.fillColor
   _drawRawLinePath(ctx, shape.points, shape.isClosed, 'butt')
-  ctx.fill() if shape.isClosed
+  ctx.fill()
   ctx.stroke()
 
 

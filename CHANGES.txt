@@ -1,6 +1,17 @@
 v0.4.5:
  * UI improvements
  * New option toolbarPosition: 'top'|'bottom'
+ * LC.renderShapesToCanvas(shapes, rect, backgroundColor)
+ * LC.renderShapesToSVG(shapes, rect, backgroundColor)
+ * New rendering API
+   * LC.defineCanvasRenderer shapeName, (ctx, shape) -> mutate ctx
+   * LC.defineSVGRenderer shapeName, (shape) -> string
+ * Tools can be implemented with @usesSimpleAPI=false and the new events
+     pointerdown, pointermove, pointerdrag, and pointerup
+ * Polygon tool
+ * Zero-length lines render consistently across browsers (by not rendering)
+ * Shape rendering aligned to pixel grid for sharper drawings
+ * Zooming works correctly
 
 v0.4.4:
  * Fix idiotic text tool exception
