@@ -1,3 +1,7 @@
+v0.4.5:
+ * UI improvements
+ * New option toolbarPosition: 'top'|'bottom'
+
 v0.4.4:
  * Fix idiotic text tool exception
 
