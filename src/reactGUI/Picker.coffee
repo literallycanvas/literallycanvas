@@ -26,9 +26,16 @@ Picker = React.createClass
       ),
       if toolButtonComponents.length % 2 != 0
         (div {className: 'toolbar-button thin-button disabled'})
-      UndoRedoButtons({lc, imageURLPrefix}),
-      ZoomButtons({lc, imageURLPrefix})
-      ClearButton({lc})
+      (div style: {
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+        },
+        UndoRedoButtons({lc, imageURLPrefix}),
+        ZoomButtons({lc, imageURLPrefix})
+        ClearButton({lc})
+      )
     )
 
 
