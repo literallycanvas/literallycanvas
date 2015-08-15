@@ -1,7 +1,7 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.LC=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 
 },{}],2:[function(_dereq_,module,exports){
-var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, shapeToJSON, util, _ref,
+var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, renderShapeToContext, renderShapeToSVG, shapeToJSON, util, _ref,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __slice = [].slice;
 
@@ -12,6 +12,10 @@ bindEvents = _dereq_('./bindEvents');
 math = _dereq_('./math');
 
 _ref = _dereq_('./shapes'), createShape = _ref.createShape, shapeToJSON = _ref.shapeToJSON, JSONToShape = _ref.JSONToShape;
+
+renderShapeToContext = _dereq_('./canvasRenderer').renderShapeToContext;
+
+renderShapeToSVG = _dereq_('./svgRenderer').renderShapeToSVG;
 
 Pencil = _dereq_('../tools/Pencil');
 
@@ -24,6 +28,11 @@ module.exports = LiterallyCanvas = (function() {
     this.containerEl = containerEl;
     this.setImageSize = __bind(this.setImageSize, this);
     bindEvents(this, this.containerEl, opts.keyboardShortcuts);
+    this.config = {
+      zoomMin: opts.zoomMin || 0.2,
+      zoomMax: opts.zoomMax || 4.0,
+      zoomStep: opts.zoomStep || 0.2
+    };
     this.colors = {
       primary: opts.primaryColor || '#000',
       secondary: opts.secondaryColor || '#fff',
@@ -134,45 +143,79 @@ module.exports = LiterallyCanvas = (function() {
     return this._shapesInProgress = newVal;
   };
 
-  LiterallyCanvas.prototype.begin = function(x, y) {
+  LiterallyCanvas.prototype.pointerDown = function(x, y) {
     return util.requestAnimationFrame((function(_this) {
       return function() {
         var newPos;
-        newPos = _this.clientCoordsToDrawingCoords(x, y);
-        _this.tool.begin(newPos.x, newPos.y, _this);
-        _this.isDragging = true;
-        return _this.trigger("drawStart", {
-          tool: _this.tool
-        });
-      };
-    })(this));
-  };
-
-  LiterallyCanvas.prototype["continue"] = function(x, y) {
-    return util.requestAnimationFrame((function(_this) {
-      return function() {
-        var newPos;
-        newPos = _this.clientCoordsToDrawingCoords(x, y);
-        if (_this.isDragging) {
-          _this.tool["continue"](newPos.x, newPos.y, _this);
-          return _this.trigger("drawContinue", {
+        if (_this.tool.usesSimpleAPI) {
+          newPos = _this.clientCoordsToDrawingCoords(x, y);
+          _this.tool.begin(newPos.x, newPos.y, _this);
+          _this.isDragging = true;
+          return _this.trigger("drawStart", {
             tool: _this.tool
+          });
+        } else {
+          _this.isDragging = true;
+          return _this.trigger("pointerdown", {
+            tool: _this.tool,
+            x: x,
+            y: y
           });
         }
       };
     })(this));
   };
 
-  LiterallyCanvas.prototype.end = function(x, y) {
+  LiterallyCanvas.prototype.pointerMove = function(x, y) {
     return util.requestAnimationFrame((function(_this) {
       return function() {
         var newPos;
-        newPos = _this.clientCoordsToDrawingCoords(x, y);
-        if (_this.isDragging) {
-          _this.tool.end(newPos.x, newPos.y, _this);
+        if (_this.tool.usesSimpleAPI) {
+          newPos = _this.clientCoordsToDrawingCoords(x, y);
+          if (_this.isDragging) {
+            _this.tool["continue"](newPos.x, newPos.y, _this);
+            return _this.trigger("drawContinue", {
+              tool: _this.tool
+            });
+          }
+        } else {
+          if (_this.isDragging) {
+            return _this.trigger("pointerdrag", {
+              tool: _this.tool,
+              x: x,
+              y: y
+            });
+          } else {
+            return _this.trigger("pointermove", {
+              tool: _this.tool,
+              x: x,
+              y: y
+            });
+          }
+        }
+      };
+    })(this));
+  };
+
+  LiterallyCanvas.prototype.pointerUp = function(x, y) {
+    return util.requestAnimationFrame((function(_this) {
+      return function() {
+        var newPos;
+        if (_this.tool.usesSimpleAPI) {
+          newPos = _this.clientCoordsToDrawingCoords(x, y);
+          if (_this.isDragging) {
+            _this.tool.end(newPos.x, newPos.y, _this);
+            _this.isDragging = false;
+            return _this.trigger("drawEnd", {
+              tool: _this.tool
+            });
+          }
+        } else {
           _this.isDragging = false;
-          return _this.trigger("drawEnd", {
-            tool: _this.tool
+          return _this.trigger("pointerup", {
+            tool: _this.tool,
+            x: x,
+            y: y
           });
         }
       };
@@ -266,8 +309,8 @@ module.exports = LiterallyCanvas = (function() {
   LiterallyCanvas.prototype.zoom = function(factor) {
     var newScale;
     newScale = this.scale + factor;
-    newScale = Math.max(newScale, 0.6);
-    newScale = Math.min(newScale, 4.0);
+    newScale = Math.max(newScale, this.config.zoomMin);
+    newScale = Math.min(newScale, this.config.zoomMax);
     newScale = Math.round(newScale * 100) / 100;
     return this.setZoom(newScale);
   };
@@ -344,7 +387,10 @@ module.exports = LiterallyCanvas = (function() {
                 _results = [];
                 for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
                   shape = _ref1[_i];
-                  _results.push(shape.drawLatest(_this.ctx, _this.bufferCtx));
+                  _results.push(renderShapeToContext(_this.ctx, shape, {
+                    bufferCtx: _this.bufferCtx,
+                    shouldOnlyDrawLatest: true
+                  }));
                 }
                 return _results;
               }), _this.ctx, _this.bufferCtx);
@@ -380,7 +426,10 @@ module.exports = LiterallyCanvas = (function() {
     return this.clipped(((function(_this) {
       return function() {
         return _this.transformed((function() {
-          return shape.drawLatest(_this.ctx, _this.bufferCtx);
+          return renderShapeToContext(_this.ctx, shape, {
+            bufferCtx: _this.bufferCtx,
+            shouldOnlyDrawLatest: true
+          });
         }), _this.ctx, _this.bufferCtx);
       };
     })(this)), this.ctx, this.bufferCtx);
@@ -397,7 +446,9 @@ module.exports = LiterallyCanvas = (function() {
         _results = [];
         for (_i = 0, _len = shapes.length; _i < _len; _i++) {
           shape = shapes[_i];
-          _results.push(shape.draw(ctx, retryCallback));
+          _results.push(renderShapeToContext(ctx, shape, {
+            retryCallback: retryCallback
+          }));
         }
         return _results;
       };
@@ -601,22 +652,16 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.getSVGString = function(opts) {
-    var height, width, x, y, _ref1;
     if (opts == null) {
       opts = {};
     }
     if (opts.rect == null) {
       opts.rect = this.getContentBounds();
     }
-    _ref1 = opts.rect, x = _ref1.x, y = _ref1.y, width = _ref1.width, height = _ref1.height;
     if (!(opts.rect.width && opts.rect.height)) {
       return;
     }
-    return ("<svg xmlns='http://www.w3.org/2000/svg' width='" + width + "' height='" + height + "' viewBox='0 0 " + width + " " + height + "'> <rect width='" + width + "' height='" + height + "' x='0' y='0' fill='" + this.colors.background + "' /> <g transform='translate(" + (-x) + ", " + (-y) + ")'> " + (this.backgroundShapes.map(function(s) {
-      return s.toSVG();
-    }).join('')) + " " + (this.shapes.map(function(s) {
-      return s.toSVG();
-    }).join('')) + " </g> </svg>").replace(/(\r\n|\n|\r)/gm, "");
+    return util.renderShapesToSVG(this.backgroundShapes.concat(this.shapes), opts.rect, this.colors.background);
   };
 
   LiterallyCanvas.prototype.loadSnapshot = function(snapshot) {
@@ -655,7 +700,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":36,"./actions":4,"./bindEvents":5,"./math":9,"./shapes":10,"./util":11}],3:[function(_dereq_,module,exports){
+},{"../tools/Pencil":38,"./actions":4,"./bindEvents":5,"./canvasRenderer":6,"./math":10,"./shapes":11,"./svgRenderer":12,"./util":13}],3:[function(_dereq_,module,exports){
 var TextRenderer, getLinesToRender, getNextLine, parseFontString;
 
 _dereq_('./fontmetrics.js');
@@ -859,7 +904,7 @@ TextRenderer = (function() {
 module.exports = TextRenderer;
 
 
-},{"./fontmetrics.js":6}],4:[function(_dereq_,module,exports){
+},{"./fontmetrics.js":7}],4:[function(_dereq_,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -980,7 +1025,7 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
       var p;
       e.preventDefault();
       p = position(canvas, e);
-      return lc["continue"](p.left, p.top);
+      return lc.pointerMove(p.left, p.top);
     };
   })(this);
   mouseUpListener = (function(_this) {
@@ -991,9 +1036,10 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
         return true;
       };
       p = position(canvas, e);
-      lc.end(p.left, p.top);
+      lc.pointerUp(p.left, p.top);
       document.removeEventListener('mousemove', mouseMoveListener);
-      return document.removeEventListener('mouseup', mouseUpListener);
+      document.removeEventListener('mouseup', mouseUpListener);
+      return canvas.addEventListener('mousemove', mouseMoveListener);
     };
   })(this);
   canvas.addEventListener('mousedown', (function(_this) {
@@ -1005,18 +1051,19 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
         return false;
       };
       p = position(canvas, e);
-      lc.begin(p.left, p.top);
+      lc.pointerDown(p.left, p.top);
+      canvas.removeEventListener('mousemove', mouseMoveListener);
       document.addEventListener('mousemove', mouseMoveListener);
       return document.addEventListener('mouseup', mouseUpListener);
     };
   })(this));
   touchMoveListener = function(e) {
     e.preventDefault();
-    return lc["continue"].apply(lc, coordsForTouchEvent(canvas, e));
+    return lc.pointerMove.apply(lc, coordsForTouchEvent(canvas, e));
   };
   touchEndListener = function(e) {
     e.preventDefault();
-    lc.end.apply(lc, coordsForTouchEvent(canvas, e));
+    lc.pointerUp.apply(lc, coordsForTouchEvent(canvas, e));
     document.removeEventListener('touchmove', touchMoveListener);
     document.removeEventListener('touchend', touchEndListener);
     return document.removeEventListener('touchcancel', touchEndListener);
@@ -1024,12 +1071,12 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
   canvas.addEventListener('touchstart', function(e) {
     e.preventDefault();
     if (e.touches.length === 1) {
-      lc.begin.apply(lc, coordsForTouchEvent(canvas, e));
+      lc.pointerDown.apply(lc, coordsForTouchEvent(canvas, e));
       document.addEventListener('touchmove', touchMoveListener);
       document.addEventListener('touchend', touchEndListener);
       return document.addEventListener('touchcancel', touchEndListener);
     } else {
-      return lc["continue"].apply(lc, coordsForTouchEvent(canvas, e));
+      return lc.pointerMove.apply(lc, coordsForTouchEvent(canvas, e));
     }
   });
   if (panWithKeyboard) {
@@ -1054,6 +1101,260 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
 
 
 },{}],6:[function(_dereq_,module,exports){
+var defineCanvasRenderer, drawErasedLinePath, drawErasedLinePathLatest, drawLinePath, drawLinePathLatest, lineEndCapShapes, noop, renderShapeToCanvas, renderShapeToContext, renderers, _drawRawLinePath;
+
+lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
+
+renderers = {};
+
+defineCanvasRenderer = function(shapeName, drawFunc, drawLatestFunc) {
+  return renderers[shapeName] = {
+    drawFunc: drawFunc,
+    drawLatestFunc: drawLatestFunc
+  };
+};
+
+noop = function() {};
+
+renderShapeToContext = function(ctx, shape, opts) {
+  var bufferCtx;
+  if (opts == null) {
+    opts = {};
+  }
+  if (opts.shouldIgnoreUnsupportedShapes == null) {
+    opts.shouldIgnoreUnsupportedShapes = false;
+  }
+  if (opts.retryCallback == null) {
+    opts.retryCallback = noop;
+  }
+  if (opts.shouldOnlyDrawLatest == null) {
+    opts.shouldOnlyDrawLatest = false;
+  }
+  if (opts.bufferCtx == null) {
+    opts.bufferCtx = null;
+  }
+  bufferCtx = opts.bufferCtx;
+  if (renderers[shape.className]) {
+    if (opts.shouldOnlyDrawLatest && renderers[shape.className].drawLatestFunc) {
+      return renderers[shape.className].drawLatestFunc(ctx, bufferCtx, shape, opts.retryCallback);
+    } else {
+      return renderers[shape.className].drawFunc(ctx, shape, opts.retryCallback);
+    }
+  } else if (opts.shouldIgnoreUnsupportedShapes) {
+    return console.warn("Can't render shape of type " + shape.className + " to canvas");
+  } else {
+    throw "Can't render shape of type " + shape.className + " to canvas";
+  }
+};
+
+renderShapeToCanvas = function(canvas, shape, opts) {
+  return renderShapeToContext(canvas.getContext('2d'), shape, opts);
+};
+
+defineCanvasRenderer('Rectangle', function(ctx, shape) {
+  var x, y;
+  x = shape.x;
+  y = shape.y;
+  if (shape.strokeWidth % 2 !== 0) {
+    x += 0.5;
+    y += 0.5;
+  }
+  ctx.fillStyle = shape.fillColor;
+  ctx.fillRect(x, y, shape.width, shape.height);
+  ctx.lineWidth = shape.strokeWidth;
+  ctx.strokeStyle = shape.strokeColor;
+  return ctx.strokeRect(x, y, shape.width, shape.height);
+});
+
+defineCanvasRenderer('Ellipse', function(ctx, shape) {
+  var centerX, centerY, halfHeight, halfWidth;
+  ctx.save();
+  halfWidth = Math.floor(shape.width / 2);
+  halfHeight = Math.floor(shape.height / 2);
+  centerX = shape.x + halfWidth;
+  centerY = shape.y + halfHeight;
+  ctx.translate(centerX, centerY);
+  ctx.scale(1, Math.abs(shape.height / shape.width));
+  ctx.beginPath();
+  ctx.arc(0, 0, Math.abs(halfWidth), 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.restore();
+  ctx.fillStyle = shape.fillColor;
+  ctx.fill();
+  ctx.lineWidth = shape.strokeWidth;
+  ctx.strokeStyle = shape.strokeColor;
+  return ctx.stroke();
+});
+
+defineCanvasRenderer('SelectionBox', (function() {
+  var _drawHandle;
+  _drawHandle = function(ctx, shape, _arg, handleSize) {
+    var x, y;
+    x = _arg.x, y = _arg.y;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x, y, handleSize, handleSize);
+    ctx.strokeStyle = '#000';
+    return ctx.strokeRect(x, y, handleSize, handleSize);
+  };
+  return function(ctx, shape) {
+    if (shape.backgroundColor) {
+      ctx.fillStyle = shape.backgroundColor;
+      ctx.fillRect(shape._br.x - shape.margin, shape._br.y - shape.margin, shape._br.width + shape.margin * 2, shape._br.height + shape.margin * 2);
+    }
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#000';
+    ctx.setLineDash([2, 4]);
+    ctx.strokeRect(shape._br.x - shape.margin, shape._br.y - shape.margin, shape._br.width + shape.margin * 2, shape._br.height + shape.margin * 2);
+    ctx.setLineDash([]);
+    _drawHandle(ctx, shape.getTopLeftHandleRect(), shape.handleSize);
+    _drawHandle(ctx, shape.getTopRightHandleRect(), shape.handleSize);
+    _drawHandle(ctx, shape.getBottomLeftHandleRect(), shape.handleSize);
+    return _drawHandle(ctx, shape.getBottomRightHandleRect(), shape.handleSize);
+  };
+})());
+
+defineCanvasRenderer('Image', function(ctx, shape, retryCallback) {
+  if (shape.image.width) {
+    return ctx.drawImage(shape.image, shape.x, shape.y);
+  } else if (retryCallback) {
+    return shape.image.onload = retryCallback;
+  }
+});
+
+defineCanvasRenderer('Line', function(ctx, shape) {
+  var arrowWidth, x1, x2, y1, y2;
+  if (shape.x1 === shape.x2 && shape.y1 === shape.y2) {
+    return;
+  }
+  x1 = shape.x1;
+  x2 = shape.x2;
+  y1 = shape.y1;
+  y2 = shape.y2;
+  if (shape.strokeWidth % 2 !== 0) {
+    x1 += 0.5;
+    x2 += 0.5;
+    y1 += 0.5;
+    y2 += 0.5;
+  }
+  ctx.lineWidth = shape.strokeWidth;
+  ctx.strokeStyle = shape.color;
+  ctx.lineCap = shape.capStyle;
+  if (shape.dash) {
+    ctx.setLineDash(shape.dash);
+  }
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  if (shape.dash) {
+    ctx.setLineDash([]);
+  }
+  arrowWidth = Math.max(shape.strokeWidth * 2.2, 5);
+  if (shape.endCapShapes[0]) {
+    lineEndCapShapes[shape.endCapShapes[0]].drawToCanvas(ctx, x1, y1, Math.atan2(y1 - y2, x1 - x2), arrowWidth, shape.color);
+  }
+  if (shape.endCapShapes[1]) {
+    return lineEndCapShapes[shape.endCapShapes[1]].drawToCanvas(ctx, x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color);
+  }
+});
+
+_drawRawLinePath = function(ctx, points, close, lineCap) {
+  var point, _i, _len, _ref;
+  if (close == null) {
+    close = false;
+  }
+  if (lineCap == null) {
+    lineCap = 'round';
+  }
+  if (!points.length) {
+    return;
+  }
+  ctx.lineCap = lineCap;
+  ctx.strokeStyle = points[0].color;
+  ctx.lineWidth = points[0].size;
+  ctx.beginPath();
+  if (points[0].size % 2 === 0) {
+    ctx.moveTo(points[0].x, points[0].y);
+  } else {
+    ctx.moveTo(points[0].x + 0.5, points[0].y + 0.5);
+  }
+  _ref = points.slice(1);
+  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+    point = _ref[_i];
+    if (points[0].size % 2 === 0) {
+      ctx.lineTo(point.x, point.y);
+    } else {
+      ctx.lineTo(point.x + 0.5, point.y + 0.5);
+    }
+  }
+  if (close) {
+    return ctx.closePath();
+  }
+};
+
+drawLinePath = function(ctx, shape) {
+  _drawRawLinePath(ctx, shape.smoothedPoints);
+  return ctx.stroke();
+};
+
+drawLinePathLatest = function(ctx, bufferCtx, shape) {
+  var drawEnd, drawStart, segmentStart;
+  if (shape.tail) {
+    segmentStart = shape.smoothedPoints.length - shape.segmentSize * shape.tailSize;
+    drawStart = segmentStart < shape.segmentSize * 2 ? 0 : segmentStart;
+    drawEnd = segmentStart + shape.segmentSize + 1;
+    _drawRawLinePath(bufferCtx, shape.smoothedPoints.slice(drawStart, drawEnd));
+    return bufferCtx.stroke();
+  } else {
+    _drawRawLinePath(bufferCtx, shape.smoothedPoints);
+    return bufferCtx.stroke();
+  }
+};
+
+defineCanvasRenderer('LinePath', drawLinePath, drawLinePathLatest);
+
+drawErasedLinePath = function(ctx, shape) {
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
+  drawLinePath(ctx, shape);
+  return ctx.restore();
+};
+
+drawErasedLinePathLatest = function(ctx, bufferCtx, shape) {
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
+  bufferCtx.save();
+  bufferCtx.globalCompositeOperation = "destination-out";
+  drawLinePathLatest(ctx, bufferCtx, shape);
+  ctx.restore();
+  return bufferCtx.restore();
+};
+
+defineCanvasRenderer('ErasedLinePath', drawErasedLinePath, drawErasedLinePathLatest);
+
+defineCanvasRenderer('Text', function(ctx, shape) {
+  if (!shape.renderer) {
+    shape._makeRenderer(ctx);
+  }
+  ctx.fillStyle = shape.color;
+  return shape.renderer.draw(ctx, shape.x, shape.y);
+});
+
+defineCanvasRenderer('Polygon', function(ctx, shape) {
+  ctx.fillStyle = shape.fillColor;
+  _drawRawLinePath(ctx, shape.points, shape.isClosed, 'butt');
+  ctx.fill();
+  return ctx.stroke();
+});
+
+module.exports = {
+  defineCanvasRenderer: defineCanvasRenderer,
+  renderShapeToCanvas: renderShapeToCanvas,
+  renderShapeToContext: renderShapeToContext
+};
+
+
+},{"./lineEndCapShapes.coffee":8}],7:[function(_dereq_,module,exports){
 /**
   This library rewrites the Canvas2D "measureText" function
   so that it returns a more complete metrics object.
@@ -1244,7 +1545,7 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
   };
 }());
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 module.exports = {
   arrow: (function() {
     var getPoints;
@@ -1295,7 +1596,7 @@ module.exports = {
 };
 
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var localize, strings, _;
 
 strings = {};
@@ -1316,7 +1617,7 @@ module.exports = {
 };
 
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(_dereq_,module,exports){
 var Point, math, normals, unit, util, _slope;
 
 Point = _dereq_('./shapes').Point;
@@ -1405,35 +1706,71 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
 module.exports = math;
 
 
-},{"./shapes":10,"./util":11}],10:[function(_dereq_,module,exports){
-var HANDLE_SIZE, JSONToShape, LinePath, MARGIN, TextRenderer, bspline, createShape, defineShape, lineEndCapShapes, linePathFuncs, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _refine,
+},{"./shapes":11,"./util":13}],11:[function(_dereq_,module,exports){
+var JSONToShape, LinePath, TextRenderer, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _ref, _ref1, _refine,
   __slice = [].slice;
 
 util = _dereq_('./util');
 
-lineEndCapShapes = _dereq_('../core/lineEndCapShapes.coffee');
-
 TextRenderer = _dereq_('./TextRenderer');
+
+lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
+
+_ref = _dereq_('./canvasRenderer'), defineCanvasRenderer = _ref.defineCanvasRenderer, renderShapeToContext = _ref.renderShapeToContext;
+
+_ref1 = _dereq_('./svgRenderer'), defineSVGRenderer = _ref1.defineSVGRenderer, renderShapeToSVG = _ref1.renderShapeToSVG;
 
 shapes = {};
 
 defineShape = function(name, props) {
-  var Shape, k;
+  var Shape, drawFunc, drawLatestFunc, k, legacyDrawFunc, legacyDrawLatestFunc, legacySVGFunc, svgFunc;
   Shape = function() {
-    var args, _ref;
+    var args, _ref2;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = props.constructor).call.apply(_ref, [this].concat(__slice.call(args)));
+    (_ref2 = props.constructor).call.apply(_ref2, [this].concat(__slice.call(args)));
     return this;
   };
-  if (props.toSVG == null) {
-    props.toSVG = function() {
-      return '';
-    };
-  }
   Shape.prototype.className = name;
   Shape.fromJSON = props.fromJSON;
-  Shape.prototype.drawLatest = function(ctx, bufferCtx) {
-    return this.draw(ctx, bufferCtx);
+  if (props.draw) {
+    legacyDrawFunc = props.draw;
+    legacyDrawLatestFunc = props.draw || function(ctx, bufferCtx, retryCallback) {
+      return this.draw(ctx, bufferCtx, retryCallback);
+    };
+    drawFunc = function(ctx, shape, retryCallback) {
+      return legacyDrawFunc.call(shape, ctx, retryCallback);
+    };
+    drawLatestFunc = function(ctx, bufferCtx, shape, retryCallback) {
+      return legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback);
+    };
+    delete props.draw;
+    if (props.drawLatest) {
+      delete props.drawLatest;
+    }
+    defineCanvasRenderer(name, drawFunc, drawLatestFunc);
+  }
+  if (props.toSVG) {
+    legacySVGFunc = props.toSVG;
+    svgFunc = function(shape) {
+      return legacySVGFunc.call(shape);
+    };
+    delete props.toSVG;
+    defineSVGRenderer(name, svgFunc);
+  }
+  Shape.prototype.draw = function(ctx, retryCallback) {
+    return renderShapeToContext(ctx, this, {
+      retryCallback: retryCallback
+    });
+  };
+  Shape.prototype.drawLatest = function(ctx, bufferCtx, retryCallback) {
+    return renderShapeToContext(ctx, this, {
+      retryCallback: retryCallback,
+      bufferCtx: bufferCtx,
+      shouldOnlyDrawLatest: true
+    });
+  };
+  Shape.prototype.toSVG = function() {
+    return renderShapeToSVG(this);
   };
   for (k in props) {
     if (k !== 'fromJSON') {
@@ -1539,13 +1876,6 @@ defineShape('Image', {
     this.y = args.y || 0;
     return this.image = args.image || null;
   },
-  draw: function(ctx, retryCallback) {
-    if (this.image.width) {
-      return ctx.drawImage(this.image, this.x, this.y);
-    } else if (retryCallback) {
-      return this.image.onload = retryCallback;
-    }
-  },
   getBoundingRect: function() {
     return {
       x: this.x,
@@ -1570,9 +1900,6 @@ defineShape('Image', {
       x: data.y,
       image: img
     });
-  },
-  toSVG: function() {
-    return "<image x='" + this.x + "' y='" + this.y + "' width='" + this.image.naturalWidth + "' height='" + this.image.naturalHeight + "' xlink:href='" + this.image.src + "' />";
   }
 });
 
@@ -1588,13 +1915,6 @@ defineShape('Rectangle', {
     this.strokeWidth = args.strokeWidth || 1;
     this.strokeColor = args.strokeColor || 'black';
     return this.fillColor = args.fillColor || 'transparent';
-  },
-  draw: function(ctx) {
-    ctx.fillStyle = this.fillColor;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
-    ctx.lineWidth = this.strokeWidth;
-    ctx.strokeStyle = this.strokeColor;
-    return ctx.strokeRect(this.x, this.y, this.width, this.height);
   },
   getBoundingRect: function() {
     return {
@@ -1617,9 +1937,6 @@ defineShape('Rectangle', {
   },
   fromJSON: function(data) {
     return createShape('Rectangle', data);
-  },
-  toSVG: function() {
-    return "<rect x='" + this.x + "' y='" + this.y + "' width='" + this.width + "' height='" + this.height + "' stroke='" + this.strokeColor + "' fill='" + this.fillColor + "' stroke-width='" + this.strokeWidth + "' />";
   }
 });
 
@@ -1635,25 +1952,6 @@ defineShape('Ellipse', {
     this.strokeWidth = args.strokeWidth || 1;
     this.strokeColor = args.strokeColor || 'black';
     return this.fillColor = args.fillColor || 'transparent';
-  },
-  draw: function(ctx) {
-    var centerX, centerY, halfHeight, halfWidth;
-    ctx.save();
-    halfWidth = Math.floor(this.width / 2);
-    halfHeight = Math.floor(this.height / 2);
-    centerX = this.x + halfWidth;
-    centerY = this.y + halfHeight;
-    ctx.translate(centerX, centerY);
-    ctx.scale(1, Math.abs(this.height / this.width));
-    ctx.beginPath();
-    ctx.arc(0, 0, Math.abs(halfWidth), 0, Math.PI * 2);
-    ctx.closePath();
-    ctx.restore();
-    ctx.fillStyle = this.fillColor;
-    ctx.fill();
-    ctx.lineWidth = this.strokeWidth;
-    ctx.strokeStyle = this.strokeColor;
-    return ctx.stroke();
   },
   getBoundingRect: function() {
     return {
@@ -1676,14 +1974,6 @@ defineShape('Ellipse', {
   },
   fromJSON: function(data) {
     return createShape('Ellipse', data);
-  },
-  toSVG: function() {
-    var centerX, centerY, halfHeight, halfWidth;
-    halfWidth = Math.floor(this.width / 2);
-    halfHeight = Math.floor(this.height / 2);
-    centerX = this.x + halfWidth;
-    centerY = this.y + halfHeight;
-    return "<ellipse cx='" + centerX + "' cy='" + centerY + "' rx='" + halfWidth + "' ry='" + halfHeight + "' stroke='" + this.strokeColor + "' fill='" + this.fillColor + "' stroke-width='" + this.strokeWidth + "' />";
   }
 });
 
@@ -1702,29 +1992,6 @@ defineShape('Line', {
     this.capStyle = args.capStyle || 'round';
     this.endCapShapes = args.endCapShapes || [null, null];
     return this.dash = args.dash || null;
-  },
-  draw: function(ctx) {
-    var arrowWidth;
-    ctx.lineWidth = this.strokeWidth;
-    ctx.strokeStyle = this.color;
-    ctx.lineCap = this.capStyle;
-    if (this.dash) {
-      ctx.setLineDash(this.dash);
-    }
-    ctx.beginPath();
-    ctx.moveTo(this.x1, this.y1);
-    ctx.lineTo(this.x2, this.y2);
-    ctx.stroke();
-    if (this.dash) {
-      ctx.setLineDash([]);
-    }
-    arrowWidth = Math.max(this.strokeWidth * 2.2, 5);
-    if (this.endCapShapes[0]) {
-      lineEndCapShapes[this.endCapShapes[0]].drawToCanvas(ctx, this.x1, this.y1, Math.atan2(this.y1 - this.y2, this.x1 - this.x2), arrowWidth, this.color);
-    }
-    if (this.endCapShapes[1]) {
-      return lineEndCapShapes[this.endCapShapes[1]].drawToCanvas(ctx, this.x2, this.y2, Math.atan2(this.y2 - this.y1, this.x2 - this.x1), arrowWidth, this.color);
-    }
   },
   getBoundingRect: function() {
     return {
@@ -1749,19 +2016,6 @@ defineShape('Line', {
   },
   fromJSON: function(data) {
     return createShape('Line', data);
-  },
-  toSVG: function() {
-    var arrowWidth, capString, dashString;
-    dashString = this.dash ? "stroke-dasharray='" + (this.dash.join(', ')) + "'" : '';
-    capString = '';
-    arrowWidth = Math.max(this.strokeWidth * 2.2, 5);
-    if (this.endCapShapes[0]) {
-      capString += lineEndCapShapes[this.endCapShapes[0]].svg(this.x1, this.y1, Math.atan2(this.y1 - this.y2, this.x1 - this.x2), arrowWidth, this.color);
-    }
-    if (this.endCapShapes[1]) {
-      capString += lineEndCapShapes[this.endCapShapes[1]].svg(this.x2, this.y2, Math.atan2(this.y2 - this.y1, this.x2 - this.x1), arrowWidth, this.color);
-    }
-    return "<g> <line x1='" + this.x1 + "' y1='" + this.y1 + "' x2='" + this.x2 + "' y2='" + this.y2 + "' " + dashString + " stroke-linecap='" + this.capStyle + "' stroke='" + this.color + "'stroke-width='" + this.strokeWidth + "' /> " + capString + " <g>";
   }
 });
 
@@ -1789,22 +2043,22 @@ _createLinePathFromData = function(shapeName, data) {
   points = null;
   if (data.points) {
     points = (function() {
-      var _i, _len, _ref, _results;
-      _ref = data.points;
+      var _i, _len, _ref2, _results;
+      _ref2 = data.points;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        pointData = _ref[_i];
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        pointData = _ref2[_i];
         _results.push(JSONToShape(pointData));
       }
       return _results;
     })();
   } else if (data.pointCoordinatePairs) {
     points = (function() {
-      var _i, _len, _ref, _ref1, _results;
-      _ref = data.pointCoordinatePairs;
+      var _i, _len, _ref2, _ref3, _results;
+      _ref2 = data.pointCoordinatePairs;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        _ref1 = _ref[_i], x = _ref1[0], y = _ref1[1];
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        _ref3 = _ref2[_i], x = _ref3[0], y = _ref3[1];
         _results.push(JSONToShape({
           className: 'Point',
           data: {
@@ -1822,11 +2076,11 @@ _createLinePathFromData = function(shapeName, data) {
   smoothedPoints = null;
   if (data.smoothedPointCoordinatePairs) {
     smoothedPoints = (function() {
-      var _i, _len, _ref, _ref1, _results;
-      _ref = data.smoothedPointCoordinatePairs;
+      var _i, _len, _ref2, _ref3, _results;
+      _ref2 = data.smoothedPointCoordinatePairs;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        _ref1 = _ref[_i], x = _ref1[0], y = _ref1[1];
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        _ref3 = _ref2[_i], x = _ref3[0], y = _ref3[1];
         _results.push(JSONToShape({
           className: 'Point',
           data: {
@@ -1896,21 +2150,21 @@ linePathFuncs = {
         tailSize: this.tailSize,
         smooth: this.smooth,
         pointCoordinatePairs: (function() {
-          var _i, _len, _ref, _results;
-          _ref = this.points;
+          var _i, _len, _ref2, _results;
+          _ref2 = this.points;
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            point = _ref[_i];
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            point = _ref2[_i];
             _results.push([point.x, point.y]);
           }
           return _results;
         }).call(this),
         smoothedPointCoordinatePairs: (function() {
-          var _i, _len, _ref, _results;
-          _ref = this.smoothedPoints;
+          var _i, _len, _ref2, _results;
+          _ref2 = this.smoothedPoints;
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            point = _ref[_i];
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            point = _ref2[_i];
             _results.push([point.x, point.y]);
           }
           return _results;
@@ -1924,11 +2178,11 @@ linePathFuncs = {
         tailSize: this.tailSize,
         smooth: this.smooth,
         points: (function() {
-          var _i, _len, _ref, _results;
-          _ref = this.points;
+          var _i, _len, _ref2, _results;
+          _ref2 = this.points;
           _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            p = _ref[_i];
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            p = _ref2[_i];
             _results.push(shapeToJSON(p));
           }
           return _results;
@@ -1938,24 +2192,6 @@ linePathFuncs = {
   },
   fromJSON: function(data) {
     return _createLinePathFromData('LinePath', data);
-  },
-  toSVG: function() {
-    return "<polyline fill='none' points='" + (this.smoothedPoints.map(function(p) {
-      return "" + p.x + "," + p.y;
-    }).join(' ')) + "' stroke='" + this.points[0].color + "' stroke-width='" + this.points[0].size + "' />";
-  },
-  draw: function(ctx) {
-    return this.drawPoints(ctx, this.smoothedPoints);
-  },
-  drawLatest: function(ctx, bufferCtx) {
-    var drawEnd, drawStart, segmentStart;
-    this.drawPoints(ctx, this.tail ? this.tail : this.smoothedPoints);
-    if (this.tail) {
-      segmentStart = this.smoothedPoints.length - this.segmentSize * this.tailSize;
-      drawStart = segmentStart < this.segmentSize * 2 ? 0 : segmentStart;
-      drawEnd = segmentStart + this.segmentSize + 1;
-      return this.drawPoints(bufferCtx, this.smoothedPoints.slice(drawStart, drawEnd));
-    }
   },
   addPoint: function(point) {
     this.points.push(point);
@@ -1969,23 +2205,6 @@ linePathFuncs = {
       this.tail = util.last(bspline(util.last(this.points, this.sampleSize), this.order), this.segmentSize * this.tailSize);
       return this.smoothedPoints = this.smoothedPoints.slice(0, this.smoothedPoints.length - this.segmentSize * (this.tailSize - 1)).concat(this.tail);
     }
-  },
-  drawPoints: function(ctx, points) {
-    var point, _i, _len, _ref;
-    if (!points.length) {
-      return;
-    }
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = points[0].color;
-    ctx.lineWidth = points[0].size;
-    ctx.beginPath();
-    ctx.moveTo(points[0].x, points[0].y);
-    _ref = points.slice(1);
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      point = _ref[_i];
-      ctx.lineTo(point.x, point.y);
-    }
-    return ctx.stroke();
   }
 };
 
@@ -1995,23 +2214,7 @@ defineShape('ErasedLinePath', {
   constructor: linePathFuncs.constructor,
   toJSON: linePathFuncs.toJSON,
   addPoint: linePathFuncs.addPoint,
-  drawPoints: linePathFuncs.drawPoints,
   getBoundingRect: linePathFuncs.getBoundingRect,
-  draw: function(ctx) {
-    ctx.save();
-    ctx.globalCompositeOperation = "destination-out";
-    linePathFuncs.draw.call(this, ctx);
-    return ctx.restore();
-  },
-  drawLatest: function(ctx, bufferCtx) {
-    ctx.save();
-    ctx.globalCompositeOperation = "destination-out";
-    bufferCtx.save();
-    bufferCtx.globalCompositeOperation = "destination-out";
-    linePathFuncs.drawLatest.call(this, ctx, bufferCtx);
-    ctx.restore();
-    return bufferCtx.restore();
-  },
   fromJSON: function(data) {
     return _createLinePathFromData('ErasedLinePath', data);
   }
@@ -2027,11 +2230,13 @@ defineShape('Point', {
     this.size = args.size || 0;
     return this.color = args.color || '';
   },
-  lastPoint: function() {
-    return this;
-  },
-  draw: function(ctx) {
-    throw "not implemented";
+  getBoundingRect: function() {
+    return {
+      x: this.x - this.size / 2,
+      y: this.y - this.size / 2,
+      width: this.size,
+      height: this.size
+    };
   },
   toJSON: function() {
     return {
@@ -2043,6 +2248,68 @@ defineShape('Point', {
   },
   fromJSON: function(data) {
     return createShape('Point', data);
+  }
+});
+
+defineShape('Polygon', {
+  constructor: function(args) {
+    var point, _i, _len, _ref2, _results;
+    if (args == null) {
+      args = {};
+    }
+    this.points = args.points;
+    this.fillColor = args.fillColor || 'white';
+    this.strokeColor = args.strokeColor || 'black';
+    this.strokeWidth = args.strokeWidth;
+    this.dash = args.dash || null;
+    if (args.isClosed == null) {
+      args.isClosed = true;
+    }
+    this.isClosed = args.isClosed;
+    _ref2 = this.points;
+    _results = [];
+    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+      point = _ref2[_i];
+      point.color = this.strokeColor;
+      _results.push(point.size = this.strokeWidth);
+    }
+    return _results;
+  },
+  addPoint: function(x, y) {
+    return this.points.push(LC.createShape('Point', {
+      x: x,
+      y: y
+    }));
+  },
+  getBoundingRect: function() {
+    return util.getBoundingRect(this.points.map(function(p) {
+      return p.getBoundingRect();
+    }));
+  },
+  toJSON: function() {
+    return {
+      strokeWidth: this.strokeWidth,
+      fillColor: this.fillColor,
+      strokeColor: this.strokeColor,
+      dash: this.dash,
+      isClosed: this.isClosed,
+      pointCoordinatePairs: this.points.map(function(p) {
+        return [p.x, p.y];
+      })
+    };
+  },
+  fromJSON: function(data) {
+    data.points = data.pointCoordinatePairs.map(function(_arg) {
+      var x, y;
+      x = _arg[0], y = _arg[1];
+      return createShape('Point', {
+        x: x,
+        y: y,
+        size: data.strokeWidth,
+        color: data.strokeColor
+      });
+    });
+    return createShape('Polygon', data);
   }
 });
 
@@ -2069,13 +2336,6 @@ defineShape('Text', {
       this.x -= this.renderer.metrics.bounds.minx;
       return this.y -= this.renderer.metrics.leading - this.renderer.metrics.descent;
     }
-  },
-  draw: function(ctx, bufferCtx) {
-    if (!this.renderer) {
-      this._makeRenderer(ctx);
-    }
-    ctx.fillStyle = this.color;
-    return this.renderer.draw(ctx, this.x, this.y);
   },
   setText: function(text) {
     this.text = text;
@@ -2141,28 +2401,8 @@ defineShape('Text', {
   },
   fromJSON: function(data) {
     return createShape('Text', data);
-  },
-  toSVG: function() {
-    var heightString, textSplitOnLines, widthString;
-    widthString = this.forcedWidth ? "width='" + this.forcedWidth + "px'" : "";
-    heightString = this.forcedHeight ? "height='" + this.forcedHeight + "px'" : "";
-    textSplitOnLines = this.text.split(/\r\n|\r|\n/g);
-    if (this.renderer) {
-      textSplitOnLines = this.renderer.lines;
-    }
-    return "<text x='" + this.x + "' y='" + this.y + "' " + widthString + " " + heightString + " fill='" + this.color + "' style='font: " + this.font + ";'> " + (textSplitOnLines.map((function(_this) {
-      return function(line, i) {
-        var dy;
-        dy = i === 0 ? 0 : '1.2em';
-        return "<tspan x='" + _this.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'>" + line + "</tspan>";
-      };
-    })(this)).join('')) + " </text>";
   }
 });
-
-HANDLE_SIZE = 10;
-
-MARGIN = 4;
 
 defineShape('SelectionBox', {
   constructor: function(args) {
@@ -2170,74 +2410,50 @@ defineShape('SelectionBox', {
       args = {};
     }
     this.shape = args.shape;
+    this.handleSize = 10;
+    this.margin = 4;
     this.backgroundColor = args.backgroundColor || null;
     return this._br = this.shape.getBoundingRect(args.ctx);
   },
-  draw: function(ctx) {
-    if (this.backgroundColor) {
-      ctx.fillStyle = this.backgroundColor;
-      ctx.fillRect(this._br.x - MARGIN, this._br.y - MARGIN, this._br.width + MARGIN * 2, this._br.height + MARGIN * 2);
-    }
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#000';
-    ctx.setLineDash([2, 4]);
-    ctx.strokeRect(this._br.x - MARGIN, this._br.y - MARGIN, this._br.width + MARGIN * 2, this._br.height + MARGIN * 2);
-    ctx.setLineDash([]);
-    this._drawHandle(ctx, this.getTopLeftHandleRect());
-    this._drawHandle(ctx, this.getTopRightHandleRect());
-    this._drawHandle(ctx, this.getBottomLeftHandleRect());
-    return this._drawHandle(ctx, this.getBottomRightHandleRect());
-  },
-  _drawHandle: function(ctx, _arg) {
-    var x, y;
-    x = _arg.x, y = _arg.y;
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(x, y, HANDLE_SIZE, HANDLE_SIZE);
-    ctx.strokeStyle = '#000';
-    return ctx.strokeRect(x, y, HANDLE_SIZE, HANDLE_SIZE);
-  },
   getTopLeftHandleRect: function() {
     return {
-      x: this._br.x - HANDLE_SIZE - MARGIN,
-      y: this._br.y - HANDLE_SIZE - MARGIN,
-      width: HANDLE_SIZE,
-      height: HANDLE_SIZE
+      x: this._br.x - this.handleSize - this.margin,
+      y: this._br.y - this.handleSize - this.margin,
+      width: this.handleSize,
+      height: this.handleSize
     };
   },
   getBottomLeftHandleRect: function() {
     return {
-      x: this._br.x - HANDLE_SIZE - MARGIN,
-      y: this._br.y + this._br.height + MARGIN,
-      width: HANDLE_SIZE,
-      height: HANDLE_SIZE
+      x: this._br.x - this.handleSize - this.margin,
+      y: this._br.y + this._br.height + this.margin,
+      width: this.handleSize,
+      height: this.handleSize
     };
   },
   getTopRightHandleRect: function() {
     return {
-      x: this._br.x + this._br.width + MARGIN,
-      y: this._br.y - HANDLE_SIZE - MARGIN,
-      width: HANDLE_SIZE,
-      height: HANDLE_SIZE
+      x: this._br.x + this._br.width + this.margin,
+      y: this._br.y - this.handleSize - this.margin,
+      width: this.handleSize,
+      height: this.handleSize
     };
   },
   getBottomRightHandleRect: function() {
     return {
-      x: this._br.x + this._br.width + MARGIN,
-      y: this._br.y + this._br.height + MARGIN,
-      width: HANDLE_SIZE,
-      height: HANDLE_SIZE
+      x: this._br.x + this._br.width + this.margin,
+      y: this._br.y + this._br.height + this.margin,
+      width: this.handleSize,
+      height: this.handleSize
     };
   },
   getBoundingRect: function() {
     return {
-      x: this._br.x - MARGIN,
-      y: this._br.y - MARGIN,
-      width: this._br.width + MARGIN * 2,
-      height: this._br.height + MARGIN * 2
+      x: this._br.x - this.margin,
+      y: this._br.y - this.margin,
+      width: this._br.width + this.margin * 2,
+      height: this._br.height + this.margin * 2
     };
-  },
-  toSVG: function() {
-    return "";
   }
 });
 
@@ -2249,11 +2465,146 @@ module.exports = {
 };
 
 
-},{"../core/lineEndCapShapes.coffee":7,"./TextRenderer":3,"./util":11}],11:[function(_dereq_,module,exports){
-var slice, util,
+},{"./TextRenderer":3,"./canvasRenderer":6,"./lineEndCapShapes.coffee":8,"./svgRenderer":12,"./util":13}],12:[function(_dereq_,module,exports){
+var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
+
+lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
+
+renderers = {};
+
+defineSVGRenderer = function(shapeName, shapeToSVGFunc) {
+  return renderers[shapeName] = shapeToSVGFunc;
+};
+
+renderShapeToSVG = function(shape, opts) {
+  if (opts == null) {
+    opts = {};
+  }
+  if (opts.shouldIgnoreUnsupportedShapes == null) {
+    opts.shouldIgnoreUnsupportedShapes = false;
+  }
+  if (renderers[shape.className]) {
+    return renderers[shape.className](shape);
+  } else if (opts.shouldIgnoreUnsupportedShapes) {
+    console.warn("Can't render shape of type " + shape.className + " to SVG");
+    return "";
+  } else {
+    throw "Can't render shape of type " + shape.className + " to SVG";
+  }
+};
+
+defineSVGRenderer('Rectangle', function(shape) {
+  var x, y;
+  x = shape.x;
+  y = shape.y;
+  if (shape.strokeWidth % 2 !== 0) {
+    x += 0.5;
+    y += 0.5;
+  }
+  return "<rect x='" + x + "' y='" + y + "' width='" + shape.width + "' height='" + shape.height + "' stroke='" + shape.strokeColor + "' fill='" + shape.fillColor + "' stroke-width='" + shape.strokeWidth + "' />";
+});
+
+defineSVGRenderer('Ellipse', function(shape) {
+  var centerX, centerY, halfHeight, halfWidth;
+  halfWidth = Math.floor(shape.width / 2);
+  halfHeight = Math.floor(shape.height / 2);
+  centerX = shape.x + halfWidth;
+  centerY = shape.y + halfHeight;
+  return "<ellipse cx='" + centerX + "' cy='" + centerY + "' rx='" + halfWidth + "' ry='" + halfHeight + "' stroke='" + shape.strokeColor + "' fill='" + shape.fillColor + "' stroke-width='" + shape.strokeWidth + "' />";
+});
+
+defineSVGRenderer('Image', function(shape) {
+  return "<image x='" + shape.x + "' y='" + shape.y + "' width='" + shape.image.naturalWidth + "' height='" + shape.image.naturalHeight + "' xlink:href='" + shape.image.src + "' />";
+});
+
+defineSVGRenderer('Line', function(shape) {
+  var arrowWidth, capString, dashString, x1, x2, y1, y2;
+  dashString = shape.dash ? "stroke-dasharray='" + (shape.dash.join(', ')) + "'" : '';
+  capString = '';
+  arrowWidth = Math.max(shape.strokeWidth * 2.2, 5);
+  x1 = shape.x1;
+  x2 = shape.x2;
+  y1 = shape.y1;
+  y2 = shape.y2;
+  if (shape.strokeWidth % 2 !== 0) {
+    x1 += 0.5;
+    x2 += 0.5;
+    y1 += 0.5;
+    y2 += 0.5;
+  }
+  if (shape.endCapShapes[0]) {
+    capString += lineEndCapShapes[shape.endCapShapes[0]].svg(x1, y1, Math.atan2(y1 - y2, x1 - x2), arrowWidth, shape.color);
+  }
+  if (shape.endCapShapes[1]) {
+    capString += lineEndCapShapes[shape.endCapShapes[1]].svg(x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color);
+  }
+  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + "'stroke-width='" + shape.strokeWidth + "' /> " + capString + " <g>";
+});
+
+defineSVGRenderer('LinePath', function(shape) {
+  return "<polyline fill='none' points='" + (shape.smoothedPoints.map(function(p) {
+    var offset;
+    offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
+    return "" + (p.x + offset) + "," + (p.y + offset);
+  }).join(' ')) + "' stroke='" + shape.points[0].color + "' stroke-width='" + shape.points[0].size + "' />";
+});
+
+defineSVGRenderer('ErasedLinePath', function(shape) {
+  return "";
+});
+
+defineSVGRenderer('Polygon', function(shape) {
+  if (shape.isClosed) {
+    return "<polygon fill='" + shape.fillColor + "' points='" + (shape.points.map(function(p) {
+      var offset;
+      offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
+      return "" + (p.x + offset) + "," + (p.y + offset);
+    }).join(' ')) + "' stroke='" + shape.strokeColor + "' stroke-width='" + shape.strokeWidth + "' />";
+  } else {
+    return "<polyline fill='" + shape.fillColor + "' points='" + (shape.points.map(function(p) {
+      var offset;
+      offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
+      return "" + (p.x + offset) + "," + (p.y + offset);
+    }).join(' ')) + "' stroke='none' /> <polyline fill='none' points='" + (shape.points.map(function(p) {
+      var offset;
+      offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
+      return "" + (p.x + offset) + "," + (p.y + offset);
+    }).join(' ')) + "' stroke='" + shape.strokeColor + "' stroke-width='" + shape.strokeWidth + "' />";
+  }
+});
+
+defineSVGRenderer('Text', function(shape) {
+  var heightString, textSplitOnLines, widthString;
+  widthString = shape.forcedWidth ? "width='" + shape.forcedWidth + "px'" : "";
+  heightString = shape.forcedHeight ? "height='" + shape.forcedHeight + "px'" : "";
+  textSplitOnLines = shape.text.split(/\r\n|\r|\n/g);
+  if (shape.renderer) {
+    textSplitOnLines = shape.renderer.lines;
+  }
+  return "<text x='" + shape.x + "' y='" + shape.y + "' " + widthString + " " + heightString + " fill='" + shape.color + "' style='font: " + shape.font + ";'> " + (textSplitOnLines.map((function(_this) {
+    return function(line, i) {
+      var dy;
+      dy = i === 0 ? 0 : '1.2em';
+      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + line + " </tspan>";
+    };
+  })(this)).join('')) + " </text>";
+});
+
+module.exports = {
+  defineSVGRenderer: defineSVGRenderer,
+  renderShapeToSVG: renderShapeToSVG
+};
+
+
+},{"./lineEndCapShapes.coffee":8}],13:[function(_dereq_,module,exports){
+var renderShapeToContext, renderShapeToSVG, slice, util,
   __slice = [].slice;
 
 slice = Array.prototype.slice;
+
+renderShapeToContext = _dereq_('./canvasRenderer').renderShapeToContext;
+
+renderShapeToSVG = _dereq_('./svgRenderer').renderShapeToSVG;
 
 util = {
   last: function(array, n) {
@@ -2326,9 +2677,14 @@ util = {
     ctx.scale(scale, scale);
     for (_i = 0, _len = shapes.length; _i < _len; _i++) {
       shape = shapes[_i];
-      shape.draw(ctx);
+      renderShapeToContext(ctx, shape);
     }
     return canvas;
+  },
+  renderShapesToSVG: function(shapes, _arg, backgroundColor) {
+    var height, width, x, y;
+    x = _arg.x, y = _arg.y, width = _arg.width, height = _arg.height;
+    return ("<svg xmlns='http://www.w3.org/2000/svg' width='" + width + "' height='" + height + "' viewBox='0 0 " + width + " " + height + "'> <rect width='" + width + "' height='" + height + "' x='0' y='0' fill='" + backgroundColor + "' /> <g transform='translate(" + (-x) + ", " + (-y) + ")'> " + (shapes.map(renderShapeToSVG).join('')) + " </g> </svg>").replace(/(\r\n|\n|\r)/gm, "");
   },
   getBoundingRect: function(rects, width, height) {
     var maxX, maxY, minX, minY, rect, _i, _len;
@@ -2386,7 +2742,7 @@ util = {
 module.exports = util;
 
 
-},{}],12:[function(_dereq_,module,exports){
+},{"./canvasRenderer":6,"./svgRenderer":12}],14:[function(_dereq_,module,exports){
 (function () {
   function CustomEvent ( event, params ) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
@@ -2399,7 +2755,7 @@ module.exports = util;
 
   window.CustomEvent = CustomEvent;
 })();
-},{}],13:[function(_dereq_,module,exports){
+},{}],15:[function(_dereq_,module,exports){
 var hasWarned = false;
 if (!CanvasRenderingContext2D.prototype.setLineDash) {
   CanvasRenderingContext2D.prototype.setLineDash = function() {
@@ -2411,8 +2767,8 @@ if (!CanvasRenderingContext2D.prototype.setLineDash) {
   }
 }
 module.exports = null;
-},{}],14:[function(_dereq_,module,exports){
-var LiterallyCanvas, baseTools, defaultImageURLPrefix, defineOptionsStyle, init, initReact, localize, registerJQueryPlugin, setDefaultImageURLPrefix, shapes, tools, util;
+},{}],16:[function(_dereq_,module,exports){
+var LiterallyCanvas, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultTools, defineOptionsStyle, init, initReact, localize, registerJQueryPlugin, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
 
 _dereq_('./ie_customevent');
 
@@ -2421,6 +2777,10 @@ _dereq_('./ie_setLineDash');
 LiterallyCanvas = _dereq_('./core/LiterallyCanvas');
 
 initReact = _dereq_('./reactGUI/init');
+
+canvasRenderer = _dereq_('./core/canvasRenderer');
+
+svgRenderer = _dereq_('./core/svgRenderer');
 
 shapes = _dereq_('./core/shapes');
 
@@ -2438,6 +2798,22 @@ _dereq_('./optionsStyles/null');
 
 defineOptionsStyle = _dereq_('./optionsStyles/optionsStyles').defineOptionsStyle;
 
+conversion = {
+  snapshotToShapes: function(snapshot) {
+    var shape, _i, _len, _ref, _results;
+    _ref = snapshot.shapes;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      shape = _ref[_i];
+      _results.push(shapes.JSONToShape(shape));
+    }
+    return _results;
+  },
+  snapshotJSONToShapes: function(json) {
+    return conversion.snapshotToShapes(JSON.parse(json));
+  }
+};
+
 baseTools = _dereq_('./tools/base');
 
 tools = {
@@ -2447,11 +2823,14 @@ tools = {
   Rectangle: _dereq_('./tools/Rectangle'),
   Ellipse: _dereq_('./tools/Ellipse'),
   Text: _dereq_('./tools/Text'),
+  Polygon: _dereq_('./tools/Polygon'),
   Pan: _dereq_('./tools/Pan'),
   Eyedropper: _dereq_('./tools/Eyedropper'),
   Tool: baseTools.Tool,
   ToolWithStroke: baseTools.ToolWithStroke
 };
+
+defaultTools = [tools.Pencil, tools.Eraser, tools.Line, tools.Rectangle, tools.Ellipse, tools.Text, tools.Polygon, tools.Pan, tools.Eyedropper];
 
 defaultImageURLPrefix = 'lib/img';
 
@@ -2460,7 +2839,7 @@ setDefaultImageURLPrefix = function(newDefault) {
 };
 
 init = function(el, opts) {
-  var child, drawingViewElement, lc, optionsElement, pickerElement, _i, _len, _ref;
+  var child, drawingViewElement, lc, optionsElement, pickerElement, topOrBottomClassName, _i, _len, _ref;
   if (opts == null) {
     opts = {};
   }
@@ -2475,6 +2854,9 @@ init = function(el, opts) {
   }
   if (opts.backgroundColor == null) {
     opts.backgroundColor = 'transparent';
+  }
+  if (opts.toolbarPosition == null) {
+    opts.toolbarPosition = 'top';
   }
   if (opts.keyboardShortcuts == null) {
     opts.keyboardShortcuts = true;
@@ -2494,8 +2876,17 @@ init = function(el, opts) {
   if (opts.watermarkScale == null) {
     opts.watermarkScale = 1;
   }
+  if (opts.zoomMin == null) {
+    opts.zoomMin = 0.2;
+  }
+  if (opts.zoomMax == null) {
+    opts.zoomMax = 4.0;
+  }
+  if (opts.zoomStep == null) {
+    opts.zoomStep = 0.2;
+  }
   if (!('tools' in opts)) {
-    opts.tools = [tools.Pencil, tools.Eraser, tools.Line, tools.Rectangle, tools.Ellipse, tools.Text, tools.Pan, tools.Eyedropper];
+    opts.tools = defaultTools;
   }
 
   /* henceforth, all pre-existing DOM children shall be destroyed */
@@ -2509,6 +2900,8 @@ init = function(el, opts) {
   if ([' ', ' '].join(el.className).indexOf(' literally ') === -1) {
     el.className = el.className + ' literally';
   }
+  topOrBottomClassName = opts.toolbarPosition === 'top' ? 'toolbar-at-top' : 'toolbar-at-bottom';
+  el.className = el.className + ' ' + topOrBottomClassName;
   pickerElement = document.createElement('div');
   pickerElement.className = 'lc-picker';
   drawingViewElement = document.createElement('div');
@@ -2557,15 +2950,25 @@ module.exports = {
   tools: tools,
   defineOptionsStyle: defineOptionsStyle,
   setDefaultImageURLPrefix: setDefaultImageURLPrefix,
+  defaultTools: defaultTools,
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
   JSONToShape: shapes.JSONToShape,
   shapeToJSON: shapes.shapeToJSON,
+  defineCanvasRenderer: canvasRenderer.defineCanvasRenderer,
+  renderShapeToContext: canvasRenderer.renderShapeToContext,
+  renderShapeToCanvas: canvasRenderer.renderShapeToCanvas,
+  renderShapesToCanvas: util.renderShapesToCanvas,
+  defineSVGRenderer: svgRenderer.defineSVGRenderer,
+  renderShapeToSVG: svgRenderer.renderShapeToSVG,
+  renderShapesToSVG: util.renderShapesToSVG,
+  snapshotToShapes: conversion.snapshotToShapes,
+  snapshotJSONToShapes: conversion.snapshotJSONToShapes,
   localize: localize
 };
 
 
-},{"./core/LiterallyCanvas":2,"./core/localization":8,"./core/shapes":10,"./core/util":11,"./ie_customevent":12,"./ie_setLineDash":13,"./optionsStyles/font":15,"./optionsStyles/line-options-and-stroke-width":16,"./optionsStyles/null":17,"./optionsStyles/optionsStyles":18,"./optionsStyles/stroke-width":19,"./reactGUI/init":30,"./tools/Ellipse":31,"./tools/Eraser":32,"./tools/Eyedropper":33,"./tools/Line":34,"./tools/Pan":35,"./tools/Pencil":36,"./tools/Rectangle":37,"./tools/Text":38,"./tools/base":39}],15:[function(_dereq_,module,exports){
+},{"./core/LiterallyCanvas":2,"./core/canvasRenderer":6,"./core/localization":9,"./core/shapes":11,"./core/svgRenderer":12,"./core/util":13,"./ie_customevent":14,"./ie_setLineDash":15,"./optionsStyles/font":17,"./optionsStyles/line-options-and-stroke-width":18,"./optionsStyles/null":19,"./optionsStyles/optionsStyles":20,"./optionsStyles/stroke-width":21,"./reactGUI/init":32,"./tools/Ellipse":33,"./tools/Eraser":34,"./tools/Eyedropper":35,"./tools/Line":36,"./tools/Pan":37,"./tools/Pencil":38,"./tools/Polygon":39,"./tools/Rectangle":40,"./tools/Text":41,"./tools/base":42}],17:[function(_dereq_,module,exports){
 var defineOptionsStyle, _;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -2665,7 +3068,7 @@ defineOptionsStyle('font', React.createClass({
     _ref = React.DOM, div = _ref.div, input = _ref.input, select = _ref.select, option = _ref.option, br = _ref.br, label = _ref.label, span = _ref.span;
     return div({
       className: 'lc-font-settings'
-    }, _("Size: "), select({
+    }, select({
       value: this.state.fontSizeIndex,
       onChange: this.handleFontSize
     }, this.getFontSizes().map((function(_this) {
@@ -2673,7 +3076,7 @@ defineOptionsStyle('font', React.createClass({
         return option({
           value: ix,
           key: ix
-        }, size);
+        }, "" + size + "px");
       };
     })(this))), select({
       value: this.state.fontFamilyIndex,
@@ -2706,7 +3109,7 @@ defineOptionsStyle('font', React.createClass({
 module.exports = {};
 
 
-},{"../core/localization":8,"./optionsStyles":18}],16:[function(_dereq_,module,exports){
+},{"../core/localization":9,"./optionsStyles":20}],18:[function(_dereq_,module,exports){
 var StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -2729,7 +3132,7 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
   },
   mixins: [createSetStateOnEventMixin('toolChange')],
   render: function() {
-    var arrowButtonClass, dashButtonClass, div, img, li, toggleIsDashed, togglehasEndArrow, ul, _ref;
+    var arrowButtonClass, dashButtonClass, div, img, li, style, toggleIsDashed, togglehasEndArrow, ul, _ref;
     _ref = React.DOM, div = _ref.div, ul = _ref.ul, li = _ref.li, img = _ref.img;
     toggleIsDashed = (function(_this) {
       return function() {
@@ -2744,30 +3147,30 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
       };
     })(this);
     dashButtonClass = React.addons.classSet({
-      'basic-button square-button': true,
+      'square-toolbar-button': true,
       'selected': this.state.isDashed
     });
     arrowButtonClass = React.addons.classSet({
-      'basic-button square-button': true,
+      'square-toolbar-button': true,
       'selected': this.state.hasEndArrow
     });
-    return div({}, ul({
-      className: 'button-row',
-      style: {
-        float: 'left',
-        marginRight: 20
-      }
-    }, li({}, div({
+    style = {
+      float: 'left',
+      margin: 1
+    };
+    return div({}, div({
       className: dashButtonClass,
-      onClick: toggleIsDashed
+      onClick: toggleIsDashed,
+      style: style
     }, img({
       src: "" + this.props.imageURLPrefix + "/dashed-line.png"
-    }))), li({}, div({
+    })), div({
       className: arrowButtonClass,
-      onClick: togglehasEndArrow
+      onClick: togglehasEndArrow,
+      style: style
     }, img({
       src: "" + this.props.imageURLPrefix + "/line-with-arrow.png"
-    })))), StrokeWidthPicker({
+    })), StrokeWidthPicker({
       tool: this.props.tool,
       lc: this.props.lc
     }));
@@ -2777,7 +3180,7 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
 module.exports = {};
 
 
-},{"../reactGUI/StrokeWidthPicker":25,"../reactGUI/createSetStateOnEventMixin":28,"./optionsStyles":18}],17:[function(_dereq_,module,exports){
+},{"../reactGUI/StrokeWidthPicker":27,"../reactGUI/createSetStateOnEventMixin":30,"./optionsStyles":20}],19:[function(_dereq_,module,exports){
 var defineOptionsStyle;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -2792,13 +3195,13 @@ defineOptionsStyle('null', React.createClass({
 module.exports = {};
 
 
-},{"./optionsStyles":18}],18:[function(_dereq_,module,exports){
+},{"./optionsStyles":20}],20:[function(_dereq_,module,exports){
 var defineOptionsStyle, optionsStyles;
 
 optionsStyles = {};
 
 defineOptionsStyle = function(name, style) {
-  return optionsStyles[name] = style;
+  return optionsStyles[name] = React.createFactory(style);
 };
 
 module.exports = {
@@ -2807,7 +3210,7 @@ module.exports = {
 };
 
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],21:[function(_dereq_,module,exports){
 var StrokeWidthPicker, defineOptionsStyle;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
@@ -2819,7 +3222,7 @@ defineOptionsStyle('stroke-width', StrokeWidthPicker);
 module.exports = {};
 
 
-},{"../reactGUI/StrokeWidthPicker":25,"./optionsStyles":18}],20:[function(_dereq_,module,exports){
+},{"../reactGUI/StrokeWidthPicker":27,"./optionsStyles":20}],22:[function(_dereq_,module,exports){
 var ClearButton, React, createSetStateOnEventMixin, _;
 
 React = _dereq_('./React-shim');
@@ -2864,7 +3267,7 @@ ClearButton = React.createClass({
 module.exports = ClearButton;
 
 
-},{"../core/localization":8,"./React-shim":24,"./createSetStateOnEventMixin":28}],21:[function(_dereq_,module,exports){
+},{"../core/localization":9,"./React-shim":26,"./createSetStateOnEventMixin":30}],23:[function(_dereq_,module,exports){
 var ColorWell, React;
 
 React = _dereq_('./React-shim');
@@ -2909,26 +3312,26 @@ ColorWell = React.createClass({
     var div, label, _ref;
     _ref = React.DOM, div = _ref.div, label = _ref.label;
     return div({
-      className: 'toolbar-button color-well-label fat-button',
       onMouseLeave: this.closePicker,
-      onClick: this.togglePicker
-    }, label({
+      onClick: this.togglePicker,
       style: {
-        display: 'block',
-        clear: 'both'
+        float: 'left'
       }
-    }, this.props.label), div({
+    }, div({
       className: React.addons.classSet({
+        'square-toolbar-button': true,
         'color-well-container': true,
         'selected': this.state.isPickerVisible
       }),
       style: {
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        float: 'left',
+        margin: 1
       }
     }, div({
-      className: 'color-well-checker'
+      className: 'color-well-checker color-well-checker-top-left'
     }), div({
-      className: 'color-well-checker',
+      className: 'color-well-checker color-well-checker-bottom-right',
       style: {
         left: '50%',
         top: '50%'
@@ -2938,7 +3341,9 @@ ColorWell = React.createClass({
       style: {
         backgroundColor: this.state.color
       }
-    }, " "), this.renderPicker()));
+    }, " "), this.renderPicker()), label({
+      float: 'left'
+    }, this.props.label));
   },
   renderPicker: function() {
     var div, hue, i, renderTransparentCell, rows, _i, _len, _ref;
@@ -3025,14 +3430,46 @@ ColorWell = React.createClass({
 module.exports = ColorWell;
 
 
-},{"./React-shim":24}],22:[function(_dereq_,module,exports){
-var Options, React, createSetStateOnEventMixin, optionsStyles;
+},{"./React-shim":26}],24:[function(_dereq_,module,exports){
+var ColorPickers, ColorWell, Options, React, createSetStateOnEventMixin, optionsStyles, _;
 
 React = _dereq_('./React-shim');
 
 createSetStateOnEventMixin = _dereq_('./createSetStateOnEventMixin');
 
 optionsStyles = _dereq_('../optionsStyles/optionsStyles').optionsStyles;
+
+ColorWell = React.createFactory(_dereq_('./ColorWell'));
+
+_ = _dereq_('../core/localization')._;
+
+ColorPickers = React.createFactory(React.createClass({
+  displayName: 'ColorPickers',
+  render: function() {
+    var div, lc;
+    lc = this.props.lc;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-color-pickers',
+      style: {
+        float: 'left',
+        marginRight: '0.5em'
+      }
+    }, ColorWell({
+      lc: lc,
+      colorName: 'background',
+      label: _('bg')
+    }), ColorWell({
+      lc: lc,
+      colorName: 'primary',
+      label: _('stroke')
+    }), ColorWell({
+      lc: lc,
+      colorName: 'secondary',
+      label: _('fill')
+    }));
+  }
+}));
 
 Options = React.createClass({
   displayName: 'Options',
@@ -3048,57 +3485,32 @@ Options = React.createClass({
   },
   mixins: [createSetStateOnEventMixin('toolChange')],
   render: function() {
-    var style;
+    var div, style;
+    div = React.DOM.div;
     style = "" + this.state.style;
-    return optionsStyles[style]({
+    return div({}, ColorPickers({
+      lc: this.props.lc
+    }), optionsStyles[style]({
       lc: this.props.lc,
       tool: this.state.tool,
       imageURLPrefix: this.props.imageURLPrefix
-    });
+    }));
   }
 });
 
 module.exports = Options;
 
 
-},{"../optionsStyles/optionsStyles":18,"./React-shim":24,"./createSetStateOnEventMixin":28}],23:[function(_dereq_,module,exports){
-var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
+},{"../core/localization":9,"../optionsStyles/optionsStyles":20,"./ColorWell":23,"./React-shim":26,"./createSetStateOnEventMixin":30}],25:[function(_dereq_,module,exports){
+var ClearButton, Picker, React, UndoRedoButtons, ZoomButtons;
 
 React = _dereq_('./React-shim');
 
-ClearButton = _dereq_('./ClearButton');
+ClearButton = React.createFactory(_dereq_('./ClearButton'));
 
-ColorWell = _dereq_('./ColorWell');
+UndoRedoButtons = React.createFactory(_dereq_('./UndoRedoButtons'));
 
-UndoRedoButtons = _dereq_('./UndoRedoButtons');
-
-ZoomButtons = _dereq_('./ZoomButtons');
-
-_ = _dereq_('../core/localization')._;
-
-ColorPickers = React.createClass({
-  displayName: 'ColorPickers',
-  render: function() {
-    var div, lc;
-    lc = this.props.lc;
-    div = React.DOM.div;
-    return div({
-      className: 'lc-color-pickers'
-    }, ColorWell({
-      lc: lc,
-      colorName: 'background',
-      label: _('background')
-    }), ColorWell({
-      lc: lc,
-      colorName: 'primary',
-      label: _('stroke')
-    }), ColorWell({
-      lc: lc,
-      colorName: 'secondary',
-      label: _('fill')
-    }));
-  }
-});
+ZoomButtons = React.createFactory(_dereq_('./ZoomButtons'));
 
 Picker = React.createClass({
   displayName: 'Picker',
@@ -3130,7 +3542,14 @@ Picker = React.createClass({
       };
     })(this)), toolButtonComponents.length % 2 !== 0 ? div({
       className: 'toolbar-button thin-button disabled'
-    }) : void 0, UndoRedoButtons({
+    }) : void 0, div({
+      style: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0
+      }
+    }, UndoRedoButtons({
       lc: lc,
       imageURLPrefix: imageURLPrefix
     }), ZoomButtons({
@@ -3138,16 +3557,14 @@ Picker = React.createClass({
       imageURLPrefix: imageURLPrefix
     }), ClearButton({
       lc: lc
-    }), ColorPickers({
-      lc: lc
-    }));
+    })));
   }
 });
 
 module.exports = Picker;
 
 
-},{"../core/localization":8,"./ClearButton":20,"./ColorWell":21,"./React-shim":24,"./UndoRedoButtons":26,"./ZoomButtons":27}],24:[function(_dereq_,module,exports){
+},{"./ClearButton":22,"./React-shim":26,"./UndoRedoButtons":28,"./ZoomButtons":29}],26:[function(_dereq_,module,exports){
 var React;
 
 try {
@@ -3163,7 +3580,7 @@ if ((React != null ? React.addons : void 0) == null) {
 module.exports = React;
 
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var createSetStateOnEventMixin;
 
 createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
@@ -3180,25 +3597,25 @@ module.exports = React.createClass({
   },
   mixins: [createSetStateOnEventMixin('toolChange')],
   render: function() {
-    var circle, div, getItem, li, strokeWidths, svg, ul, _ref;
+    var circle, div, li, strokeWidths, svg, ul, _ref;
     _ref = React.DOM, ul = _ref.ul, li = _ref.li, svg = _ref.svg, circle = _ref.circle, div = _ref.div;
     strokeWidths = [1, 2, 5, 10, 20, 30];
-    getItem = (function(_this) {
-      return function(strokeWidth) {};
-    })(this);
-    return ul({
-      className: 'button-row'
-    }, strokeWidths.map((function(_this) {
+    return div({}, strokeWidths.map((function(_this) {
       return function(strokeWidth, ix) {
         var buttonClassName, buttonSize;
         buttonClassName = React.addons.classSet({
-          'basic-button': true,
+          'square-toolbar-button': true,
           'selected': strokeWidth === _this.state.strokeWidth
         });
-        buttonSize = 30;
-        return li({
-          className: 'lc-stroke-width',
-          key: strokeWidth
+        buttonSize = 28;
+        return div({
+          key: strokeWidth,
+          style: {
+            float: 'left',
+            width: buttonSize,
+            height: buttonSize,
+            margin: 1
+          }
         }, div({
           className: buttonClassName,
           onClick: function() {
@@ -3206,14 +3623,14 @@ module.exports = React.createClass({
             return _this.setState(_this.getState());
           }
         }, svg({
-          width: buttonSize,
-          height: buttonSize,
+          width: buttonSize - 2,
+          height: buttonSize - 2,
           viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
           version: "1.1",
           xmlns: "http://www.w3.org/2000/svg"
         }, circle({
-          cx: Math.ceil(buttonSize / 2),
-          cy: Math.ceil(buttonSize / 2),
+          cx: Math.ceil(buttonSize / 2 - 1),
+          cy: Math.ceil(buttonSize / 2 - 1),
           r: strokeWidth / 2
         }))));
       };
@@ -3222,7 +3639,7 @@ module.exports = React.createClass({
 });
 
 
-},{"../reactGUI/createSetStateOnEventMixin":28}],26:[function(_dereq_,module,exports){
+},{"../reactGUI/createSetStateOnEventMixin":30}],28:[function(_dereq_,module,exports){
 var React, RedoButton, UndoButton, UndoRedoButtons, createSetStateOnEventMixin, createUndoRedoButtonComponent;
 
 React = _dereq_('./React-shim');
@@ -3286,9 +3703,9 @@ createUndoRedoButtonComponent = function(undoOrRedo) {
   });
 };
 
-UndoButton = createUndoRedoButtonComponent('undo');
+UndoButton = React.createFactory(createUndoRedoButtonComponent('undo'));
 
-RedoButton = createUndoRedoButtonComponent('redo');
+RedoButton = React.createFactory(createUndoRedoButtonComponent('redo'));
 
 UndoRedoButtons = React.createClass({
   displayName: 'UndoRedoButtons',
@@ -3304,7 +3721,7 @@ UndoRedoButtons = React.createClass({
 module.exports = UndoRedoButtons;
 
 
-},{"./React-shim":24,"./createSetStateOnEventMixin":28}],27:[function(_dereq_,module,exports){
+},{"./React-shim":26,"./createSetStateOnEventMixin":30}],29:[function(_dereq_,module,exports){
 var React, ZoomButtons, ZoomInButton, ZoomOutButton, createSetStateOnEventMixin, createZoomButtonComponent;
 
 React = _dereq_('./React-shim');
@@ -3319,9 +3736,9 @@ createZoomButtonComponent = function(inOrOut) {
         isEnabled: (function() {
           switch (false) {
             case inOrOut !== 'in':
-              return this.props.lc.scale < 4.0;
+              return this.props.lc.scale < this.props.lc.config.zoomMax;
             case inOrOut !== 'out':
-              return this.props.lc.scale > 0.6;
+              return this.props.lc.scale > this.props.lc.config.zoomMin;
           }
         }).call(this)
       };
@@ -3346,11 +3763,11 @@ createZoomButtonComponent = function(inOrOut) {
             return function() {};
           case inOrOut !== 'in':
             return function() {
-              return lc.zoom(0.2);
+              return lc.zoom(lc.config.zoomStep);
             };
           case inOrOut !== 'out':
             return function() {
-              return lc.zoom(-0.2);
+              return lc.zoom(-lc.config.zoomStep);
             };
         }
       }).call(this);
@@ -3368,9 +3785,9 @@ createZoomButtonComponent = function(inOrOut) {
   });
 };
 
-ZoomOutButton = createZoomButtonComponent('out');
+ZoomOutButton = React.createFactory(createZoomButtonComponent('out'));
 
-ZoomInButton = createZoomButtonComponent('in');
+ZoomInButton = React.createFactory(createZoomButtonComponent('in'));
 
 ZoomButtons = React.createClass({
   displayName: 'ZoomButtons',
@@ -3386,7 +3803,7 @@ ZoomButtons = React.createClass({
 module.exports = ZoomButtons;
 
 
-},{"./React-shim":24,"./createSetStateOnEventMixin":28}],28:[function(_dereq_,module,exports){
+},{"./React-shim":26,"./createSetStateOnEventMixin":30}],30:[function(_dereq_,module,exports){
 var React, createSetStateOnEventMixin;
 
 React = _dereq_('./React-shim');
@@ -3407,7 +3824,7 @@ module.exports = createSetStateOnEventMixin = function(eventName) {
 };
 
 
-},{"./React-shim":24}],29:[function(_dereq_,module,exports){
+},{"./React-shim":26}],31:[function(_dereq_,module,exports){
 var React, createToolButton;
 
 React = _dereq_('./React-shim');
@@ -3416,7 +3833,7 @@ createToolButton = function(_arg) {
   var displayName, getTool, imageName, tool;
   displayName = _arg.displayName, getTool = _arg.getTool, imageName = _arg.imageName;
   tool = getTool();
-  return React.createClass({
+  return React.createFactory(React.createClass({
     displayName: displayName,
     getDefaultProps: function() {
       return {
@@ -3451,22 +3868,22 @@ createToolButton = function(_arg) {
         title: displayName
       });
     }
-  });
+  }));
 };
 
 module.exports = createToolButton;
 
 
-},{"./React-shim":24}],30:[function(_dereq_,module,exports){
+},{"./React-shim":26}],32:[function(_dereq_,module,exports){
 var Options, Picker, React, createToolButton, init;
 
 React = _dereq_('./React-shim');
 
 createToolButton = _dereq_('./createToolButton');
 
-Options = _dereq_('./Options');
+Options = React.createFactory(_dereq_('./Options'));
 
-Picker = _dereq_('./Picker');
+Picker = React.createFactory(_dereq_('./Picker'));
 
 init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
   var toolButtonComponents;
@@ -3481,12 +3898,12 @@ init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
       }
     });
   });
-  React.renderComponent(Picker({
+  React.render(Picker({
     lc: lc,
     toolButtonComponents: toolButtonComponents,
     imageURLPrefix: imageURLPrefix
   }), pickerElement);
-  return React.renderComponent(Options({
+  return React.render(Options({
     lc: lc,
     imageURLPrefix: imageURLPrefix
   }), optionsElement);
@@ -3495,7 +3912,7 @@ init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
 module.exports = init;
 
 
-},{"./Options":22,"./Picker":23,"./React-shim":24,"./createToolButton":29}],31:[function(_dereq_,module,exports){
+},{"./Options":24,"./Picker":25,"./React-shim":26,"./createToolButton":31}],33:[function(_dereq_,module,exports){
 var Ellipse, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3540,7 +3957,7 @@ module.exports = Ellipse = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":10,"./base":39}],32:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],34:[function(_dereq_,module,exports){
 var Eraser, Pencil, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3578,7 +3995,7 @@ module.exports = Eraser = (function(_super) {
 })(Pencil);
 
 
-},{"../core/shapes":10,"./Pencil":36}],33:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./Pencil":38}],35:[function(_dereq_,module,exports){
 var Eyedropper, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3617,7 +4034,7 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":10,"./base":39}],34:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],36:[function(_dereq_,module,exports){
 var Line, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3674,7 +4091,7 @@ module.exports = Line = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":10,"./base":39}],35:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],37:[function(_dereq_,module,exports){
 var Pan, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3694,20 +4111,48 @@ module.exports = Pan = (function(_super) {
 
   Pan.prototype.iconName = 'pan';
 
-  Pan.prototype.begin = function(x, y, lc) {
-    return this.start = {
-      x: x,
-      y: y
-    };
+  Pan.prototype.usesSimpleAPI = false;
+
+  Pan.prototype.didBecomeActive = function(lc) {
+    var unsubscribeFuncs;
+    unsubscribeFuncs = [];
+    this.unsubscribe = (function(_this) {
+      return function() {
+        var func, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = unsubscribeFuncs.length; _i < _len; _i++) {
+          func = unsubscribeFuncs[_i];
+          _results.push(func());
+        }
+        return _results;
+      };
+    })(this);
+    unsubscribeFuncs.push(lc.on('pointerdown', (function(_this) {
+      return function(_arg) {
+        var x, y;
+        x = _arg.x, y = _arg.y;
+        _this.oldPosition = lc.position;
+        return _this.pointerStart = {
+          x: x,
+          y: y
+        };
+      };
+    })(this)));
+    return unsubscribeFuncs.push(lc.on('pointerdrag', (function(_this) {
+      return function(_arg) {
+        var dp, x, y;
+        x = _arg.x, y = _arg.y;
+        dp = {
+          x: x - _this.pointerStart.x,
+          y: y - _this.pointerStart.y
+        };
+        return lc.setPan(_this.oldPosition.x + dp.x, _this.oldPosition.y + dp.y);
+      };
+    })(this)));
   };
 
-  Pan.prototype["continue"] = function(x, y, lc) {
-    lc.pan(this.start.x - x, this.start.y - y);
-    return lc.repaintAllLayers();
-  };
-
-  Pan.prototype.end = function(x, y, lc) {
-    return lc.repaintAllLayers();
+  Pan.prototype.willBecomeInactive = function(lc) {
+    return this.unsubscribe();
   };
 
   return Pan;
@@ -3715,7 +4160,7 @@ module.exports = Pan = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":10,"./base":39}],36:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],38:[function(_dereq_,module,exports){
 var Pencil, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3777,7 +4222,179 @@ module.exports = Pencil = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":10,"./base":39}],37:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],39:[function(_dereq_,module,exports){
+var Pencil, ToolWithStroke, createShape,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+ToolWithStroke = _dereq_('./base').ToolWithStroke;
+
+createShape = _dereq_('../core/shapes').createShape;
+
+module.exports = Pencil = (function(_super) {
+  __extends(Pencil, _super);
+
+  function Pencil() {
+    return Pencil.__super__.constructor.apply(this, arguments);
+  }
+
+  Pencil.prototype.name = 'Polygon';
+
+  Pencil.prototype.iconName = 'polygon';
+
+  Pencil.prototype.usesSimpleAPI = false;
+
+  Pencil.prototype.didBecomeActive = function(lc) {
+    var onDown, onMove, onUp, unsubscribeFuncs;
+    unsubscribeFuncs = [];
+    this.unsubscribe = (function(_this) {
+      return function() {
+        var func, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = unsubscribeFuncs.length; _i < _len; _i++) {
+          func = unsubscribeFuncs[_i];
+          _results.push(func());
+        }
+        return _results;
+      };
+    })(this);
+    this.points = null;
+    this.maybePoint = null;
+    onUp = (function(_this) {
+      return function() {
+        if (_this._getWillFinish()) {
+          _this._close(lc);
+          return;
+        }
+        if (_this.points) {
+          _this.points.push(_this.maybePoint);
+        } else {
+          _this.points = [_this.maybePoint];
+        }
+        _this.maybePoint = {
+          x: _this.maybePoint.x,
+          y: _this.maybePoint.y
+        };
+        lc.setShapesInProgress(_this._getShapes(lc));
+        return lc.repaintLayer('main');
+      };
+    })(this);
+    onMove = (function(_this) {
+      return function(_arg) {
+        var x, y;
+        x = _arg.x, y = _arg.y;
+        if (_this.maybePoint) {
+          _this.maybePoint.x = x;
+          _this.maybePoint.y = y;
+          lc.setShapesInProgress(_this._getShapes(lc));
+          return lc.repaintLayer('main');
+        }
+      };
+    })(this);
+    onDown = (function(_this) {
+      return function(_arg) {
+        var x, y;
+        x = _arg.x, y = _arg.y;
+        _this.maybePoint = {
+          x: x,
+          y: y
+        };
+        lc.setShapesInProgress(_this._getShapes(lc));
+        return lc.repaintLayer('main');
+      };
+    })(this);
+    unsubscribeFuncs.push(lc.on('pointerdown', onDown));
+    unsubscribeFuncs.push(lc.on('pointerdrag', onMove));
+    unsubscribeFuncs.push(lc.on('pointermove', onMove));
+    return unsubscribeFuncs.push(lc.on('pointerup', onUp));
+  };
+
+  Pencil.prototype.willBecomeInactive = function(lc) {
+    return this.unsubscribe();
+  };
+
+  Pencil.prototype._getArePointsClose = function(a, b) {
+    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y)) < 10;
+  };
+
+  Pencil.prototype._getWillClose = function() {
+    if (!(this.points && this.points.length > 1)) {
+      return false;
+    }
+    if (!this.maybePoint) {
+      return false;
+    }
+    return this._getArePointsClose(this.points[0], this.maybePoint);
+  };
+
+  Pencil.prototype._getWillFinish = function() {
+    if (!(this.points && this.points.length > 1)) {
+      return false;
+    }
+    if (!this.maybePoint) {
+      return false;
+    }
+    return this._getArePointsClose(this.points[0], this.maybePoint) || this._getArePointsClose(this.points[this.points.length - 1], this.maybePoint);
+  };
+
+  Pencil.prototype._close = function(lc) {
+    lc.setShapesInProgress([]);
+    if (this.points.length > 2) {
+      lc.saveShape(this._getShape(lc, false));
+    }
+    this.maybePoint = null;
+    return this.points = null;
+  };
+
+  Pencil.prototype._getShapes = function(lc, isInProgress) {
+    var shape;
+    if (isInProgress == null) {
+      isInProgress = true;
+    }
+    shape = this._getShape(lc, isInProgress);
+    if (shape) {
+      return [shape];
+    } else {
+      return [];
+    }
+  };
+
+  Pencil.prototype._getShape = function(lc, isInProgress) {
+    var points;
+    if (isInProgress == null) {
+      isInProgress = true;
+    }
+    points = [];
+    if (this.points) {
+      points = points.concat(this.points);
+    }
+    if ((!isInProgress) && points.length < 3) {
+      return null;
+    }
+    if (isInProgress && this.maybePoint) {
+      points.push(this.maybePoint);
+    }
+    if (points.length > 1) {
+      return createShape('Polygon', {
+        isClosed: this._getWillClose(),
+        strokeColor: lc.getColor('primary'),
+        fillColor: lc.getColor('secondary'),
+        strokeWidth: this.strokeWidth,
+        points: points.map(function(xy) {
+          return createShape('Point', xy);
+        })
+      });
+    } else {
+      return null;
+    }
+  };
+
+  return Pencil;
+
+})(ToolWithStroke);
+
+
+},{"../core/shapes":11,"./base":42}],40:[function(_dereq_,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3822,7 +4439,7 @@ module.exports = Rectangle = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":10,"./base":39}],38:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],41:[function(_dereq_,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4184,7 +4801,7 @@ module.exports = Text = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":10,"./base":39}],39:[function(_dereq_,module,exports){
+},{"../core/shapes":11,"./base":42}],42:[function(_dereq_,module,exports){
 var Tool, ToolWithStroke, tools,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4197,6 +4814,8 @@ tools.Tool = Tool = (function() {
   Tool.prototype.name = null;
 
   Tool.prototype.iconName = null;
+
+  Tool.prototype.usesSimpleAPI = true;
 
   Tool.prototype.begin = function(x, y, lc) {};
 
@@ -4230,6 +4849,6 @@ tools.ToolWithStroke = ToolWithStroke = (function(_super) {
 module.exports = tools;
 
 
-},{}]},{},[14])
-(14)
+},{}]},{},[16])
+(16)
 });
