@@ -18,6 +18,7 @@ v0.4.5:
  * Zero-length lines render consistently across browsers (by not rendering)
  * Shape rendering aligned to pixel grid for sharper drawings
  * Zooming works correctly
+ * Configurable zoomMin, zoomMax, zoomStep
 
 v0.4.4:
  * Fix idiotic text tool exception
