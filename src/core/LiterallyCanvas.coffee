@@ -113,39 +113,39 @@ module.exports = class LiterallyCanvas
 
   pointerDown: (x, y) ->
     util.requestAnimationFrame () =>
+      p = @clientCoordsToDrawingCoords(x, y)
       if @tool.usesSimpleAPI
-        newPos = @clientCoordsToDrawingCoords(x, y)
-        @tool.begin newPos.x, newPos.y, this
+        @tool.begin p.x, p.y, this
         @isDragging = true
         @trigger("drawStart", {tool: @tool})
       else
         @isDragging = true
-        @trigger("pointerdown", {tool: @tool, x, y})
+        @trigger("pointerdown", {tool: @tool, x: p.x, y: p.y})
 
   pointerMove: (x, y) ->
     util.requestAnimationFrame () =>
+      p = @clientCoordsToDrawingCoords(x, y)
       if @tool.usesSimpleAPI
-        newPos = @clientCoordsToDrawingCoords(x, y)
         if @isDragging
-          @tool.continue newPos.x, newPos.y, this
+          @tool.continue p.x, p.y, this
           @trigger("drawContinue", {tool: @tool})
       else
         if @isDragging
-          @trigger("pointerdrag", {tool: @tool, x, y})
+          @trigger("pointerdrag", {tool: @tool, x: p.x, y: p.y})
         else
-          @trigger("pointermove", {tool: @tool, x, y})
+          @trigger("pointermove", {tool: @tool, x: p.x, y: p.y})
 
   pointerUp: (x, y) ->
     util.requestAnimationFrame () =>
+      p = @clientCoordsToDrawingCoords(x, y)
       if @tool.usesSimpleAPI
-        newPos = @clientCoordsToDrawingCoords(x, y)
         if @isDragging
-          @tool.end newPos.x, newPos.y, this
+          @tool.end p.x, p.y, this
           @isDragging = false
           @trigger("drawEnd", {tool: @tool})
       else
         @isDragging = false
-        @trigger("pointerup", {tool: @tool, x, y})
+        @trigger("pointerup", {tool: @tool, x: p.x, y: p.y})
 
   setColor: (name, color) ->
     @colors[name] = color
