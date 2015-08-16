@@ -1,5 +1,5 @@
 {defineOptionsStyle} = require './optionsStyles'
-StrokeWidthPicker = require '../reactGUI/StrokeWidthPicker'
+StrokeWidthPicker = React.createFactory require '../reactGUI/StrokeWidthPicker'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 
 defineOptionsStyle 'line-options-and-stroke-width', React.createClass
