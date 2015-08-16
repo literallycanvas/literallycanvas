@@ -14,14 +14,14 @@ module.exports = class Pan extends Tool
       for func in unsubscribeFuncs
         func()
 
-    unsubscribeFuncs.push lc.on 'pointerdown', ({x, y}) =>
+    unsubscribeFuncs.push lc.on 'pointerdown', ({rawX, rawY}) =>
       @oldPosition = lc.position
-      @pointerStart = {x, y}
+      @pointerStart = {x: rawX, y: rawY}
 
-    unsubscribeFuncs.push lc.on 'pointerdrag', ({x, y}) =>
+    unsubscribeFuncs.push lc.on 'pointerdrag', ({rawX, rawY}) =>
       dp = {
-        x: (x - @pointerStart.x),
-        y: (y - @pointerStart.y)
+        x: (rawX - @pointerStart.x),
+        y: (rawY - @pointerStart.y)
       }
       lc.setPan(@oldPosition.x + dp.x, @oldPosition.y + dp.y)
 

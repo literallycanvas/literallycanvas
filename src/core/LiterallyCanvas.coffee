@@ -120,7 +120,7 @@ module.exports = class LiterallyCanvas
         @trigger("drawStart", {tool: @tool})
       else
         @isDragging = true
-        @trigger("pointerdown", {tool: @tool, x: p.x, y: p.y})
+        @trigger("pointerdown", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
 
   pointerMove: (x, y) ->
     util.requestAnimationFrame () =>
@@ -131,9 +131,9 @@ module.exports = class LiterallyCanvas
           @trigger("drawContinue", {tool: @tool})
       else
         if @isDragging
-          @trigger("pointerdrag", {tool: @tool, x: p.x, y: p.y})
+          @trigger("pointerdrag", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
         else
-          @trigger("pointermove", {tool: @tool, x: p.x, y: p.y})
+          @trigger("pointermove", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
 
   pointerUp: (x, y) ->
     util.requestAnimationFrame () =>
@@ -145,7 +145,7 @@ module.exports = class LiterallyCanvas
           @trigger("drawEnd", {tool: @tool})
       else
         @isDragging = false
-        @trigger("pointerup", {tool: @tool, x: p.x, y: p.y})
+        @trigger("pointerup", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
 
   setColor: (name, color) ->
     @colors[name] = color
