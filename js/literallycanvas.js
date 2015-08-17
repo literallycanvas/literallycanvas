@@ -144,36 +144,34 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.pointerDown = function(x, y) {
-    return util.requestAnimationFrame((function(_this) {
-      return function() {
-        var newPos;
-        if (_this.tool.usesSimpleAPI) {
-          newPos = _this.clientCoordsToDrawingCoords(x, y);
-          _this.tool.begin(newPos.x, newPos.y, _this);
-          _this.isDragging = true;
-          return _this.trigger("drawStart", {
-            tool: _this.tool
-          });
-        } else {
-          _this.isDragging = true;
-          return _this.trigger("pointerdown", {
-            tool: _this.tool,
-            x: x,
-            y: y
-          });
-        }
-      };
-    })(this));
+    var p;
+    p = this.clientCoordsToDrawingCoords(x, y);
+    if (this.tool.usesSimpleAPI) {
+      this.tool.begin(p.x, p.y, this);
+      this.isDragging = true;
+      return this.trigger("drawStart", {
+        tool: this.tool
+      });
+    } else {
+      this.isDragging = true;
+      return this.trigger("pointerdown", {
+        tool: this.tool,
+        x: p.x,
+        y: p.y,
+        rawX: x,
+        rawY: y
+      });
+    }
   };
 
   LiterallyCanvas.prototype.pointerMove = function(x, y) {
     return util.requestAnimationFrame((function(_this) {
       return function() {
-        var newPos;
+        var p;
+        p = _this.clientCoordsToDrawingCoords(x, y);
         if (_this.tool.usesSimpleAPI) {
-          newPos = _this.clientCoordsToDrawingCoords(x, y);
           if (_this.isDragging) {
-            _this.tool["continue"](newPos.x, newPos.y, _this);
+            _this.tool["continue"](p.x, p.y, _this);
             return _this.trigger("drawContinue", {
               tool: _this.tool
             });
@@ -182,14 +180,18 @@ module.exports = LiterallyCanvas = (function() {
           if (_this.isDragging) {
             return _this.trigger("pointerdrag", {
               tool: _this.tool,
-              x: x,
-              y: y
+              x: p.x,
+              y: p.y,
+              rawX: x,
+              rawY: y
             });
           } else {
             return _this.trigger("pointermove", {
               tool: _this.tool,
-              x: x,
-              y: y
+              x: p.x,
+              y: p.y,
+              rawX: x,
+              rawY: y
             });
           }
         }
@@ -198,28 +200,26 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.pointerUp = function(x, y) {
-    return util.requestAnimationFrame((function(_this) {
-      return function() {
-        var newPos;
-        if (_this.tool.usesSimpleAPI) {
-          newPos = _this.clientCoordsToDrawingCoords(x, y);
-          if (_this.isDragging) {
-            _this.tool.end(newPos.x, newPos.y, _this);
-            _this.isDragging = false;
-            return _this.trigger("drawEnd", {
-              tool: _this.tool
-            });
-          }
-        } else {
-          _this.isDragging = false;
-          return _this.trigger("pointerup", {
-            tool: _this.tool,
-            x: x,
-            y: y
-          });
-        }
-      };
-    })(this));
+    var p;
+    p = this.clientCoordsToDrawingCoords(x, y);
+    if (this.tool.usesSimpleAPI) {
+      if (this.isDragging) {
+        this.tool.end(p.x, p.y, this);
+        this.isDragging = false;
+        return this.trigger("drawEnd", {
+          tool: this.tool
+        });
+      }
+    } else {
+      this.isDragging = false;
+      return this.trigger("pointerup", {
+        tool: this.tool,
+        x: p.x,
+        y: p.y,
+        rawX: x,
+        rawY: y
+      });
+    }
   };
 
   LiterallyCanvas.prototype.setColor = function(name, color) {
@@ -3114,7 +3114,7 @@ var StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
 
 defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
 
-StrokeWidthPicker = _dereq_('../reactGUI/StrokeWidthPicker');
+StrokeWidthPicker = React.createFactory(_dereq_('../reactGUI/StrokeWidthPicker'));
 
 createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
 
@@ -3309,24 +3309,28 @@ ColorWell = React.createClass({
     return this.props.lc.setColor(this.props.colorName, c);
   },
   render: function() {
-    var div, label, _ref;
-    _ref = React.DOM, div = _ref.div, label = _ref.label;
+    var br, div, label, _ref;
+    _ref = React.DOM, div = _ref.div, label = _ref.label, br = _ref.br;
     return div({
+      className: React.addons.classSet({
+        'color-well': true,
+        'open': this.state.isPickerVisible
+      }),
       onMouseLeave: this.closePicker,
       onClick: this.togglePicker,
       style: {
-        float: 'left'
+        float: 'left',
+        textAlign: 'center'
       }
-    }, div({
+    }, label({
+      float: 'left'
+    }, this.props.label), br({}), div({
       className: React.addons.classSet({
-        'square-toolbar-button': true,
-        'color-well-container': true,
+        'color-well-color-container': true,
         'selected': this.state.isPickerVisible
       }),
       style: {
-        backgroundColor: 'white',
-        float: 'left',
-        margin: 1
+        backgroundColor: 'white'
       }
     }, div({
       className: 'color-well-checker color-well-checker-top-left'
@@ -3341,9 +3345,7 @@ ColorWell = React.createClass({
       style: {
         backgroundColor: this.state.color
       }
-    }, " "), this.renderPicker()), label({
-      float: 'left'
-    }, this.props.label));
+    }, " ")), this.renderPicker());
   },
   renderPicker: function() {
     var div, hue, i, renderTransparentCell, rows, _i, _len, _ref;
@@ -3431,45 +3433,13 @@ module.exports = ColorWell;
 
 
 },{"./React-shim":26}],24:[function(_dereq_,module,exports){
-var ColorPickers, ColorWell, Options, React, createSetStateOnEventMixin, optionsStyles, _;
+var Options, React, createSetStateOnEventMixin, optionsStyles;
 
 React = _dereq_('./React-shim');
 
 createSetStateOnEventMixin = _dereq_('./createSetStateOnEventMixin');
 
 optionsStyles = _dereq_('../optionsStyles/optionsStyles').optionsStyles;
-
-ColorWell = React.createFactory(_dereq_('./ColorWell'));
-
-_ = _dereq_('../core/localization')._;
-
-ColorPickers = React.createFactory(React.createClass({
-  displayName: 'ColorPickers',
-  render: function() {
-    var div, lc;
-    lc = this.props.lc;
-    div = React.DOM.div;
-    return div({
-      className: 'lc-color-pickers',
-      style: {
-        float: 'left',
-        marginRight: '0.5em'
-      }
-    }, ColorWell({
-      lc: lc,
-      colorName: 'background',
-      label: _('bg')
-    }), ColorWell({
-      lc: lc,
-      colorName: 'primary',
-      label: _('stroke')
-    }), ColorWell({
-      lc: lc,
-      colorName: 'secondary',
-      label: _('fill')
-    }));
-  }
-}));
 
 Options = React.createClass({
   displayName: 'Options',
@@ -3488,21 +3458,19 @@ Options = React.createClass({
     var div, style;
     div = React.DOM.div;
     style = "" + this.state.style;
-    return div({}, ColorPickers({
-      lc: this.props.lc
-    }), optionsStyles[style]({
+    return optionsStyles[style]({
       lc: this.props.lc,
       tool: this.state.tool,
       imageURLPrefix: this.props.imageURLPrefix
-    }));
+    });
   }
 });
 
 module.exports = Options;
 
 
-},{"../core/localization":9,"../optionsStyles/optionsStyles":20,"./ColorWell":23,"./React-shim":26,"./createSetStateOnEventMixin":30}],25:[function(_dereq_,module,exports){
-var ClearButton, Picker, React, UndoRedoButtons, ZoomButtons;
+},{"../optionsStyles/optionsStyles":20,"./React-shim":26,"./createSetStateOnEventMixin":30}],25:[function(_dereq_,module,exports){
+var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
 
 React = _dereq_('./React-shim');
 
@@ -3511,6 +3479,34 @@ ClearButton = React.createFactory(_dereq_('./ClearButton'));
 UndoRedoButtons = React.createFactory(_dereq_('./UndoRedoButtons'));
 
 ZoomButtons = React.createFactory(_dereq_('./ZoomButtons'));
+
+_ = _dereq_('../core/localization')._;
+
+ColorWell = React.createFactory(_dereq_('./ColorWell'));
+
+ColorPickers = React.createFactory(React.createClass({
+  displayName: 'ColorPickers',
+  render: function() {
+    var div, lc;
+    lc = this.props.lc;
+    div = React.DOM.div;
+    return div({
+      className: 'lc-color-pickers'
+    }, ColorWell({
+      lc: lc,
+      colorName: 'primary',
+      label: _('stroke')
+    }), ColorWell({
+      lc: lc,
+      colorName: 'secondary',
+      label: _('fill')
+    }), ColorWell({
+      lc: lc,
+      colorName: 'background',
+      label: _('bg')
+    }));
+  }
+}));
 
 Picker = React.createClass({
   displayName: 'Picker',
@@ -3549,7 +3545,9 @@ Picker = React.createClass({
         left: 0,
         right: 0
       }
-    }, UndoRedoButtons({
+    }, ColorPickers({
+      lc: this.props.lc
+    }), UndoRedoButtons({
       lc: lc,
       imageURLPrefix: imageURLPrefix
     }), ZoomButtons({
@@ -3564,7 +3562,7 @@ Picker = React.createClass({
 module.exports = Picker;
 
 
-},{"./ClearButton":22,"./React-shim":26,"./UndoRedoButtons":28,"./ZoomButtons":29}],26:[function(_dereq_,module,exports){
+},{"../core/localization":9,"./ClearButton":22,"./ColorWell":23,"./React-shim":26,"./UndoRedoButtons":28,"./ZoomButtons":29}],26:[function(_dereq_,module,exports){
 var React;
 
 try {
@@ -4129,22 +4127,22 @@ module.exports = Pan = (function(_super) {
     })(this);
     unsubscribeFuncs.push(lc.on('pointerdown', (function(_this) {
       return function(_arg) {
-        var x, y;
-        x = _arg.x, y = _arg.y;
+        var rawX, rawY;
+        rawX = _arg.rawX, rawY = _arg.rawY;
         _this.oldPosition = lc.position;
         return _this.pointerStart = {
-          x: x,
-          y: y
+          x: rawX,
+          y: rawY
         };
       };
     })(this)));
     return unsubscribeFuncs.push(lc.on('pointerdrag', (function(_this) {
       return function(_arg) {
-        var dp, x, y;
-        x = _arg.x, y = _arg.y;
+        var dp, rawX, rawY;
+        rawX = _arg.rawX, rawY = _arg.rawY;
         dp = {
-          x: x - _this.pointerStart.x,
-          y: y - _this.pointerStart.y
+          x: rawX - _this.pointerStart.x,
+          y: rawY - _this.pointerStart.y
         };
         return lc.setPan(_this.oldPosition.x + dp.x, _this.oldPosition.y + dp.y);
       };
