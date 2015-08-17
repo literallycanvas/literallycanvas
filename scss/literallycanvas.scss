@@ -183,7 +183,7 @@ $selectedColor: lighten(#3cb0fd, 20%);
     background-color: white;
     border: $basicBorder;
 
-    left: $pickerWidth;
+    left: $pickerWidth - 1px;
     bottom: $optionsHeight;
 
     .color-row {

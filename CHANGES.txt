@@ -1,3 +1,6 @@
+v0.4.7:
+ * Fix color picker not working on Firefox
+
 v0.4.6:
  * Fix various awful bugs
  * Move color pickers back to the left, with a slightly better UI than before
