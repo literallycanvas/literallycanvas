@@ -7,10 +7,9 @@ $optionsButtonSize: $optionsHeight - 3px;
 
 $canvasBackground: #ddd;
 $toolbarBackground: rgb(230, 230, 230);
+$selectedColor: lighten(#3cb0fd, 20%);
 
 @mixin button-style-1 {
-  $selected: lighten(#3cb0fd, 20%);
-
   border: 2px solid transparent;
   border-radius: 3px;
 
@@ -20,10 +19,10 @@ $toolbarBackground: rgb(230, 230, 230);
   }
 
   &.selected:not(.disabled) {
-    background-color: $selected;
+    background-color: $selectedColor;
   }
   &:hover:not(.disabled) {
-    border-color: $selected;
+    border-color: $selectedColor;
   }
   &:active:not(.disabled) {
   }
@@ -40,10 +39,6 @@ $toolbarBackground: rgb(230, 230, 230);
     top: 0;
     border-bottom: $basicBorder;
   }
-  .color-picker-popup {
-    top: $optionsButtonSize;
-    left: 0;
-  }
 }
 
 .literally.toolbar-at-bottom {
@@ -51,10 +46,6 @@ $toolbarBackground: rgb(230, 230, 230);
   .lc-options {
     bottom: 0;
     border-top: $basicBorder;
-  }
-  .color-picker-popup {
-    left: 0;
-    bottom: $optionsButtonSize;
   }
 }
 
@@ -142,11 +133,26 @@ $toolbarBackground: rgb(230, 230, 230);
 }
 
 .literally {
-  .color-well-container {
+  .color-well {
+    font-size: 10px;
+    float: left;
+    width: $pickerWidth - 1px;
+
+    &.open {
+      background-color: $selectedColor;
+    }
+
+    // Don't set position: relative, because we want the pickers to be
+    // positioned inside the whole view.
+  }
+
+  .color-well-color-container {
     @include button-style-1;
+    border: 1px solid #aaa;
     position: relative;
-    width: $optionsButtonSize;
-    height: $optionsButtonSize;
+    width: $pickerButtonSize - 2px;
+    height: $pickerButtonSize - 2px;
+    margin: 1px auto;
     overflow: visible;
 
     .color-well-checker {
@@ -176,6 +182,9 @@ $toolbarBackground: rgb(230, 230, 230);
     z-index: 1;
     background-color: white;
     border: $basicBorder;
+
+    left: $pickerWidth;
+    bottom: $optionsHeight;
 
     .color-row {
       clear: both;

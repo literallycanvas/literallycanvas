@@ -20,20 +20,25 @@ ColorWell = React.createClass
   setColor: (c) -> @props.lc.setColor(@props.colorName, c)
 
   render: ->
-    {div, label} = React.DOM
+    {div, label, br} = React.DOM
     (div \
       {
+        className: React.addons.classSet({
+          'color-well': true,
+          'open': @state.isPickerVisible ,
+        }),
         onMouseLeave: @closePicker
         onClick: @togglePicker
-        style: {float: 'left'}
+        style: {float: 'left', textAlign: 'center'}
       },
+      (label {float: 'left'}, @props.label),
+      (br {}),
       (div \
         {
           className: React.addons.classSet
-            'square-toolbar-button': true
-            'color-well-container': true
+            'color-well-color-container': true
             'selected': @state.isPickerVisible
-          style: {backgroundColor: 'white', float: 'left', margin: 1}
+          style: {backgroundColor: 'white'}
         },
         (div {className: 'color-well-checker color-well-checker-top-left'}),
         (div {
@@ -47,9 +52,8 @@ ColorWell = React.createClass
           },
           " "
         ),
-        @renderPicker()
       ),
-      (label {float: 'left'}, @props.label),
+      @renderPicker()
     )
 
   renderPicker: ->
