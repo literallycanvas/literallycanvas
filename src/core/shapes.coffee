@@ -175,7 +175,6 @@ defineShape 'Line',
     @x2 = args.x2 or 0
     @y2 = args.y2 or 0
     @strokeWidth = args.strokeWidth or 1
-    @strokeStyle = args.strokeStyle or null
     @color = args.color or 'black'
     @capStyle = args.capStyle or 'round'
     @endCapShapes = args.endCapShapes or [null, null]
