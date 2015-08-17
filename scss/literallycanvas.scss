@@ -234,7 +234,7 @@ $selectedColor: lighten(#3cb0fd, 20%);
   }
 
   .lc-font-settings {
-    height: $optionsHeight;
+    height: $optionsHeight - 1px;
     line-height: $optionsHeight;
     padding-left: 4px;
     background-color: #f5f5f5;
