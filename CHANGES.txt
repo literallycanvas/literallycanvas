@@ -1,5 +1,6 @@
 v0.4.6:
- * Fix exception when switching to the line tool
+ * Fix various awful bugs
+ * Move color pickers back to the left, with a slightly better UI than before
 
 v0.4.5:
  * Require React v0.13+ (up from v0.10)
