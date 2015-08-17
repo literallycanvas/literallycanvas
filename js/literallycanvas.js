@@ -1987,7 +1987,6 @@ defineShape('Line', {
     this.x2 = args.x2 || 0;
     this.y2 = args.y2 || 0;
     this.strokeWidth = args.strokeWidth || 1;
-    this.strokeStyle = args.strokeStyle || null;
     this.color = args.color || 'black';
     this.capStyle = args.capStyle || 'round';
     this.endCapShapes = args.endCapShapes || [null, null];
