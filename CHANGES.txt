@@ -1,3 +1,6 @@
+v0.4.8:
+ * Fix loading an image from JSON.
+
 v0.4.7:
  * Fix color picker not working on Firefox
 
