@@ -149,7 +149,7 @@ module.exports = {
   defineCanvasRenderer:  canvasRenderer.defineCanvasRenderer,
   renderShapeToContext: canvasRenderer.renderShapeToContext,
   renderShapeToCanvas: canvasRenderer.renderShapeToCanvas,
-  renderShapesToCanvas: util.renderShapesToCanvas
+  renderShapesToCanvas: util.renderShapes
 
   defineSVGRenderer: svgRenderer.defineSVGRenderer,
   renderShapeToSVG: svgRenderer.renderShapeToSVG,
