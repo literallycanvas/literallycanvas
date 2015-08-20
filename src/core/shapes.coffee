@@ -124,7 +124,7 @@ defineShape 'Image',
   fromJSON: (data) ->
     img = new Image()
     img.src = data.imageSrc
-    createShape('Image', {x: data.x, x: data.y, image: img})
+    createShape('Image', {x: data.x, y: data.y, image: img})
 
 
 defineShape 'Rectangle',

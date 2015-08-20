@@ -20,6 +20,7 @@ release-files: all
 
 release-branch: release-files
 	git fetch lc release:release
+	git push origin lc/release:release
 	ghp-import -p -r lc -b release literallycanvas -m "Release"
 
 release-bower:
