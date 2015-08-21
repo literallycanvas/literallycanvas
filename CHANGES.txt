@@ -1,9 +1,7 @@
-v0.4.9:
- * Rename pointerdown, pointerdrag, pointermove, and pointerup to
-   lc-pointerdown, lc-pointerdrag, lc-pointermove, and lc-pointerup (#308)
-
 v0.4.8:
  * Fix loading an image from JSON.
+ * Rename pointerdown, pointerdrag, pointermove, and pointerup to
+   lc-pointerdown, lc-pointerdrag, lc-pointermove, and lc-pointerup (#308)
 
 v0.4.7:
  * Fix color picker not working on Firefox
