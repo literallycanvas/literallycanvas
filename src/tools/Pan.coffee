@@ -14,11 +14,11 @@ module.exports = class Pan extends Tool
       for func in unsubscribeFuncs
         func()
 
-    unsubscribeFuncs.push lc.on 'pointerdown', ({rawX, rawY}) =>
+    unsubscribeFuncs.push lc.on 'lc-pointerdown', ({rawX, rawY}) =>
       @oldPosition = lc.position
       @pointerStart = {x: rawX, y: rawY}
 
-    unsubscribeFuncs.push lc.on 'pointerdrag', ({rawX, rawY}) =>
+    unsubscribeFuncs.push lc.on 'lc-pointerdrag', ({rawX, rawY}) =>
       dp = {
         x: (rawX - @pointerStart.x),
         y: (rawY - @pointerStart.y)

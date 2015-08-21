@@ -42,10 +42,10 @@ module.exports = class Pencil extends ToolWithStroke
       lc.setShapesInProgress(@_getShapes(lc))
       lc.repaintLayer('main')
 
-    unsubscribeFuncs.push lc.on 'pointerdown', onDown
-    unsubscribeFuncs.push lc.on 'pointerdrag', onMove
-    unsubscribeFuncs.push lc.on 'pointermove', onMove
-    unsubscribeFuncs.push lc.on 'pointerup', onUp
+    unsubscribeFuncs.push lc.on 'lc-pointerdown', onDown
+    unsubscribeFuncs.push lc.on 'lc-pointerdrag', onMove
+    unsubscribeFuncs.push lc.on 'lc-pointermove', onMove
+    unsubscribeFuncs.push lc.on 'lc-pointerup', onUp
 
   willBecomeInactive: (lc) ->
     @unsubscribe()
