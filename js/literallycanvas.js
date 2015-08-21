@@ -154,7 +154,7 @@ module.exports = LiterallyCanvas = (function() {
       });
     } else {
       this.isDragging = true;
-      return this.trigger("pointerdown", {
+      return this.trigger("lc-pointerdown", {
         tool: this.tool,
         x: p.x,
         y: p.y,
@@ -178,7 +178,7 @@ module.exports = LiterallyCanvas = (function() {
           }
         } else {
           if (_this.isDragging) {
-            return _this.trigger("pointerdrag", {
+            return _this.trigger("lc-pointerdrag", {
               tool: _this.tool,
               x: p.x,
               y: p.y,
@@ -186,7 +186,7 @@ module.exports = LiterallyCanvas = (function() {
               rawY: y
             });
           } else {
-            return _this.trigger("pointermove", {
+            return _this.trigger("lc-pointermove", {
               tool: _this.tool,
               x: p.x,
               y: p.y,
@@ -212,7 +212,7 @@ module.exports = LiterallyCanvas = (function() {
       }
     } else {
       this.isDragging = false;
-      return this.trigger("pointerup", {
+      return this.trigger("lc-pointerup", {
         tool: this.tool,
         x: p.x,
         y: p.y,
@@ -1302,7 +1302,7 @@ drawLinePathLatest = function(ctx, bufferCtx, shape) {
   if (shape.tail) {
     segmentStart = shape.smoothedPoints.length - shape.segmentSize * shape.tailSize;
     drawStart = segmentStart < shape.segmentSize * 2 ? 0 : segmentStart;
-    drawEnd = segmentStart + shape.segmentSize + 1;
+    drawEnd = shape.smoothedPoints.length - 1;
     _drawRawLinePath(bufferCtx, shape.smoothedPoints.slice(drawStart, drawEnd));
     return bufferCtx.stroke();
   } else {
@@ -1897,7 +1897,7 @@ defineShape('Image', {
     img.src = data.imageSrc;
     return createShape('Image', {
       x: data.x,
-      x: data.y,
+      y: data.y,
       image: img
     });
   }
@@ -2957,7 +2957,7 @@ module.exports = {
   defineCanvasRenderer: canvasRenderer.defineCanvasRenderer,
   renderShapeToContext: canvasRenderer.renderShapeToContext,
   renderShapeToCanvas: canvasRenderer.renderShapeToCanvas,
-  renderShapesToCanvas: util.renderShapesToCanvas,
+  renderShapesToCanvas: util.renderShapes,
   defineSVGRenderer: svgRenderer.defineSVGRenderer,
   renderShapeToSVG: svgRenderer.renderShapeToSVG,
   renderShapesToSVG: util.renderShapesToSVG,
@@ -4124,7 +4124,7 @@ module.exports = Pan = (function(_super) {
         return _results;
       };
     })(this);
-    unsubscribeFuncs.push(lc.on('pointerdown', (function(_this) {
+    unsubscribeFuncs.push(lc.on('lc-pointerdown', (function(_this) {
       return function(_arg) {
         var rawX, rawY;
         rawX = _arg.rawX, rawY = _arg.rawY;
@@ -4135,7 +4135,7 @@ module.exports = Pan = (function(_super) {
         };
       };
     })(this)));
-    return unsubscribeFuncs.push(lc.on('pointerdrag', (function(_this) {
+    return unsubscribeFuncs.push(lc.on('lc-pointerdrag', (function(_this) {
       return function(_arg) {
         var dp, rawX, rawY;
         rawX = _arg.rawX, rawY = _arg.rawY;
@@ -4300,10 +4300,10 @@ module.exports = Pencil = (function(_super) {
         return lc.repaintLayer('main');
       };
     })(this);
-    unsubscribeFuncs.push(lc.on('pointerdown', onDown));
-    unsubscribeFuncs.push(lc.on('pointerdrag', onMove));
-    unsubscribeFuncs.push(lc.on('pointermove', onMove));
-    return unsubscribeFuncs.push(lc.on('pointerup', onUp));
+    unsubscribeFuncs.push(lc.on('lc-pointerdown', onDown));
+    unsubscribeFuncs.push(lc.on('lc-pointerdrag', onMove));
+    unsubscribeFuncs.push(lc.on('lc-pointermove', onMove));
+    return unsubscribeFuncs.push(lc.on('lc-pointerup', onUp));
   };
 
   Pencil.prototype.willBecomeInactive = function(lc) {
