@@ -171,7 +171,8 @@ drawLinePathLatest = (ctx, bufferCtx, shape) ->
       shape.smoothedPoints.length - shape.segmentSize * shape.tailSize
     drawStart =
       if segmentStart < shape.segmentSize * 2 then 0 else segmentStart
-    drawEnd = segmentStart + shape.segmentSize + 1
+    drawEnd = shape.smoothedPoints.length - 1
+
     _drawRawLinePath(bufferCtx, shape.smoothedPoints.slice(drawStart, drawEnd))
     bufferCtx.stroke()
   else
