@@ -35,7 +35,6 @@ util =
 
     for canvas in canvases
       ctx.drawImage(canvas, 0, 0)
-      ctx.drawImage(canvas, 0, 0)
     c
 
   renderShapes: (shapes, bounds, scale=1, canvas=null) ->
