@@ -76,6 +76,9 @@ module.exports = class LiterallyCanvas
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
+    # dispatchEvent has a boolean value that doesn't mean anything to us, so
+    # don't let CoffeeScript send it back
+    null
 
   on: (name, fn) ->
     wrapper = (e) -> fn e.detail
