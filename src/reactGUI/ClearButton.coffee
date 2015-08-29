@@ -1,6 +1,7 @@
 React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {_} = require '../core/localization'
+{classSet} = require '../core/util'
 
 ClearButton = React.createClass
   displayName: 'ClearButton'
@@ -12,7 +13,7 @@ ClearButton = React.createClass
     {div} = React.DOM
     {lc} = @props
 
-    className = React.addons.classSet
+    className = classSet
       'lc-clear': true
       'toolbar-button': true
       'fat-button': true

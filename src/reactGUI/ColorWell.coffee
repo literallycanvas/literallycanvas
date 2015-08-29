@@ -1,4 +1,5 @@
 React = require './React-shim'
+{classSet} = require '../core/util'
 
 
 ColorWell = React.createClass
@@ -23,7 +24,7 @@ ColorWell = React.createClass
     {div, label, br} = React.DOM
     (div \
       {
-        className: React.addons.classSet({
+        className: classSet({
           'color-well': true,
           'open': @state.isPickerVisible ,
         }),
@@ -35,7 +36,7 @@ ColorWell = React.createClass
       (br {}),
       (div \
         {
-          className: React.addons.classSet
+          className: classSet
             'color-well-color-container': true
             'selected': @state.isPickerVisible
           style: {backgroundColor: 'white'}
@@ -65,7 +66,7 @@ ColorWell = React.createClass
         {className: 'color-row', key: 0, style: {height: 20}},
         (div \
           {
-            className: React.addons.classSet(
+            className: classSet(
               'color-cell transparent-cell': true,
               'selected': @state.color == 'transparent'
             )
@@ -87,7 +88,7 @@ ColorWell = React.createClass
         return (div \
           {className: 'color-row', key: ix, style: {width: 20 * row.length}},
           row.map((cellColor, ix2) =>
-            className = React.addons.classSet
+            className = classSet
               'color-cell': true
               'selected': @state.color == cellColor
             (div \

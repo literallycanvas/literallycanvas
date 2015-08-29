@@ -1,6 +1,7 @@
 {defineOptionsStyle} = require './optionsStyles'
 StrokeWidthPicker = React.createFactory require '../reactGUI/StrokeWidthPicker'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
+{classSet} = require '../core/util'
 
 defineOptionsStyle 'line-options-and-stroke-width', React.createClass
   displayName: 'LineOptionsAndStrokeWidth'
@@ -21,10 +22,10 @@ defineOptionsStyle 'line-options-and-stroke-width', React.createClass
       @props.tool.hasEndArrow = !@props.tool.hasEndArrow
       @setState @getState()
 
-    dashButtonClass = React.addons.classSet
+    dashButtonClass = classSet
       'square-toolbar-button': true
       'selected': @state.isDashed
-    arrowButtonClass = React.addons.classSet
+    arrowButtonClass = classSet
       'square-toolbar-button': true
       'selected': @state.hasEndArrow
     style = {float: 'left', margin: 1}

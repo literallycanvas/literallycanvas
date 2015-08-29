@@ -1,5 +1,6 @@
 React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
+{classSet} = require '../core/util'
 
 createZoomButtonComponent = (inOrOut) -> React.createClass
   displayName: if inOrOut == 'in' then 'ZoomInButton' else 'ZoomOutButton'
@@ -17,7 +18,7 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
     {lc, imageURLPrefix} = @props
     title = if inOrOut == 'in' then 'Zoom in' else 'Zoom out'
 
-    className = "lc-zoom-#{inOrOut} " + React.addons.classSet
+    className = "lc-zoom-#{inOrOut} " + classSet
       'toolbar-button': true
       'thin-button': true
       'disabled': not @state.isEnabled

@@ -1,4 +1,5 @@
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
+{classSet} = require '../core/util'
 
 
 module.exports = React.createClass
@@ -13,7 +14,7 @@ module.exports = React.createClass
 
     (div {},
       strokeWidths.map((strokeWidth, ix) =>
-        buttonClassName = React.addons.classSet
+        buttonClassName = classSet
           'square-toolbar-button': true
           'selected': strokeWidth == @state.strokeWidth
         buttonSize = 28

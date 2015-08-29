@@ -3,11 +3,19 @@ slice = Array.prototype.slice
 {renderShapeToSVG} = require './svgRenderer'
 
 util =
+
   last: (array, n = null) ->
     if n
       return slice.call(array, Math.max(array.length - n, 0))
     else
       return array[array.length - 1]
+
+  classSet: (classNameToIsPresent) ->
+    classNames = []
+    for key of classNameToIsPresent
+      if classNameToIsPresent[key]
+        classNames.push(key)
+    return classNames.join(' ')
 
   matchElementSize: (elementToMatch, elementsToResize, scale, callback = ->) ->
     resize = =>

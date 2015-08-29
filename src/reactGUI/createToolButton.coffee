@@ -1,4 +1,5 @@
 React = require './React-shim'
+{classSet} = require '../core/util'
 
 
 createToolButton = ({displayName, getTool, imageName}) ->
@@ -16,7 +17,7 @@ createToolButton = ({displayName, getTool, imageName}) ->
       {div, img} = React.DOM
       {imageURLPrefix, isSelected, onSelect} = @props
 
-      className = React.addons.classSet
+      className = classSet
         'lc-pick-tool': true
         'toolbar-button': true
         'thin-button': true

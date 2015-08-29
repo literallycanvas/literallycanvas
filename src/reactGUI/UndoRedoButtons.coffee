@@ -1,5 +1,6 @@
 React = require './React-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
+{classSet} = require '../core/util'
 
 createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
   displayName: if undoOrRedo == 'undo' then 'UndoButton' else 'RedoButton'
@@ -24,7 +25,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
     {lc, imageURLPrefix} = @props
     title = if undoOrRedo == 'undo' then 'Undo' else 'Redo'
 
-    className = "lc-#{undoOrRedo} " + React.addons.classSet
+    className = "lc-#{undoOrRedo} " + classSet
       'toolbar-button': true
       'thin-button': true
       'disabled': not @state.isEnabled
