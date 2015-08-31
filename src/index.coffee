@@ -106,7 +106,7 @@ init = (el, opts = {}) ->
   drawingViewElement.className = 'lc-drawing'
 
   optionsElement = document.createElement('div')
-  optionsElement.className = 'lc-options'
+  optionsElement.className = 'lc-options horz-toolbar'
 
   el.appendChild(pickerElement)
   el.appendChild(drawingViewElement)

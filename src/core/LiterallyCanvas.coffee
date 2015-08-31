@@ -14,6 +14,8 @@ module.exports = class LiterallyCanvas
   constructor: (@containerEl, opts) ->
     bindEvents(this, @containerEl, opts.keyboardShortcuts)
 
+    @opts = opts
+
     @config =
       zoomMin: opts.zoomMin or 0.2
       zoomMax: opts.zoomMax or 4.0

@@ -37,6 +37,8 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     canvas.addEventListener 'mousemove', mouseMoveListener
 
   canvas.addEventListener 'mousedown', (e) =>
+    return if e.target.tagName.toLowerCase() != 'canvas'
+
     down = true
     e.preventDefault()
     canvas.onselectstart = -> false # disable selection while dragging
@@ -60,6 +62,7 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     document.removeEventListener 'touchcancel', touchEndListener
 
   canvas.addEventListener 'touchstart', (e) ->
+    return if e.target.tagName.toLowerCase() != 'canvas'
     e.preventDefault()
     if e.touches.length == 1
       lc.pointerDown(coordsForTouchEvent(canvas, e)...)

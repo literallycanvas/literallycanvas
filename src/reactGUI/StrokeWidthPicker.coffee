@@ -19,13 +19,7 @@ module.exports = React.createClass
           'selected': strokeWidth == @state.strokeWidth
         buttonSize = 28
         (div {
-            key: strokeWidth,
-            style: {
-              float: 'left',
-              width: buttonSize,
-              height: buttonSize,
-              margin: 1
-            }
+            key: strokeWidth
           },
           (div \
             {
