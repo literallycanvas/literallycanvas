@@ -95,8 +95,10 @@ init = (el, opts = {}) ->
 
   topOrBottomClassName = if opts.toolbarPosition == 'top'
     'toolbar-at-top'
-  else
+  else if opts.toolbarPosition == 'bottom'
     'toolbar-at-bottom'
+  else if opts.toolbarPosition == 'hidden'
+    'toolbar-hidden'
   el.className = el.className + ' ' + topOrBottomClassName
 
   pickerElement = document.createElement('div')

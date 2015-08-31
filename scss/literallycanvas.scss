@@ -54,6 +54,11 @@ $selectedColor: lighten(#3cb0fd, 20%);
   }
 }
 
+.literally.toolbar-hidden {
+  .lc-drawing { left: 0; right: 0; bottom: 0; top: 0; }
+  .lc-options, .lc-picker { display: none; }
+}
+
 .literally {
   position: relative;
   background-color: $canvasBackground;
