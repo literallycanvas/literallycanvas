@@ -12,7 +12,7 @@ INFINITE = 'infinite'
 module.exports = class LiterallyCanvas
 
   constructor: (@containerEl, opts) ->
-    bindEvents(this, @containerEl, opts.keyboardShortcuts)
+    @_unsubscribeEvents = bindEvents(this, @containerEl, opts.keyboardShortcuts)
 
     @opts = opts
 
@@ -75,6 +75,11 @@ module.exports = class LiterallyCanvas
 
     if @watermarkImage
       @watermarkImage.onload = => @repaintLayer('background')
+
+  _teardown: ->
+    @tool.willBecomeInactive(this)
+    @tool = null
+    @_unsubscribeEvents()
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))

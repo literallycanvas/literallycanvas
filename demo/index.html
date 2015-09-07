@@ -35,12 +35,14 @@
 
   <body>
     <div class="fs-container">
-      <div class="literally one">
-        <canvas id="original-canvas"></canvas>
-      </div>
+      <div class="literally one"></div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
       <br>
       <a href="javascript:void(0);" id="change-size">Change size</a>
+      <br>
+      <a href="javascript:void(0);" id="hide-lc">Teardown</a>
+      <br>
+      <a href="javascript:void(0);" id="show-lc">Setup</a>
 
       <br>
       <div class="svg-container"
@@ -62,8 +64,30 @@
     <script src="/lib/js/literallycanvas.js"></script>
 
     <script type="text/javascript">
+      LC.setDefaultImageURLPrefix('/lib/img');
 
-      $(document).ready(function() {
+      var lc = null;
+
+      var updateSVG = function() {
+        if (!lc) return;
+        $('.svg-container')[0].innerHTML = lc.getSVGString();
+      }
+
+      var backgroundImage = new Image();
+
+      LC.util.addImageOnload(backgroundImage, updateSVG);
+
+      backgroundImage.src = '/demo/bear.png';
+
+      var watermarkImage = new Image();
+      //watermarkImage.src = '/demo/watermark.png';
+      // for testing watermark loading bug:
+      //watermarkImage.src = 'http://literallycanvas.com/_static/watermark.png'
+
+      // the only LC-specific thing we have to do
+      var containerOne = document.getElementsByClassName('literally one')[0];
+
+      var showLC = function() {
         // disable scrolling on touch devices so we can actually draw
         $(document).bind('touchmove', function(e) {
           if (e.target === document.documentElement) {
@@ -71,19 +95,7 @@
           }
         });
 
-        LC.setDefaultImageURLPrefix('/lib/img');
-
-        var backgroundImage = new Image();
-        backgroundImage.src = '/demo/bear.png';
-
-        var watermarkImage = new Image();
-        //watermarkImage.src = '/demo/watermark.png';
-        // for testing watermark loading bug:
-        //watermarkImage.src = 'http://literallycanvas.com/_static/watermark.png'
-
-        // the only LC-specific thing we have to do
-        var containerOne = document.getElementsByClassName('literally one')[0];
-        var lc = LC.init(containerOne, {
+        lc = LC.init(containerOne, {
           toolbarPosition: 'bottom',
           backgroundShapes: [
             LC.createShape(
@@ -116,18 +128,34 @@
           lc.setImageSize(null, 200)
         });
 
-        var oldOnload = backgroundImage.onload;
-        backgroundImage.onload = function() {
-          $('.svg-container')[0].innerHTML = lc.getSVGString()
-          if (oldOnload) oldOnload();
-        }
+        updateSVG();
 
         /* demo of inserting a shape below another
         var newShape = LC.JSONToShape({"className":"Rectangle","data":{"x":238,"y":168,"width":122,"height":112,"strokeWidth":5,"strokeColor":"hsl(0, 100%, 42%)","fillColor":"#0f0"},"id":"4764db7c-9d6d-1e7f-f304-3904fa464e6b"})
         lc.saveShape(newShape, false, "e97d582e-6c88-f01e-6ba0-6a9344b5594c")
         */
+      };
+
+      $(document).ready(function() {
+        // disable scrolling on touch devices so we can actually draw
+        $(document).bind('touchmove', function(e) {
+          if (e.target === document.documentElement) {
+            return e.preventDefault();
+          }
+        });
+        showLC();
       });
 
+      $('#hide-lc').click(function() {
+        if (lc) {
+          lc.teardown();
+          lc = null;
+        }
+      });
+
+      $('#show-lc').click(function() {
+        if (!lc) { showLC(); }
+      });
     </script>
 
     <!--

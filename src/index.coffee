@@ -118,10 +118,18 @@ init = (el, opts = {}) ->
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
 
-  initReact(pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
+  initReact(
+    pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)
+
+  teardown = ->
+    lc._teardown()
+    pickerElement.remove()
+    drawingViewElement.remove()
+    optionsElement.remove()
+  lc.teardown = teardown
 
   lc
 

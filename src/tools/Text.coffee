@@ -37,6 +37,7 @@ module.exports = class Text extends Tool
 
     unsubscribeFuncs.push lc.on 'undo', switchAway
     unsubscribeFuncs.push lc.on 'redo', switchAway
+    unsubscribeFuncs.push lc.on 'clear', switchAway
     unsubscribeFuncs.push lc.on 'zoom', updateInputEl
     unsubscribeFuncs.push lc.on 'imageSizeChange', updateInputEl
     unsubscribeFuncs.push lc.on 'snapshotLoad', =>
