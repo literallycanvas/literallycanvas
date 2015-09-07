@@ -76,6 +76,7 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
 
   if panWithKeyboard
     listener = (e) ->
+      console.warn("Keyboard panning is deprecated.")
       switch e.keyCode
         when 37 then lc.pan -10, 0
         when 38 then lc.pan 0, -10
