@@ -87,6 +87,52 @@
       // the only LC-specific thing we have to do
       var containerOne = document.getElementsByClassName('literally one')[0];
 
+      var MyTool = function() {
+        var self = this;
+
+        return {
+          usesSimpleAPI: false,  // DO NOT FORGET THIS!!!
+          name: 'ImageTool',
+          iconName: 'line',
+          optionsStyle: null,
+
+          didBecomeActive: function(lc) {
+            var onPointerDown = function(pt) {
+              self.currentShape = LC.createShape('Image', {
+                image: backgroundImage, x: pt.x, y: pt.y});
+              lc.setShapesInProgress([self.currentShape]);
+              lc.repaintLayer('main');
+            };
+
+            var onPointerDrag = function(pt) {
+              self.currentShape.x = pt.x;
+              self.currentShape.y = pt.y;
+              lc.setShapesInProgress([self.currentShape]);
+              lc.repaintLayer('main');
+            };
+
+            var onPointerUp = function(pt) {
+              self.currentShape.x = pt.x;
+              self.currentShape.y = pt.y;
+              lc.setShapesInProgress([]);
+              lc.saveShape(self.currentShape);
+            };
+
+            // lc.on() returns a function that unsubscribes us. capture it.
+            self.unsubscribeFuncs = [
+              lc.on('lc-pointerdown', onPointerDown),
+              lc.on('lc-pointerdrag', onPointerDrag),
+              lc.on('lc-pointerup', onPointerUp)
+            ];
+          },
+
+          willBecomeInactive: function(lc) {
+            // call all the unsubscribe functions
+            self.unsubscribeFuncs.map(function(f) { f() });
+          }
+        }
+      };
+
       var showLC = function() {
         // disable scrolling on touch devices so we can actually draw
         $(document).bind('touchmove', function(e) {
@@ -97,6 +143,7 @@
 
         lc = LC.init(containerOne, {
           toolbarPosition: 'bottom',
+          tools: LC.defaultTools.concat([MyTool]),
           backgroundShapes: [
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100}),
@@ -113,6 +160,7 @@
 
         lc.on('drawingChange', function() {
           localStorage.setItem('drawing', lc.getSnapshotJSON());
+          updateSVG();
         });
 
         // lc.setPan(100, 100);
