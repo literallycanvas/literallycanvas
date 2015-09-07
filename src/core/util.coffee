@@ -4,6 +4,13 @@ slice = Array.prototype.slice
 
 util =
 
+  addImageOnload: (img, fn) ->
+    oldOnload = img.onload
+    img.onload = ->
+      oldOnload?()
+      fn()
+    return img
+
   last: (array, n = null) ->
     if n
       return slice.call(array, Math.max(array.length - n, 0))

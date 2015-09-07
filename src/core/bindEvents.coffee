@@ -21,6 +21,8 @@ buttonIsDown = (e) ->
 
 
 module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
+  unsubs = []
+
   mouseMoveListener = (e) =>
     e.preventDefault()
     p = position(canvas, e)
@@ -73,11 +75,15 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
       lc.pointerMove(coordsForTouchEvent(canvas, e)...)
 
   if panWithKeyboard
-    document.addEventListener 'keydown', (e) ->
+    listener = (e) ->
       switch e.keyCode
         when 37 then lc.pan -10, 0
         when 38 then lc.pan 0, -10
         when 39 then lc.pan 10, 0
         when 40 then lc.pan 0, 10
-
       lc.repaintAllLayers()
+
+    document.addEventListener 'keydown', listener
+    unsubs.push -> document.removeEventListener(listener)
+
+  -> f() for f in unsubs
