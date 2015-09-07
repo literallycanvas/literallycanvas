@@ -43,6 +43,7 @@ module.exports = class Pencil extends ToolWithStroke
 
     unsubscribeFuncs.push lc.on 'undo', => @_cancel(lc)
     unsubscribeFuncs.push lc.on 'redo', => @_cancel(lc)
+    unsubscribeFuncs.push lc.on 'clear', => @_cancel(lc)
     unsubscribeFuncs.push lc.on 'lc-pointerdown', onDown
     unsubscribeFuncs.push lc.on 'lc-pointerdrag', onMove
     unsubscribeFuncs.push lc.on 'lc-pointermove', onMove
