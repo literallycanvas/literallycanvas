@@ -120,10 +120,14 @@ defineShape 'Image',
     @y = args.y or 0
     @image = args.image or null
   getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height}
-  toJSON: -> {@x, @y, imageSrc: @image.src}
+  toJSON: -> {@x, @y, imageSrc: @image.src, imageObject: @image}
   fromJSON: (data) ->
-    img = new Image()
-    img.src = data.imageSrc
+    img = null
+    if data.imageObject?.width
+      img = data.imageObject
+    else
+      img = new Image()
+      img.src = data.imageSrc
     createShape('Image', {x: data.x, y: data.y, image: img})
 
 

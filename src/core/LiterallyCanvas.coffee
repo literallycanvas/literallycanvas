@@ -4,6 +4,7 @@ math = require './math'
 {createShape, shapeToJSON, JSONToShape} = require './shapes'
 {renderShapeToContext} = require './canvasRenderer'
 {renderShapeToSVG} = require './svgRenderer'
+snapshotToDataURL = require './snapshotToDataURL'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
@@ -393,34 +394,17 @@ module.exports = class LiterallyCanvas
       if @width == INFINITE then 0 else @width,
       if @height == INFINITE then 0 else @height)
 
-  getImage: (opts={}) ->
-    # {x, y, width, height}
-    opts.rect ?= @getContentBounds()
-
-    if not (opts.rect.width and opts.rect.height)
-      return
-
-    opts.scale ?= 1
+  getImage: (opts) ->
+    opts.includeWatermark ?= true
     opts.scaleDownRetina ?= true
-    opts.includeWatermark ?= @watermarkImage and true
-
+    opts.scale ?= 1
     opts.scale *= @backingScale unless opts.scaleDownRetina
-    @repaintLayer('main', true)
-
-    watermarkCanvas = document.createElement('canvas')
-    watermarkCanvas.width = opts.rect.width * opts.scale
-    watermarkCanvas.height = opts.rect.height * opts.scale
-    watermarkCtx = watermarkCanvas.getContext('2d')
-    watermarkCtx.fillStyle = @colors.background
-    watermarkCtx.fillRect(0, 0, watermarkCanvas.width, watermarkCanvas.height)
 
     if opts.includeWatermark
-      @_renderWatermark(watermarkCtx, false)
-
-    util.combineCanvases(
-      watermarkCanvas,
-      util.renderShapes(@backgroundShapes, opts.rect, opts.scale),
-      util.renderShapes(@shapes, opts.rect, opts.scale))
+      opts.watermarkImage = @watermarkImage
+      opts.watermarkScale = @watermarkScale
+      opts.watermarkScale *= @backingScale unless opts.scaleDownRetina
+    return snapshotToDataURL(@getSnapshot(), opts)
 
   canvasForExport: ->
     @repaintAllLayers()

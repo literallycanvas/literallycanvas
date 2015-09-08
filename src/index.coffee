@@ -8,6 +8,7 @@ canvasRenderer = require './core/canvasRenderer'
 svgRenderer = require './core/svgRenderer'
 shapes = require './core/shapes'
 util = require './core/util'
+snapshotToDataURL = require './core/snapshotToDataURL'
 
 {localize} = require './core/localization'
 
@@ -169,6 +170,8 @@ module.exports = {
 
   snapshotToShapes: conversion.snapshotToShapes
   snapshotJSONToShapes: conversion.snapshotJSONToShapes
+
+  snapshotToDataURL: snapshotToDataURL
 
   localize: localize
 }
