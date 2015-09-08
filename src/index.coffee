@@ -80,6 +80,8 @@ init = (el, opts = {}) ->
   opts.zoomMax ?= 4.0
   opts.zoomStep ?= 0.2
 
+  opts.snapshot ?= null
+
   unless 'tools' of opts
     opts.tools = defaultTools
 

@@ -76,6 +76,8 @@ module.exports = class LiterallyCanvas
     if @watermarkImage
       @watermarkImage.onload = => @repaintLayer('background')
 
+    @loadSnapshot(opts.snapshot) if opts.snapshot
+
   _teardown: ->
     @tool.willBecomeInactive(this)
     @tool = null
@@ -427,10 +429,22 @@ module.exports = class LiterallyCanvas
   canvasWithBackground: (backgroundImageOrCanvas) ->
     util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
 
-  getSnapshot: -> {
-    shapes: (shapeToJSON(shape) for shape in @shapes),
-    @colors}
-  getSnapshotJSON: -> JSON.stringify(@getSnapshot())
+  getSnapshot: (keys=null) ->
+    keys ?= ['shapes', 'imageSize', 'colors', 'position', 'scale', 'backgroundShapes']
+    snapshot = {}
+    for k in ['colors', 'position', 'scale']
+      snapshot[k] = this[k] if k in keys
+    if 'shapes' in keys
+      snapshot.shapes = (shapeToJSON(shape) for shape in @shapes)
+    if 'backgroundShapes' in keys
+      snapshot.backgroundShapes = (shapeToJSON(shape) for shape in @backgroundShapes)
+    if 'imageSize' in keys
+      snapshot.imageSize = {@width, @height}
+
+    snapshot
+  getSnapshotJSON: ->
+    console.warn("lc.getSnapshotJSON() is deprecated. use JSON.stringify(lc.getSnapshot()) instead.")
+    JSON.stringify(@getSnapshot())
 
   getSVGString: (opts={}) ->
     # {x, y, width, height}
@@ -445,18 +459,30 @@ module.exports = class LiterallyCanvas
   loadSnapshot: (snapshot) ->
     return unless snapshot
 
-    snapshot.colors ?= @colors
+    if snapshot.colors
+      for k in ['primary', 'secondary', 'background']
+        @setColor(k, snapshot.colors[k])
 
-    for k in ['primary', 'secondary', 'background']
-      @setColor(k, snapshot.colors[k])
+    if snapshot.shapes
+      @shapes = []
+      for shapeRepr in snapshot.shapes
+        shape = JSONToShape(shapeRepr)
+        @execute(new actions.AddShapeAction(this, shape)) if shape
 
-    @shapes = []
-    for shapeRepr in snapshot.shapes
-      shape = JSONToShape(shapeRepr)
-      @execute(new actions.AddShapeAction(this, shape)) if shape
+    if snapshot.backgroundShapes
+      @backgroundShapes = (JSONToShape(s) for s in snapshot.backgroundShapes)
+
+    if snapshot.imageSize
+      @width = snapshot.imageSize.width
+      @height = snapshot.imageSize.height
+
+    @position = snapshot.position if snapshot.position
+    @scale = snapshot.scale if snapshot.scale
+
     @repaintAllLayers()
     @trigger('snapshotLoad')
     @trigger('drawingChange', {})
 
   loadSnapshotJSON: (str) ->
+    console.warn("lc.loadSnapshotJSON() is deprecated. use lc.loadSnapshot(JSON.parse(snapshot)) instead.")
     @loadSnapshot(JSON.parse(str))

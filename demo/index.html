@@ -144,6 +144,7 @@
         lc = LC.init(containerOne, {
           toolbarPosition: 'bottom',
           tools: LC.defaultTools.concat([MyTool]),
+          snapshot: JSON.parse(localStorage.getItem('drawing')),
           backgroundShapes: [
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100}),
@@ -156,12 +157,15 @@
           // imageSize: {width: 500, height: 300}
         });
         window.demoLC = lc;
-        lc.loadSnapshotJSON(localStorage.getItem('drawing'));
 
-        lc.on('drawingChange', function() {
-          localStorage.setItem('drawing', lc.getSnapshotJSON());
+        var save = function() {
+          localStorage.setItem('drawing', JSON.stringify(lc.getSnapshot()));
           updateSVG();
-        });
+        }
+
+        lc.on('drawingChange', save);
+        lc.on('pan', save);
+        lc.on('zoom', save);
 
         // lc.setPan(100, 100);
 
