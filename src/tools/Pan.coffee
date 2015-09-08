@@ -19,9 +19,13 @@ module.exports = class Pan extends Tool
       @pointerStart = {x: rawX, y: rawY}
 
     unsubscribeFuncs.push lc.on 'lc-pointerdrag', ({rawX, rawY}) =>
+      # okay, so this is really bad:
+      # lc.position is "buggy screen coordinates": correct on non-retina,
+      # probably wrong on retina. compensate here; in v0.5 we should put the
+      # offset in drawing coordinates.
       dp = {
-        x: (rawX - @pointerStart.x),
-        y: (rawY - @pointerStart.y)
+        x: (rawX - @pointerStart.x) * lc.backingScale,
+        y: (rawY - @pointerStart.y) * lc.backingScale
       }
       lc.setPan(@oldPosition.x + dp.x, @oldPosition.y + dp.y)
 
