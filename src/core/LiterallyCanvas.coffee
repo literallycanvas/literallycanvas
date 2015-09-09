@@ -4,7 +4,7 @@ math = require './math'
 {createShape, shapeToJSON, JSONToShape} = require './shapes'
 {renderShapeToContext} = require './canvasRenderer'
 {renderShapeToSVG} = require './svgRenderer'
-snapshotToDataURL = require './snapshotToDataURL'
+snapshotToImage = require './snapshotToImage'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
@@ -404,7 +404,7 @@ module.exports = class LiterallyCanvas
       opts.watermarkImage = @watermarkImage
       opts.watermarkScale = @watermarkScale
       opts.watermarkScale *= @backingScale unless opts.scaleDownRetina
-    return snapshotToDataURL(@getSnapshot(), opts)
+    return snapshotToImage(@getSnapshot(), opts)
 
   canvasForExport: ->
     @repaintAllLayers()
