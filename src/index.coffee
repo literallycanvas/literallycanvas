@@ -9,6 +9,7 @@ svgRenderer = require './core/svgRenderer'
 shapes = require './core/shapes'
 util = require './core/util'
 snapshotToImage = require './core/snapshotToImage'
+snapshotToSVG = require './core/snapshotToSVG'
 
 {localize} = require './core/localization'
 
@@ -172,6 +173,7 @@ module.exports = {
   snapshotJSONToShapes: conversion.snapshotJSONToShapes
 
   snapshotToImage: snapshotToImage
+  snapshotToSVG: snapshotToSVG
 
   localize: localize
 }

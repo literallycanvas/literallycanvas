@@ -13,7 +13,6 @@ renderWatermark = (ctx, image, scale) ->
   ctx.restore()
 
 module.exports = (snapshot, opts={}) ->
-  console.log snapshot
   opts.scale ?= 1
 
   shapes = (JSONToShape(s) for s in snapshot.shapes)
@@ -23,15 +22,21 @@ module.exports = (snapshot, opts={}) ->
   imageSize = snapshot.imageSize or {width: INFINITE, height: INFINITE}
   {width, height} = imageSize
   colors = snapshot.colors or {background: 'transparent'}
+  allShapes = shapes.concat(backgroundShapes)
 
   watermarkCanvas = document.createElement('canvas')
   watermarkCtx = watermarkCanvas.getContext('2d')
 
+  opts.margin ?= {top: 0, right: 0, bottom: 0, left: 0}
   unless opts.rect
     opts.rect = util.getBoundingRect(
-      (s.getBoundingRect(watermarkCtx) for s in  shapes.concat(backgroundShapes))
+      (s.getBoundingRect(watermarkCtx) for s in allShapes)
       if width == INFINITE then 0 else width,
       if height == INFINITE then 0 else height)
+  opts.rect.x -= opts.margin.left
+  opts.rect.y -= opts.margin.top
+  opts.rect.width += opts.margin.left + opts.margin.right
+  opts.rect.height += opts.margin.top + opts.margin.bottom
 
   watermarkCanvas.width = opts.rect.width * opts.scale
   watermarkCanvas.height = opts.rect.height * opts.scale

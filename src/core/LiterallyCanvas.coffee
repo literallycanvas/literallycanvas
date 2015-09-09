@@ -5,6 +5,7 @@ math = require './math'
 {renderShapeToContext} = require './canvasRenderer'
 {renderShapeToSVG} = require './svgRenderer'
 snapshotToImage = require './snapshotToImage'
+snapshotToSVG = require './snapshotToSVG'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
@@ -430,15 +431,7 @@ module.exports = class LiterallyCanvas
     console.warn("lc.getSnapshotJSON() is deprecated. use JSON.stringify(lc.getSnapshot()) instead.")
     JSON.stringify(@getSnapshot())
 
-  getSVGString: (opts={}) ->
-    # {x, y, width, height}
-    opts.rect ?= @getContentBounds()
-
-    if not (opts.rect.width and opts.rect.height)
-      return
-
-    util.renderShapesToSVG(
-      @backgroundShapes.concat(@shapes), opts.rect, @colors.background)
+  getSVGString: (opts={}) -> snapshotToSVG(@getSnapshot(), opts)
 
   loadSnapshot: (snapshot) ->
     return unless snapshot
