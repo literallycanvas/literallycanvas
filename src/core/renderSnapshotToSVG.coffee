@@ -3,8 +3,6 @@ util = require './util'
 
 INFINITE = 'infinite'
 module.exports = (snapshot, opts={}) ->
-  opts.scale ?= 1
-
   shapes = (JSONToShape(s) for s in snapshot.shapes)
   backgroundShapes = []
   if snapshot.backgroundShapes

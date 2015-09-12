@@ -1,5 +1,6 @@
 v0.4.9:
- * Snapshot API is public
+ * The snapshot API is more public. The JSON-suffixed snapshot methods are
+   being deprecated in favor of ones that deal with JavaScript objects.
  * New LC.init() options:
    * snapshot: load a snapshot immediately
    * defaultStrokeWidth
@@ -22,7 +23,7 @@ v0.4.9:
  * LC.util.combineCanvases() doesn't draw each canvas twice (probably fixed
    some image rendering bugs)
  * Deprecations (docs provide external replacements):
-    * Keyboard navigation
+    * Keyboard navigation (keyboardShortcuts option)
     * lc.getSnapshotJSON()
     * lc.setSnapshotJSON()
     * LC.snapshotJSONToShapes()
