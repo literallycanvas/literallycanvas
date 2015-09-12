@@ -1,4 +1,5 @@
 v0.4.9:
+ * Snapshot API is public
  * New LC.init() options:
    * snapshot: load a snapshot immediately
    * defaultStrokeWidth
