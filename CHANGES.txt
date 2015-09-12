@@ -1,3 +1,31 @@
+v0.4.9:
+ * New LC.init() options:
+   * snapshot: load a snapshot immediately
+   * defaultStrokeWidth
+   * strokeWidths: defaults to [1, 2, 5, 10, 20, 30]
+   * toolbarPosition can now be 'hidden'
+ * Snapshots save and load pan and zoom values, image size, and background
+   shapes
+ * lc.getImage({margin: {top, right, bottom, left}}) lets you put a margin
+   around an image whose bounds are derived from the shapes' bounding rect
+ * LC.renderSnapshotToImage()
+ * LC.renderSnapshotToSVG()
+ * LC.teardown() completely removes Literally Canvas from the web page
+ * LC.util.addImageOnload(img, callback) adds a callback to the image's onload
+   event without replacing any existing callbacks
+ * Polygon tool behavior improvements:
+    * On-screen UI to close or cancel, for a better experience on touch devices
+    * Cancel current shape if user hits undo, redo, or clear
+ * Event handling improvements
+ * LC.util.classSet replaces internal usage of React.addons.classSet
+ * LC.util.combineCanvases() doesn't draw each canvas twice (probably fixed
+   some image rendering bugs)
+ * Deprecations (docs provide external replacements):
+    * Keyboard navigation
+    * lc.getSnapshotJSON()
+    * lc.setSnapshotJSON()
+    * LC.snapshotJSONToShapes()
+
 v0.4.8:
  * Fix loading an image from JSON.
  * Rename pointerdown, pointerdrag, pointermove, and pointerup to
