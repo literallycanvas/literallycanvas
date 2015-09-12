@@ -10,7 +10,7 @@ module.exports = React.createClass
 
   render: ->
     {ul, li, svg, circle, div} = React.DOM
-    strokeWidths = [1, 2, 5, 10, 20, 30]
+    strokeWidths = @props.lc.opts.strokeWidths
 
     (div {},
       strokeWidths.map((strokeWidth, ix) =>

@@ -146,6 +146,8 @@
           toolbarPosition: 'bottom',
           tools: LC.defaultTools.concat([MyTool]),
           snapshot: JSON.parse(localStorage.getItem('drawing')),
+          defaultStrokeWidth: 2,
+          strokeWidths: [1, 2, 3, 5, 30],
           backgroundShapes: [
             LC.createShape(
               'Image', {image: backgroundImage, x: 100, y: 100}),

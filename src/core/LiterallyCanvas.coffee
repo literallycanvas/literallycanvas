@@ -60,7 +60,7 @@ module.exports = class LiterallyCanvas
     @scale = 1.0
     # GUI immediately replaces this value, but it's initialized so you can have
     # something really simple
-    @tool = new Pencil()
+    @tool = new @opts.tools[0](this)
 
     @width = opts.imageSize.width or INFINITE
     @height = opts.imageSize.height or INFINITE

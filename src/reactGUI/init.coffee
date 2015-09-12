@@ -7,7 +7,7 @@ Picker = React.createFactory require './Picker'
 
 init = (pickerElement, optionsElement, lc, tools, imageURLPrefix) ->
   toolButtonComponents = tools.map (ToolClass) ->
-    toolInstance = new ToolClass()
+    toolInstance = new ToolClass(lc)
     createToolButton
       displayName: toolInstance.name
       imageName: toolInstance.iconName

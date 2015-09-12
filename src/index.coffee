@@ -68,6 +68,9 @@ init = (el, opts = {}) ->
   opts.secondaryColor ?= '#fff'
   opts.backgroundColor ?= 'transparent'
 
+  opts.strokeWidths ?= [1, 2, 5, 10, 20, 30]
+  opts.defaultStrokeWidth ?= 5
+
   opts.toolbarPosition ?= 'top'
 
   opts.keyboardShortcuts ?= true
