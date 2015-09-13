@@ -395,7 +395,7 @@ module.exports = class LiterallyCanvas
       if @width == INFINITE then 0 else @width,
       if @height == INFINITE then 0 else @height)
 
-  getImage: (opts) ->
+  getImage: (opts={}) ->
     opts.includeWatermark ?= true
     opts.scaleDownRetina ?= true
     opts.scale ?= 1
