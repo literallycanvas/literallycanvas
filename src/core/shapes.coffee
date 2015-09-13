@@ -8,8 +8,9 @@ shapes = {}
 
 
 defineShape = (name, props) ->
-  Shape = (args...) ->
-    props.constructor.call(this, args...)
+  # improve Chrome JIT perf by not using arguments object
+  Shape = (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) ->
+    props.constructor.call(this, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p)
     this
   Shape.prototype.className = name
   Shape.fromJSON = props.fromJSON
@@ -51,8 +52,9 @@ defineShape = (name, props) ->
   Shape
 
 
-createShape = (name, args...) ->
-  s = new shapes[name](args...)
+# improve Chrome JIT perf by not using arguments object
+createShape = (name, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) ->
+  s = new shapes[name](a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p)
   s.id = util.getGUID()
   s
 
