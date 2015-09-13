@@ -602,6 +602,9 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.getImage = function(opts) {
+    if (opts == null) {
+      opts = {};
+    }
     if (opts.includeWatermark == null) {
       opts.includeWatermark = true;
     }
@@ -1956,8 +1959,7 @@ module.exports = function(snapshot, opts) {
 
 
 },{"./shapes":13,"./util":15}],13:[function(_dereq_,module,exports){
-var JSONToShape, LinePath, TextRenderer, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _ref, _ref1, _refine,
-  __slice = [].slice;
+var JSONToShape, LinePath, TextRenderer, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _ref, _ref1, _refine;
 
 util = _dereq_('./util');
 
@@ -1973,10 +1975,8 @@ shapes = {};
 
 defineShape = function(name, props) {
   var Shape, drawFunc, drawLatestFunc, k, legacyDrawFunc, legacyDrawLatestFunc, legacySVGFunc, svgFunc;
-  Shape = function() {
-    var args, _ref2;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref2 = props.constructor).call.apply(_ref2, [this].concat(__slice.call(args)));
+  Shape = function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+    props.constructor.call(this, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
     return this;
   };
   Shape.prototype.className = name;
@@ -2030,14 +2030,9 @@ defineShape = function(name, props) {
   return Shape;
 };
 
-createShape = function() {
-  var args, name, s;
-  name = arguments[0], args = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-  s = (function(func, args, ctor) {
-    ctor.prototype = func.prototype;
-    var child = new ctor, result = func.apply(child, args);
-    return Object(result) === result ? result : child;
-  })(shapes[name], args, function(){});
+createShape = function(name, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+  var s;
+  s = new shapes[name](a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
   s.id = util.getGUID();
   return s;
 };
