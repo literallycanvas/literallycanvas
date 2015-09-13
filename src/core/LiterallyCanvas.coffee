@@ -340,7 +340,7 @@ module.exports = class LiterallyCanvas
   transformed: (fn, contexts...) ->
     for ctx in contexts
       ctx.save()
-      ctx.translate @position.x, @position.y
+      ctx.translate Math.floor(@position.x), Math.floor(@position.y)
       scale = @getRenderScale()
       ctx.scale scale, scale
 

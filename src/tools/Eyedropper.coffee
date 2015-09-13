@@ -1,5 +1,4 @@
 {Tool} = require './base'
-{createShape} = require '../core/shapes'
 
 
 module.exports = class Eyedropper extends Tool
