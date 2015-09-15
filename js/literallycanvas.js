@@ -519,7 +519,7 @@ module.exports = LiterallyCanvas = (function() {
     for (_i = 0, _len = contexts.length; _i < _len; _i++) {
       ctx = contexts[_i];
       ctx.save();
-      ctx.translate(this.position.x, this.position.y);
+      ctx.translate(Math.floor(this.position.x), Math.floor(this.position.y));
       scale = this.getRenderScale();
       ctx.scale(scale, scale);
     }
@@ -1292,10 +1292,17 @@ defineCanvasRenderer('SelectionBox', (function() {
 })());
 
 defineCanvasRenderer('Image', function(ctx, shape, retryCallback) {
+  var oldOnload;
   if (shape.image.width) {
     return ctx.drawImage(shape.image, shape.x, shape.y);
   } else if (retryCallback) {
-    return shape.image.onload = retryCallback;
+    oldOnload = shape.image.onload;
+    return shape.image.onload = function() {
+      if (typeof oldOnload === "function") {
+        oldOnload();
+      }
+      return retryCallback();
+    };
   }
 });
 
@@ -4293,13 +4300,11 @@ module.exports = Eraser = (function(_super) {
 
 
 },{"../core/shapes":13,"./Pencil":40}],37:[function(_dereq_,module,exports){
-var Eyedropper, Tool, createShape,
+var Eyedropper, Tool,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 Tool = _dereq_('./base').Tool;
-
-createShape = _dereq_('../core/shapes').createShape;
 
 module.exports = Eyedropper = (function(_super) {
   __extends(Eyedropper, _super);
@@ -4331,7 +4336,7 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":44}],38:[function(_dereq_,module,exports){
+},{"./base":44}],38:[function(_dereq_,module,exports){
 var Line, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4827,9 +4832,9 @@ module.exports = Text = (function(_super) {
 
   Text.prototype.iconName = 'text';
 
-  function Text(text, font) {
-    this.text = text != null ? text : '';
-    this.font = font != null ? font : 'bold 18px sans-serif';
+  function Text() {
+    this.text = '';
+    this.font = 'bold 18px sans-serif';
     this.currentShape = null;
     this.currentShapeState = null;
     this.initialShapeBoundingRect = null;
