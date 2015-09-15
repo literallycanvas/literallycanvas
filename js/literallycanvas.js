@@ -1292,17 +1292,10 @@ defineCanvasRenderer('SelectionBox', (function() {
 })());
 
 defineCanvasRenderer('Image', function(ctx, shape, retryCallback) {
-  var oldOnload;
   if (shape.image.width) {
     return ctx.drawImage(shape.image, shape.x, shape.y);
   } else if (retryCallback) {
-    oldOnload = shape.image.onload;
-    return shape.image.onload = function() {
-      if (typeof oldOnload === "function") {
-        oldOnload();
-      }
-      return retryCallback();
-    };
+    return shape.image.onload = retryCallback;
   }
 });
 
