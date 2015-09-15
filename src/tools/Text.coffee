@@ -15,7 +15,9 @@ module.exports = class Text extends Tool
   name: 'Text'
   iconName: 'text'
 
-  constructor: (@text = '', @font = 'bold 18px sans-serif') ->
+  constructor: ->
+    @text = ''
+    @font = 'bold 18px sans-serif'
     @currentShape = null
     @currentShapeState = null
     @initialShapeBoundingRect = null

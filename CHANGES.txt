@@ -1,3 +1,6 @@
+v0.4.10:
+ * Fix the text tool
+
 v0.4.9:
  * The snapshot API is more public. The JSON-suffixed snapshot methods are
    being deprecated in favor of ones that deal with JavaScript objects.

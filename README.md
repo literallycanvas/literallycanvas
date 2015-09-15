@@ -1,5 +1,5 @@
-Literally Canvas v0.4.9
-=======================
+Literally Canvas v0.4.10
+========================
 
 Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
 widget. Its only dependency is [React.js](http://facebook.github.io/react/).
