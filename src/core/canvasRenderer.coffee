@@ -68,13 +68,18 @@ defineCanvasRenderer 'Ellipse', (ctx, shape) ->
 
 
 defineCanvasRenderer 'SelectionBox', do ->
-  _drawHandle = (ctx, shape, {x, y}, handleSize) ->
+  _drawHandle = (ctx, {x, y}, handleSize) ->
     ctx.fillStyle = '#fff'
     ctx.fillRect(x, y, handleSize, handleSize)
     ctx.strokeStyle = '#000'
     ctx.strokeRect(x, y, handleSize, handleSize)
 
   (ctx, shape) ->
+    _drawHandle(ctx, shape.getTopLeftHandleRect(), shape.handleSize)
+    _drawHandle(ctx, shape.getTopRightHandleRect(), shape.handleSize)
+    _drawHandle(ctx, shape.getBottomLeftHandleRect(), shape.handleSize)
+    _drawHandle(ctx, shape.getBottomRightHandleRect(), shape.handleSize)
+
     if shape.backgroundColor
       ctx.fillStyle = shape.backgroundColor
       ctx.fillRect(
@@ -90,10 +95,6 @@ defineCanvasRenderer 'SelectionBox', do ->
       shape._br.width + shape.margin * 2, shape._br.height + shape.margin * 2)
 
     ctx.setLineDash([])
-    _drawHandle(ctx, shape.getTopLeftHandleRect(), shape.handleSize)
-    _drawHandle(ctx, shape.getTopRightHandleRect(), shape.handleSize)
-    _drawHandle(ctx, shape.getBottomLeftHandleRect(), shape.handleSize)
-    _drawHandle(ctx, shape.getBottomRightHandleRect(), shape.handleSize)
 
 
 defineCanvasRenderer 'Image', (ctx, shape, retryCallback) ->

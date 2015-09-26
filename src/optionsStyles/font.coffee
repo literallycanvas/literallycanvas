@@ -116,8 +116,8 @@ defineOptionsStyle 'font', React.createClass
         )
       )
       (select {value: @state.fontName, onChange: @handleFontFamily},
-        ALL_FONTS.map ([groupName, fonts]) =>
-          (optgroup {label: groupName}, fonts.map (family, ix) ->
+        ALL_FONTS.map ([label, fonts]) =>
+          (optgroup {key: label, label}, fonts.map (family, ix) ->
             (option {value: family.name, key: ix}, family.name)
           )
       )

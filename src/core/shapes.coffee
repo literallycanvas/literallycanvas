@@ -427,7 +427,9 @@ defineShape 'Text',
       else
         throw "Must pass ctx if text hasn't been rendered yet"
     {
-      @x, @y, width: @renderer.getWidth(true), height: @renderer.getHeight()
+      x: Math.floor(@x), y: Math.floor(@y),
+      width: Math.ceil(@renderer.getWidth(true)),
+      height: Math.ceil(@renderer.getHeight())
     }
   toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)
@@ -440,6 +442,10 @@ defineShape 'SelectionBox',
     @margin = 4
     @backgroundColor = args.backgroundColor or null
     @_br = @shape.getBoundingRect(args.ctx)
+
+  toJSON: -> {shape: shapeToJSON(@shape), @backgroundColor}
+  fromJSON: ({shape, handleSize, margin, backgroundColor}) ->
+    createShape('SelectionBox', {shape: JSONToShape(shape), backgroundColor})
 
   getTopLeftHandleRect: ->
     {

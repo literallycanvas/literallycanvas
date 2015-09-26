@@ -34,6 +34,9 @@ defineSVGRenderer 'Rectangle', (shape) ->
   "
 
 
+defineSVGRenderer 'SelectionBox', (shape) -> return ""
+
+
 defineSVGRenderer 'Ellipse', (shape) ->
   halfWidth = Math.floor(shape.width / 2)
   halfHeight = Math.floor(shape.height / 2)
