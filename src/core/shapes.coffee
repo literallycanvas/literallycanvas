@@ -120,9 +120,10 @@ defineShape 'Image',
   constructor: (args={}) ->
     @x = args.x or 0
     @y = args.y or 0
+    @scale = args.scale or 1
     @image = args.image or null
-  getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height}
-  toJSON: -> {@x, @y, imageSrc: @image.src, imageObject: @image}
+  getBoundingRect: -> {@x, @y, width: @image.width, height: @image.height, @scale}
+  toJSON: -> {@x, @y, imageSrc: @image.src, imageObject: @image, @scale}
   fromJSON: (data) ->
     img = null
     if data.imageObject?.width
@@ -130,7 +131,7 @@ defineShape 'Image',
     else
       img = new Image()
       img.src = data.imageSrc
-    createShape('Image', {x: data.x, y: data.y, image: img})
+    createShape('Image', {x: data.x, y: data.y, image: img, scale: data.scale})
 
 
 defineShape 'Rectangle',

@@ -54,7 +54,8 @@ defineSVGRenderer 'Image', (shape) ->
   # This will only work when embedded in a web page.
   "
     <image x='#{shape.x}' y='#{shape.y}'
-      width='#{shape.image.naturalWidth}' height='#{shape.image.naturalHeight}'
+      width='#{shape.image.naturalWidth * shape.scale}'
+      height='#{shape.image.naturalHeight * shape.scale}'
       xlink:href='#{shape.image.src}' />
   "
 

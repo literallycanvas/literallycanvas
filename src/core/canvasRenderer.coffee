@@ -99,7 +99,12 @@ defineCanvasRenderer 'SelectionBox', do ->
 
 defineCanvasRenderer 'Image', (ctx, shape, retryCallback) ->
   if shape.image.width
-    ctx.drawImage(shape.image, shape.x, shape.y)
+    if shape.scale == 1
+      ctx.drawImage(shape.image, shape.x, shape.y)
+    else
+      ctx.drawImage(
+        shape.image, shape.x, shape.y,
+        shape.image.width * shape.scale, shape.image.height * shape.scale)
   else if retryCallback
     shape.image.onload = retryCallback
 

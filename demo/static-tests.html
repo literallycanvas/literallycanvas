@@ -118,6 +118,7 @@
 
       var shapes = [
         LC.createShape('Image', {image: img, x: 0, y: 0}),
+        LC.createShape('Image', {image: img, x: 10, y: 10, scale: 0.5}),
         LC.createShape('Polygon', {
           strokeColor: '#080', fillColor: 'red', strokeWidth: 1,
           points: [
@@ -228,11 +229,9 @@
       ];
       renderTestResults('static-test-results-body', shapes);
 
-      var oldImageOnload = img.onload;
-      img.onload = function() {
-        oldImageOnload();
+      LC.util.addImageOnload(img, function() {
         renderTestResults('static-test-results-body-2', shapes);
-      }
+      });
     </script>
     <script src="//localhost:35728/livereload.js"></script>
   </body>
