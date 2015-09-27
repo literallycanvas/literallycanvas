@@ -13,6 +13,7 @@ getPosition = (element) =>
 
 
 parseHSLAString = (s) ->
+  return "hsla(0, 0%, 0%, 0)" if s == 'transparent'
   return null unless s.substring(0, 4) == 'hsla'
   firstParen = s.indexOf('(')
   lastParen = s.indexOf(')')
@@ -134,25 +135,28 @@ ColorGrid = React.createFactory React.createClass
 
 ColorWell = React.createClass
   displayName: 'ColorWell'
-  getInitialState: -> {
-    color: @props.lc.colors[@props.colorName],
-    isPickerVisible: false,
-    alpha: 1
-    sat: 100
-    hsla: null
-  }
+  getInitialState: ->
+    colorString = @props.lc.colors[@props.colorName]
+    hsla = getHSLAString(colorString)
+    hsla ?= {alpha: 1, sat: 100, hue: 0, light: 50}
+    {
+      colorString,
+      alpha: if hsla.alpha == null then 1 else hsla.alpha
+      sat: if hsla.sat == null then 100 else hsla.alpha
+      isPickerVisible: false,
+      hsla: hsla
+    }
 
   # our color state tracks lc's
   componentDidMount: ->
     @unsubscribe = @props.lc.on "#{@props.colorName}ColorChange", =>
-      @setState {color: @props.lc.colors[@props.colorName]}
+      colorString = @props.lc.colors[@props.colorName]
+      @setState({colorString})
+      @setHSLAFromColorString(colorString)
   componentWillUnmount: -> @unsubscribe()
 
   setHSLAFromColorString: (c) ->
-    if c == 'transparent'
-      hsla = {hue: 0, sat: 0, light: 0, alpha: 0}
-    else
-      hsla = parseHSLAString(c)
+    hsla = parseHSLAString(c)
     alpha = hsla.alpha or @state.alpha
     sat = hsla.sat or @state.sat
     @setState({hsla, alpha, sat})
@@ -160,10 +164,10 @@ ColorWell = React.createClass
   closePicker: -> @setState({isPickerVisible: false})
   togglePicker: ->
     @setState({isPickerVisible: not @state.isPickerVisible})
-    @setHSLAFromColorString(@state.color)
+    @setHSLAFromColorString(@state.colorString)
 
   setColor: (c) ->
-    @setState({color: c})
+    @setState({colorString: c})
     @setHSLAFromColorString(c)
     @props.lc.setColor(@props.colorName, c)
 
@@ -212,7 +216,7 @@ ColorWell = React.createClass
         (div \
           {
             className: 'color-well-color',
-            style: {backgroundColor: @state.color}
+            style: {backgroundColor: @state.colorString}
           },
           " "
         ),
@@ -232,6 +236,22 @@ ColorWell = React.createClass
         }
       }, text)
 
+    renderColor = =>
+      checkerboardURL = "#{lc.opts.imageURLPrefix}/checkerboard-8x8.png"
+      (div {
+        className: 'color-row', key: "color", style: {
+          position: 'relative'
+          backgroundImage: "url(#{checkerboardURL})"
+          backgroundRepeat: 'repeat'
+          height: 24
+        }},
+        (div {style: {
+          position: 'absolute',
+          top: 0, right: 0, bottom: 0, left: 0
+          backgroundColor: @state.colorString
+        }})
+      )
+
     rows = []
     rows.push ({hue: 0, sat: 0, light: i, alpha: @state.alpha} for i in [0..100] by 10)
     for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
@@ -240,7 +260,7 @@ ColorWell = React.createClass
     onSelectColor = (hsla, s) => @setColor(s)
 
     (div {className: 'color-picker-popup'},
-      #renderTransparentCell(),
+      renderColor()
       renderLabel("alpha")
       (Slider {
         initialValue: @state.alpha,
@@ -251,7 +271,7 @@ ColorWell = React.createClass
         initialValue: @state.sat, max: 100,
         onChange: (newValue) => @setSat(newValue)
       }),
-      (ColorGrid {rows, selectedColor: @state.color, onChange: onSelectColor})
+      (ColorGrid {rows, selectedColor: @state.colorString, onChange: onSelectColor})
     )
 
 
