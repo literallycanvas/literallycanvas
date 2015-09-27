@@ -199,7 +199,7 @@ $selectedColor: lighten(#3cb0fd, 20%);
   .color-picker-popup {
     position: absolute;
     z-index: 1;
-    background-color: white;
+    background-color: transparent;
     border: $basicBorder;
 
     left: $pickerWidth - 1px;

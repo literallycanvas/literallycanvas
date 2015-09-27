@@ -3,14 +3,33 @@ React = require './React-shim'
 
 
 getPosition = (element) =>
-  xPosition = 0
-  yPosition = 0
-      
-  while (element)
-      xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft)
-      yPosition += (element.offsetTop - element.scrollTop + element.clientTop)
-      element = element.offsetParent
-  {x: xPosition, y: yPosition}
+  x = 0
+  y = 0
+  while element
+    x += (element.offsetLeft - element.scrollLeft + element.clientLeft)
+    y += (element.offsetTop - element.scrollTop + element.clientTop)
+    element = element.offsetParent
+  {x, y}
+
+
+parseHSLAString = (s) ->
+  return null unless s.substring(0, 4) == 'hsla'
+  firstParen = s.indexOf('(')
+  lastParen = s.indexOf(')')
+  insideParens = s.substring(firstParen + 1, lastParen - firstParen + 4)
+  components = (s.trim() for s in insideParens.split(','))
+  return {
+    hue: parseInt(components[0], 10)
+    sat: parseInt(components[1].substring(0, components[1].length - 1), 10)
+    light: parseInt(components[2].substring(0, components[2].length - 1), 10)
+    alpha: parseFloat(components[3])
+  }
+
+
+getHSLAString = ({hue, sat, light, alpha}) ->
+  "hsla(#{hue}, #{sat}%, #{light}%, #{alpha})"
+getHSLString = ({hue, sat, light}) ->
+  "hsl(#{hue}, #{sat}%, #{light}%)"
 
 
 Slider = React.createFactory React.createClass
@@ -70,6 +89,7 @@ ColorWell = React.createClass
     color: @props.lc.colors[@props.colorName],
     isPickerVisible: false,
     alpha: 1
+    hsla: null
   }
 
   # our color state tracks lc's
@@ -78,9 +98,31 @@ ColorWell = React.createClass
       @setState {color: @props.lc.colors[@props.colorName]}
   componentWillUnmount: -> @unsubscribe()
 
-  togglePicker: -> @setState {isPickerVisible: not @state.isPickerVisible}
-  closePicker: -> @setState {isPickerVisible: false}
-  setColor: (c) -> @props.lc.setColor(@props.colorName, c)
+  updateHSLA: (c) ->
+    if c == 'transparent'
+      hsla = {hue: 0, sat: 0, light: 0, alpha: 0}
+    else
+      hsla = parseHSLAString(c)
+    alpha = hsla.alpha or @state.alpha
+    @setState({hsla, alpha})
+
+  closePicker: -> @setState({isPickerVisible: false})
+  togglePicker: ->
+    @setState({isPickerVisible: not @state.isPickerVisible})
+    @updateHSLA(@state.color)
+
+  setColor: (c) ->
+    @setState({color: c})
+    @updateHSLA(c)
+    @props.lc.setColor(@props.colorName, c)
+
+  setAlpha: (alpha) ->
+    @setState({alpha})
+    if @state.hsla
+      hsla = @state.hsla
+      hsla.alpha = alpha
+      @setState({hsla})
+      @setColor(getHSLAString(hsla))
 
   render: ->
     {div, label, br} = React.DOM
@@ -139,27 +181,37 @@ ColorWell = React.createClass
       )
 
     rows = []
-    rows.push ("hsla(0, 0%, #{i}%, #{@state.alpha})" for i in [0..100] by 10)
+    rows.push ({hue: 0, sat: 0, light: i, alpha: @state.alpha} for i in [0..100] by 10)
     for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
-      rows.push("hsla(#{hue}, 100%, #{i}%, #{@state.alpha})" for i in [10..90] by 8)
+      rows.push ({hue, sat: 100, light: i, alpha: @state.alpha} for i in [10..90] by 8)
 
     (div {className: 'color-picker-popup'},
       renderTransparentCell(),
       (Slider {
         initialValue: @state.alpha,
-        onChange: (newValue) => @setState({alpha: newValue})}),
+        onChange: (newValue) => @setAlpha(newValue)
+      }),
       rows.map((row, ix) =>
         return (div \
-          {className: 'color-row', key: ix, style: {width: 20 * row.length}},
+          {
+            className: 'color-row',
+            key: ix,
+            style: {width: 20 * row.length, opacity: @state.alpha}
+          },
           row.map((cellColor, ix2) =>
+            {hue, sat, light, alpha} = cellColor
+            colorString = getHSLAString(cellColor)
+            colorStringNoAlpha = "hsl(#{hue}, #{sat}%, #{light}%)"
             className = classSet
               'color-cell': true
-              'selected': @state.color == cellColor
+              'selected': @state.color == colorString
             (div \
               {
                 className,
-                onClick: => @setColor(cellColor)
-                style: {backgroundColor: cellColor}
+                onClick: (e) =>
+                  @setColor(colorString)
+                  e.stopPropagation()
+                style: {backgroundColor: colorStringNoAlpha}
                 key: ix2
               }
             )
