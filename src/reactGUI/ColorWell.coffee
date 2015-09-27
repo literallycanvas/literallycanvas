@@ -1,5 +1,5 @@
 React = require './React-shim'
-{classSet} = require '../core/util'
+{classSet, requestAnimationFrame, cancelAnimationFrame} = require '../core/util'
 
 
 getPosition = (element) =>
@@ -48,23 +48,34 @@ Slider = React.createFactory React.createClass
     fullH = m * 2 + rad * 2
     lineM = (fullH - lineH) / 2
 
-    update = (e) =>
-      e.stopPropagation()
+    getVal = (e) =>
       el = @getDOMNode()
       parentPosition = getPosition(el)
       x = e.clientX - parentPosition.x
       positionInRange = (x - lineM) / (el.clientWidth - lineM * 2)
-      val = Math.max(@props.min, Math.min(@props.max, @props.min + rangeSize * positionInRange))
-      @setState({value: val})
-      @props.onChange(val)
+      Math.max(@props.min, Math.min(@props.max, @props.min + rangeSize * positionInRange))
+
+    start = => @setState({isMouseDown: true})
+    stop = =>
+      @props.onChange(@state.value)
+      @setState({isMouseDown: false})
 
     (div {
         style: {position: 'relative', width: '100%', height: fullH},
-        onClick: update
-        onMouseMove: (e) => update(e) if @state.isMouseDown
-        onMouseDown: => @setState({isMouseDown: true})
-        onMouseUp: => @setState({isMouseDown: false})
-        onMouseLeave: => @setState({isMouseDown: false})
+        onClick: (e) =>
+          e.stopPropagation()
+          @setState({value: getVal(e)})
+        onMouseMove: (e) =>
+          return unless @state.isMouseDown
+          e.stopPropagation()
+          value = getVal(e)
+          cancelAnimationFrame(@state.animFrameId) if @state.animFrameId
+          @setState({animFrameId: requestAnimationFrame =>
+            @setState({value})
+          })
+        onMouseDown: start
+        onMouseUp: stop
+        onMouseLeave: stop
       },
       (div {style: {
         position: 'absolute', top: lineM, right: lineM, bottom: lineM, left: lineM,
@@ -98,7 +109,7 @@ ColorWell = React.createClass
       @setState {color: @props.lc.colors[@props.colorName]}
   componentWillUnmount: -> @unsubscribe()
 
-  updateHSLA: (c) ->
+  setHSLAFromColorString: (c) ->
     if c == 'transparent'
       hsla = {hue: 0, sat: 0, light: 0, alpha: 0}
     else
@@ -109,11 +120,11 @@ ColorWell = React.createClass
   closePicker: -> @setState({isPickerVisible: false})
   togglePicker: ->
     @setState({isPickerVisible: not @state.isPickerVisible})
-    @updateHSLA(@state.color)
+    @setHSLAFromColorString(@state.color)
 
   setColor: (c) ->
     @setState({color: c})
-    @updateHSLA(c)
+    @setHSLAFromColorString(c)
     @props.lc.setColor(@props.colorName, c)
 
   setAlpha: (alpha) ->
