@@ -221,23 +221,16 @@ ColorWell = React.createClass
     )
 
   renderPicker: ->
-    {div} = React.DOM
+    {div, label} = React.DOM
     return null unless @state.isPickerVisible
 
-    renderTransparentCell = =>
-      (div \
-        {className: 'color-row', key: 0, style: {height: 20}},
-        (div \
-          {
-            className: classSet(
-              'color-cell transparent-cell': true,
-              'selected': @state.color == 'transparent'
-            )
-            onClick: => @setColor('transparent')
-          },
-          'transparent'
-        )
-      )
+    renderLabel = (text) =>
+      (div {
+        className: 'color-row label', key: text, style: {
+          lineHeight: '20px'
+          height: 16
+        }
+      }, text)
 
     rows = []
     rows.push ({hue: 0, sat: 0, light: i, alpha: @state.alpha} for i in [0..100] by 10)
@@ -248,10 +241,12 @@ ColorWell = React.createClass
 
     (div {className: 'color-picker-popup'},
       #renderTransparentCell(),
+      renderLabel("alpha")
       (Slider {
         initialValue: @state.alpha,
         onChange: (newValue) => @setAlpha(newValue)
       }),
+      renderLabel("saturation")
       (Slider {
         initialValue: @state.sat, max: 100,
         onChange: (newValue) => @setSat(newValue)
