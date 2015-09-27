@@ -2,6 +2,7 @@ v0.4.11:
  * lc.setWatermarkImage(image)
  * 'scale' parameter for the Image shape
  * Fix text box drag handles (they were invisible)
+ * Transparency and saturation sliders in color picker
 
 v0.4.10:
  * Fix the text tool

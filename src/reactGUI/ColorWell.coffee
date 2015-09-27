@@ -55,6 +55,9 @@ Slider = React.createFactory React.createClass
       positionInRange = (x - lineM) / (el.clientWidth - lineM * 2)
       Math.max(@props.min, Math.min(@props.max, @props.min + rangeSize * positionInRange))
 
+    update = (value) =>
+      @setState({value})
+      @props.onChange(value)
     start = => @setState({isMouseDown: true})
     stop = =>
       @props.onChange(@state.value)
@@ -64,15 +67,13 @@ Slider = React.createFactory React.createClass
         style: {position: 'relative', width: '100%', height: fullH},
         onClick: (e) =>
           e.stopPropagation()
-          @setState({value: getVal(e)})
+          update(getVal(e))
         onMouseMove: (e) =>
           return unless @state.isMouseDown
           e.stopPropagation()
           value = getVal(e)
           cancelAnimationFrame(@state.animFrameId) if @state.animFrameId
-          @setState({animFrameId: requestAnimationFrame =>
-            @setState({value})
-          })
+          @setState({animFrameId: requestAnimationFrame => update(value)})
         onMouseDown: start
         onMouseUp: stop
         onMouseLeave: stop
@@ -94,12 +95,50 @@ Slider = React.createFactory React.createClass
     )
 
 
+ColorGrid = React.createFactory React.createClass
+  displayName: 'ColorGrid'
+  shouldComponentUpdate: (nextProps, nextState) ->
+    @props.selectedColor != nextProps.selectedColor
+  render: ->
+    {div} = React.DOM
+    (div {},
+      @props.rows.map((row, ix) =>
+        return (div \
+          {
+            className: 'color-row',
+            key: ix,
+            style: {width: 20 * row.length}
+          },
+          row.map((cellColor, ix2) =>
+            {hue, sat, light, alpha} = cellColor
+            colorString = getHSLAString(cellColor)
+            colorStringNoAlpha = "hsl(#{hue}, #{sat}%, #{light}%)"
+            className = classSet
+              'color-cell': true
+              'selected': @props.selectedColor == colorString
+            (div \
+              {
+                className,
+                onClick: (e) =>
+                  @props.onChange(cellColor, colorString)
+                  e.stopPropagation()
+                style: {backgroundColor: colorStringNoAlpha}
+                key: ix2
+              }
+            )
+          )
+        )
+      )
+    )
+
+
 ColorWell = React.createClass
   displayName: 'ColorWell'
   getInitialState: -> {
     color: @props.lc.colors[@props.colorName],
     isPickerVisible: false,
     alpha: 1
+    sat: 100
     hsla: null
   }
 
@@ -115,7 +154,8 @@ ColorWell = React.createClass
     else
       hsla = parseHSLAString(c)
     alpha = hsla.alpha or @state.alpha
-    @setState({hsla, alpha})
+    sat = hsla.sat or @state.sat
+    @setState({hsla, alpha, sat})
 
   closePicker: -> @setState({isPickerVisible: false})
   togglePicker: ->
@@ -132,6 +172,14 @@ ColorWell = React.createClass
     if @state.hsla
       hsla = @state.hsla
       hsla.alpha = alpha
+      @setState({hsla})
+      @setColor(getHSLAString(hsla))
+
+  setSat: (sat) ->
+    @setState({sat})
+    if @state.hsla
+      hsla = @state.hsla
+      hsla.sat = sat
       @setState({hsla})
       @setColor(getHSLAString(hsla))
 
@@ -196,39 +244,19 @@ ColorWell = React.createClass
     for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
       rows.push ({hue, sat: 100, light: i, alpha: @state.alpha} for i in [10..90] by 8)
 
+    onSelectColor = (hsla, s) => @setColor(s)
+
     (div {className: 'color-picker-popup'},
-      renderTransparentCell(),
+      #renderTransparentCell(),
       (Slider {
         initialValue: @state.alpha,
         onChange: (newValue) => @setAlpha(newValue)
       }),
-      rows.map((row, ix) =>
-        return (div \
-          {
-            className: 'color-row',
-            key: ix,
-            style: {width: 20 * row.length, opacity: @state.alpha}
-          },
-          row.map((cellColor, ix2) =>
-            {hue, sat, light, alpha} = cellColor
-            colorString = getHSLAString(cellColor)
-            colorStringNoAlpha = "hsl(#{hue}, #{sat}%, #{light}%)"
-            className = classSet
-              'color-cell': true
-              'selected': @state.color == colorString
-            (div \
-              {
-                className,
-                onClick: (e) =>
-                  @setColor(colorString)
-                  e.stopPropagation()
-                style: {backgroundColor: colorStringNoAlpha}
-                key: ix2
-              }
-            )
-          )
-        )
-      )
+      (Slider {
+        initialValue: @state.sat, max: 100,
+        onChange: (newValue) => @setSat(newValue)
+      }),
+      (ColorGrid {rows, selectedColor: @state.color, onChange: onSelectColor})
     )
 
 
