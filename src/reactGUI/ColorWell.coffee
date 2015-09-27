@@ -13,7 +13,7 @@ getPosition = (element) =>
 
 
 parseHSLAString = (s) ->
-  return "hsla(0, 0%, 0%, 0)" if s == 'transparent'
+  return {hue: 0, sat: 0, light: 0, alpha: 0} if s == 'transparent'
   return null unless s.substring(0, 4) == 'hsla'
   firstParen = s.indexOf('(')
   lastParen = s.indexOf(')')
@@ -55,31 +55,36 @@ Slider = React.createFactory React.createClass
       el = @refs.line.getDOMNode()
       parentPosition = getPosition(el)
       x = e.clientX - parentPosition.x
+      if e.touches and e.touches?.length > 0
+        x = e.touches[0].clientX - parentPosition.x
       positionInRange = x / el.clientWidth
       Math.max(@props.min, Math.min(@props.max, @props.min + rangeSize * positionInRange))
 
-    update = (value) => @props.onChange(value)
+    updateValue = (value) => @props.onChange(value)
+    update = (e) =>
+      return unless @state?.isMouseDown
+      e.stopPropagation()
+      e.preventDefault()
+      value = getVal(e)
+      cancelAnimationFrame(@state.animFrameId) if @state.animFrameId
+      @setState({animFrameId: requestAnimationFrame => updateValue(value)})
     start = (e) =>
       e.stopPropagation()
       @setState({isMouseDown: true})
-      console.profile()
     stop = (e) =>
       return unless @state?.isMouseDown
-      console.profileEnd()
-      update(getVal(e))
+      updateValue(getVal(e))
       @setState({isMouseDown: false})
 
     (div {
         style: {position: 'relative', width: '100%', height: fullH},
         onClick: (e) =>
           e.stopPropagation()
-          update(getVal(e))
-        onMouseMove: (e) =>
-          return unless @state?.isMouseDown
-          e.stopPropagation()
-          value = getVal(e)
-          cancelAnimationFrame(@state.animFrameId) if @state.animFrameId
-          @setState({animFrameId: requestAnimationFrame => update(value)})
+          updateValue(getVal(e))
+        onMouseMove: update
+        onTouchStart: start
+        onTouchMove: update
+        onTouchEnd: stop
         onMouseDown: start
         onMouseUp: stop
         onMouseLeave: stop
@@ -146,11 +151,15 @@ ColorWell = React.createClass
   getInitialState: ->
     colorString = @props.lc.colors[@props.colorName]
     hsla = getHSLAString(colorString)
-    hsla ?= {alpha: 1, sat: 100, hue: 0, light: 50}
+    hsla ?= {}
+    hsla.alpha ?= 1
+    hsla.sat ?= 100
+    hsla.hue ?= 0
+    hsla.light ?= 50
     {
       colorString,
-      alpha: if hsla.alpha == null then 1 else hsla.alpha
-      sat: if hsla.sat == null then 100 else hsla.alpha
+      alpha: hsla.alpha
+      sat: hsla.sat
       isPickerVisible: false,
       hsla: hsla
     }
@@ -168,7 +177,7 @@ ColorWell = React.createClass
     if hsla
       @setState({hsla, alpha: hsla.alpha, sat: hsla.sat})
     else
-      @setState({hsla: null})
+      @setState({hsla: null, alpha: 1, sat: 100})
 
   closePicker: -> @setState({isPickerVisible: false})
   togglePicker: ->
@@ -246,7 +255,7 @@ ColorWell = React.createClass
       }, text)
 
     renderColor = =>
-      checkerboardURL = "#{lc.opts.imageURLPrefix}/checkerboard-8x8.png"
+      checkerboardURL = "#{@props.lc.opts.imageURLPrefix}/checkerboard-8x8.png"
       (div {
         className: 'color-row', key: "color", style: {
           position: 'relative'
