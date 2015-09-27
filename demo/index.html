@@ -78,7 +78,7 @@
       backgroundImage.src = '/demo/bear.png';
 
       var watermarkImage = new Image();
-      //watermarkImage.src = '/demo/watermark.png';
+      watermarkImage.src = '/demo/watermark.png';
       // for testing watermark loading bug:
       //watermarkImage.src = 'http://literallycanvas.com/_static/watermark.png'
 
@@ -153,10 +153,11 @@
               {x: 0, y: 0, width: 100, height: 100, strokeColor: '#000'})
           ],
           // backgroundColor: '#f00',
-          watermarkImage: watermarkImage//,
+          // watermarkImage: watermarkImage//,
           // imageSize: {width: 500, height: 300}
         });
         window.demoLC = lc;
+        lc.setWatermarkImage(watermarkImage);
 
         var save = function() {
           localStorage.setItem('drawing', JSON.stringify(lc.getSnapshot()));

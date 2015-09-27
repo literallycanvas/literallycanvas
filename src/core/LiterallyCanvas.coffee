@@ -232,6 +232,11 @@ module.exports = class LiterallyCanvas
     @repaintAllLayers()
     @trigger('zoom', {oldScale: oldScale, newScale: @scale})
 
+  setWatermarkImage: (newImage) ->
+    @watermarkImage = newImage
+    util.addImageOnload newImage, => @repaintLayer('background')
+    @repaintLayer('background') if newImage.width
+
   repaintAllLayers: ->
     for key in ['background', 'main']
       @repaintLayer(key)
