@@ -35,12 +35,13 @@ getHSLString = ({hue, sat, light}) ->
 
 Slider = React.createFactory React.createClass
   displayName: 'Slider'
-  getDefaultProps: -> {min: 0, max: 1, onChange: ->}
-  getInitialState: -> {value: @props.initialValue}
+  getDefaultProps: -> {min: 0, max: 1, value: 1, onChange: ->}
+  shouldComponentUpdate: (nextProps, nextState) -> true
+    #return nextProps.value != @props.value
   render: ->
     {div} = React.DOM
     rangeSize = @props.max - @props.min
-    pos = (@state.value - @props.min) / rangeSize
+    pos = (@props.value - @props.min) / rangeSize
     posPercent = pos * 100 + '%'
 
     lineH = 4
@@ -48,20 +49,24 @@ Slider = React.createFactory React.createClass
     m = 4
     fullH = m * 2 + rad * 2
     lineM = (fullH - lineH) / 2
+    extraHorzM = 20
 
     getVal = (e) =>
-      el = @getDOMNode()
+      el = @refs.line.getDOMNode()
       parentPosition = getPosition(el)
       x = e.clientX - parentPosition.x
-      positionInRange = (x - lineM) / (el.clientWidth - lineM * 2)
+      positionInRange = x / el.clientWidth
       Math.max(@props.min, Math.min(@props.max, @props.min + rangeSize * positionInRange))
 
-    update = (value) =>
-      @setState({value})
-      @props.onChange(value)
-    start = => @setState({isMouseDown: true})
-    stop = =>
-      @props.onChange(@state.value)
+    update = (value) => @props.onChange(value)
+    start = (e) =>
+      e.stopPropagation()
+      @setState({isMouseDown: true})
+      console.profile()
+    stop = (e) =>
+      return unless @state?.isMouseDown
+      console.profileEnd()
+      update(getVal(e))
       @setState({isMouseDown: false})
 
     (div {
@@ -70,7 +75,7 @@ Slider = React.createFactory React.createClass
           e.stopPropagation()
           update(getVal(e))
         onMouseMove: (e) =>
-          return unless @state.isMouseDown
+          return unless @state?.isMouseDown
           e.stopPropagation()
           value = getVal(e)
           cancelAnimationFrame(@state.animFrameId) if @state.animFrameId
@@ -78,9 +83,12 @@ Slider = React.createFactory React.createClass
         onMouseDown: start
         onMouseUp: stop
         onMouseLeave: stop
+        onMouseEnter: stop
       },
-      (div {style: {
-        position: 'absolute', top: lineM, right: lineM, bottom: lineM, left: lineM,
+      (div {ref: 'line', style: {
+        position: 'absolute',
+        top: lineM, right: lineM + extraHorzM,
+        bottom: lineM, left: lineM + extraHorzM,
         backgroundColor: 'black', borderRadius: lineH / 2}},
         (div {style: {
           borderRadius: rad,
@@ -98,8 +106,8 @@ Slider = React.createFactory React.createClass
 
 ColorGrid = React.createFactory React.createClass
   displayName: 'ColorGrid'
-  shouldComponentUpdate: (nextProps, nextState) ->
-    @props.selectedColor != nextProps.selectedColor
+  shouldComponentUpdate: (nextProps, nextState) -> true
+    #@props.selectedColor != nextProps.selectedColor
   render: ->
     {div} = React.DOM
     (div {},
@@ -155,11 +163,12 @@ ColorWell = React.createClass
       @setHSLAFromColorString(colorString)
   componentWillUnmount: -> @unsubscribe()
 
-  setHSLAFromColorString: (c) ->
+  setHSLAFromColorString: (c, forceSat=false) ->
     hsla = parseHSLAString(c)
-    alpha = hsla.alpha or @state.alpha
-    sat = hsla.sat or @state.sat
-    @setState({hsla, alpha, sat})
+    if hsla
+      @setState({hsla, alpha: hsla.alpha, sat: hsla.sat})
+    else
+      @setState({hsla: null})
 
   closePicker: -> @setState({isPickerVisible: false})
   togglePicker: ->
@@ -255,7 +264,7 @@ ColorWell = React.createClass
     rows = []
     rows.push ({hue: 0, sat: 0, light: i, alpha: @state.alpha} for i in [0..100] by 10)
     for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
-      rows.push ({hue, sat: 100, light: i, alpha: @state.alpha} for i in [10..90] by 8)
+      rows.push ({hue, sat: @state.sat, light: i, alpha: @state.alpha} for i in [10..90] by 8)
 
     onSelectColor = (hsla, s) => @setColor(s)
 
@@ -263,12 +272,12 @@ ColorWell = React.createClass
       renderColor()
       renderLabel("alpha")
       (Slider {
-        initialValue: @state.alpha,
+        value: @state.alpha,
         onChange: (newValue) => @setAlpha(newValue)
       }),
       renderLabel("saturation")
       (Slider {
-        initialValue: @state.sat, max: 100,
+        value: @state.sat, max: 100,
         onChange: (newValue) => @setSat(newValue)
       }),
       (ColorGrid {rows, selectedColor: @state.colorString, onChange: onSelectColor})
