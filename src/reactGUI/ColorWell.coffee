@@ -130,12 +130,16 @@ ColorGrid = React.createFactory React.createClass
             className = classSet
               'color-cell': true
               'selected': @props.selectedColor == colorString
+            update = (e) =>
+              @props.onChange(cellColor, colorString)
+              e.stopPropagation()
+              e.preventDefault()
             (div \
               {
                 className,
-                onClick: (e) =>
-                  @props.onChange(cellColor, colorString)
-                  e.stopPropagation()
+                onTouchStart: update
+                onTouchMove: update
+                onClick: update
                 style: {backgroundColor: colorStringNoAlpha}
                 key: ix2
               }
@@ -151,6 +155,7 @@ ColorWell = React.createClass
   getInitialState: ->
     colorString = @props.lc.colors[@props.colorName]
     hsla = getHSLAString(colorString)
+    console.log hsla
     hsla ?= {}
     hsla.alpha ?= 1
     hsla.sat ?= 100
@@ -172,7 +177,7 @@ ColorWell = React.createClass
       @setHSLAFromColorString(colorString)
   componentWillUnmount: -> @unsubscribe()
 
-  setHSLAFromColorString: (c, forceSat=false) ->
+  setHSLAFromColorString: (c) ->
     hsla = parseHSLAString(c)
     if hsla
       @setState({hsla, alpha: hsla.alpha, sat: hsla.sat})
@@ -206,6 +211,7 @@ ColorWell = React.createClass
       @setColor(getHSLAString(hsla))
 
   render: ->
+    console.log @state
     {div, label, br} = React.DOM
     (div \
       {
