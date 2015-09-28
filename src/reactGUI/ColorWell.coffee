@@ -154,8 +154,7 @@ ColorWell = React.createClass
   displayName: 'ColorWell'
   getInitialState: ->
     colorString = @props.lc.colors[@props.colorName]
-    hsla = getHSLAString(colorString)
-    console.log hsla
+    hsla = parseHSLAString(colorString)
     hsla ?= {}
     hsla.alpha ?= 1
     hsla.sat ?= 100
@@ -211,7 +210,6 @@ ColorWell = React.createClass
       @setColor(getHSLAString(hsla))
 
   render: ->
-    console.log @state
     {div, label, br} = React.DOM
     (div \
       {
