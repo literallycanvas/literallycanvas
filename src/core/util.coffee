@@ -116,4 +116,17 @@ util =
         s4() + '-' +
         s4() + s4() + s4())
 
+  requestAnimationFrame: (f) ->
+    return window.webkitRequestAnimationFrame(f) if window.webkitRequestAnimationFrame
+    return window.requestAnimationFrame(f) if window.requestAnimationFrame
+    return window.mozRequestAnimationFrame(f) if window.mozRequestAnimationFrame
+    return setTimeout(f, 0)
+
+  cancelAnimationFrame: (f) ->
+    return window.webkitCancelRequestAnimationFrame(f) if window.webkitCancelRequestAnimationFrame
+    return window.webkitCancelAnimationFrame(f) if window.webkitCancelAnimationFrame
+    return window.cancelAnimationFrame(f) if window.cancelAnimationFrame
+    return window.mozCancelAnimationFrame(f) if window.mozCancelAnimationFrame
+    return clearTimeout(f)
+
 module.exports = util
