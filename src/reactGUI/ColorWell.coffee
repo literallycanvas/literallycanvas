@@ -2,16 +2,6 @@ React = require './React-shim'
 {classSet, requestAnimationFrame, cancelAnimationFrame} = require '../core/util'
 
 
-getPosition = (element) =>
-  x = 0
-  y = 0
-  while element
-    x += (element.offsetLeft - element.scrollLeft + element.clientLeft)
-    y += (element.offsetTop - element.scrollTop + element.clientTop)
-    element = element.offsetParent
-  {x, y}
-
-
 parseHSLAString = (s) ->
   return {hue: 0, sat: 0, light: 0, alpha: 0} if s == 'transparent'
   return null unless s.substring(0, 4) == 'hsla'
@@ -33,86 +23,9 @@ getHSLString = ({hue, sat, light}) ->
   "hsl(#{hue}, #{sat}%, #{light}%)"
 
 
-Slider = React.createFactory React.createClass
-  displayName: 'Slider'
-  getDefaultProps: -> {min: 0, max: 1, value: 1, onChange: ->}
-  shouldComponentUpdate: (nextProps, nextState) -> true
-    #return nextProps.value != @props.value
-  render: ->
-    {div} = React.DOM
-    rangeSize = @props.max - @props.min
-    pos = (@props.value - @props.min) / rangeSize
-    posPercent = pos * 100 + '%'
-
-    lineH = 4
-    rad = 8
-    m = 4
-    fullH = m * 2 + rad * 2
-    lineM = (fullH - lineH) / 2
-    extraHorzM = 20
-
-    getVal = (e) =>
-      el = @refs.line.getDOMNode()
-      parentPosition = getPosition(el)
-      x = e.clientX - parentPosition.x
-      if e.touches and e.touches?.length > 0
-        x = e.touches[0].clientX - parentPosition.x
-      positionInRange = x / el.clientWidth
-      Math.max(@props.min, Math.min(@props.max, @props.min + rangeSize * positionInRange))
-
-    updateValue = (value) => @props.onChange(value)
-    update = (e) =>
-      return unless @state?.isMouseDown
-      e.stopPropagation()
-      e.preventDefault()
-      value = getVal(e)
-      cancelAnimationFrame(@state.animFrameId) if @state.animFrameId
-      @setState({animFrameId: requestAnimationFrame => updateValue(value)})
-    start = (e) =>
-      e.stopPropagation()
-      @setState({isMouseDown: true})
-    stop = (e) =>
-      return unless @state?.isMouseDown
-      updateValue(getVal(e))
-      @setState({isMouseDown: false})
-
-    (div {
-        style: {position: 'relative', width: '100%', height: fullH},
-        onClick: (e) =>
-          e.stopPropagation()
-          updateValue(getVal(e))
-        onMouseMove: update
-        onTouchStart: start
-        onTouchMove: update
-        onTouchEnd: stop
-        onMouseDown: start
-        onMouseUp: stop
-        onMouseLeave: stop
-        onMouseEnter: stop
-      },
-      (div {ref: 'line', style: {
-        position: 'absolute',
-        top: lineM, right: lineM + extraHorzM,
-        bottom: lineM, left: lineM + extraHorzM,
-        backgroundColor: 'black', borderRadius: lineH / 2}},
-        (div {style: {
-          borderRadius: rad,
-          backgroundColor: '#aaa',
-          border: '1px solid black',
-          position: 'absolute',
-          top: -(rad - lineH / 2),
-          left: posPercent,
-          width: rad * 2, height: rad * 2,
-          transform: "translate(-#{rad}px,0px)"
-        }})
-      )
-    )
-
-
 ColorGrid = React.createFactory React.createClass
   displayName: 'ColorGrid'
-  shouldComponentUpdate: (nextProps, nextState) -> true
-    #@props.selectedColor != nextProps.selectedColor
+  mixins: [React.addons.PureRenderMixin]
   render: ->
     {div} = React.DOM
     (div {},
@@ -152,6 +65,7 @@ ColorGrid = React.createFactory React.createClass
 
 ColorWell = React.createClass
   displayName: 'ColorWell'
+  mixins: [React.addons.PureRenderMixin]
   getInitialState: ->
     colorString = @props.lc.colors[@props.colorName]
     hsla = parseHSLAString(colorString)
@@ -160,10 +74,11 @@ ColorWell = React.createClass
     hsla.sat ?= 100
     hsla.hue ?= 0
     hsla.light ?= 50
+
     {
       colorString,
       alpha: hsla.alpha
-      sat: hsla.sat
+      sat: if hsla.sat == 0 then 100 else hsla.sat
       isPickerVisible: false,
       hsla: hsla
     }
@@ -185,8 +100,10 @@ ColorWell = React.createClass
 
   closePicker: -> @setState({isPickerVisible: false})
   togglePicker: ->
-    @setState({isPickerVisible: not @state.isPickerVisible})
+    isPickerVisible = not @state.isPickerVisible
+    shouldResetSat = isPickerVisible && @state.sat == 0
     @setHSLAFromColorString(@state.colorString)
+    @setState({isPickerVisible, sat: if shouldResetSat then 100 else @state.sat})
 
   setColor: (c) ->
     @setState({colorString: c})
@@ -203,6 +120,7 @@ ColorWell = React.createClass
 
   setSat: (sat) ->
     @setState({sat})
+    throw "SAT" if isNaN(sat)
     if @state.hsla
       hsla = @state.hsla
       hsla.sat = sat
@@ -218,7 +136,6 @@ ColorWell = React.createClass
           'open': @state.isPickerVisible ,
         }),
         onMouseLeave: @closePicker
-        onClick: @togglePicker
         style: {float: 'left', textAlign: 'center'}
       },
       (label {float: 'left'}, @props.label),
@@ -229,6 +146,7 @@ ColorWell = React.createClass
             'color-well-color-container': true
             'selected': @state.isPickerVisible
           style: {backgroundColor: 'white'}
+          onClick: @togglePicker
         },
         (div {className: 'color-well-checker color-well-checker-top-left'}),
         (div {
@@ -247,7 +165,7 @@ ColorWell = React.createClass
     )
 
   renderPicker: ->
-    {div, label} = React.DOM
+    {div, label, input} = React.DOM
     return null unless @state.isPickerVisible
 
     renderLabel = (text) =>
@@ -284,14 +202,18 @@ ColorWell = React.createClass
     (div {className: 'color-picker-popup'},
       renderColor()
       renderLabel("alpha")
-      (Slider {
+      (input {
+        type: 'range',
+        min: 0, max: 1, step: 0.01
         value: @state.alpha,
-        onChange: (newValue) => @setAlpha(newValue)
+        onChange: (e) => @setAlpha(parseFloat(e.target.value))
       }),
       renderLabel("saturation")
-      (Slider {
+      (input {
+        type: 'range',
+        min: 0, max: 100,
         value: @state.sat, max: 100,
-        onChange: (newValue) => @setSat(newValue)
+        onChange: (e) => @setSat(parseInt(e.target.value, 10))
       }),
       (ColorGrid {rows, selectedColor: @state.colorString, onChange: onSelectColor})
     )

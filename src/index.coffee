@@ -65,8 +65,8 @@ setDefaultImageURLPrefix = (newDefault) -> defaultImageURLPrefix = newDefault
 init = (el, opts = {}) ->
   opts.imageURLPrefix ?= defaultImageURLPrefix
 
-  opts.primaryColor ?= '#000'
-  opts.secondaryColor ?= '#fff'
+  opts.primaryColor ?= 'hsla(0, 0%, 0%, 1)'
+  opts.secondaryColor ?= 'hsla(0, 0%, 100%, 1)'
   opts.backgroundColor ?= 'transparent'
 
   opts.strokeWidths ?= [1, 2, 5, 10, 20, 30]
