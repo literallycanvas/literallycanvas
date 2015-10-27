@@ -45,6 +45,11 @@
       <a href="javascript:void(0);" id="show-lc">Setup</a>
 
       <br>
+
+      <a href="javascript:void(0);" id="pencil">Pencil</a>
+      <br>
+      <a href="javascript:void(0);" id="eraser">Eraser</a>
+
       <div class="svg-container"
           style="display: inline-block; border: 1px solid yellow"></div>
 
@@ -56,7 +61,7 @@
 
     <script src="/demo/jquery-1.8.2.js"></script>
     <script src="/demo/fastclick.js"></script>
-    <script src="/demo/react-0.13.3.js"></script>
+    <!--<script src="/demo/react-0.13.3.js"></script>-->
     <!--<script src="/demo/react-0.10.0.js"></script>-->
     <script src="/lib/js/literallycanvas.js"></script>
 
@@ -208,6 +213,13 @@
 
       $('#show-lc').click(function() {
         if (!lc) { showLC(); }
+      });
+
+      $('#pencil').click(function() {
+        lc.setTool(new LC.tools.Pencil(lc));
+      });
+      $('#eraser').click(function() {
+        lc.setTool(new LC.tools.Eraser(lc));
       });
     </script>
 
