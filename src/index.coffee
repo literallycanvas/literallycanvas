@@ -2,7 +2,6 @@ require './ie_customevent'
 require './ie_setLineDash'
 
 LiterallyCanvas = require './core/LiterallyCanvas'
-initReact = require './reactGUI/init'
 
 canvasRenderer = require './core/canvasRenderer'
 svgRenderer = require './core/svgRenderer'
@@ -13,20 +12,10 @@ renderSnapshotToSVG = require './core/renderSnapshotToSVG'
 
 {localize} = require './core/localization'
 
-
-require './optionsStyles/font'
-require './optionsStyles/stroke-width'
-require './optionsStyles/line-options-and-stroke-width'
-require './optionsStyles/null'
-React.initializeTouchEvents(true)
-{defineOptionsStyle} = require './optionsStyles/optionsStyles'
-
-
 conversion =
   snapshotToShapes: (snapshot) ->
     shapes.JSONToShape(shape) for shape in snapshot.shapes
   snapshotJSONToShapes: (json) -> conversion.snapshotToShapes(JSON.parse(json))
-
 
 baseTools = require './tools/base'
 tools =
@@ -43,7 +32,6 @@ tools =
   Tool: baseTools.Tool
   ToolWithStroke: baseTools.ToolWithStroke
 
-
 defaultTools = [
   tools.Pencil,
   tools.Eraser,
@@ -57,10 +45,8 @@ defaultTools = [
   tools.Eyedropper,
 ]
 
-
 defaultImageURLPrefix = 'lib/img'
 setDefaultImageURLPrefix = (newDefault) -> defaultImageURLPrefix = newDefault
-
 
 init = (el, opts = {}) ->
   opts.imageURLPrefix ?= defaultImageURLPrefix
@@ -109,54 +95,31 @@ init = (el, opts = {}) ->
     'toolbar-hidden'
   el.className = el.className + ' ' + topOrBottomClassName
 
-  pickerElement = document.createElement('div')
-  pickerElement.className = 'lc-picker'
-
   drawingViewElement = document.createElement('div')
   drawingViewElement.className = 'lc-drawing'
 
-  optionsElement = document.createElement('div')
-  optionsElement.className = 'lc-options horz-toolbar'
-
-  el.appendChild(pickerElement)
   el.appendChild(drawingViewElement)
-  el.appendChild(optionsElement)
 
   ### and get to work ###
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
-
-  initReact(
-    pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
 
   if 'onInit' of opts
     opts.onInit(lc)
 
   teardown = ->
     lc._teardown()
-    pickerElement.remove()
     drawingViewElement.remove()
-    optionsElement.remove()
+
   lc.teardown = teardown
 
   lc
 
-
-registerJQueryPlugin = (_$) ->
-  _$.fn.literallycanvas = (opts = {}) ->
-    @each (ix, el) =>
-      el.literallycanvas = init(el, opts)
-    this
-
-
 # non-browserify compatibility
 window.LC = {init}
-if window.$
-    registerJQueryPlugin(window.$)
-
 
 module.exports = {
-  init, registerJQueryPlugin, util, tools, defineOptionsStyle,
+  init, util, tools,
   setDefaultImageURLPrefix, defaultTools,
 
   defineShape: shapes.defineShape,
