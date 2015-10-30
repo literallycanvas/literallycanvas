@@ -16,7 +16,7 @@ gulp.task('sass', function() {
 });
 
 
-gulp.task('browserify', function() {
+gulp.task('browserify-lc-main', function() {
   var bundleStream = browserify({
       basedir: 'src', extensions: ['.js', '.coffee'], debug: true
   }).add('./index.coffee')
@@ -37,11 +37,32 @@ gulp.task('browserify', function() {
     .pipe(connect.reload());
 });
 
+gulp.task('browserify-lc-core', function() {
+  var bundleStream = browserify({
+      basedir: 'src', extensions: ['.js', '.coffee'], debug: true
+  }).add('./index.coffee')
+    .transform('coffeeify')
+    .bundle({standalone: 'LC'})
+    .on('error', function (err) {
+      if (err) {
+        console.error(err.toString());
+      }
+    });
 
-gulp.task('uglify', ['browserify'], function() {
-  return gulp.src('./lib/js/literallycanvas.js')
+  return bundleStream
+    .pipe(source('./src/index.coffee'))
+    .pipe(rename('literallycanvas-core.js'))
+    .pipe(gulp.dest('./lib/js/'))
+    .pipe(connect.reload());
+});
+
+
+gulp.task('uglify', ['browserify-lc-main', 'browserify-lc-core'], function() {
+  return gulp.src(['./lib/js/literallycanvas?(-core).js'])
     .pipe(uglify())
-    .pipe(rename('literallycanvas.min.js'))
+    .pipe(rename({
+      suffix: ".min"
+    }))
     .pipe(gulp.dest('./lib/js'));
 });
 
@@ -69,5 +90,5 @@ gulp.task('serve', function() {
 });
 
 
-gulp.task('dev', ['browserify', 'sass', 'watch', 'serve'], function() {
+gulp.task('dev', ['browserify-lc-main', 'sass', 'watch', 'serve'], function() {
 });
