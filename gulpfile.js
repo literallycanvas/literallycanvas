@@ -6,7 +6,7 @@ var sass = require('gulp-ruby-sass');
 var source = require('vinyl-source-stream');
 var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify');
-
+var preprocessify = require('preprocessify');
 
 gulp.task('sass', function() {
   return gulp.src('scss/literallycanvas.scss')
@@ -22,6 +22,7 @@ gulp.task('browserify-lc-main', function() {
   }).add('./index.coffee')
     .external('React/addons')
     .external('React')
+    .transform(preprocessify({ INCLUDE_REACT: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
     .bundle({standalone: 'LC'})
     .on('error', function (err) {
@@ -41,6 +42,7 @@ gulp.task('browserify-lc-core', function() {
   var bundleStream = browserify({
       basedir: 'src', extensions: ['.js', '.coffee'], debug: true
   }).add('./index.coffee')
+    .transform(preprocessify({}, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
     .bundle({standalone: 'LC'})
     .on('error', function (err) {

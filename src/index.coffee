@@ -2,7 +2,6 @@ require './ie_customevent'
 require './ie_setLineDash'
 
 LiterallyCanvas = require './core/LiterallyCanvas'
-initReact = require './reactGUI/init'
 
 canvasRenderer = require './core/canvasRenderer'
 svgRenderer = require './core/svgRenderer'
@@ -13,14 +12,15 @@ renderSnapshotToSVG = require './core/renderSnapshotToSVG'
 
 {localize} = require './core/localization'
 
-
+# @ifdef INCLUDE_REACT
+initReact = require './reactGUI/init'
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
 require './optionsStyles/line-options-and-stroke-width'
 require './optionsStyles/null'
 React.initializeTouchEvents(true)
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
-
+# @endif
 
 conversion =
   snapshotToShapes: (snapshot) ->
@@ -109,34 +109,41 @@ init = (el, opts = {}) ->
     'toolbar-hidden'
   el.className = el.className + ' ' + topOrBottomClassName
 
-  pickerElement = document.createElement('div')
-  pickerElement.className = 'lc-picker'
-
   drawingViewElement = document.createElement('div')
   drawingViewElement.className = 'lc-drawing'
+
+  el.appendChild(drawingViewElement)
+
+  # @ifdef INCLUDE_REACT
+  pickerElement = document.createElement('div')
+  pickerElement.className = 'lc-picker'
 
   optionsElement = document.createElement('div')
   optionsElement.className = 'lc-options horz-toolbar'
 
   el.appendChild(pickerElement)
-  el.appendChild(drawingViewElement)
   el.appendChild(optionsElement)
+  # @endif
 
   ### and get to work ###
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
 
+  # @ifdef INCLUDE_REACT
   initReact(
     pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
+  # @endif
 
   if 'onInit' of opts
     opts.onInit(lc)
 
   teardown = ->
     lc._teardown()
-    pickerElement.remove()
     drawingViewElement.remove()
+    # @ifdef INCLUDE_REACT
+    pickerElement.remove()
     optionsElement.remove()
+    # @endif
   lc.teardown = teardown
 
   lc
@@ -156,8 +163,11 @@ if window.$
 
 
 module.exports = {
-  init, registerJQueryPlugin, util, tools, defineOptionsStyle,
+  init, registerJQueryPlugin, util, tools,
   setDefaultImageURLPrefix, defaultTools,
+  # @ifdef INCLUDE_REACT
+  defineOptionsStyle,
+  # @endif
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
