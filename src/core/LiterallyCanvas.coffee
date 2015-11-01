@@ -60,7 +60,7 @@ module.exports = class LiterallyCanvas
     @scale = 1.0
     # GUI immediately replaces this value, but it's initialized so you can have
     # something really simple
-    @tool = new @opts.tools[0](this)
+    @setTool(new @opts.tools[0](this))
 
     @width = opts.imageSize.width or INFINITE
     @height = opts.imageSize.height or INFINITE
@@ -118,7 +118,7 @@ module.exports = class LiterallyCanvas
     @trigger('imageSizeChange', {@width, @height})
 
   setTool: (tool) ->
-    @tool.willBecomeInactive(this)
+    @tool?.willBecomeInactive(this)
     @tool = tool
     @trigger('toolChange', {tool})
     tool.didBecomeActive(this)
