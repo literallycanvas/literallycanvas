@@ -12,7 +12,7 @@ renderSnapshotToSVG = require './core/renderSnapshotToSVG'
 
 {localize} = require './core/localization'
 
-# @ifdef INCLUDE_REACT
+# @ifdef INCLUDE_GUI
 initReact = require './reactGUI/init'
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
@@ -114,7 +114,7 @@ init = (el, opts = {}) ->
 
   el.appendChild(drawingViewElement)
 
-  # @ifdef INCLUDE_REACT
+  # @ifdef INCLUDE_GUI
   pickerElement = document.createElement('div')
   pickerElement.className = 'lc-picker'
 
@@ -129,7 +129,7 @@ init = (el, opts = {}) ->
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
 
-  # @ifdef INCLUDE_REACT
+  # @ifdef INCLUDE_GUI
   initReact(
     pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
   # @endif
@@ -140,7 +140,7 @@ init = (el, opts = {}) ->
   teardown = ->
     lc._teardown()
     drawingViewElement.remove()
-    # @ifdef INCLUDE_REACT
+    # @ifdef INCLUDE_GUI
     pickerElement.remove()
     optionsElement.remove()
     # @endif
@@ -165,7 +165,7 @@ if window.$
 module.exports = {
   init, registerJQueryPlugin, util, tools,
   setDefaultImageURLPrefix, defaultTools,
-  # @ifdef INCLUDE_REACT
+  # @ifdef INCLUDE_GUI
   defineOptionsStyle,
   # @endif
 

@@ -22,7 +22,7 @@ gulp.task('browserify-lc-main', function() {
   }).add('./index.coffee')
     .external('React/addons')
     .external('React')
-    .transform(preprocessify({ INCLUDE_REACT: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
+    .transform(preprocessify({ INCLUDE_GUI: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
     .bundle({standalone: 'LC'})
     .on('error', function (err) {
