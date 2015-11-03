@@ -88,13 +88,17 @@ $selectedColor: lighten(#3cb0fd, 20%);
   }
 
   .lc-drawing {
-    right: 0; left: $pickerWidth;
-    cursor: default;
+    right: 0; left: 0; bottom: 0; left: 0;
 
     & > * {
       position: absolute;
       top: 0; right: 0; bottom: 0; left: 0;
     }
+  }
+
+  .lc-drawing.with-gui {
+    right: 0; left: $pickerWidth;
+    cursor: default;
 
     .polygon-toolbar {
       top: auto;

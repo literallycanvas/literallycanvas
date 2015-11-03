@@ -101,16 +101,26 @@ init = (el, opts = {}) ->
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
 
+  # @ifdef INCLUDE_GUI
   topOrBottomClassName = if opts.toolbarPosition == 'top'
     'toolbar-at-top'
   else if opts.toolbarPosition == 'bottom'
     'toolbar-at-bottom'
   else if opts.toolbarPosition == 'hidden'
     'toolbar-hidden'
+  # @endif
+  # @ifndef INCLUDE_GUI
+  topOrBottomClassName = 'toolbar-hidden'
+  # @endif
   el.className = el.className + ' ' + topOrBottomClassName
 
   drawingViewElement = document.createElement('div')
+  # @ifdef INCLUDE_GUI
+  drawingViewElement.className = 'lc-drawing with-gui'
+  # @endif
+  # @ifndef INCLUDE_GUI
   drawingViewElement.className = 'lc-drawing'
+  # @endif
 
   el.appendChild(drawingViewElement)
 
