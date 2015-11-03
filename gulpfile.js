@@ -79,7 +79,7 @@ gulp.task('demo-reload', function () {
 
 
 gulp.task('watch', function() {
-  gulp.watch(['src/*.coffee', 'src/*/*.coffee'], ['browserify']);
+  gulp.watch(['src/*.coffee', 'src/*/*.coffee'], ['browserify-lc-main', 'browserify-lc-core']);
   gulp.watch('scss/*.scss', ['sass']);
   gulp.watch('demo/*', ['demo-reload']);
 });
@@ -92,5 +92,5 @@ gulp.task('serve', function() {
 });
 
 
-gulp.task('dev', ['browserify-lc-main', 'sass', 'watch', 'serve'], function() {
+gulp.task('dev', ['browserify-lc-main', 'browserify-lc-core', 'sass', 'watch', 'serve'], function() {
 });
