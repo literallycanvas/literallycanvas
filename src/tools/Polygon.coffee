@@ -1,7 +1,7 @@
 {ToolWithStroke} = require './base'
 {createShape} = require '../core/shapes'
 
-module.exports = class Pencil extends ToolWithStroke
+module.exports = class Polygon extends ToolWithStroke
 
   name: 'Polygon'
   iconName: 'polygon'
