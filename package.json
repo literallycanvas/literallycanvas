@@ -22,19 +22,21 @@
   },
   "devDependencies": {
     "browserify": "~3.44.2",
+    "coffeeify": "~0.6.0",
     "envify": "~1.2.1",
     "gulp": "~3.8.0",
-    "uglify-js": "~2.4.13",
-    "gulp-ruby-sass": "~0.4.3",
-    "coffeeify": "~0.6.0",
-    "reactify": "~0.13.1",
-    "vinyl-source-stream": "~0.1.1",
-    "watchify": "~0.8.3",
-    "gulp-uglify": "~0.2.1",
-    "streamify": "~0.2.3",
-    "gulp-streamify": "0.0.5",
+    "gulp-connect": "~2.0.5",
+    "gulp-preprocess": "^1.2.0",
     "gulp-rename": "~1.2.0",
-    "gulp-connect": "~2.0.5"
+    "gulp-ruby-sass": "~0.4.3",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "~0.2.1",
+    "preprocessify": "0.0.6",
+    "reactify": "~0.13.1",
+    "streamify": "~0.2.3",
+    "uglify-js": "~2.4.13",
+    "vinyl-source-stream": "~0.1.1",
+    "watchify": "~0.8.3"
   },
   "dependencies": {
     "react": ">=0.13.0"

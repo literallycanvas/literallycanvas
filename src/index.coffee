@@ -2,7 +2,6 @@ require './ie_customevent'
 require './ie_setLineDash'
 
 LiterallyCanvas = require './core/LiterallyCanvas'
-initReact = require './reactGUI/init'
 
 canvasRenderer = require './core/canvasRenderer'
 svgRenderer = require './core/svgRenderer'
@@ -13,14 +12,15 @@ renderSnapshotToSVG = require './core/renderSnapshotToSVG'
 
 {localize} = require './core/localization'
 
-
+# @ifdef INCLUDE_GUI
+initReact = require './reactGUI/init'
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
 require './optionsStyles/line-options-and-stroke-width'
 require './optionsStyles/null'
 React.initializeTouchEvents(true)
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
-
+# @endif
 
 conversion =
   snapshotToShapes: (snapshot) ->
@@ -101,42 +101,59 @@ init = (el, opts = {}) ->
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
 
+  # @ifdef INCLUDE_GUI
   topOrBottomClassName = if opts.toolbarPosition == 'top'
     'toolbar-at-top'
   else if opts.toolbarPosition == 'bottom'
     'toolbar-at-bottom'
   else if opts.toolbarPosition == 'hidden'
     'toolbar-hidden'
+  # @endif
+  # @ifndef INCLUDE_GUI
+  topOrBottomClassName = 'toolbar-hidden'
+  # @endif
   el.className = el.className + ' ' + topOrBottomClassName
 
+  drawingViewElement = document.createElement('div')
+  # @ifdef INCLUDE_GUI
+  drawingViewElement.className = 'lc-drawing with-gui'
+  # @endif
+  # @ifndef INCLUDE_GUI
+  drawingViewElement.className = 'lc-drawing'
+  # @endif
+
+  el.appendChild(drawingViewElement)
+
+  # @ifdef INCLUDE_GUI
   pickerElement = document.createElement('div')
   pickerElement.className = 'lc-picker'
-
-  drawingViewElement = document.createElement('div')
-  drawingViewElement.className = 'lc-drawing'
 
   optionsElement = document.createElement('div')
   optionsElement.className = 'lc-options horz-toolbar'
 
   el.appendChild(pickerElement)
-  el.appendChild(drawingViewElement)
   el.appendChild(optionsElement)
+  # @endif
 
   ### and get to work ###
 
   lc = new LiterallyCanvas(drawingViewElement, opts)
 
+  # @ifdef INCLUDE_GUI
   initReact(
     pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
+  # @endif
 
   if 'onInit' of opts
     opts.onInit(lc)
 
   teardown = ->
     lc._teardown()
-    pickerElement.remove()
     drawingViewElement.remove()
+    # @ifdef INCLUDE_GUI
+    pickerElement.remove()
     optionsElement.remove()
+    # @endif
   lc.teardown = teardown
 
   lc
@@ -156,8 +173,11 @@ if window.$
 
 
 module.exports = {
-  init, registerJQueryPlugin, util, tools, defineOptionsStyle,
+  init, registerJQueryPlugin, util, tools,
   setDefaultImageURLPrefix, defaultTools,
+  # @ifdef INCLUDE_GUI
+  defineOptionsStyle,
+  # @endif
 
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
