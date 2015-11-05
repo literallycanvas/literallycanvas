@@ -268,7 +268,11 @@ $selectedColor: lighten(#3cb0fd, 20%);
 }
 
 .literally .polygon-toolbar {
+  position: absolute;
   border-top: $basicBorder;
+  border-bottom: $basicBorder;
+  top: -100%;
+  width: 100%;
 }
 
 .literally .lc-options {
