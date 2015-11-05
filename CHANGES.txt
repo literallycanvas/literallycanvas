@@ -3,6 +3,8 @@ v0.4.11:
  * 'scale' parameter for the Image shape
  * Fix text box drag handles (they were invisible)
  * Transparency and saturation sliders in color picker
+ * Build a literallycanvas-core library that does not include the tool UI
+ * Decouple polygon tool UI from tool; trigger 'lc-polygon*' events
 
 v0.4.10:
  * Fix the text tool
