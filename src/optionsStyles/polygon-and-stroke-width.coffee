@@ -46,13 +46,15 @@ defineOptionsStyle 'polygon-and-stroke-width', React.createClass
     polygonToolStyle = {display: 'none'} unless @state.inProgress
 
     div {},
-      (div {className: 'square-toolbar-button', onClick: polygonFinishOpen, style: polygonToolStyle},
-        img {src: "#{@props.imageURLPrefix}/polygon-open.png"}),
-      (div {className: 'square-toolbar-button', onClick: polygonFinishClosed, style: polygonToolStyle},
-        img {src: "#{@props.imageURLPrefix}/polygon-closed.png"}),
-      (div {className: 'square-toolbar-button', onClick: polygonCancel, style: polygonToolStyle},
-        img {src: "#{@props.imageURLPrefix}/polygon-cancel.png"}),
-      (StrokeWidthPicker {tool: @props.tool, lc: @props.lc})
+      div {className: 'polygon-toolbar horz-toolbar', style: polygonToolStyle},
+        (div {className: 'square-toolbar-button', onClick: polygonFinishOpen},
+          img {src: "#{@props.imageURLPrefix}/polygon-open.png"}),
+        (div {className: 'square-toolbar-button', onClick: polygonFinishClosed},
+          img {src: "#{@props.imageURLPrefix}/polygon-closed.png"}),
+        (div {className: 'square-toolbar-button', onClick: polygonCancel},
+          img {src: "#{@props.imageURLPrefix}/polygon-cancel.png"}),
+      div {},
+        (StrokeWidthPicker {tool: @props.tool, lc: @props.lc})
 
 
 module.exports = {}
