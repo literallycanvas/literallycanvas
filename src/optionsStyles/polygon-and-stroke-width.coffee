@@ -18,10 +18,10 @@ defineOptionsStyle 'polygon-and-stroke-width', React.createClass
         func()
 
     showPolygonTools = () =>
-      this.setState({ inProgress: true });
+      @setState({ inProgress: true }) unless @state.inProgress;
 
     hidePolygonTools = () =>
-      this.setState({ inProgress: false });
+      @setState({ inProgress: false });
 
     unsubscribeFuncs.push lc.on 'lc-polygon-started', showPolygonTools
     unsubscribeFuncs.push lc.on 'lc-polygon-stopped', hidePolygonTools
@@ -42,15 +42,15 @@ defineOptionsStyle 'polygon-and-stroke-width', React.createClass
     polygonCancel = () =>
       lc.trigger 'lc-polygon-cancel'
 
-    polygonToolStyle = {float: 'left', margin: 1}
-    polygonToolStyle.display = 'none' unless @state.inProgress
+    polygonToolStyle = {}
+    polygonToolStyle = {display: 'none'} unless @state.inProgress
 
     div {},
-      (div {className: 'square-toolbar-button', onClick: polygonFinishOpen, polygonToolStyle},
+      (div {className: 'square-toolbar-button', onClick: polygonFinishOpen, style: polygonToolStyle},
         img {src: "#{@props.imageURLPrefix}/polygon-open.png"}),
-      (div {className: 'square-toolbar-button', onClick: polygonFinishClosed, polygonToolStyle},
+      (div {className: 'square-toolbar-button', onClick: polygonFinishClosed, style: polygonToolStyle},
         img {src: "#{@props.imageURLPrefix}/polygon-closed.png"}),
-      (div {className: 'square-toolbar-button', onClick: polygonCancel, polygonToolStyle},
+      (div {className: 'square-toolbar-button', onClick: polygonCancel, style: polygonToolStyle},
         img {src: "#{@props.imageURLPrefix}/polygon-cancel.png"}),
       (StrokeWidthPicker {tool: @props.tool, lc: @props.lc})
 
