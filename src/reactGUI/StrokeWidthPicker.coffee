@@ -25,7 +25,7 @@ module.exports = React.createClass
             {
               className: buttonClassName,
               onClick: =>
-                @props.tool.strokeWidth = strokeWidth
+                @props.lc.trigger 'setStrokeWidth', strokeWidth
                 @setState @getState()
             },
             (svg \

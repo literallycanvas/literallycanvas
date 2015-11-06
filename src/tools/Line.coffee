@@ -1,13 +1,12 @@
-{Tool} = require './base'
+{ToolWithStroke} = require './base'
 {createShape} = require '../core/shapes'
 
 
-module.exports = class Line extends Tool
+module.exports = class Line extends ToolWithStroke
 
   name: 'Line'
   iconName: 'line'
 
-  constructor: -> @strokeWidth = 5
   optionsStyle: 'line-options-and-stroke-width'
 
   begin: (x, y, lc) ->

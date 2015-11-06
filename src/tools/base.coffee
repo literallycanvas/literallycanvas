@@ -31,5 +31,16 @@ tools.ToolWithStroke = class ToolWithStroke extends Tool
   constructor: (lc) -> @strokeWidth = lc.opts.defaultStrokeWidth
   optionsStyle: 'stroke-width'
 
+  didBecomeActive: (lc) ->
+    unsubscribeFuncs = []
+    @unsubscribe = =>
+      for func in unsubscribeFuncs
+        func()
+
+    unsubscribeFuncs.push lc.on 'setStrokeWidth', (strokeWidth) =>
+      @strokeWidth = strokeWidth
+
+  willBecomeInactive: (lc) ->
+    @unsubscribe()
 
 module.exports = tools
