@@ -15,7 +15,7 @@
       }
 
       .fs-container {
-       width: 768px;
+       width: 1000px;
        margin: 50px;
       }
 
@@ -99,6 +99,7 @@
         <a href="javascript:void(0);" class='tool' id="tool-ellipse">Ellipse</a>
         <a href="javascript:void(0);" class='tool' id="tool-rectangle">Rectangle</a>
         <a href="javascript:void(0);" class='tool' id="tool-polygon">Polygon</a>
+        <a href="javascript:void(0);" class='tool' id="tool-select">Select</a>
       </div>
 
 <!-- SIZES WON'T WORK UNTIL SIZE EVENT PR IS MERGED! -->
@@ -249,6 +250,10 @@
             name: 'tool-polygon',
             el: document.getElementById('tool-polygon'),
             tool: new LC.tools.Polygon(lc)
+          },{
+            name: 'tool-select',
+            el: document.getElementById('tool-select'),
+            tool: new LC.tools.SelectShape(lc)
           }
         ];
 
