@@ -24,7 +24,7 @@ defineShape = (name, props) ->
       legacyDrawFunc.call(shape, ctx, retryCallback)
     drawLatestFunc = (ctx, bufferCtx, shape, retryCallback) ->
       legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback)
-    delete props.draw 
+    delete props.draw
     delete props.drawLatest if props.drawLatest
 
     defineCanvasRenderer(name, drawFunc, drawLatestFunc)
@@ -439,7 +439,10 @@ defineShape 'Text',
 defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
-    @handleSize = 10
+    if args.handleSize?
+      @handleSize = args.handleSize
+    else
+      @handleSize = 10
     @margin = 4
     @backgroundColor = args.backgroundColor or null
     @_br = @shape.getBoundingRect(args.ctx)
