@@ -4,9 +4,12 @@ createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 
 module.exports = React.createClass
   displayName: 'StrokeWidthPicker'
-  getState: -> {strokeWidth: @props.tool.strokeWidth}
+
+  getState: (tool=@props.tool) -> {strokeWidth: tool.strokeWidth}
   getInitialState: -> @getState()
-  mixins: [createSetStateOnEventMixin('toolChange')]
+  mixins: [createSetStateOnEventMixin('setStrokeWidth')]
+
+  componentWillReceiveProps: (props) -> @setState @getState(props.tool)
 
   render: ->
     {ul, li, svg, circle, div} = React.DOM
@@ -24,9 +27,7 @@ module.exports = React.createClass
           (div \
             {
               className: buttonClassName,
-              onClick: =>
-                @props.lc.trigger 'setStrokeWidth', strokeWidth
-                @setState @getState()
+              onClick: => @props.lc.trigger 'setStrokeWidth', strokeWidth
             },
             (svg \
               {
