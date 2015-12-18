@@ -5,6 +5,8 @@ v0.4.11:
  * Transparency and saturation sliders in color picker
  * Build a literallycanvas-core library that does not include the tool UI
  * Decouple polygon tool UI from tool; trigger 'lc-polygon*' events
+ * Fixed several bugs in SVG rendering
+ * Fixed behavior of stroke width picker when switching tools
 
 v0.4.10:
  * Fix the text tool
