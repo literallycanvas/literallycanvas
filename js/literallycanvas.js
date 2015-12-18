@@ -3683,8 +3683,8 @@ defineOptionsStyle('polygon-and-stroke-width', React.createClass({
         });
       };
     })(this);
-    unsubscribeFuncs.push(lc.on('lc-polygon-started', showPolygonTools));
-    return unsubscribeFuncs.push(lc.on('lc-polygon-stopped', hidePolygonTools));
+    unsubscribeFuncs.push(this.props.lc.on('lc-polygon-started', showPolygonTools));
+    return unsubscribeFuncs.push(this.props.lc.on('lc-polygon-stopped', hidePolygonTools));
   },
   componentWillUnmount: function() {
     return this.unsubscribe();
