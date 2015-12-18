@@ -110,6 +110,7 @@ defineSVGRenderer 'LinePath', (shape) ->
         "#{p.x+offset},#{p.y+offset}").join(' ')
       }'
       stroke='#{shape.points[0].color}'
+      stroke-linecap='round'
       stroke-width='#{shape.points[0].size}' />
   "
 
