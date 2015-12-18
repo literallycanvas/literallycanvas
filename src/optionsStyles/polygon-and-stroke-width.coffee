@@ -23,8 +23,8 @@ defineOptionsStyle 'polygon-and-stroke-width', React.createClass
     hidePolygonTools = () =>
       @setState({ inProgress: false });
 
-    unsubscribeFuncs.push lc.on 'lc-polygon-started', showPolygonTools
-    unsubscribeFuncs.push lc.on 'lc-polygon-stopped', hidePolygonTools
+    unsubscribeFuncs.push @props.lc.on 'lc-polygon-started', showPolygonTools
+    unsubscribeFuncs.push @props.lc.on 'lc-polygon-stopped', hidePolygonTools
 
   componentWillUnmount: ->
     @unsubscribe()
