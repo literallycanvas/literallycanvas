@@ -1,6 +1,4 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.LC=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-
-},{}],2:[function(_dereq_,module,exports){
 var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, renderShapeToContext, renderShapeToSVG, renderSnapshotToImage, renderSnapshotToSVG, shapeToJSON, util, _ref,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __slice = [].slice,
@@ -772,7 +770,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":41,"./actions":4,"./bindEvents":5,"./canvasRenderer":6,"./math":10,"./renderSnapshotToImage":11,"./renderSnapshotToSVG":12,"./shapes":13,"./svgRenderer":14,"./util":15}],3:[function(_dereq_,module,exports){
+},{"../tools/Pencil":23,"./actions":3,"./bindEvents":4,"./canvasRenderer":5,"./math":9,"./renderSnapshotToImage":10,"./renderSnapshotToSVG":11,"./shapes":12,"./svgRenderer":13,"./util":14}],2:[function(_dereq_,module,exports){
 var TextRenderer, getLinesToRender, getNextLine, parseFontString;
 
 _dereq_('./fontmetrics.js');
@@ -976,7 +974,7 @@ TextRenderer = (function() {
 module.exports = TextRenderer;
 
 
-},{"./fontmetrics.js":7}],4:[function(_dereq_,module,exports){
+},{"./fontmetrics.js":6}],3:[function(_dereq_,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -1059,7 +1057,7 @@ module.exports = {
 };
 
 
-},{}],5:[function(_dereq_,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 var bindEvents, buttonIsDown, coordsForTouchEvent, position;
 
 coordsForTouchEvent = function(el, e) {
@@ -1193,7 +1191,7 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
 };
 
 
-},{}],6:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var defineCanvasRenderer, drawErasedLinePath, drawErasedLinePathLatest, drawLinePath, drawLinePathLatest, lineEndCapShapes, noop, renderShapeToCanvas, renderShapeToContext, renderers, _drawRawLinePath;
 
 lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
@@ -1451,7 +1449,7 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes.coffee":8}],7:[function(_dereq_,module,exports){
+},{"./lineEndCapShapes.coffee":7}],6:[function(_dereq_,module,exports){
 /**
   This library rewrites the Canvas2D "measureText" function
   so that it returns a more complete metrics object.
@@ -1642,7 +1640,7 @@ module.exports = {
   };
 }());
 
-},{}],8:[function(_dereq_,module,exports){
+},{}],7:[function(_dereq_,module,exports){
 module.exports = {
   arrow: (function() {
     var getPoints;
@@ -1693,7 +1691,7 @@ module.exports = {
 };
 
 
-},{}],9:[function(_dereq_,module,exports){
+},{}],8:[function(_dereq_,module,exports){
 var localize, strings, _;
 
 strings = {};
@@ -1714,7 +1712,7 @@ module.exports = {
 };
 
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
 var Point, math, normals, unit, util, _slope;
 
 Point = _dereq_('./shapes').Point;
@@ -1803,7 +1801,7 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
 module.exports = math;
 
 
-},{"./shapes":13,"./util":15}],11:[function(_dereq_,module,exports){
+},{"./shapes":12,"./util":14}],10:[function(_dereq_,module,exports){
 var INFINITE, JSONToShape, renderWatermark, util;
 
 util = _dereq_('./util');
@@ -1902,7 +1900,7 @@ module.exports = function(snapshot, opts) {
 };
 
 
-},{"./shapes":13,"./util":15}],12:[function(_dereq_,module,exports){
+},{"./shapes":12,"./util":14}],11:[function(_dereq_,module,exports){
 var INFINITE, JSONToShape, util;
 
 util = _dereq_('./util');
@@ -1977,7 +1975,7 @@ module.exports = function(snapshot, opts) {
 };
 
 
-},{"./shapes":13,"./util":15}],13:[function(_dereq_,module,exports){
+},{"./shapes":12,"./util":14}],12:[function(_dereq_,module,exports){
 var JSONToShape, LinePath, TextRenderer, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _ref, _ref1, _refine;
 
 util = _dereq_('./util');
@@ -2751,7 +2749,7 @@ module.exports = {
 };
 
 
-},{"./TextRenderer":3,"./canvasRenderer":6,"./lineEndCapShapes.coffee":8,"./svgRenderer":14,"./util":15}],14:[function(_dereq_,module,exports){
+},{"./TextRenderer":2,"./canvasRenderer":5,"./lineEndCapShapes.coffee":7,"./svgRenderer":13,"./util":14}],13:[function(_dereq_,module,exports){
 var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
 
 lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
@@ -2892,7 +2890,7 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes.coffee":8}],15:[function(_dereq_,module,exports){
+},{"./lineEndCapShapes.coffee":7}],14:[function(_dereq_,module,exports){
 var renderShapeToContext, renderShapeToSVG, slice, util,
   __slice = [].slice;
 
@@ -3085,7 +3083,7 @@ util = {
 module.exports = util;
 
 
-},{"./canvasRenderer":6,"./svgRenderer":14}],16:[function(_dereq_,module,exports){
+},{"./canvasRenderer":5,"./svgRenderer":13}],15:[function(_dereq_,module,exports){
 (function () {
   function CustomEvent ( event, params ) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
@@ -3098,7 +3096,7 @@ module.exports = util;
 
   window.CustomEvent = CustomEvent;
 })();
-},{}],17:[function(_dereq_,module,exports){
+},{}],16:[function(_dereq_,module,exports){
 var hasWarned = false;
 if (!CanvasRenderingContext2D.prototype.setLineDash) {
   CanvasRenderingContext2D.prototype.setLineDash = function() {
@@ -3110,8 +3108,8 @@ if (!CanvasRenderingContext2D.prototype.setLineDash) {
   }
 }
 module.exports = null;
-},{}],18:[function(_dereq_,module,exports){
-var LiterallyCanvas, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultTools, defineOptionsStyle, init, initReact, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
+},{}],17:[function(_dereq_,module,exports){
+var LiterallyCanvas, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultTools, init, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
 
 _dereq_('./ie_customevent');
 
@@ -3132,22 +3130,6 @@ renderSnapshotToImage = _dereq_('./core/renderSnapshotToImage');
 renderSnapshotToSVG = _dereq_('./core/renderSnapshotToSVG');
 
 localize = _dereq_('./core/localization').localize;
-
-initReact = _dereq_('./reactGUI/init');
-
-_dereq_('./optionsStyles/font');
-
-_dereq_('./optionsStyles/stroke-width');
-
-_dereq_('./optionsStyles/line-options-and-stroke-width');
-
-_dereq_('./optionsStyles/polygon-and-stroke-width');
-
-_dereq_('./optionsStyles/null');
-
-React.initializeTouchEvents(true);
-
-defineOptionsStyle = _dereq_('./optionsStyles/optionsStyles').defineOptionsStyle;
 
 conversion = {
   snapshotToShapes: function(snapshot) {
@@ -3190,7 +3172,7 @@ setDefaultImageURLPrefix = function(newDefault) {
 };
 
 init = function(el, opts) {
-  var child, drawingViewElement, lc, optionsElement, pickerElement, teardown, topOrBottomClassName, _i, _len, _ref;
+  var child, drawingViewElement, lc, teardown, topOrBottomClassName, _i, _len, _ref;
   if (opts == null) {
     opts = {};
   }
@@ -3260,29 +3242,20 @@ init = function(el, opts) {
   if ([' ', ' '].join(el.className).indexOf(' literally ') === -1) {
     el.className = el.className + ' literally';
   }
-  topOrBottomClassName = opts.toolbarPosition === 'top' ? 'toolbar-at-top' : opts.toolbarPosition === 'bottom' ? 'toolbar-at-bottom' : opts.toolbarPosition === 'hidden' ? 'toolbar-hidden' : void 0;
+  topOrBottomClassName = 'toolbar-hidden';
   el.className = el.className + ' ' + topOrBottomClassName;
   drawingViewElement = document.createElement('div');
-  drawingViewElement.className = 'lc-drawing with-gui';
+  drawingViewElement.className = 'lc-drawing';
   el.appendChild(drawingViewElement);
-  pickerElement = document.createElement('div');
-  pickerElement.className = 'lc-picker';
-  optionsElement = document.createElement('div');
-  optionsElement.className = 'lc-options horz-toolbar';
-  el.appendChild(pickerElement);
-  el.appendChild(optionsElement);
 
   /* and get to work */
   lc = new LiterallyCanvas(drawingViewElement, opts);
-  initReact(pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix);
   if ('onInit' in opts) {
     opts.onInit(lc);
   }
   teardown = function() {
     lc._teardown();
-    drawingViewElement.remove();
-    pickerElement.remove();
-    return optionsElement.remove();
+    return drawingViewElement.remove();
   };
   lc.teardown = teardown;
   return lc;
@@ -3317,7 +3290,6 @@ module.exports = {
   tools: tools,
   setDefaultImageURLPrefix: setDefaultImageURLPrefix,
   defaultTools: defaultTools,
-  defineOptionsStyle: defineOptionsStyle,
   defineShape: shapes.defineShape,
   createShape: shapes.createShape,
   JSONToShape: shapes.JSONToShape,
@@ -3337,1321 +3309,7 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":2,"./core/canvasRenderer":6,"./core/localization":9,"./core/renderSnapshotToImage":11,"./core/renderSnapshotToSVG":12,"./core/shapes":13,"./core/svgRenderer":14,"./core/util":15,"./ie_customevent":16,"./ie_setLineDash":17,"./optionsStyles/font":19,"./optionsStyles/line-options-and-stroke-width":20,"./optionsStyles/null":21,"./optionsStyles/optionsStyles":22,"./optionsStyles/polygon-and-stroke-width":23,"./optionsStyles/stroke-width":24,"./reactGUI/init":35,"./tools/Ellipse":36,"./tools/Eraser":37,"./tools/Eyedropper":38,"./tools/Line":39,"./tools/Pan":40,"./tools/Pencil":41,"./tools/Polygon":42,"./tools/Rectangle":43,"./tools/Text":44,"./tools/base":45}],19:[function(_dereq_,module,exports){
-var ALL_FONTS, FONT_NAME_TO_VALUE, MONOSPACE_FONTS, OTHER_FONTS, SANS_SERIF_FONTS, SERIF_FONTS, defineOptionsStyle, name, value, _, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3;
-
-defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
-
-_ = _dereq_('../core/localization')._;
-
-SANS_SERIF_FONTS = [['Arial', 'Arial,"Helvetica Neue",Helvetica,sans-serif'], ['Arial Black', '"Arial Black","Arial Bold",Gadget,sans-serif'], ['Arial Narrow', '"Arial Narrow",Arial,sans-serif'], ['Gill Sans', '"Gill Sans","Gill Sans MT",Calibri,sans-serif'], ['Helvetica', '"Helvetica Neue",Helvetica,Arial,sans-serif'], ['Impact', 'Impact,Haettenschweiler,"Franklin Gothic Bold",Charcoal,"Helvetica Inserat","Bitstream Vera Sans Bold","Arial Black",sans-serif'], ['Tahoma', 'Tahoma,Verdana,Segoe,sans-serif'], ['Trebuchet MS', '"Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif'], ['Verdana', 'Verdana,Geneva,sans-serif']].map(function(_arg) {
-  var name, value;
-  name = _arg[0], value = _arg[1];
-  return {
-    name: _(name),
-    value: value
-  };
-});
-
-SERIF_FONTS = [['Baskerville', 'Baskerville,"Baskerville Old Face","Hoefler Text",Garamond,"Times New Roman",serif'], ['Garamond', 'Garamond,Baskerville,"Baskerville Old Face","Hoefler Text","Times New Roman",serif'], ['Georgia', 'Georgia,Times,"Times New Roman",serif'], ['Hoefler Text', '"Hoefler Text","Baskerville Old Face",Garamond,"Times New Roman",serif'], ['Lucida Bright', '"Lucida Bright",Georgia,serif'], ['Palatino', 'Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif'], ['Times New Roman', 'TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif']].map(function(_arg) {
-  var name, value;
-  name = _arg[0], value = _arg[1];
-  return {
-    name: _(name),
-    value: value
-  };
-});
-
-MONOSPACE_FONTS = [['Consolas/Monaco', 'Consolas,monaco,"Lucida Console",monospace'], ['Courier New', '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'], ['Lucida Sans Typewriter', '"Lucida Sans Typewriter","Lucida Console",monaco,"Bitstream Vera Sans Mono",monospace']].map(function(_arg) {
-  var name, value;
-  name = _arg[0], value = _arg[1];
-  return {
-    name: _(name),
-    value: value
-  };
-});
-
-OTHER_FONTS = [['Copperplate', 'Copperplate,"Copperplate Gothic Light",fantasy'], ['Papyrus', 'Papyrus,fantasy'], ['Script', '"Brush Script MT",cursive']].map(function(_arg) {
-  var name, value;
-  name = _arg[0], value = _arg[1];
-  return {
-    name: _(name),
-    value: value
-  };
-});
-
-ALL_FONTS = [[_('Sans Serif'), SANS_SERIF_FONTS], [_('Serif'), SERIF_FONTS], [_('Monospace'), MONOSPACE_FONTS], [_('Other'), OTHER_FONTS]];
-
-FONT_NAME_TO_VALUE = {};
-
-for (_i = 0, _len = SANS_SERIF_FONTS.length; _i < _len; _i++) {
-  _ref = SANS_SERIF_FONTS[_i], name = _ref.name, value = _ref.value;
-  FONT_NAME_TO_VALUE[name] = value;
-}
-
-for (_j = 0, _len1 = SERIF_FONTS.length; _j < _len1; _j++) {
-  _ref1 = SERIF_FONTS[_j], name = _ref1.name, value = _ref1.value;
-  FONT_NAME_TO_VALUE[name] = value;
-}
-
-for (_k = 0, _len2 = MONOSPACE_FONTS.length; _k < _len2; _k++) {
-  _ref2 = MONOSPACE_FONTS[_k], name = _ref2.name, value = _ref2.value;
-  FONT_NAME_TO_VALUE[name] = value;
-}
-
-for (_l = 0, _len3 = OTHER_FONTS.length; _l < _len3; _l++) {
-  _ref3 = OTHER_FONTS[_l], name = _ref3.name, value = _ref3.value;
-  FONT_NAME_TO_VALUE[name] = value;
-}
-
-defineOptionsStyle('font', React.createClass({
-  displayName: 'FontOptions',
-  getInitialState: function() {
-    return {
-      isItalic: false,
-      isBold: false,
-      fontName: 'Helvetica',
-      fontSizeIndex: 4
-    };
-  },
-  getFontSizes: function() {
-    return [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288];
-  },
-  updateTool: function(newState) {
-    var fontSize, items, k;
-    if (newState == null) {
-      newState = {};
-    }
-    for (k in this.state) {
-      if (!(k in newState)) {
-        newState[k] = this.state[k];
-      }
-    }
-    fontSize = this.getFontSizes()[newState.fontSizeIndex];
-    items = [];
-    if (newState.isItalic) {
-      items.push('italic');
-    }
-    if (newState.isBold) {
-      items.push('bold');
-    }
-    items.push("" + fontSize + "px");
-    items.push(FONT_NAME_TO_VALUE[newState.fontName]);
-    this.props.lc.tool.font = items.join(' ');
-    return this.props.lc.trigger('setFont', items.join(' '));
-  },
-  handleFontSize: function(event) {
-    var newState;
-    newState = {
-      fontSizeIndex: event.target.value
-    };
-    this.setState(newState);
-    return this.updateTool(newState);
-  },
-  handleFontFamily: function(event) {
-    var newState;
-    newState = {
-      fontName: event.target.selectedOptions[0].innerHTML
-    };
-    this.setState(newState);
-    return this.updateTool(newState);
-  },
-  handleItalic: function(event) {
-    var newState;
-    newState = {
-      isItalic: !this.state.isItalic
-    };
-    this.setState(newState);
-    return this.updateTool(newState);
-  },
-  handleBold: function(event) {
-    var newState;
-    newState = {
-      isBold: !this.state.isBold
-    };
-    this.setState(newState);
-    return this.updateTool(newState);
-  },
-  componentDidMount: function() {
-    return this.updateTool();
-  },
-  render: function() {
-    var br, div, input, label, lc, optgroup, option, select, span, _ref4;
-    lc = this.props.lc;
-    _ref4 = React.DOM, div = _ref4.div, input = _ref4.input, select = _ref4.select, option = _ref4.option, br = _ref4.br, label = _ref4.label, span = _ref4.span, optgroup = _ref4.optgroup;
-    return div({
-      className: 'lc-font-settings'
-    }, select({
-      value: this.state.fontSizeIndex,
-      onChange: this.handleFontSize
-    }, this.getFontSizes().map((function(_this) {
-      return function(size, ix) {
-        return option({
-          value: ix,
-          key: ix
-        }, "" + size + "px");
-      };
-    })(this))), select({
-      value: this.state.fontName,
-      onChange: this.handleFontFamily
-    }, ALL_FONTS.map((function(_this) {
-      return function(_arg) {
-        var fonts, label;
-        label = _arg[0], fonts = _arg[1];
-        return optgroup({
-          key: label,
-          label: label
-        }, fonts.map(function(family, ix) {
-          return option({
-            value: family.name,
-            key: ix
-          }, family.name);
-        }));
-      };
-    })(this))), label({
-      htmlFor: 'italic'
-    }, input({
-      type: 'checkbox',
-      id: 'italic',
-      checked: this.state.isItalic,
-      onChange: this.handleItalic
-    }, _("italic"))), label({
-      htmlFor: 'bold'
-    }, input({
-      type: 'checkbox',
-      id: 'bold',
-      checked: this.state.isBold,
-      onChange: this.handleBold
-    }, _("bold"))));
-  }
-}));
-
-module.exports = {};
-
-
-},{"../core/localization":9,"./optionsStyles":22}],20:[function(_dereq_,module,exports){
-var StrokeWidthPicker, classSet, createSetStateOnEventMixin, defineOptionsStyle;
-
-defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
-
-StrokeWidthPicker = React.createFactory(_dereq_('../reactGUI/StrokeWidthPicker'));
-
-createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
-
-classSet = _dereq_('../core/util').classSet;
-
-defineOptionsStyle('line-options-and-stroke-width', React.createClass({
-  displayName: 'LineOptionsAndStrokeWidth',
-  getState: function() {
-    return {
-      strokeWidth: this.props.tool.strokeWidth,
-      isDashed: this.props.tool.isDashed,
-      hasEndArrow: this.props.tool.hasEndArrow
-    };
-  },
-  getInitialState: function() {
-    return this.getState();
-  },
-  mixins: [createSetStateOnEventMixin('toolChange')],
-  render: function() {
-    var arrowButtonClass, dashButtonClass, div, img, li, style, toggleIsDashed, togglehasEndArrow, ul, _ref;
-    _ref = React.DOM, div = _ref.div, ul = _ref.ul, li = _ref.li, img = _ref.img;
-    toggleIsDashed = (function(_this) {
-      return function() {
-        _this.props.tool.isDashed = !_this.props.tool.isDashed;
-        return _this.setState(_this.getState());
-      };
-    })(this);
-    togglehasEndArrow = (function(_this) {
-      return function() {
-        _this.props.tool.hasEndArrow = !_this.props.tool.hasEndArrow;
-        return _this.setState(_this.getState());
-      };
-    })(this);
-    dashButtonClass = classSet({
-      'square-toolbar-button': true,
-      'selected': this.state.isDashed
-    });
-    arrowButtonClass = classSet({
-      'square-toolbar-button': true,
-      'selected': this.state.hasEndArrow
-    });
-    style = {
-      float: 'left',
-      margin: 1
-    };
-    return div({}, div({
-      className: dashButtonClass,
-      onClick: toggleIsDashed,
-      style: style
-    }, img({
-      src: "" + this.props.imageURLPrefix + "/dashed-line.png"
-    })), div({
-      className: arrowButtonClass,
-      onClick: togglehasEndArrow,
-      style: style
-    }, img({
-      src: "" + this.props.imageURLPrefix + "/line-with-arrow.png"
-    })), StrokeWidthPicker({
-      tool: this.props.tool,
-      lc: this.props.lc
-    }));
-  }
-}));
-
-module.exports = {};
-
-
-},{"../core/util":15,"../reactGUI/StrokeWidthPicker":30,"../reactGUI/createSetStateOnEventMixin":33,"./optionsStyles":22}],21:[function(_dereq_,module,exports){
-var defineOptionsStyle;
-
-defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
-
-defineOptionsStyle('null', React.createClass({
-  displayName: 'NoOptions',
-  render: function() {
-    return React.DOM.div();
-  }
-}));
-
-module.exports = {};
-
-
-},{"./optionsStyles":22}],22:[function(_dereq_,module,exports){
-var defineOptionsStyle, optionsStyles;
-
-optionsStyles = {};
-
-defineOptionsStyle = function(name, style) {
-  return optionsStyles[name] = React.createFactory(style);
-};
-
-module.exports = {
-  optionsStyles: optionsStyles,
-  defineOptionsStyle: defineOptionsStyle
-};
-
-
-},{}],23:[function(_dereq_,module,exports){
-var StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
-
-defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
-
-StrokeWidthPicker = React.createFactory(_dereq_('../reactGUI/StrokeWidthPicker'));
-
-createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
-
-defineOptionsStyle('polygon-and-stroke-width', React.createClass({
-  displayName: 'PolygonAndStrokeWidth',
-  getState: function() {
-    return {
-      strokeWidth: this.props.tool.strokeWidth,
-      inProgress: false
-    };
-  },
-  getInitialState: function() {
-    return this.getState();
-  },
-  mixins: [createSetStateOnEventMixin('toolChange')],
-  componentDidMount: function() {
-    var hidePolygonTools, showPolygonTools, unsubscribeFuncs;
-    unsubscribeFuncs = [];
-    this.unsubscribe = (function(_this) {
-      return function() {
-        var func, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = unsubscribeFuncs.length; _i < _len; _i++) {
-          func = unsubscribeFuncs[_i];
-          _results.push(func());
-        }
-        return _results;
-      };
-    })(this);
-    showPolygonTools = (function(_this) {
-      return function() {
-        if (!_this.state.inProgress) {
-          return _this.setState({
-            inProgress: true
-          });
-        }
-      };
-    })(this);
-    hidePolygonTools = (function(_this) {
-      return function() {
-        return _this.setState({
-          inProgress: false
-        });
-      };
-    })(this);
-    unsubscribeFuncs.push(lc.on('lc-polygon-started', showPolygonTools));
-    return unsubscribeFuncs.push(lc.on('lc-polygon-stopped', hidePolygonTools));
-  },
-  componentWillUnmount: function() {
-    return this.unsubscribe();
-  },
-  render: function() {
-    var div, img, lc, polygonCancel, polygonFinishClosed, polygonFinishOpen, polygonToolStyle, _ref;
-    lc = this.props.lc;
-    _ref = React.DOM, div = _ref.div, img = _ref.img;
-    polygonFinishOpen = (function(_this) {
-      return function() {
-        return lc.trigger('lc-polygon-finishopen');
-      };
-    })(this);
-    polygonFinishClosed = (function(_this) {
-      return function() {
-        return lc.trigger('lc-polygon-finishclosed');
-      };
-    })(this);
-    polygonCancel = (function(_this) {
-      return function() {
-        return lc.trigger('lc-polygon-cancel');
-      };
-    })(this);
-    polygonToolStyle = {};
-    if (!this.state.inProgress) {
-      polygonToolStyle = {
-        display: 'none'
-      };
-    }
-    return div({}, div({
-      className: 'polygon-toolbar horz-toolbar',
-      style: polygonToolStyle
-    }, div({
-      className: 'square-toolbar-button',
-      onClick: polygonFinishOpen
-    }, img({
-      src: "" + this.props.imageURLPrefix + "/polygon-open.png"
-    })), div({
-      className: 'square-toolbar-button',
-      onClick: polygonFinishClosed
-    }, img({
-      src: "" + this.props.imageURLPrefix + "/polygon-closed.png"
-    })), div({
-      className: 'square-toolbar-button',
-      onClick: polygonCancel
-    }, img({
-      src: "" + this.props.imageURLPrefix + "/polygon-cancel.png"
-    }))), div({}, StrokeWidthPicker({
-      tool: this.props.tool,
-      lc: this.props.lc
-    })));
-  }
-}));
-
-module.exports = {};
-
-
-},{"../reactGUI/StrokeWidthPicker":30,"../reactGUI/createSetStateOnEventMixin":33,"./optionsStyles":22}],24:[function(_dereq_,module,exports){
-var StrokeWidthPicker, defineOptionsStyle;
-
-defineOptionsStyle = _dereq_('./optionsStyles').defineOptionsStyle;
-
-StrokeWidthPicker = _dereq_('../reactGUI/StrokeWidthPicker');
-
-defineOptionsStyle('stroke-width', StrokeWidthPicker);
-
-module.exports = {};
-
-
-},{"../reactGUI/StrokeWidthPicker":30,"./optionsStyles":22}],25:[function(_dereq_,module,exports){
-var ClearButton, React, classSet, createSetStateOnEventMixin, _;
-
-React = _dereq_('./React-shim');
-
-createSetStateOnEventMixin = _dereq_('./createSetStateOnEventMixin');
-
-_ = _dereq_('../core/localization')._;
-
-classSet = _dereq_('../core/util').classSet;
-
-ClearButton = React.createClass({
-  displayName: 'ClearButton',
-  getState: function() {
-    return {
-      isEnabled: this.props.lc.canUndo()
-    };
-  },
-  getInitialState: function() {
-    return this.getState();
-  },
-  mixins: [createSetStateOnEventMixin('drawingChange')],
-  render: function() {
-    var className, div, lc, onClick;
-    div = React.DOM.div;
-    lc = this.props.lc;
-    className = classSet({
-      'lc-clear': true,
-      'toolbar-button': true,
-      'fat-button': true,
-      'disabled': !this.state.isEnabled
-    });
-    onClick = lc.canUndo() ? ((function(_this) {
-      return function() {
-        return lc.clear();
-      };
-    })(this)) : function() {};
-    return div({
-      className: className,
-      onClick: onClick
-    }, _('Clear'));
-  }
-});
-
-module.exports = ClearButton;
-
-
-},{"../core/localization":9,"../core/util":15,"./React-shim":29,"./createSetStateOnEventMixin":33}],26:[function(_dereq_,module,exports){
-var ColorGrid, ColorWell, React, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, requestAnimationFrame, _ref;
-
-React = _dereq_('./React-shim');
-
-_ref = _dereq_('../core/util'), classSet = _ref.classSet, requestAnimationFrame = _ref.requestAnimationFrame, cancelAnimationFrame = _ref.cancelAnimationFrame;
-
-parseHSLAString = function(s) {
-  var components, firstParen, insideParens, lastParen;
-  if (s === 'transparent') {
-    return {
-      hue: 0,
-      sat: 0,
-      light: 0,
-      alpha: 0
-    };
-  }
-  if (s.substring(0, 4) !== 'hsla') {
-    return null;
-  }
-  firstParen = s.indexOf('(');
-  lastParen = s.indexOf(')');
-  insideParens = s.substring(firstParen + 1, lastParen - firstParen + 4);
-  components = (function() {
-    var _i, _len, _ref1, _results;
-    _ref1 = insideParens.split(',');
-    _results = [];
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      s = _ref1[_i];
-      _results.push(s.trim());
-    }
-    return _results;
-  })();
-  return {
-    hue: parseInt(components[0], 10),
-    sat: parseInt(components[1].substring(0, components[1].length - 1), 10),
-    light: parseInt(components[2].substring(0, components[2].length - 1), 10),
-    alpha: parseFloat(components[3])
-  };
-};
-
-getHSLAString = function(_arg) {
-  var alpha, hue, light, sat;
-  hue = _arg.hue, sat = _arg.sat, light = _arg.light, alpha = _arg.alpha;
-  return "hsla(" + hue + ", " + sat + "%, " + light + "%, " + alpha + ")";
-};
-
-getHSLString = function(_arg) {
-  var hue, light, sat;
-  hue = _arg.hue, sat = _arg.sat, light = _arg.light;
-  return "hsl(" + hue + ", " + sat + "%, " + light + "%)";
-};
-
-ColorGrid = React.createFactory(React.createClass({
-  displayName: 'ColorGrid',
-  mixins: [React.addons.PureRenderMixin],
-  render: function() {
-    var div;
-    div = React.DOM.div;
-    return div({}, this.props.rows.map((function(_this) {
-      return function(row, ix) {
-        return div({
-          className: 'color-row',
-          key: ix,
-          style: {
-            width: 20 * row.length
-          }
-        }, row.map(function(cellColor, ix2) {
-          var alpha, className, colorString, colorStringNoAlpha, hue, light, sat, update;
-          hue = cellColor.hue, sat = cellColor.sat, light = cellColor.light, alpha = cellColor.alpha;
-          colorString = getHSLAString(cellColor);
-          colorStringNoAlpha = "hsl(" + hue + ", " + sat + "%, " + light + "%)";
-          className = classSet({
-            'color-cell': true,
-            'selected': _this.props.selectedColor === colorString
-          });
-          update = function(e) {
-            _this.props.onChange(cellColor, colorString);
-            e.stopPropagation();
-            return e.preventDefault();
-          };
-          return div({
-            className: className,
-            onTouchStart: update,
-            onTouchMove: update,
-            onClick: update,
-            style: {
-              backgroundColor: colorStringNoAlpha
-            },
-            key: ix2
-          });
-        }));
-      };
-    })(this)));
-  }
-}));
-
-ColorWell = React.createClass({
-  displayName: 'ColorWell',
-  mixins: [React.addons.PureRenderMixin],
-  getInitialState: function() {
-    var colorString, hsla;
-    colorString = this.props.lc.colors[this.props.colorName];
-    hsla = parseHSLAString(colorString);
-    if (hsla == null) {
-      hsla = {};
-    }
-    if (hsla.alpha == null) {
-      hsla.alpha = 1;
-    }
-    if (hsla.sat == null) {
-      hsla.sat = 100;
-    }
-    if (hsla.hue == null) {
-      hsla.hue = 0;
-    }
-    if (hsla.light == null) {
-      hsla.light = 50;
-    }
-    return {
-      colorString: colorString,
-      alpha: hsla.alpha,
-      sat: hsla.sat === 0 ? 100 : hsla.sat,
-      isPickerVisible: false,
-      hsla: hsla
-    };
-  },
-  componentDidMount: function() {
-    return this.unsubscribe = this.props.lc.on("" + this.props.colorName + "ColorChange", (function(_this) {
-      return function() {
-        var colorString;
-        colorString = _this.props.lc.colors[_this.props.colorName];
-        _this.setState({
-          colorString: colorString
-        });
-        return _this.setHSLAFromColorString(colorString);
-      };
-    })(this));
-  },
-  componentWillUnmount: function() {
-    return this.unsubscribe();
-  },
-  setHSLAFromColorString: function(c) {
-    var hsla;
-    hsla = parseHSLAString(c);
-    if (hsla) {
-      return this.setState({
-        hsla: hsla,
-        alpha: hsla.alpha,
-        sat: hsla.sat
-      });
-    } else {
-      return this.setState({
-        hsla: null,
-        alpha: 1,
-        sat: 100
-      });
-    }
-  },
-  closePicker: function() {
-    return this.setState({
-      isPickerVisible: false
-    });
-  },
-  togglePicker: function() {
-    var isPickerVisible, shouldResetSat;
-    isPickerVisible = !this.state.isPickerVisible;
-    shouldResetSat = isPickerVisible && this.state.sat === 0;
-    this.setHSLAFromColorString(this.state.colorString);
-    return this.setState({
-      isPickerVisible: isPickerVisible,
-      sat: shouldResetSat ? 100 : this.state.sat
-    });
-  },
-  setColor: function(c) {
-    this.setState({
-      colorString: c
-    });
-    this.setHSLAFromColorString(c);
-    return this.props.lc.setColor(this.props.colorName, c);
-  },
-  setAlpha: function(alpha) {
-    var hsla;
-    this.setState({
-      alpha: alpha
-    });
-    if (this.state.hsla) {
-      hsla = this.state.hsla;
-      hsla.alpha = alpha;
-      this.setState({
-        hsla: hsla
-      });
-      return this.setColor(getHSLAString(hsla));
-    }
-  },
-  setSat: function(sat) {
-    var hsla;
-    this.setState({
-      sat: sat
-    });
-    if (isNaN(sat)) {
-      throw "SAT";
-    }
-    if (this.state.hsla) {
-      hsla = this.state.hsla;
-      hsla.sat = sat;
-      this.setState({
-        hsla: hsla
-      });
-      return this.setColor(getHSLAString(hsla));
-    }
-  },
-  render: function() {
-    var br, div, label, _ref1;
-    _ref1 = React.DOM, div = _ref1.div, label = _ref1.label, br = _ref1.br;
-    return div({
-      className: classSet({
-        'color-well': true,
-        'open': this.state.isPickerVisible
-      }),
-      onMouseLeave: this.closePicker,
-      style: {
-        float: 'left',
-        textAlign: 'center'
-      }
-    }, label({
-      float: 'left'
-    }, this.props.label), br({}), div({
-      className: classSet({
-        'color-well-color-container': true,
-        'selected': this.state.isPickerVisible
-      }),
-      style: {
-        backgroundColor: 'white'
-      },
-      onClick: this.togglePicker
-    }, div({
-      className: 'color-well-checker color-well-checker-top-left'
-    }), div({
-      className: 'color-well-checker color-well-checker-bottom-right',
-      style: {
-        left: '50%',
-        top: '50%'
-      }
-    }), div({
-      className: 'color-well-color',
-      style: {
-        backgroundColor: this.state.colorString
-      }
-    }, " ")), this.renderPicker());
-  },
-  renderPicker: function() {
-    var div, hue, i, input, label, onSelectColor, renderColor, renderLabel, rows, _i, _len, _ref1, _ref2;
-    _ref1 = React.DOM, div = _ref1.div, label = _ref1.label, input = _ref1.input;
-    if (!this.state.isPickerVisible) {
-      return null;
-    }
-    renderLabel = (function(_this) {
-      return function(text) {
-        return div({
-          className: 'color-row label',
-          key: text,
-          style: {
-            lineHeight: '20px',
-            height: 16
-          }
-        }, text);
-      };
-    })(this);
-    renderColor = (function(_this) {
-      return function() {
-        var checkerboardURL;
-        checkerboardURL = "" + _this.props.lc.opts.imageURLPrefix + "/checkerboard-8x8.png";
-        return div({
-          className: 'color-row',
-          key: "color",
-          style: {
-            position: 'relative',
-            backgroundImage: "url(" + checkerboardURL + ")",
-            backgroundRepeat: 'repeat',
-            height: 24
-          }
-        }, div({
-          style: {
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            backgroundColor: _this.state.colorString
-          }
-        }));
-      };
-    })(this);
-    rows = [];
-    rows.push((function() {
-      var _i, _results;
-      _results = [];
-      for (i = _i = 0; _i <= 100; i = _i += 10) {
-        _results.push({
-          hue: 0,
-          sat: 0,
-          light: i,
-          alpha: this.state.alpha
-        });
-      }
-      return _results;
-    }).call(this));
-    _ref2 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
-    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-      hue = _ref2[_i];
-      rows.push((function() {
-        var _j, _results;
-        _results = [];
-        for (i = _j = 10; _j <= 90; i = _j += 8) {
-          _results.push({
-            hue: hue,
-            sat: this.state.sat,
-            light: i,
-            alpha: this.state.alpha
-          });
-        }
-        return _results;
-      }).call(this));
-    }
-    onSelectColor = (function(_this) {
-      return function(hsla, s) {
-        return _this.setColor(s);
-      };
-    })(this);
-    return div({
-      className: 'color-picker-popup'
-    }, renderColor(), renderLabel("alpha"), input({
-      type: 'range',
-      min: 0,
-      max: 1,
-      step: 0.01,
-      value: this.state.alpha,
-      onChange: (function(_this) {
-        return function(e) {
-          return _this.setAlpha(parseFloat(e.target.value));
-        };
-      })(this)
-    }), renderLabel("saturation"), input({
-      type: 'range',
-      min: 0,
-      max: 100,
-      value: this.state.sat,
-      max: 100,
-      onChange: (function(_this) {
-        return function(e) {
-          return _this.setSat(parseInt(e.target.value, 10));
-        };
-      })(this)
-    }), ColorGrid({
-      rows: rows,
-      selectedColor: this.state.colorString,
-      onChange: onSelectColor
-    }));
-  }
-});
-
-module.exports = ColorWell;
-
-
-},{"../core/util":15,"./React-shim":29}],27:[function(_dereq_,module,exports){
-var Options, React, createSetStateOnEventMixin, optionsStyles;
-
-React = _dereq_('./React-shim');
-
-createSetStateOnEventMixin = _dereq_('./createSetStateOnEventMixin');
-
-optionsStyles = _dereq_('../optionsStyles/optionsStyles').optionsStyles;
-
-Options = React.createClass({
-  displayName: 'Options',
-  getState: function() {
-    var _ref;
-    return {
-      style: (_ref = this.props.lc.tool) != null ? _ref.optionsStyle : void 0,
-      tool: this.props.lc.tool
-    };
-  },
-  getInitialState: function() {
-    return this.getState();
-  },
-  mixins: [createSetStateOnEventMixin('toolChange')],
-  render: function() {
-    var div, style;
-    div = React.DOM.div;
-    style = "" + this.state.style;
-    return optionsStyles[style]({
-      lc: this.props.lc,
-      tool: this.state.tool,
-      imageURLPrefix: this.props.imageURLPrefix
-    });
-  }
-});
-
-module.exports = Options;
-
-
-},{"../optionsStyles/optionsStyles":22,"./React-shim":29,"./createSetStateOnEventMixin":33}],28:[function(_dereq_,module,exports){
-var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
-
-React = _dereq_('./React-shim');
-
-ClearButton = React.createFactory(_dereq_('./ClearButton'));
-
-UndoRedoButtons = React.createFactory(_dereq_('./UndoRedoButtons'));
-
-ZoomButtons = React.createFactory(_dereq_('./ZoomButtons'));
-
-_ = _dereq_('../core/localization')._;
-
-ColorWell = React.createFactory(_dereq_('./ColorWell'));
-
-ColorPickers = React.createFactory(React.createClass({
-  displayName: 'ColorPickers',
-  render: function() {
-    var div, lc;
-    lc = this.props.lc;
-    div = React.DOM.div;
-    return div({
-      className: 'lc-color-pickers'
-    }, ColorWell({
-      lc: lc,
-      colorName: 'primary',
-      label: _('stroke')
-    }), ColorWell({
-      lc: lc,
-      colorName: 'secondary',
-      label: _('fill')
-    }), ColorWell({
-      lc: lc,
-      colorName: 'background',
-      label: _('bg')
-    }));
-  }
-}));
-
-Picker = React.createClass({
-  displayName: 'Picker',
-  getInitialState: function() {
-    return {
-      selectedToolIndex: 0
-    };
-  },
-  render: function() {
-    var div, imageURLPrefix, lc, toolButtonComponents, _ref;
-    div = React.DOM.div;
-    _ref = this.props, toolButtonComponents = _ref.toolButtonComponents, lc = _ref.lc, imageURLPrefix = _ref.imageURLPrefix;
-    return div({
-      className: 'lc-picker-contents'
-    }, toolButtonComponents.map((function(_this) {
-      return function(component, ix) {
-        return component({
-          lc: lc,
-          imageURLPrefix: imageURLPrefix,
-          key: ix,
-          isSelected: ix === _this.state.selectedToolIndex,
-          onSelect: function(tool) {
-            lc.setTool(tool);
-            return _this.setState({
-              selectedToolIndex: ix
-            });
-          }
-        });
-      };
-    })(this)), toolButtonComponents.length % 2 !== 0 ? div({
-      className: 'toolbar-button thin-button disabled'
-    }) : void 0, div({
-      style: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0
-      }
-    }, ColorPickers({
-      lc: this.props.lc
-    }), UndoRedoButtons({
-      lc: lc,
-      imageURLPrefix: imageURLPrefix
-    }), ZoomButtons({
-      lc: lc,
-      imageURLPrefix: imageURLPrefix
-    }), ClearButton({
-      lc: lc
-    })));
-  }
-});
-
-module.exports = Picker;
-
-
-},{"../core/localization":9,"./ClearButton":25,"./ColorWell":26,"./React-shim":29,"./UndoRedoButtons":31,"./ZoomButtons":32}],29:[function(_dereq_,module,exports){
-var React;
-
-try {
-  React = _dereq_('React/addons');
-} catch (_error) {
-  React = window.React;
-}
-
-if ((React != null ? React.addons : void 0) == null) {
-  throw "Can't find React (you need the version with addons)";
-}
-
-module.exports = React;
-
-
-},{}],30:[function(_dereq_,module,exports){
-var classSet, createSetStateOnEventMixin;
-
-createSetStateOnEventMixin = _dereq_('../reactGUI/createSetStateOnEventMixin');
-
-classSet = _dereq_('../core/util').classSet;
-
-module.exports = React.createClass({
-  displayName: 'StrokeWidthPicker',
-  getState: function(tool) {
-    if (tool == null) {
-      tool = this.props.tool;
-    }
-    return {
-      strokeWidth: tool.strokeWidth
-    };
-  },
-  getInitialState: function() {
-    return this.getState();
-  },
-  mixins: [createSetStateOnEventMixin('setStrokeWidth')],
-  componentWillReceiveProps: function(props) {
-    return this.setState(this.getState(props.tool));
-  },
-  render: function() {
-    var circle, div, li, strokeWidths, svg, ul, _ref;
-    _ref = React.DOM, ul = _ref.ul, li = _ref.li, svg = _ref.svg, circle = _ref.circle, div = _ref.div;
-    strokeWidths = this.props.lc.opts.strokeWidths;
-    return div({}, strokeWidths.map((function(_this) {
-      return function(strokeWidth, ix) {
-        var buttonClassName, buttonSize;
-        buttonClassName = classSet({
-          'square-toolbar-button': true,
-          'selected': strokeWidth === _this.state.strokeWidth
-        });
-        buttonSize = 28;
-        return div({
-          key: strokeWidth
-        }, div({
-          className: buttonClassName,
-          onClick: function() {
-            return _this.props.lc.trigger('setStrokeWidth', strokeWidth);
-          }
-        }, svg({
-          width: buttonSize - 2,
-          height: buttonSize - 2,
-          viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
-          version: "1.1",
-          xmlns: "http://www.w3.org/2000/svg"
-        }, circle({
-          cx: Math.ceil(buttonSize / 2 - 1),
-          cy: Math.ceil(buttonSize / 2 - 1),
-          r: strokeWidth / 2
-        }))));
-      };
-    })(this)));
-  }
-});
-
-
-},{"../core/util":15,"../reactGUI/createSetStateOnEventMixin":33}],31:[function(_dereq_,module,exports){
-var React, RedoButton, UndoButton, UndoRedoButtons, classSet, createSetStateOnEventMixin, createUndoRedoButtonComponent;
-
-React = _dereq_('./React-shim');
-
-createSetStateOnEventMixin = _dereq_('./createSetStateOnEventMixin');
-
-classSet = _dereq_('../core/util').classSet;
-
-createUndoRedoButtonComponent = function(undoOrRedo) {
-  return React.createClass({
-    displayName: undoOrRedo === 'undo' ? 'UndoButton' : 'RedoButton',
-    getState: function() {
-      return {
-        isEnabled: (function() {
-          switch (false) {
-            case undoOrRedo !== 'undo':
-              return this.props.lc.canUndo();
-            case undoOrRedo !== 'redo':
-              return this.props.lc.canRedo();
-          }
-        }).call(this)
-      };
-    },
-    getInitialState: function() {
-      return this.getState();
-    },
-    mixins: [createSetStateOnEventMixin('drawingChange')],
-    render: function() {
-      var className, div, imageURLPrefix, img, lc, onClick, src, style, title, _ref, _ref1;
-      _ref = React.DOM, div = _ref.div, img = _ref.img;
-      _ref1 = this.props, lc = _ref1.lc, imageURLPrefix = _ref1.imageURLPrefix;
-      title = undoOrRedo === 'undo' ? 'Undo' : 'Redo';
-      className = ("lc-" + undoOrRedo + " ") + classSet({
-        'toolbar-button': true,
-        'thin-button': true,
-        'disabled': !this.state.isEnabled
-      });
-      onClick = (function() {
-        switch (false) {
-          case !!this.state.isEnabled:
-            return function() {};
-          case undoOrRedo !== 'undo':
-            return function() {
-              return lc.undo();
-            };
-          case undoOrRedo !== 'redo':
-            return function() {
-              return lc.redo();
-            };
-        }
-      }).call(this);
-      src = "" + imageURLPrefix + "/" + undoOrRedo + ".png";
-      style = {
-        backgroundImage: "url(" + src + ")"
-      };
-      return div({
-        className: className,
-        onClick: onClick,
-        title: title,
-        style: style
-      });
-    }
-  });
-};
-
-UndoButton = React.createFactory(createUndoRedoButtonComponent('undo'));
-
-RedoButton = React.createFactory(createUndoRedoButtonComponent('redo'));
-
-UndoRedoButtons = React.createClass({
-  displayName: 'UndoRedoButtons',
-  render: function() {
-    var div;
-    div = React.DOM.div;
-    return div({
-      className: 'lc-undo-redo'
-    }, UndoButton(this.props), RedoButton(this.props));
-  }
-});
-
-module.exports = UndoRedoButtons;
-
-
-},{"../core/util":15,"./React-shim":29,"./createSetStateOnEventMixin":33}],32:[function(_dereq_,module,exports){
-var React, ZoomButtons, ZoomInButton, ZoomOutButton, classSet, createSetStateOnEventMixin, createZoomButtonComponent;
-
-React = _dereq_('./React-shim');
-
-createSetStateOnEventMixin = _dereq_('./createSetStateOnEventMixin');
-
-classSet = _dereq_('../core/util').classSet;
-
-createZoomButtonComponent = function(inOrOut) {
-  return React.createClass({
-    displayName: inOrOut === 'in' ? 'ZoomInButton' : 'ZoomOutButton',
-    getState: function() {
-      return {
-        isEnabled: (function() {
-          switch (false) {
-            case inOrOut !== 'in':
-              return this.props.lc.scale < this.props.lc.config.zoomMax;
-            case inOrOut !== 'out':
-              return this.props.lc.scale > this.props.lc.config.zoomMin;
-          }
-        }).call(this)
-      };
-    },
-    getInitialState: function() {
-      return this.getState();
-    },
-    mixins: [createSetStateOnEventMixin('zoom')],
-    render: function() {
-      var className, div, imageURLPrefix, img, lc, onClick, src, style, title, _ref, _ref1;
-      _ref = React.DOM, div = _ref.div, img = _ref.img;
-      _ref1 = this.props, lc = _ref1.lc, imageURLPrefix = _ref1.imageURLPrefix;
-      title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
-      className = ("lc-zoom-" + inOrOut + " ") + classSet({
-        'toolbar-button': true,
-        'thin-button': true,
-        'disabled': !this.state.isEnabled
-      });
-      onClick = (function() {
-        switch (false) {
-          case !!this.state.isEnabled:
-            return function() {};
-          case inOrOut !== 'in':
-            return function() {
-              return lc.zoom(lc.config.zoomStep);
-            };
-          case inOrOut !== 'out':
-            return function() {
-              return lc.zoom(-lc.config.zoomStep);
-            };
-        }
-      }).call(this);
-      src = "" + imageURLPrefix + "/zoom-" + inOrOut + ".png";
-      style = {
-        backgroundImage: "url(" + src + ")"
-      };
-      return div({
-        className: className,
-        onClick: onClick,
-        title: title,
-        style: style
-      });
-    }
-  });
-};
-
-ZoomOutButton = React.createFactory(createZoomButtonComponent('out'));
-
-ZoomInButton = React.createFactory(createZoomButtonComponent('in'));
-
-ZoomButtons = React.createClass({
-  displayName: 'ZoomButtons',
-  render: function() {
-    var div;
-    div = React.DOM.div;
-    return div({
-      className: 'lc-zoom'
-    }, ZoomOutButton(this.props), ZoomInButton(this.props));
-  }
-});
-
-module.exports = ZoomButtons;
-
-
-},{"../core/util":15,"./React-shim":29,"./createSetStateOnEventMixin":33}],33:[function(_dereq_,module,exports){
-var React, createSetStateOnEventMixin;
-
-React = _dereq_('./React-shim');
-
-module.exports = createSetStateOnEventMixin = function(eventName) {
-  return {
-    componentDidMount: function() {
-      return this.unsubscribe = this.props.lc.on(eventName, (function(_this) {
-        return function() {
-          return _this.setState(_this.getState());
-        };
-      })(this));
-    },
-    componentWillUnmount: function() {
-      return this.unsubscribe();
-    }
-  };
-};
-
-
-},{"./React-shim":29}],34:[function(_dereq_,module,exports){
-var React, classSet, createToolButton;
-
-React = _dereq_('./React-shim');
-
-classSet = _dereq_('../core/util').classSet;
-
-createToolButton = function(_arg) {
-  var displayName, getTool, imageName, tool;
-  displayName = _arg.displayName, getTool = _arg.getTool, imageName = _arg.imageName;
-  tool = getTool();
-  return React.createFactory(React.createClass({
-    displayName: displayName,
-    getDefaultProps: function() {
-      return {
-        isSelected: false,
-        lc: null
-      };
-    },
-    componentWillMount: function() {
-      if (this.props.isSelected) {
-        return this.props.lc.setTool(tool);
-      }
-    },
-    render: function() {
-      var className, div, imageURLPrefix, img, isSelected, onSelect, src, _ref, _ref1;
-      _ref = React.DOM, div = _ref.div, img = _ref.img;
-      _ref1 = this.props, imageURLPrefix = _ref1.imageURLPrefix, isSelected = _ref1.isSelected, onSelect = _ref1.onSelect;
-      className = classSet({
-        'lc-pick-tool': true,
-        'toolbar-button': true,
-        'thin-button': true,
-        'selected': isSelected
-      });
-      src = "" + imageURLPrefix + "/" + imageName + ".png";
-      return div({
-        className: className,
-        style: {
-          'backgroundImage': "url(" + src + ")"
-        },
-        onClick: (function() {
-          return onSelect(tool);
-        }),
-        title: displayName
-      });
-    }
-  }));
-};
-
-module.exports = createToolButton;
-
-
-},{"../core/util":15,"./React-shim":29}],35:[function(_dereq_,module,exports){
-var Options, Picker, React, createToolButton, init;
-
-React = _dereq_('./React-shim');
-
-createToolButton = _dereq_('./createToolButton');
-
-Options = React.createFactory(_dereq_('./Options'));
-
-Picker = React.createFactory(_dereq_('./Picker'));
-
-init = function(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
-  var toolButtonComponents;
-  toolButtonComponents = tools.map(function(ToolClass) {
-    var toolInstance;
-    toolInstance = new ToolClass(lc);
-    return createToolButton({
-      displayName: toolInstance.name,
-      imageName: toolInstance.iconName,
-      getTool: function() {
-        return toolInstance;
-      }
-    });
-  });
-  React.render(Picker({
-    lc: lc,
-    toolButtonComponents: toolButtonComponents,
-    imageURLPrefix: imageURLPrefix
-  }), pickerElement);
-  return React.render(Options({
-    lc: lc,
-    imageURLPrefix: imageURLPrefix
-  }), optionsElement);
-};
-
-module.exports = init;
-
-
-},{"./Options":27,"./Picker":28,"./React-shim":29,"./createToolButton":34}],36:[function(_dereq_,module,exports){
+},{"./core/LiterallyCanvas":1,"./core/canvasRenderer":5,"./core/localization":8,"./core/renderSnapshotToImage":10,"./core/renderSnapshotToSVG":11,"./core/shapes":12,"./core/svgRenderer":13,"./core/util":14,"./ie_customevent":15,"./ie_setLineDash":16,"./tools/Ellipse":18,"./tools/Eraser":19,"./tools/Eyedropper":20,"./tools/Line":21,"./tools/Pan":22,"./tools/Pencil":23,"./tools/Polygon":24,"./tools/Rectangle":25,"./tools/Text":26,"./tools/base":27}],18:[function(_dereq_,module,exports){
 var Ellipse, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4696,7 +3354,7 @@ module.exports = Ellipse = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":45}],37:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],19:[function(_dereq_,module,exports){
 var Eraser, Pencil, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4734,7 +3392,7 @@ module.exports = Eraser = (function(_super) {
 })(Pencil);
 
 
-},{"../core/shapes":13,"./Pencil":41}],38:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./Pencil":23}],20:[function(_dereq_,module,exports){
 var Eyedropper, Tool,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4771,7 +3429,7 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"./base":45}],39:[function(_dereq_,module,exports){
+},{"./base":27}],21:[function(_dereq_,module,exports){
 var Line, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4828,7 +3486,7 @@ module.exports = Line = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":45}],40:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],22:[function(_dereq_,module,exports){
 var Pan, Tool, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4897,7 +3555,7 @@ module.exports = Pan = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":45}],41:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],23:[function(_dereq_,module,exports){
 var Pencil, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -4959,7 +3617,7 @@ module.exports = Pencil = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":45}],42:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],24:[function(_dereq_,module,exports){
 var Polygon, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -5175,7 +3833,7 @@ module.exports = Polygon = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":45}],43:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],25:[function(_dereq_,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -5220,7 +3878,7 @@ module.exports = Rectangle = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":13,"./base":45}],44:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],26:[function(_dereq_,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -5581,7 +4239,7 @@ module.exports = Text = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":45}],45:[function(_dereq_,module,exports){
+},{"../core/shapes":12,"./base":27}],27:[function(_dereq_,module,exports){
 var Tool, ToolWithStroke, tools,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -5654,6 +4312,6 @@ tools.ToolWithStroke = ToolWithStroke = (function(_super) {
 module.exports = tools;
 
 
-},{}]},{},[18])
-(18)
+},{}]},{},[17])
+(17)
 });
