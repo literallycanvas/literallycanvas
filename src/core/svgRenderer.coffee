@@ -20,15 +20,23 @@ renderShapeToSVG = (shape, opts={}) ->
 
 
 defineSVGRenderer 'Rectangle', (shape) ->
-  x = shape.x
-  y = shape.y
+  x1 = shape.x
+  y1 = shape.y
+  x2 = shape.x + shape.width
+  y2 = shape.y + shape.height
+
+  x = Math.min(x1, x2)
+  y = Math.min(y1, y2)
+  width = Math.max(x1, x2) - x
+  height = Math.max(y1, y2) - y
+
   if shape.strokeWidth % 2 != 0
     x += 0.5
     y += 0.5
 
   "
     <rect x='#{x}' y='#{y}'
-      width='#{shape.width}' height='#{shape.height}'
+      width='#{width}' height='#{height}'
       stroke='#{shape.strokeColor}' fill='#{shape.fillColor}'
       stroke-width='#{shape.strokeWidth}' />
   "
@@ -43,8 +51,8 @@ defineSVGRenderer 'Ellipse', (shape) ->
   centerX = shape.x + halfWidth
   centerY = shape.y + halfHeight
   "
-    <ellipse cx='#{centerX}' cy='#{centerY}' rx='#{halfWidth}'
-      ry='#{halfHeight}'
+    <ellipse cx='#{centerX}' cy='#{centerY}' rx='#{Math.abs(halfWidth)}'
+      ry='#{Math.abs(halfHeight)}'
       stroke='#{shape.strokeColor}' fill='#{shape.fillColor}'
       stroke-width='#{shape.strokeWidth}' />
   "
@@ -87,9 +95,9 @@ defineSVGRenderer 'Line', (shape) ->
       <line x1='#{x1}' y1='#{y1}' x2='#{x2}' y2='#{y2}'
         #{dashString}
         stroke-linecap='#{shape.capStyle}'
-        stroke='#{shape.color}'stroke-width='#{shape.strokeWidth}' />
+        stroke='#{shape.color} 'stroke-width='#{shape.strokeWidth}' />
       #{capString}
-    <g>
+    </g>
   "
 
 
@@ -102,6 +110,7 @@ defineSVGRenderer 'LinePath', (shape) ->
         "#{p.x+offset},#{p.y+offset}").join(' ')
       }'
       stroke='#{shape.points[0].color}'
+      stroke-linecap='round'
       stroke-width='#{shape.points[0].size}' />
   "
 
