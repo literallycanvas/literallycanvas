@@ -25,6 +25,7 @@ release-branch: release-files
 
 release-bower:
 	git push lc-bower release:master -f
+	git push lc-bower --tags
 
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
