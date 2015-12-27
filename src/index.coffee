@@ -19,7 +19,6 @@ require './optionsStyles/stroke-width'
 require './optionsStyles/line-options-and-stroke-width'
 require './optionsStyles/polygon-and-stroke-width'
 require './optionsStyles/null'
-React.initializeTouchEvents(true)
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
 # @endif
 
