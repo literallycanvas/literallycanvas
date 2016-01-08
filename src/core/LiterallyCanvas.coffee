@@ -354,12 +354,13 @@ module.exports = class LiterallyCanvas
     for ctx in contexts
       ctx.restore()
 
-  clear: ->
+  clear: (triggerClearEvent=true) ->
     oldShapes = @shapes
     newShapes = []
     @execute(new actions.ClearAction(this, oldShapes, newShapes))
     @repaintLayer('main')
-    @trigger('clear', null)
+    if triggerClearEvent
+      @trigger('clear', null)
     @trigger('drawingChange', {})
 
   execute: (action) ->
