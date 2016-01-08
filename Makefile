@@ -27,6 +27,9 @@ release-bower:
 	git push lc-bower release:master -f
 	git push lc-bower --tags
 
+release-npm:
+	npm publish
+
 ignore-js:
 	git update-index --assume-unchanged lib/js/literallycanvas.js
 	git update-index --assume-unchanged lib/js/literallycanvas.min.js

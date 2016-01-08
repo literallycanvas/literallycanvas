@@ -2,3 +2,4 @@
 literallycanvas/
 *.sublime-workspace
 node_modules/
+*.log
