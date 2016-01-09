@@ -69,6 +69,8 @@ defineCanvasRenderer 'Ellipse', (ctx, shape) ->
 
 defineCanvasRenderer 'SelectionBox', do ->
   _drawHandle = (ctx, {x, y}, handleSize) ->
+    return if handleSize == 0
+
     ctx.fillStyle = '#fff'
     ctx.fillRect(x, y, handleSize, handleSize)
     ctx.strokeStyle = '#000'

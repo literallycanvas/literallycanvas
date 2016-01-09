@@ -24,7 +24,7 @@ defineShape = (name, props) ->
       legacyDrawFunc.call(shape, ctx, retryCallback)
     drawLatestFunc = (ctx, bufferCtx, shape, retryCallback) ->
       legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback)
-    delete props.draw 
+    delete props.draw
     delete props.drawLatest if props.drawLatest
 
     defineCanvasRenderer(name, drawFunc, drawLatestFunc)
@@ -132,6 +132,12 @@ defineShape 'Image',
       img = new Image()
       img.src = data.imageSrc
     createShape('Image', {x: data.x, y: data.y, image: img, scale: data.scale})
+  move: ( moveInfo={} ) ->
+    @x = @x - moveInfo.xDiff
+    @y = @y - moveInfo.yDiff
+  setUpperLeft: (upperLeft={}) ->
+    @x = upperLeft.x
+    @y = upperLeft.y
 
 
 defineShape 'Rectangle',
@@ -152,6 +158,12 @@ defineShape 'Rectangle',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Rectangle', data)
+  move: ( moveInfo={} ) ->
+    @x = @x - moveInfo.xDiff
+    @y = @y - moveInfo.yDiff
+  setUpperLeft: (upperLeft={}) ->
+    @x = upperLeft.x
+    @y = upperLeft.y
 
 
 # this is pretty similar to the Rectangle shape. maybe consolidate somehow.
@@ -173,6 +185,12 @@ defineShape 'Ellipse',
   }
   toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
   fromJSON: (data) -> createShape('Ellipse', data)
+  move: ( moveInfo={} ) ->
+    @x = @x - moveInfo.xDiff
+    @y = @y - moveInfo.yDiff
+  setUpperLeft: (upperLeft={}) ->
+    @x = upperLeft.x
+    @y = upperLeft.y
 
 
 defineShape 'Line',
@@ -196,6 +214,16 @@ defineShape 'Line',
   toJSON: ->
     {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
   fromJSON: (data) -> createShape('Line', data)
+  move: ( moveInfo={} ) ->
+    @x1 = @x1 - moveInfo.xDiff
+    @y1 = @y1 - moveInfo.yDiff
+    @x2 = @x2 - moveInfo.xDiff
+    @y2 = @y2 - moveInfo.yDiff
+  setUpperLeft: (upperLeft={}) ->
+    br = @getBoundingRect()
+    xDiff = br.x - upperLeft.x
+    yDiff = br.y - upperLeft.y
+    @move({ xDiff, yDiff })
 
 
 # returns false if no points because there are no points to share style
@@ -306,6 +334,22 @@ linePathFuncs =
         0, @smoothedPoints.length - @segmentSize * (@tailSize - 1)
       ).concat(@tail)
 
+  move: ( moveInfo={} ) ->
+    if !@smooth
+      pts = @points
+    else
+      pts = @smoothedPoints
+
+    for pt in pts
+      pt.move(moveInfo)
+
+    @points = @smoothedPoints
+
+  setUpperLeft: (upperLeft={}) ->
+    br = @getBoundingRect()
+    xDiff = br.x - upperLeft.x
+    yDiff = br.y - upperLeft.y
+    @move({ xDiff, yDiff })
 
 LinePath = defineShape 'LinePath', linePathFuncs
 
@@ -330,6 +374,12 @@ defineShape 'Point',
     {x: @x - @size / 2, y: @y - @size / 2, width: @size, height: @size}
   toJSON: -> {@x, @y, @size, @color}
   fromJSON: (data) -> createShape('Point', data)
+  move: ( moveInfo={} ) ->
+    @x = @x - moveInfo.xDiff
+    @y = @y - moveInfo.yDiff
+  setUpperLeft: (upperLeft={}) ->
+    @x = upperLeft.x
+    @y = upperLeft.y
 
 
 defineShape 'Polygon',
@@ -365,6 +415,16 @@ defineShape 'Polygon',
         x, y, size: data.strokeWidth, color: data.strokeColor
       })
     createShape('Polygon', data)
+
+  move: ( moveInfo={} ) ->
+    for pt in @points
+      pt.move(moveInfo)
+
+  setUpperLeft: (upperLeft={}) ->
+    br = @getBoundingRect()
+    xDiff = br.x - upperLeft.x
+    yDiff = br.y - upperLeft.y
+    @move({ xDiff, yDiff })
 
 
 defineShape 'Text',
@@ -434,12 +494,21 @@ defineShape 'Text',
     }
   toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
   fromJSON: (data) -> createShape('Text', data)
+  move: ( moveInfo={} ) ->
+    @x = @x - moveInfo.xDiff
+    @y = @y - moveInfo.yDiff
+  setUpperLeft: (upperLeft={}) ->
+    @x = upperLeft.x
+    @y = upperLeft.y
 
 
 defineShape 'SelectionBox',
   constructor: (args={}) ->
     @shape = args.shape
-    @handleSize = 10
+    if args.handleSize?
+      @handleSize = args.handleSize
+    else
+      @handleSize = 10
     @margin = 4
     @backgroundColor = args.backgroundColor or null
     @_br = @shape.getBoundingRect(args.ctx)

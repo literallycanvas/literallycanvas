@@ -299,13 +299,8 @@ module.exports = class LiterallyCanvas
   # without doing a full repaint.
   # The context is restored to its original state before returning.
   drawShapeInProgress: (shape) ->
+    @setShapesInProgress [shape]
     @repaintLayer('main', false)
-    @clipped (=>
-      @transformed (=>
-        renderShapeToContext(
-          @ctx, shape, {@bufferCtx, shouldOnlyDrawLatest: true})
-      ), @ctx, @bufferCtx
-    ), @ctx, @bufferCtx
 
   # Draws the given shapes translated and scaled to the given context.
   # The context is restored to its original state before returning.
@@ -357,6 +352,7 @@ module.exports = class LiterallyCanvas
   clear: (triggerClearEvent=true) ->
     oldShapes = @shapes
     newShapes = []
+    @setShapesInProgress []
     @execute(new actions.ClearAction(this, oldShapes, newShapes))
     @repaintLayer('main')
     if triggerClearEvent
