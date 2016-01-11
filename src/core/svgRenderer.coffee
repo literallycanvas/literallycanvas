@@ -4,7 +4,7 @@ renderers = {}
 
 # shapeToSVG(shape) -> string
 defineSVGRenderer = (shapeName, shapeToSVGFunc) ->
-	renderers[shapeName] = shapeToSVGFunc
+  renderers[shapeName] = shapeToSVGFunc
 
 
 renderShapeToSVG = (shape, opts={}) ->
@@ -108,7 +108,7 @@ defineSVGRenderer 'LinePath', (shape) ->
       points='#{shape.smoothedPoints.map((p) ->
         offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
         "#{p.x+offset},#{p.y+offset}").join(' ')
-      }'
+}'
       stroke='#{shape.points[0].color}'
       stroke-linecap='round'
       stroke-width='#{shape.points[0].size}' />
@@ -127,7 +127,7 @@ defineSVGRenderer 'Polygon', (shape) ->
         points='#{shape.points.map((p) ->
           offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
           "#{p.x+offset},#{p.y+offset}").join(' ')
-        }'
+}'
         stroke='#{shape.strokeColor}'
         stroke-width='#{shape.strokeWidth}' />
     "
@@ -138,14 +138,14 @@ defineSVGRenderer 'Polygon', (shape) ->
         points='#{shape.points.map((p) ->
           offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
           "#{p.x+offset},#{p.y+offset}").join(' ')
-        }'
+}'
         stroke='none' />
       <polyline
         fill='none'
         points='#{shape.points.map((p) ->
           offset = if p.strokeWidth % 2 == 0 then 0.0 else 0.5
           "#{p.x+offset},#{p.y+offset}").join(' ')
-        }'
+}'
         stroke='#{shape.strokeColor}'
         stroke-width='#{shape.strokeWidth}' />
     "
