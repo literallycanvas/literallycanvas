@@ -1,3 +1,5 @@
+React = require '../reactGUI/React-shim'
+
 optionsStyles = {}
 
 defineOptionsStyle = (name, style) ->

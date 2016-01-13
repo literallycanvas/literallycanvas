@@ -1,6 +1,6 @@
 util = require './util'
 TextRenderer = require './TextRenderer'
-lineEndCapShapes = require './lineEndCapShapes.coffee'
+lineEndCapShapes = require './lineEndCapShapes'
 {defineCanvasRenderer, renderShapeToContext} = require './canvasRenderer'
 {defineSVGRenderer, renderShapeToSVG} = require './svgRenderer'
 
