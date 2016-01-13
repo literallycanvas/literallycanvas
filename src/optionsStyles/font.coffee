@@ -1,3 +1,4 @@
+React = require '../reactGUI/React-shim'
 {defineOptionsStyle} = require './optionsStyles'
 {_} = require '../core/localization'
 

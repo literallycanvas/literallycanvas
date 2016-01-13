@@ -1,7 +1,8 @@
 require './ie_customevent'
 require './ie_setLineDash'
 
-LiterallyCanvas = require './core/LiterallyCanvas'
+LiterallyCanvasModel = require './core/LiterallyCanvas'
+LiterallyCanvasReactComponent = require './reactGUI/LiterallyCanvas'
 
 canvasRenderer = require './core/canvasRenderer'
 svgRenderer = require './core/svgRenderer'
@@ -13,7 +14,7 @@ renderSnapshotToSVG = require './core/renderSnapshotToSVG'
 {localize} = require './core/localization'
 
 # @ifdef INCLUDE_GUI
-initReact = require './reactGUI/init'
+initReactDOM = require './reactGUI/initDOM'
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
 require './optionsStyles/line-options-and-stroke-width'
@@ -137,10 +138,10 @@ init = (el, opts = {}) ->
 
   ### and get to work ###
 
-  lc = new LiterallyCanvas(drawingViewElement, opts)
+  lc = new LiterallyCanvasModel(drawingViewElement, opts)
 
   # @ifdef INCLUDE_GUI
-  initReact(
+  initReactDOM(
     pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
   # @endif
 
@@ -167,9 +168,10 @@ registerJQueryPlugin = (_$) ->
 
 
 # non-browserify compatibility
-window.LC = {init}
-if window.$
-    registerJQueryPlugin(window.$)
+if typeof window != 'undefined'
+  window.LC = {init}
+  if window.$
+      registerJQueryPlugin(window.$)
 
 
 module.exports = {
@@ -200,4 +202,6 @@ module.exports = {
   renderSnapshotToSVG: renderSnapshotToSVG
 
   localize: localize
+
+  LiterallyCanvas: LiterallyCanvasReactComponent
 }

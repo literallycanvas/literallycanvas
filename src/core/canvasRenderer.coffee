@@ -1,4 +1,4 @@
-lineEndCapShapes = require './lineEndCapShapes.coffee'
+lineEndCapShapes = require './lineEndCapShapes'
 renderers = {}
 
 

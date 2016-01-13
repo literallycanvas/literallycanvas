@@ -21,8 +21,9 @@ ColorPickers = React.createFactory React.createClass
 
 Picker = React.createClass
   displayName: 'Picker'
+  getDefaultProps: -> {noWrapper: false}
   getInitialState: -> {selectedToolIndex: 0}
-  render: ->
+  renderBody: ->
     {div} = React.DOM
     {toolButtonComponents, lc, imageURLPrefix} = @props
     (div {className: 'lc-picker-contents'},
@@ -52,6 +53,13 @@ Picker = React.createClass
         ClearButton({lc})
       )
     )
+  render: ->
+    {div} = React.DOM
+    {noWrapper} = @props
+    if noWrapper then this.renderBody() else \
+      (div {className: 'lc-picker'},
+        this.renderBody()
+      )
 
 
 module.exports = Picker
