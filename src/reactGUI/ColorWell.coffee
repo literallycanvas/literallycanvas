@@ -1,4 +1,5 @@
 React = require './React-shim'
+PureRenderMixin = require 'react-addons-pure-render-mixin'
 {classSet, requestAnimationFrame, cancelAnimationFrame} = require '../core/util'
 
 
@@ -25,7 +26,7 @@ getHSLString = ({hue, sat, light}) ->
 
 ColorGrid = React.createFactory React.createClass
   displayName: 'ColorGrid'
-  mixins: [React.addons.PureRenderMixin]
+  mixins: [PureRenderMixin]
   render: ->
     {div} = React.DOM
     (div {},
@@ -65,7 +66,7 @@ ColorGrid = React.createFactory React.createClass
 
 ColorWell = React.createClass
   displayName: 'ColorWell'
-  mixins: [React.addons.PureRenderMixin]
+  mixins: [PureRenderMixin]
   getInitialState: ->
     colorString = @props.lc.colors[@props.colorName]
     hsla = parseHSLAString(colorString)

@@ -1,7 +1,7 @@
 try
-  React = require 'React/addons'
+  React = require 'react'
 catch
   React = window.React
-unless React?.addons?
-  throw "Can't find React (you need the version with addons)"
+unless React?
+  throw "Can't find React"
 module.exports = React
