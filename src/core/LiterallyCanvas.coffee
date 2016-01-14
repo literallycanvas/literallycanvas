@@ -138,7 +138,7 @@ module.exports = class LiterallyCanvas
   pointerMove: (x, y) ->
     util.requestAnimationFrame () =>
       p = @clientCoordsToDrawingCoords(x, y)
-      if @tool.usesSimpleAPI
+      if @tool?.usesSimpleAPI
         if @isDragging
           @tool.continue p.x, p.y, this
           @trigger("drawContinue", {tool: @tool})
