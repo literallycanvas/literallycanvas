@@ -121,26 +121,26 @@ defineOptionsStyle 'font', React.createClass
             (option {value: family.name, key: ix}, family.name)
           )
       )
-      (label {htmlFor: 'italic'},
+      (span {},
+        (label {htmlFor: 'italic'}, _("italic")),
         (input \
           {
             type: 'checkbox',
             id: 'italic',
             checked: @state.isItalic,
             onChange: @handleItalic
-          },
-          _("italic")
+          }
         )
       )
-      (label {htmlFor: 'bold'},
+      (span {},
+        (label {htmlFor: 'bold'}, _("bold")),
         (input \
           {
             type: 'checkbox',
             id: 'bold',
             checked: @state.isBold,
             onChange: @handleBold,
-          },
-          _("bold")
+          }
         )
       )
     )
