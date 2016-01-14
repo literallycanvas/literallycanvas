@@ -94,7 +94,7 @@ class TextRenderer
     @emDashWidth = ctx.measureTextWidth('—', fontSize, fontFamily).width
     @caratWidth = ctx.measureTextWidth('|', fontSize, fontFamily).width
 
-    @lines = getLinesToRender(ctx, text, @forcedWidth)
+    @lines = getLinesToRender(ctx, @text, @forcedWidth)
 
     # we need to get metrics line by line and combine them. :-(
     @metricses = @lines.map (line) =>
