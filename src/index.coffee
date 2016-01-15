@@ -2,7 +2,6 @@ require './ie_customevent'
 require './ie_setLineDash'
 
 LiterallyCanvasModel = require './core/LiterallyCanvas'
-LiterallyCanvasReactComponent = require './reactGUI/LiterallyCanvas'
 defaultOptions = require './core/defaultOptions'
 
 canvasRenderer = require './core/canvasRenderer'
@@ -15,6 +14,7 @@ renderSnapshotToSVG = require './core/renderSnapshotToSVG'
 {localize} = require './core/localization'
 
 # @ifdef INCLUDE_GUI
+LiterallyCanvasReactComponent = require './reactGUI/LiterallyCanvas'
 initReactDOM = require './reactGUI/initDOM'
 require './optionsStyles/font'
 require './optionsStyles/stroke-width'
@@ -115,6 +115,7 @@ module.exports = {
   setDefaultImageURLPrefix, defaultTools,
   # @ifdef INCLUDE_GUI
   defineOptionsStyle,
+  LiterallyCanvas: LiterallyCanvasReactComponent,
   # @endif
 
   defineShape: shapes.defineShape,
@@ -138,6 +139,4 @@ module.exports = {
   renderSnapshotToSVG: renderSnapshotToSVG
 
   localize: localize
-
-  LiterallyCanvas: LiterallyCanvasReactComponent
 }
