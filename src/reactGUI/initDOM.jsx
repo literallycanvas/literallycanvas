@@ -1,19 +1,19 @@
 const ReactDOM = require('./ReactDOM-shim');
-const createToolButton = require('./createToolButton');
-const Options = require('./Options');
-const Picker = require('./Picker');
+const LiterallyCanvasModel = require('../core/LiterallyCanvas');
+const LiterallyCanvasReactComponent = require('./LiterallyCanvas');
 
-// Renders the React component into a dom node
-function init(pickerElement, optionsElement, lc, tools, imageURLPrefix) {
-  const toolButtonComponents = tools.map(ToolClass => {
-    return createToolButton(new ToolClass(lc));
-  });
-
-  const noWrapper = true;
-  const pickerProps = { lc, toolButtonComponents, imageURLPrefix, noWrapper };
-  const optionsProps = { lc, imageURLPrefix, noWrapper };
-  ReactDOM.render(<Picker {...pickerProps} />, pickerElement);
-  ReactDOM.render(<Options {...optionsProps} />, optionsElement);
+function init(el, opts) {
+  const originalClassName = el.className
+  const lc = new LiterallyCanvasModel(opts)
+  ReactDOM.render(<LiterallyCanvasReactComponent lc={lc} />, el);
+  lc.teardown = function() {
+    lc._teardown();
+    for (var i=0; i<el.children.length; i++) {
+      el.removeChild(el.children[i]);
+    }
+    el.className = originalClassName;
+  };
+  return lc;
 }
 
 module.exports = init;

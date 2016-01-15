@@ -70,7 +70,7 @@ const LiterallyCanvas = React.createClass({
 
   render() {
     const { lc, toolButtonComponents, props } = this;
-    const { imageURLPrefix, toolbarPosition } = props;
+    const { imageURLPrefix, toolbarPosition } = this.lc.opts;
     
     const pickerProps = { lc, toolButtonComponents, imageURLPrefix };
     const topOrBottomClassName = classSet({

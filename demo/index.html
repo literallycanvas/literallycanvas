@@ -35,6 +35,8 @@
 
   <body>
     <div class="fs-container">
+      <a href="react-component">react-component</a>
+      <a href="core_demo.html">core</a>
       <div class="literally one"></div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
       <br>
@@ -132,14 +134,14 @@
         }
       };
 
-      var showLC = function() {
-        // disable scrolling on touch devices so we can actually draw
-        $(document).bind('touchmove', function(e) {
-          if (e.target === document.documentElement) {
-            return e.preventDefault();
-          }
-        });
+      // disable scrolling on touch devices so we can actually draw
+      $(document).bind('touchmove', function(e) {
+        if (e.target === document.documentElement) {
+          return e.preventDefault();
+        }
+      });
 
+      var showLC = function() {
         lc = LC.init(containerOne, {
           toolbarPosition: 'bottom',
           tools: LC.defaultTools.concat([MyTool]),

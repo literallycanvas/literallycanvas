@@ -64,65 +64,34 @@ init = (el, opts = {}) ->
   for child in el.children
     el.removeChild(child)
 
-  # Add our own
+  # @ifdef INCLUDE_GUI
+  return require('./reactGUI/initDOM')(el, opts)
+  # @endif
+  # @ifndef INCLUDE_GUI
+  return initWithoutGUI(el, opts)
+  # @endif
 
+
+initWithoutGUI = (el, opts) ->
+  originalClassName = el.className
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
 
-  # @ifdef INCLUDE_GUI
-  topOrBottomClassName = if opts.toolbarPosition == 'top'
-    'toolbar-at-top'
-  else if opts.toolbarPosition == 'bottom'
-    'toolbar-at-bottom'
-  else if opts.toolbarPosition == 'hidden'
-    'toolbar-hidden'
-  # @endif
-  # @ifndef INCLUDE_GUI
-  topOrBottomClassName = 'toolbar-hidden'
-  # @endif
-  el.className = el.className + ' ' + topOrBottomClassName
+  el.className = el.className + ' toolbar-hidden'
 
   drawingViewElement = document.createElement('div')
-  # @ifdef INCLUDE_GUI
-  drawingViewElement.className = 'lc-drawing with-gui'
-  # @endif
-  # @ifndef INCLUDE_GUI
   drawingViewElement.className = 'lc-drawing'
-  # @endif
-
   el.appendChild(drawingViewElement)
 
-  # @ifdef INCLUDE_GUI
-  pickerElement = document.createElement('div')
-  pickerElement.className = 'lc-picker'
-
-  optionsElement = document.createElement('div')
-  optionsElement.className = 'lc-options horz-toolbar'
-
-  el.appendChild(pickerElement)
-  el.appendChild(optionsElement)
-  # @endif
-
-  ### and get to work ###
-
   lc = new LiterallyCanvasModel(drawingViewElement, opts)
-
-  # @ifdef INCLUDE_GUI
-  initReactDOM(
-    pickerElement, optionsElement, lc, opts.tools, opts.imageURLPrefix)
-  # @endif
+  lc.teardown = ->
+    lc._teardown()
+    for child in el.children
+      el.removeChild(child)
+    el.className = originalClassName
 
   if 'onInit' of opts
     opts.onInit(lc)
-
-  teardown = ->
-    lc._teardown()
-    drawingViewElement.remove()
-    # @ifdef INCLUDE_GUI
-    pickerElement.remove()
-    optionsElement.remove()
-    # @endif
-  lc.teardown = teardown
 
   lc
 
