@@ -13,9 +13,7 @@ INFINITE = 'infinite'
 
 module.exports = class LiterallyCanvas
 
-  constructor: (@containerEl, opts) ->
-    @_unsubscribeEvents = bindEvents(this, @containerEl, opts.keyboardShortcuts)
-
+  constructor: (containerEl, opts) ->
     @opts = opts
 
     @config =
@@ -28,21 +26,14 @@ module.exports = class LiterallyCanvas
       secondary: opts.secondaryColor or '#fff'
       background: opts.backgroundColor or 'transparent'
 
-    @containerEl.style['background-color'] = @colors.background
-
     @watermarkImage = opts.watermarkImage
     @watermarkScale = opts.watermarkScale or 1
 
     @backgroundCanvas = document.createElement('canvas')
     @backgroundCtx = @backgroundCanvas.getContext('2d')
-    @containerEl.appendChild(@backgroundCanvas)
-    @backgroundShapes = opts.backgroundShapes || []
-
-    @_shapesInProgress = []
 
     @canvas = document.createElement('canvas')
     @canvas.style['background-color'] = 'transparent'
-    @containerEl.appendChild(@canvas)
 
     @buffer = document.createElement('canvas')
     @buffer.style['background-color'] = 'transparent'
@@ -51,6 +42,8 @@ module.exports = class LiterallyCanvas
 
     @backingScale = util.getBackingScale(@ctx)
 
+    @backgroundShapes = opts.backgroundShapes || []
+    @_shapesInProgress = []
     @shapes = []
     @undoStack = []
     @redoStack = []
@@ -69,21 +62,40 @@ module.exports = class LiterallyCanvas
     # that all layers are repainted.
     @setZoom(@scale)
 
-    util.matchElementSize(
-      @containerEl, [@backgroundCanvas, @canvas], @backingScale, =>
+    @loadSnapshot(opts.snapshot) if opts.snapshot
+
+    @isBound = false
+    @bindToElement(containerEl)
+
+  bindToElement: (containerEl) ->
+    if @containerEl
+      console.warn("Trying to bind Literally Canvas to a DOM element more than once is unsupported.")
+      return
+
+    @containerEl = containerEl
+    @_unsubscribeEvents = bindEvents(this, @containerEl, @opts.keyboardShortcuts)
+    @containerEl.style['background-color'] = @colors.background
+    @containerEl.appendChild(@backgroundCanvas)
+    @containerEl.appendChild(@canvas)
+
+    @isBound = true
+
+    repaintAll = =>
         @keepPanInImageBounds()
         @repaintAllLayers()
-    )
+
+    util.matchElementSize(
+      @containerEl, [@backgroundCanvas, @canvas], @backingScale, repaintAll)
 
     if @watermarkImage
       @watermarkImage.onload = => @repaintLayer('background')
 
-    @loadSnapshot(opts.snapshot) if opts.snapshot
+    repaintAll()
 
   _teardown: ->
     @tool.willBecomeInactive(this)
     @tool = null
-    @_unsubscribeEvents()
+    @_unsubscribeEvents?()
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))
@@ -161,6 +173,7 @@ module.exports = class LiterallyCanvas
 
   setColor: (name, color) ->
     @colors[name] = color
+    return unless @isBound
     switch name
       when 'background'
         @containerEl.style.backgroundColor = @colors.background
@@ -246,6 +259,7 @@ module.exports = class LiterallyCanvas
   # If dirty is true then all saved shapes are completely redrawn,
   # otherwise the back buffer is simply copied to the screen as is.
   repaintLayer: (repaintLayerKey, dirty=(repaintLayerKey == 'main')) ->
+    return unless @isBound
     switch repaintLayerKey
       when 'background'
         @backgroundCtx.clearRect(
