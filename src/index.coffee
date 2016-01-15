@@ -115,7 +115,7 @@ module.exports = {
   setDefaultImageURLPrefix, defaultTools,
   # @ifdef INCLUDE_GUI
   defineOptionsStyle,
-  LiterallyCanvas: LiterallyCanvasReactComponent,
+  LiterallyCanvasReactComponent,
   # @endif
 
   defineShape: shapes.defineShape,

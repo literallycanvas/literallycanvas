@@ -1,4 +1,4 @@
-const { LiterallyCanvas } = window.LC;
+const { LiterallyCanvasReactComponent } = window.LC;
 
 const DemoApp = React.createClass({
     getInitialState() {
@@ -62,7 +62,7 @@ const DemoApp = React.createClass({
 
     render() {
         return <div>
-            {this.state.isSetUp && <LiterallyCanvas {...this.state.lcOptions} />}
+            {this.state.isSetUp && <LiterallyCanvasReactComponent {...this.state.lcOptions} />}
             <a onClick={this.actionOpenImage}>open image</a><br />
             <a onClick={this.actionChangeSize}>change size</a><br />
             {this.state.isSetUp && <a onClick={this.actionTearDown}>teardown</a>}
