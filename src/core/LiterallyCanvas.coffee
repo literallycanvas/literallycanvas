@@ -13,8 +13,16 @@ INFINITE = 'infinite'
 
 module.exports = class LiterallyCanvas
 
-  constructor: (containerEl, opts) ->
-    @opts = opts
+  constructor: (arg1, arg2) ->
+    opts = null
+    containerEl = null
+    if arg1 instanceof HTMLElement
+      containerEl = arg1
+      opts = arg2
+    else
+      opts = arg1
+
+    @opts = opts or {}
 
     @config =
       zoomMin: opts.zoomMin or 0.2
@@ -65,7 +73,7 @@ module.exports = class LiterallyCanvas
     @loadSnapshot(opts.snapshot) if opts.snapshot
 
     @isBound = false
-    @bindToElement(containerEl)
+    @bindToElement(containerEl) if containerEl
 
   bindToElement: (containerEl) ->
     if @containerEl
@@ -94,8 +102,10 @@ module.exports = class LiterallyCanvas
 
   _teardown: ->
     @tool.willBecomeInactive(this)
-    @tool = null
     @_unsubscribeEvents?()
+    @tool = null
+    @containerEl = null
+    @isBound = false
 
   trigger: (name, data) ->
     @canvas.dispatchEvent(new CustomEvent(name, detail: data))

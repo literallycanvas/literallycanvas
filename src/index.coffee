@@ -3,6 +3,7 @@ require './ie_setLineDash'
 
 LiterallyCanvasModel = require './core/LiterallyCanvas'
 LiterallyCanvasReactComponent = require './reactGUI/LiterallyCanvas'
+defaultOptions = require './core/defaultOptions'
 
 canvasRenderer = require './core/canvasRenderer'
 svgRenderer = require './core/svgRenderer'
@@ -46,59 +47,24 @@ tools =
   ToolWithStroke: baseTools.ToolWithStroke
 
 
-defaultTools = [
-  tools.Pencil,
-  tools.Eraser,
-  tools.Line,
-  tools.Rectangle,
-  tools.Ellipse,
-  tools.Text,
-  tools.Polygon,
-
-  tools.Pan,
-  tools.Eyedropper,
-]
-
-
-defaultImageURLPrefix = 'lib/img'
-setDefaultImageURLPrefix = (newDefault) -> defaultImageURLPrefix = newDefault
+defaultTools = defaultOptions.tools
+defaultImageURLPrefix = defaultOptions.imageURLPrefix
+setDefaultImageURLPrefix = (newDefault) ->
+  defaultImageURLPrefix = newDefault
+  defaultOptions.imageURLPrefix = newDefault
 
 
 init = (el, opts = {}) ->
-  opts.imageURLPrefix ?= defaultImageURLPrefix
+  for opt of defaultOptions
+    unless opt of opts
+      opts[opt] = defaultOptions[opt]
 
-  opts.primaryColor ?= 'hsla(0, 0%, 0%, 1)'
-  opts.secondaryColor ?= 'hsla(0, 0%, 100%, 1)'
-  opts.backgroundColor ?= 'transparent'
-
-  opts.strokeWidths ?= [1, 2, 5, 10, 20, 30]
-  opts.defaultStrokeWidth ?= 5
-
-  opts.toolbarPosition ?= 'top'
-
-  opts.keyboardShortcuts ?= true
-
-  opts.imageSize ?= {width: 'infinite', height: 'infinite'}
-
-  opts.backgroundShapes ?= []
-  opts.watermarkImage ?= null
-  opts.watermarkScale ?= 1
-
-  opts.zoomMin ?= 0.2
-  opts.zoomMax ?= 4.0
-  opts.zoomStep ?= 0.2
-
-  opts.snapshot ?= null
-
-  unless 'tools' of opts
-    opts.tools = defaultTools
-
-  ### henceforth, all pre-existing DOM children shall be destroyed ###
+  # Destroy all children of the element we're using
 
   for child in el.children
     el.removeChild(child)
 
-  ### and now we rebuild the city ###
+  # Add our own
 
   if [' ', ' '].join(el.className).indexOf(' literally ') == -1
     el.className = el.className + ' literally'
