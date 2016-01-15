@@ -9,7 +9,6 @@ Options = React.createClass
     style: @props.lc.tool?.optionsStyle
     tool: @props.lc.tool
   }
-  getDefaultProps: -> {noWrapper: false}
   getInitialState: -> @getState()
   mixins: [createSetStateOnEventMixin('toolChange')]
 
@@ -21,10 +20,8 @@ Options = React.createClass
 
   render: ->
     {div} = React.DOM
-    {noWrapper} = @props
-    if noWrapper then this.renderBody() else \
-      (div {className: 'lc-options horz-toolbar'},
-        this.renderBody()
-      )
+    (div {className: 'lc-options horz-toolbar'},
+      this.renderBody()
+    )
 
 module.exports = Options
