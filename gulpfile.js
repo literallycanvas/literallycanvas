@@ -36,8 +36,8 @@ gulp.task('browserify-lc-main', function() {
   var bundleStream = browserify({
       basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC'
   }).add('./index.coffee')
-    .external('React/addons')
-    .external('React')
+    .external('react')
+    .external('react-dom')
     .transform(preprocessify({ INCLUDE_GUI: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
     .transform('babelify')
