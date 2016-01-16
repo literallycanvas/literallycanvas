@@ -98,6 +98,8 @@ module.exports = class LiterallyCanvas
     if @watermarkImage
       @watermarkImage.onload = => @repaintLayer('background')
 
+    @tool?.didBecomeActive(this)
+
     repaintAll()
 
   _teardown: ->
@@ -140,10 +142,12 @@ module.exports = class LiterallyCanvas
     @trigger('imageSizeChange', {@width, @height})
 
   setTool: (tool) ->
-    @tool?.willBecomeInactive(this)
+    if @isBound
+      @tool?.willBecomeInactive(this)
     @tool = tool
     @trigger('toolChange', {tool})
-    tool.didBecomeActive(this)
+    if @isBound
+      @tool.didBecomeActive(this)
 
   setShapesInProgress: (newVal) -> @_shapesInProgress = newVal
 
