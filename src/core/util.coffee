@@ -100,6 +100,25 @@ util =
 
     {x: minX, y: minY, width: maxX - minX, height: maxY - minY}
 
+  # Returns the rect LC will use for exporting images using the given params
+  getDefaultImageRect: (
+      shapeBoundingRects,
+      explicitSize={width: 0, height: 0},
+      margin={top: 0, right: 0, bottom: 0, left: 0}) ->
+    {width, height} = explicitSize
+
+    rect = util.getBoundingRect(
+      shapeBoundingRects,
+      if width == 'infinite' then 0 else width,
+      if height == 'infinite' then 0 else height)
+
+    rect.x -= margin.left
+    rect.y -= margin.top
+    rect.width += margin.left + margin.right
+    rect.height += margin.top + margin.bottom
+
+    rect
+
   getBackingScale: (context) ->
     return 1 unless window.devicePixelRatio?
     return 1 unless window.devicePixelRatio > 1
