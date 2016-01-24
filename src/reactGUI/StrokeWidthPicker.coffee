@@ -1,3 +1,4 @@
+React = require './React-shim'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 

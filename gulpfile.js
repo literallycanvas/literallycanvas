@@ -2,29 +2,46 @@ var browserify = require('browserify');
 var gulp = require('gulp');
 var connect = require('gulp-connect');
 var rename = require('gulp-rename');
-var sass = require('gulp-ruby-sass');
+var sass = require('gulp-sass');
 var source = require('vinyl-source-stream');
 var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify');
+var coffee = require('gulp-coffee');
+var babel = require('gulp-babel');
 var preprocessify = require('preprocessify');
+var merge = require('merge-stream');
+
+gulp.task('commonjs', function() {
+  // https://github.com/gulpjs/gulp/blob/master/docs/recipes/using-multiple-sources-in-one-task.md
+  var babelTrans = gulp.src(['./src/**/*.js', './src/**/*.jsx'])
+    .pipe(babel())
+    .pipe(gulp.dest('./lib/js/'));
+
+  var coffeeTrans = gulp.src('./src/**/*.coffee')
+    .pipe(coffee({ bare: true }))
+    .pipe(gulp.dest('./lib/js/'));
+
+  return merge(babelTrans, coffeeTrans);
+});
 
 gulp.task('sass', function() {
-  return gulp.src('scss/literallycanvas.scss')
-    .pipe(sass({ style: 'compressed' }))
-    .pipe(gulp.dest('lib/css'))
+  return gulp.src('./scss/**/*.scss')
+    .pipe(sass({ outputStyle: 'compressed' }))
+    .pipe(gulp.dest('./lib/css/'))
     .pipe(connect.reload())
 });
 
 
 gulp.task('browserify-lc-main', function() {
   var bundleStream = browserify({
-      basedir: 'src', extensions: ['.js', '.coffee'], debug: true
+      basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC'
   }).add('./index.coffee')
-    .external('React/addons')
-    .external('React')
+    .external('react')
+    .external('react-dom')
     .transform(preprocessify({ INCLUDE_GUI: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
-    .bundle({standalone: 'LC'})
+    .transform('babelify')
+    .bundle()
     .on('error', function (err) {
       if (err) {
         console.error(err.toString());
@@ -40,11 +57,12 @@ gulp.task('browserify-lc-main', function() {
 
 gulp.task('browserify-lc-core', function() {
   var bundleStream = browserify({
-      basedir: 'src', extensions: ['.js', '.coffee'], debug: true
+      basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC'
   }).add('./index.coffee')
     .transform(preprocessify({}, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
-    .bundle({standalone: 'LC'})
+    .transform('babelify')
+    .bundle()
     .on('error', function (err) {
       if (err) {
         console.error(err.toString());

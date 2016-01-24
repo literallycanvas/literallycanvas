@@ -22,7 +22,7 @@ ColorPickers = React.createFactory React.createClass
 Picker = React.createClass
   displayName: 'Picker'
   getInitialState: -> {selectedToolIndex: 0}
-  render: ->
+  renderBody: ->
     {div} = React.DOM
     {toolButtonComponents, lc, imageURLPrefix} = @props
     (div {className: 'lc-picker-contents'},
@@ -51,6 +51,11 @@ Picker = React.createClass
         ZoomButtons({lc, imageURLPrefix})
         ClearButton({lc})
       )
+    )
+  render: ->
+    {div} = React.DOM
+    (div {className: 'lc-picker'},
+      this.renderBody()
     )
 
 

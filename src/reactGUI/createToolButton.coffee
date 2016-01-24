@@ -2,8 +2,9 @@ React = require './React-shim'
 {classSet} = require '../core/util'
 
 
-createToolButton = ({displayName, getTool, imageName}) ->
-  tool = getTool()
+createToolButton = (tool) ->
+  displayName = tool.name
+  imageName = tool.iconName
   React.createFactory React.createClass
     displayName: displayName,
     getDefaultProps: -> {isSelected: false, lc: null}

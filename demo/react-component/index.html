@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Literally Canvas</title>
+    <link href="/lib/css/literallycanvas.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+
+    <style type="text/css">
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin: 0;
+        background-color: gray;
+        height: 2000px;
+      }
+
+      #app-container {
+        /* width: 768px; */
+        width: 320px;
+        margin: auto;
+        /* margin-top: 50px; */
+      }
+
+      .literally {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      .literally img.background, .literally > canvas {
+        position: absolute;
+      }
+
+      a {
+        color: blue;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app-container"></div>
+
+    <script src="/demo/fastclick.js"></script>
+    <script src="react-0.14.6.js"></script>
+    <script src="react-dom-0.14.6.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="/lib/js/literallycanvas.js"></script>
+    <script type="text/babel" src="react-component-demo.jsx"></script>
+    <script src="//localhost:35728/livereload.js"></script>
+  </body>
+</html>
