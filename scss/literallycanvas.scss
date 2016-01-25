@@ -118,7 +118,7 @@ $selectedColor: lighten(#3cb0fd, 20%);
 }
 
 .literally .lc-picker {
-  z-index: 2;
+  z-index: 1001;
   border-right: $basicBorder;
 
   $buttonMargin: 2px;
