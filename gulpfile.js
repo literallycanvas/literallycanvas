@@ -34,7 +34,8 @@ gulp.task('sass', function() {
 
 gulp.task('browserify-lc-main', function() {
   var bundleStream = browserify({
-      basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC'
+      basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC',
+      debug: false
   }).add('./index.coffee')
     .external('react')
     .external('react-dom')
@@ -57,7 +58,8 @@ gulp.task('browserify-lc-main', function() {
 
 gulp.task('browserify-lc-core', function() {
   var bundleStream = browserify({
-      basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC'
+      basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC',
+      debug: false
   }).add('./index.coffee')
     .transform(preprocessify({}, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
@@ -97,7 +99,7 @@ gulp.task('demo-reload', function () {
 
 
 gulp.task('watch', function() {
-  gulp.watch(['src/*.coffee', 'src/*/*.coffee'], ['browserify-lc-main', 'browserify-lc-core']);
+  gulp.watch(['src/*.coffee', 'src/*/*.coffee', 'src/*.js', 'src/*/*.js'], ['browserify-lc-main', 'browserify-lc-core']);
   gulp.watch('scss/*.scss', ['sass']);
   gulp.watch('demo/*', ['demo-reload']);
 });
