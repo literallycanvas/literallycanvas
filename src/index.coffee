@@ -20,6 +20,7 @@ require './optionsStyles/font'
 require './optionsStyles/stroke-width'
 require './optionsStyles/line-options-and-stroke-width'
 require './optionsStyles/polygon-and-stroke-width'
+require './optionsStyles/stroke-or-fill'
 require './optionsStyles/null'
 {defineOptionsStyle} = require './optionsStyles/optionsStyles'
 # @endif
