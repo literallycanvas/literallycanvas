@@ -26,7 +26,7 @@ module.exports = class SelectShape extends Tool
       @selectedShape = lc.shapes[shapeIndex]
 
       if @selectedShape?
-        lc.trigger 'SelectShapeed', { @selectedShape }
+        lc.trigger 'shapeSelected', { @selectedShape }
         lc.setShapesInProgress [@selectedShape, createShape('SelectionBox', {
           shape: @selectedShape,
           handleSize: 0
