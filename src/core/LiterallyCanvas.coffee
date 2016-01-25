@@ -430,6 +430,14 @@ module.exports = class LiterallyCanvas
       if @width == INFINITE then 0 else @width,
       if @height == INFINITE then 0 else @height)
 
+  getDefaultImageRect: (
+      explicitSize={width: 0, height: 0},
+      margin={top: 0, right: 0, bottom: 0, left: 0}) ->
+    return util.getDefaultImageRect(
+      (s.getBoundingRect(@ctx) for s in @shapes.concat(@backgroundShapes)),
+      explicitSize,
+      margin )
+
   getImage: (opts={}) ->
     opts.includeWatermark ?= true
     opts.scaleDownRetina ?= true
