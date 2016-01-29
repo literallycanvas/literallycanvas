@@ -1,3 +1,4 @@
+const React = require('./React-shim');
 const ReactDOM = require('./ReactDOM-shim');
 const LiterallyCanvasModel = require('../core/LiterallyCanvas');
 const LiterallyCanvasReactComponent = require('./LiterallyCanvas');
