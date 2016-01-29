@@ -39,6 +39,7 @@ tools.ToolWithStroke = class ToolWithStroke extends Tool
 
     unsubscribeFuncs.push lc.on 'setStrokeWidth', (strokeWidth) =>
       @strokeWidth = strokeWidth
+      lc.trigger('toolDidUpdateOptions')
 
   willBecomeInactive: (lc) ->
     @unsubscribe()

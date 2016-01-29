@@ -8,7 +8,7 @@ module.exports = React.createClass
 
   getState: (tool=@props.tool) -> {strokeWidth: tool.strokeWidth}
   getInitialState: -> @getState()
-  mixins: [createSetStateOnEventMixin('setStrokeWidth')]
+  mixins: [createSetStateOnEventMixin('toolDidUpdateOptions')]
 
   componentWillReceiveProps: (props) -> @setState @getState(props.tool)
 
