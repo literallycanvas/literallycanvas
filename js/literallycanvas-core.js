@@ -1,37 +1,44 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.LC=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, renderShapeToContext, renderShapeToSVG, renderSnapshotToImage, renderSnapshotToSVG, shapeToJSON, util, _ref,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __slice = [].slice,
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.LC = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, ref, renderShapeToContext, renderShapeToSVG, renderSnapshotToImage, renderSnapshotToSVG, shapeToJSON, util,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  slice = [].slice,
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-actions = _dereq_('./actions');
+actions = require('./actions');
 
-bindEvents = _dereq_('./bindEvents');
+bindEvents = require('./bindEvents');
 
-math = _dereq_('./math');
+math = require('./math');
 
-_ref = _dereq_('./shapes'), createShape = _ref.createShape, shapeToJSON = _ref.shapeToJSON, JSONToShape = _ref.JSONToShape;
+ref = require('./shapes'), createShape = ref.createShape, shapeToJSON = ref.shapeToJSON, JSONToShape = ref.JSONToShape;
 
-renderShapeToContext = _dereq_('./canvasRenderer').renderShapeToContext;
+renderShapeToContext = require('./canvasRenderer').renderShapeToContext;
 
-renderShapeToSVG = _dereq_('./svgRenderer').renderShapeToSVG;
+renderShapeToSVG = require('./svgRenderer').renderShapeToSVG;
 
-renderSnapshotToImage = _dereq_('./renderSnapshotToImage');
+renderSnapshotToImage = require('./renderSnapshotToImage');
 
-renderSnapshotToSVG = _dereq_('./renderSnapshotToSVG');
+renderSnapshotToSVG = require('./renderSnapshotToSVG');
 
-Pencil = _dereq_('../tools/Pencil');
+Pencil = require('../tools/Pencil');
 
-util = _dereq_('./util');
+util = require('./util');
 
 INFINITE = 'infinite';
 
 module.exports = LiterallyCanvas = (function() {
-  function LiterallyCanvas(containerEl, opts) {
-    this.containerEl = containerEl;
-    this.setImageSize = __bind(this.setImageSize, this);
-    this._unsubscribeEvents = bindEvents(this, this.containerEl, opts.keyboardShortcuts);
-    this.opts = opts;
+  function LiterallyCanvas(arg1, arg2) {
+    this.setImageSize = bind(this.setImageSize, this);
+    var containerEl, opts;
+    opts = null;
+    containerEl = null;
+    if (arg1 instanceof HTMLElement) {
+      containerEl = arg1;
+      opts = arg2;
+    } else {
+      opts = arg1;
+    }
+    this.opts = opts || {};
     this.config = {
       zoomMin: opts.zoomMin || 0.2,
       zoomMax: opts.zoomMax || 4.0,
@@ -42,22 +49,19 @@ module.exports = LiterallyCanvas = (function() {
       secondary: opts.secondaryColor || '#fff',
       background: opts.backgroundColor || 'transparent'
     };
-    this.containerEl.style['background-color'] = this.colors.background;
     this.watermarkImage = opts.watermarkImage;
     this.watermarkScale = opts.watermarkScale || 1;
     this.backgroundCanvas = document.createElement('canvas');
     this.backgroundCtx = this.backgroundCanvas.getContext('2d');
-    this.containerEl.appendChild(this.backgroundCanvas);
-    this.backgroundShapes = opts.backgroundShapes || [];
-    this._shapesInProgress = [];
     this.canvas = document.createElement('canvas');
     this.canvas.style['background-color'] = 'transparent';
-    this.containerEl.appendChild(this.canvas);
     this.buffer = document.createElement('canvas');
     this.buffer.style['background-color'] = 'transparent';
     this.ctx = this.canvas.getContext('2d');
     this.bufferCtx = this.buffer.getContext('2d');
     this.backingScale = util.getBackingScale(this.ctx);
+    this.backgroundShapes = opts.backgroundShapes || [];
+    this._shapesInProgress = [];
     this.shapes = [];
     this.undoStack = [];
     this.redoStack = [];
@@ -71,12 +75,34 @@ module.exports = LiterallyCanvas = (function() {
     this.width = opts.imageSize.width || INFINITE;
     this.height = opts.imageSize.height || INFINITE;
     this.setZoom(this.scale);
-    util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, (function(_this) {
+    if (opts.snapshot) {
+      this.loadSnapshot(opts.snapshot);
+    }
+    this.isBound = false;
+    if (containerEl) {
+      this.bindToElement(containerEl);
+    }
+  }
+
+  LiterallyCanvas.prototype.bindToElement = function(containerEl) {
+    var ref1, repaintAll;
+    if (this.containerEl) {
+      console.warn("Trying to bind Literally Canvas to a DOM element more than once is unsupported.");
+      return;
+    }
+    this.containerEl = containerEl;
+    this._unsubscribeEvents = bindEvents(this, this.containerEl, this.opts.keyboardShortcuts);
+    this.containerEl.style['background-color'] = this.colors.background;
+    this.containerEl.appendChild(this.backgroundCanvas);
+    this.containerEl.appendChild(this.canvas);
+    this.isBound = true;
+    repaintAll = (function(_this) {
       return function() {
         _this.keepPanInImageBounds();
         return _this.repaintAllLayers();
       };
-    })(this));
+    })(this);
+    util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
     if (this.watermarkImage) {
       this.watermarkImage.onload = (function(_this) {
         return function() {
@@ -84,15 +110,20 @@ module.exports = LiterallyCanvas = (function() {
         };
       })(this);
     }
-    if (opts.snapshot) {
-      this.loadSnapshot(opts.snapshot);
+    if ((ref1 = this.tool) != null) {
+      ref1.didBecomeActive(this);
     }
-  }
+    return repaintAll();
+  };
 
   LiterallyCanvas.prototype._teardown = function() {
     this.tool.willBecomeInactive(this);
+    if (typeof this._unsubscribeEvents === "function") {
+      this._unsubscribeEvents();
+    }
     this.tool = null;
-    return this._unsubscribeEvents();
+    this.containerEl = null;
+    return this.isBound = false;
   };
 
   LiterallyCanvas.prototype.trigger = function(name, data) {
@@ -145,15 +176,19 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.setTool = function(tool) {
-    var _ref1;
-    if ((_ref1 = this.tool) != null) {
-      _ref1.willBecomeInactive(this);
+    var ref1;
+    if (this.isBound) {
+      if ((ref1 = this.tool) != null) {
+        ref1.willBecomeInactive(this);
+      }
     }
     this.tool = tool;
     this.trigger('toolChange', {
       tool: tool
     });
-    return tool.didBecomeActive(this);
+    if (this.isBound) {
+      return this.tool.didBecomeActive(this);
+    }
   };
 
   LiterallyCanvas.prototype.setShapesInProgress = function(newVal) {
@@ -184,9 +219,9 @@ module.exports = LiterallyCanvas = (function() {
   LiterallyCanvas.prototype.pointerMove = function(x, y) {
     return util.requestAnimationFrame((function(_this) {
       return function() {
-        var p;
+        var p, ref1;
         p = _this.clientCoordsToDrawingCoords(x, y);
-        if (_this.tool.usesSimpleAPI) {
+        if ((ref1 = _this.tool) != null ? ref1.usesSimpleAPI : void 0) {
           if (_this.isDragging) {
             _this.tool["continue"](p.x, p.y, _this);
             return _this.trigger("drawContinue", {
@@ -241,6 +276,9 @@ module.exports = LiterallyCanvas = (function() {
 
   LiterallyCanvas.prototype.setColor = function(name, color) {
     this.colors[name] = color;
+    if (!this.isBound) {
+      return;
+    }
     switch (name) {
       case 'background':
         this.containerEl.style.backgroundColor = this.colors.background;
@@ -252,7 +290,7 @@ module.exports = LiterallyCanvas = (function() {
       case 'secondary':
         this.repaintLayer('main');
     }
-    this.trigger("" + name + "ColorChange", this.colors[name]);
+    this.trigger(name + "ColorChange", this.colors[name]);
     if (name === 'background') {
       return this.trigger("drawingChange");
     }
@@ -287,9 +325,9 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.keepPanInImageBounds = function() {
-    var renderScale, x, y, _ref1;
+    var ref1, renderScale, x, y;
     renderScale = this.getRenderScale();
-    _ref1 = this.position, x = _ref1.x, y = _ref1.y;
+    ref1 = this.position, x = ref1.x, y = ref1.y;
     if (this.width !== INFINITE) {
       if (this.canvas.width > this.width * renderScale) {
         x = (this.canvas.width - this.width * renderScale) / 2;
@@ -359,10 +397,10 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.repaintAllLayers = function() {
-    var key, _i, _len, _ref1;
-    _ref1 = ['background', 'main'];
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      key = _ref1[_i];
+    var i, key, len, ref1;
+    ref1 = ['background', 'main'];
+    for (i = 0, len = ref1.length; i < len; i++) {
+      key = ref1[i];
       this.repaintLayer(key);
     }
     return null;
@@ -372,6 +410,9 @@ module.exports = LiterallyCanvas = (function() {
     var retryCallback;
     if (dirty == null) {
       dirty = repaintLayerKey === 'main';
+    }
+    if (!this.isBound) {
+      return;
     }
     switch (repaintLayerKey) {
       case 'background':
@@ -411,17 +452,17 @@ module.exports = LiterallyCanvas = (function() {
           this.clipped(((function(_this) {
             return function() {
               return _this.transformed((function() {
-                var shape, _i, _len, _ref1, _results;
-                _ref1 = _this._shapesInProgress;
-                _results = [];
-                for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-                  shape = _ref1[_i];
-                  _results.push(renderShapeToContext(_this.ctx, shape, {
+                var i, len, ref1, results, shape;
+                ref1 = _this._shapesInProgress;
+                results = [];
+                for (i = 0, len = ref1.length; i < len; i++) {
+                  shape = ref1[i];
+                  results.push(renderShapeToContext(_this.ctx, shape, {
                     bufferCtx: _this.bufferCtx,
                     shouldOnlyDrawLatest: true
                   }));
                 }
-                return _results;
+                return results;
               }), _this.ctx, _this.bufferCtx);
             };
           })(this)), this.ctx, this.bufferCtx);
@@ -471,15 +512,15 @@ module.exports = LiterallyCanvas = (function() {
     }
     drawShapes = (function(_this) {
       return function() {
-        var shape, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = shapes.length; _i < _len; _i++) {
-          shape = shapes[_i];
-          _results.push(renderShapeToContext(ctx, shape, {
+        var i, len, results, shape;
+        results = [];
+        for (i = 0, len = shapes.length; i < len; i++) {
+          shape = shapes[i];
+          results.push(renderShapeToContext(ctx, shape, {
             retryCallback: retryCallback
           }));
         }
-        return _results;
+        return results;
       };
     })(this);
     return this.clipped(((function(_this) {
@@ -490,8 +531,8 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.clipped = function() {
-    var contexts, ctx, fn, height, width, x, y, _i, _j, _len, _len1, _results;
-    fn = arguments[0], contexts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+    var contexts, ctx, fn, height, i, j, len, len1, results, width, x, y;
+    fn = arguments[0], contexts = 2 <= arguments.length ? slice.call(arguments, 1) : [];
     x = this.width === INFINITE ? 0 : this.position.x;
     y = this.height === INFINITE ? 0 : this.position.y;
     width = (function() {
@@ -510,48 +551,54 @@ module.exports = LiterallyCanvas = (function() {
           return this.height * this.getRenderScale();
       }
     }).call(this);
-    for (_i = 0, _len = contexts.length; _i < _len; _i++) {
-      ctx = contexts[_i];
+    for (i = 0, len = contexts.length; i < len; i++) {
+      ctx = contexts[i];
       ctx.save();
       ctx.beginPath();
       ctx.rect(x, y, width, height);
       ctx.clip();
     }
     fn();
-    _results = [];
-    for (_j = 0, _len1 = contexts.length; _j < _len1; _j++) {
-      ctx = contexts[_j];
-      _results.push(ctx.restore());
+    results = [];
+    for (j = 0, len1 = contexts.length; j < len1; j++) {
+      ctx = contexts[j];
+      results.push(ctx.restore());
     }
-    return _results;
+    return results;
   };
 
   LiterallyCanvas.prototype.transformed = function() {
-    var contexts, ctx, fn, scale, _i, _j, _len, _len1, _results;
-    fn = arguments[0], contexts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
-    for (_i = 0, _len = contexts.length; _i < _len; _i++) {
-      ctx = contexts[_i];
+    var contexts, ctx, fn, i, j, len, len1, results, scale;
+    fn = arguments[0], contexts = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+    for (i = 0, len = contexts.length; i < len; i++) {
+      ctx = contexts[i];
       ctx.save();
       ctx.translate(Math.floor(this.position.x), Math.floor(this.position.y));
       scale = this.getRenderScale();
       ctx.scale(scale, scale);
     }
     fn();
-    _results = [];
-    for (_j = 0, _len1 = contexts.length; _j < _len1; _j++) {
-      ctx = contexts[_j];
-      _results.push(ctx.restore());
+    results = [];
+    for (j = 0, len1 = contexts.length; j < len1; j++) {
+      ctx = contexts[j];
+      results.push(ctx.restore());
     }
-    return _results;
+    return results;
   };
 
-  LiterallyCanvas.prototype.clear = function() {
+  LiterallyCanvas.prototype.clear = function(triggerClearEvent) {
     var newShapes, oldShapes;
+    if (triggerClearEvent == null) {
+      triggerClearEvent = true;
+    }
     oldShapes = this.shapes;
     newShapes = [];
+    this.setShapesInProgress([]);
     this.execute(new actions.ClearAction(this, oldShapes, newShapes));
     this.repaintLayer('main');
-    this.trigger('clear', null);
+    if (triggerClearEvent) {
+      this.trigger('clear', null);
+    }
     return this.trigger('drawingChange', {});
   };
 
@@ -614,6 +661,34 @@ module.exports = LiterallyCanvas = (function() {
     }), this.width === INFINITE ? 0 : this.width, this.height === INFINITE ? 0 : this.height);
   };
 
+  LiterallyCanvas.prototype.getDefaultImageRect = function(explicitSize, margin) {
+    var s;
+    if (explicitSize == null) {
+      explicitSize = {
+        width: 0,
+        height: 0
+      };
+    }
+    if (margin == null) {
+      margin = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      };
+    }
+    return util.getDefaultImageRect((function() {
+      var i, len, ref1, results;
+      ref1 = this.shapes.concat(this.backgroundShapes);
+      results = [];
+      for (i = 0, len = ref1.length; i < len; i++) {
+        s = ref1[i];
+        results.push(s.getBoundingRect(this.ctx));
+      }
+      return results;
+    }).call(this), explicitSize, margin);
+  };
+
   LiterallyCanvas.prototype.getImage = function(opts) {
     if (opts == null) {
       opts = {};
@@ -650,7 +725,7 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.getSnapshot = function(keys) {
-    var k, shape, snapshot, _i, _len, _ref1;
+    var i, k, len, ref1, shape, snapshot;
     if (keys == null) {
       keys = null;
     }
@@ -658,38 +733,38 @@ module.exports = LiterallyCanvas = (function() {
       keys = ['shapes', 'imageSize', 'colors', 'position', 'scale', 'backgroundShapes'];
     }
     snapshot = {};
-    _ref1 = ['colors', 'position', 'scale'];
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      k = _ref1[_i];
-      if (__indexOf.call(keys, k) >= 0) {
+    ref1 = ['colors', 'position', 'scale'];
+    for (i = 0, len = ref1.length; i < len; i++) {
+      k = ref1[i];
+      if (indexOf.call(keys, k) >= 0) {
         snapshot[k] = this[k];
       }
     }
-    if (__indexOf.call(keys, 'shapes') >= 0) {
+    if (indexOf.call(keys, 'shapes') >= 0) {
       snapshot.shapes = (function() {
-        var _j, _len1, _ref2, _results;
-        _ref2 = this.shapes;
-        _results = [];
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          shape = _ref2[_j];
-          _results.push(shapeToJSON(shape));
+        var j, len1, ref2, results;
+        ref2 = this.shapes;
+        results = [];
+        for (j = 0, len1 = ref2.length; j < len1; j++) {
+          shape = ref2[j];
+          results.push(shapeToJSON(shape));
         }
-        return _results;
+        return results;
       }).call(this);
     }
-    if (__indexOf.call(keys, 'backgroundShapes') >= 0) {
+    if (indexOf.call(keys, 'backgroundShapes') >= 0) {
       snapshot.backgroundShapes = (function() {
-        var _j, _len1, _ref2, _results;
-        _ref2 = this.backgroundShapes;
-        _results = [];
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          shape = _ref2[_j];
-          _results.push(shapeToJSON(shape));
+        var j, len1, ref2, results;
+        ref2 = this.backgroundShapes;
+        results = [];
+        for (j = 0, len1 = ref2.length; j < len1; j++) {
+          shape = ref2[j];
+          results.push(shapeToJSON(shape));
         }
-        return _results;
+        return results;
       }).call(this);
     }
-    if (__indexOf.call(keys, 'imageSize') >= 0) {
+    if (indexOf.call(keys, 'imageSize') >= 0) {
       snapshot.imageSize = {
         width: this.width,
         height: this.height
@@ -711,22 +786,22 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.loadSnapshot = function(snapshot) {
-    var k, s, shape, shapeRepr, _i, _j, _len, _len1, _ref1, _ref2;
+    var i, j, k, len, len1, ref1, ref2, s, shape, shapeRepr;
     if (!snapshot) {
       return;
     }
     if (snapshot.colors) {
-      _ref1 = ['primary', 'secondary', 'background'];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        k = _ref1[_i];
+      ref1 = ['primary', 'secondary', 'background'];
+      for (i = 0, len = ref1.length; i < len; i++) {
+        k = ref1[i];
         this.setColor(k, snapshot.colors[k]);
       }
     }
     if (snapshot.shapes) {
       this.shapes = [];
-      _ref2 = snapshot.shapes;
-      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-        shapeRepr = _ref2[_j];
+      ref2 = snapshot.shapes;
+      for (j = 0, len1 = ref2.length; j < len1; j++) {
+        shapeRepr = ref2[j];
         shape = JSONToShape(shapeRepr);
         if (shape) {
           this.execute(new actions.AddShapeAction(this, shape));
@@ -735,14 +810,14 @@ module.exports = LiterallyCanvas = (function() {
     }
     if (snapshot.backgroundShapes) {
       this.backgroundShapes = (function() {
-        var _k, _len2, _ref3, _results;
-        _ref3 = snapshot.backgroundShapes;
-        _results = [];
-        for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-          s = _ref3[_k];
-          _results.push(JSONToShape(s));
+        var l, len2, ref3, results;
+        ref3 = snapshot.backgroundShapes;
+        results = [];
+        for (l = 0, len2 = ref3.length; l < len2; l++) {
+          s = ref3[l];
+          results.push(JSONToShape(s));
         }
-        return _results;
+        return results;
       })();
     }
     if (snapshot.imageSize) {
@@ -770,17 +845,17 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":23,"./actions":3,"./bindEvents":4,"./canvasRenderer":5,"./math":9,"./renderSnapshotToImage":10,"./renderSnapshotToSVG":11,"./shapes":12,"./svgRenderer":13,"./util":14}],2:[function(_dereq_,module,exports){
+},{"../tools/Pencil":24,"./actions":3,"./bindEvents":4,"./canvasRenderer":5,"./math":10,"./renderSnapshotToImage":11,"./renderSnapshotToSVG":12,"./shapes":13,"./svgRenderer":14,"./util":15}],2:[function(require,module,exports){
 var TextRenderer, getLinesToRender, getNextLine, parseFontString;
 
-_dereq_('./fontmetrics.js');
+require('./fontmetrics.js');
 
 parseFontString = function(font) {
-  var fontFamily, fontItems, fontSize, item, maybeSize, remainingFontString, _i, _len;
+  var fontFamily, fontItems, fontSize, item, j, len, maybeSize, remainingFontString;
   fontItems = font.split(' ');
   fontSize = 0;
-  for (_i = 0, _len = fontItems.length; _i < _len; _i++) {
-    item = fontItems[_i];
+  for (j = 0, len = fontItems.length; j < len; j++) {
+    item = fontItems[j];
     maybeSize = parseInt(item.replace("px", ""), 10);
     if (!isNaN(maybeSize)) {
       fontSize = maybeSize;
@@ -840,16 +915,16 @@ getNextLine = function(ctx, text, forcedWidth) {
 };
 
 getLinesToRender = function(ctx, text, forcedWidth) {
-  var lines, nextLine, remainingText, textLine, textSplitOnLines, _i, _len, _ref, _ref1;
+  var j, len, lines, nextLine, ref, ref1, remainingText, textLine, textSplitOnLines;
   textSplitOnLines = text.split(/\r\n|\r|\n/g);
   lines = [];
-  for (_i = 0, _len = textSplitOnLines.length; _i < _len; _i++) {
-    textLine = textSplitOnLines[_i];
-    _ref = getNextLine(ctx, textLine, forcedWidth), nextLine = _ref[0], remainingText = _ref[1];
+  for (j = 0, len = textSplitOnLines.length; j < len; j++) {
+    textLine = textSplitOnLines[j];
+    ref = getNextLine(ctx, textLine, forcedWidth), nextLine = ref[0], remainingText = ref[1];
     if (nextLine) {
       while (nextLine) {
         lines.push(nextLine);
-        _ref1 = getNextLine(ctx, remainingText, forcedWidth), nextLine = _ref1[0], remainingText = _ref1[1];
+        ref1 = getNextLine(ctx, remainingText, forcedWidth), nextLine = ref1[0], remainingText = ref1[1];
       }
     } else {
       lines.push(textLine);
@@ -859,73 +934,73 @@ getLinesToRender = function(ctx, text, forcedWidth) {
 };
 
 TextRenderer = (function() {
-  function TextRenderer(ctx, text, font, forcedWidth, forcedHeight) {
-    var fontFamily, fontSize, _ref;
-    this.text = text;
-    this.font = font;
-    this.forcedWidth = forcedWidth;
+  function TextRenderer(ctx, text1, font1, forcedWidth1, forcedHeight) {
+    var fontFamily, fontSize, ref;
+    this.text = text1;
+    this.font = font1;
+    this.forcedWidth = forcedWidth1;
     this.forcedHeight = forcedHeight;
-    _ref = parseFontString(this.font), fontFamily = _ref.fontFamily, fontSize = _ref.fontSize;
+    ref = parseFontString(this.font), fontFamily = ref.fontFamily, fontSize = ref.fontSize;
     ctx.font = this.font;
     ctx.textBaseline = 'baseline';
     this.emDashWidth = ctx.measureTextWidth('—', fontSize, fontFamily).width;
     this.caratWidth = ctx.measureTextWidth('|', fontSize, fontFamily).width;
-    this.lines = getLinesToRender(ctx, text, this.forcedWidth);
+    this.lines = getLinesToRender(ctx, this.text, this.forcedWidth);
     this.metricses = this.lines.map((function(_this) {
       return function(line) {
         return ctx.measureText2(line || 'X', fontSize, _this.font);
       };
     })(this));
     this.metrics = {
-      ascent: Math.max.apply(Math, this.metricses.map(function(_arg) {
+      ascent: Math.max.apply(Math, this.metricses.map(function(arg) {
         var ascent;
-        ascent = _arg.ascent;
+        ascent = arg.ascent;
         return ascent;
       })),
-      descent: Math.max.apply(Math, this.metricses.map(function(_arg) {
+      descent: Math.max.apply(Math, this.metricses.map(function(arg) {
         var descent;
-        descent = _arg.descent;
+        descent = arg.descent;
         return descent;
       })),
-      fontsize: Math.max.apply(Math, this.metricses.map(function(_arg) {
+      fontsize: Math.max.apply(Math, this.metricses.map(function(arg) {
         var fontsize;
-        fontsize = _arg.fontsize;
+        fontsize = arg.fontsize;
         return fontsize;
       })),
-      leading: Math.max.apply(Math, this.metricses.map(function(_arg) {
+      leading: Math.max.apply(Math, this.metricses.map(function(arg) {
         var leading;
-        leading = _arg.leading;
+        leading = arg.leading;
         return leading;
       })),
-      width: Math.max.apply(Math, this.metricses.map(function(_arg) {
+      width: Math.max.apply(Math, this.metricses.map(function(arg) {
         var width;
-        width = _arg.width;
+        width = arg.width;
         return width;
       })),
-      height: Math.max.apply(Math, this.metricses.map(function(_arg) {
+      height: Math.max.apply(Math, this.metricses.map(function(arg) {
         var height;
-        height = _arg.height;
+        height = arg.height;
         return height;
       })),
       bounds: {
-        minx: Math.min.apply(Math, this.metricses.map(function(_arg) {
+        minx: Math.min.apply(Math, this.metricses.map(function(arg) {
           var bounds;
-          bounds = _arg.bounds;
+          bounds = arg.bounds;
           return bounds.minx;
         })),
-        miny: Math.min.apply(Math, this.metricses.map(function(_arg) {
+        miny: Math.min.apply(Math, this.metricses.map(function(arg) {
           var bounds;
-          bounds = _arg.bounds;
+          bounds = arg.bounds;
           return bounds.miny;
         })),
-        maxx: Math.max.apply(Math, this.metricses.map(function(_arg) {
+        maxx: Math.max.apply(Math, this.metricses.map(function(arg) {
           var bounds;
-          bounds = _arg.bounds;
+          bounds = arg.bounds;
           return bounds.maxx;
         })),
-        maxy: Math.max.apply(Math, this.metricses.map(function(_arg) {
+        maxy: Math.max.apply(Math, this.metricses.map(function(arg) {
           var bounds;
-          bounds = _arg.bounds;
+          bounds = arg.bounds;
           return bounds.maxy;
         }))
       }
@@ -934,18 +1009,18 @@ TextRenderer = (function() {
   }
 
   TextRenderer.prototype.draw = function(ctx, x, y) {
-    var i, line, _i, _len, _ref, _results;
+    var i, j, len, line, ref, results;
     ctx.textBaseline = 'top';
     ctx.font = this.font;
     i = 0;
-    _ref = this.lines;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      line = _ref[_i];
+    ref = this.lines;
+    results = [];
+    for (j = 0, len = ref.length; j < len; j++) {
+      line = ref[j];
       ctx.fillText(line, x, y + i * this.metrics.leading);
-      _results.push(i += 1);
+      results.push(i += 1);
     }
-    return _results;
+    return results;
   };
 
   TextRenderer.prototype.getWidth = function(isEditing) {
@@ -974,14 +1049,14 @@ TextRenderer = (function() {
 module.exports = TextRenderer;
 
 
-},{"./fontmetrics.js":6}],3:[function(_dereq_,module,exports){
+},{"./fontmetrics.js":7}],3:[function(require,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
-  function ClearAction(lc, oldShapes, newShapes) {
-    this.lc = lc;
+  function ClearAction(lc1, oldShapes, newShapes1) {
+    this.lc = lc1;
     this.oldShapes = oldShapes;
-    this.newShapes = newShapes;
+    this.newShapes = newShapes1;
   }
 
   ClearAction.prototype["do"] = function() {
@@ -999,22 +1074,22 @@ ClearAction = (function() {
 })();
 
 AddShapeAction = (function() {
-  function AddShapeAction(lc, shape, previousShapeId) {
-    this.lc = lc;
-    this.shape = shape;
+  function AddShapeAction(lc1, shape1, previousShapeId) {
+    this.lc = lc1;
+    this.shape = shape1;
     this.previousShapeId = previousShapeId != null ? previousShapeId : null;
   }
 
   AddShapeAction.prototype["do"] = function() {
-    var found, newShapes, shape, _i, _len, _ref;
+    var found, i, len, newShapes, ref, shape;
     if (!this.lc.shapes.length || this.lc.shapes[this.lc.shapes.length - 1].id === this.previousShapeId || this.previousShapeId === null) {
       this.lc.shapes.push(this.shape);
     } else {
       newShapes = [];
       found = false;
-      _ref = this.lc.shapes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        shape = _ref[_i];
+      ref = this.lc.shapes;
+      for (i = 0, len = ref.length; i < len; i++) {
+        shape = ref[i];
         newShapes.push(shape);
         if (shape.id === this.previousShapeId) {
           newShapes.push(this.shape);
@@ -1030,14 +1105,14 @@ AddShapeAction = (function() {
   };
 
   AddShapeAction.prototype.undo = function() {
-    var newShapes, shape, _i, _len, _ref;
+    var i, len, newShapes, ref, shape;
     if (this.lc.shapes[this.lc.shapes.length - 1].id === this.shape.id) {
       this.lc.shapes.pop();
     } else {
       newShapes = [];
-      _ref = this.lc.shapes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        shape = _ref[_i];
+      ref = this.lc.shapes;
+      for (i = 0, len = ref.length; i < len; i++) {
+        shape = ref[i];
         if (shape.id !== this.shape.id) {
           newShapes.push(shape);
         }
@@ -1057,7 +1132,7 @@ module.exports = {
 };
 
 
-},{}],4:[function(_dereq_,module,exports){
+},{}],4:[function(require,module,exports){
 var bindEvents, buttonIsDown, coordsForTouchEvent, position;
 
 coordsForTouchEvent = function(el, e) {
@@ -1180,21 +1255,21 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
     });
   }
   return function() {
-    var f, _i, _len, _results;
-    _results = [];
-    for (_i = 0, _len = unsubs.length; _i < _len; _i++) {
-      f = unsubs[_i];
-      _results.push(f());
+    var f, i, len, results;
+    results = [];
+    for (i = 0, len = unsubs.length; i < len; i++) {
+      f = unsubs[i];
+      results.push(f());
     }
-    return _results;
+    return results;
   };
 };
 
 
-},{}],5:[function(_dereq_,module,exports){
-var defineCanvasRenderer, drawErasedLinePath, drawErasedLinePathLatest, drawLinePath, drawLinePathLatest, lineEndCapShapes, noop, renderShapeToCanvas, renderShapeToContext, renderers, _drawRawLinePath;
+},{}],5:[function(require,module,exports){
+var _drawRawLinePath, defineCanvasRenderer, drawErasedLinePath, drawErasedLinePathLatest, drawLinePath, drawLinePathLatest, lineEndCapShapes, noop, renderShapeToCanvas, renderShapeToContext, renderers;
 
-lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
+lineEndCapShapes = require('./lineEndCapShapes');
 
 renderers = {};
 
@@ -1279,9 +1354,12 @@ defineCanvasRenderer('Ellipse', function(ctx, shape) {
 
 defineCanvasRenderer('SelectionBox', (function() {
   var _drawHandle;
-  _drawHandle = function(ctx, _arg, handleSize) {
+  _drawHandle = function(ctx, arg, handleSize) {
     var x, y;
-    x = _arg.x, y = _arg.y;
+    x = arg.x, y = arg.y;
+    if (handleSize === 0) {
+      return;
+    }
     ctx.fillStyle = '#fff';
     ctx.fillRect(x, y, handleSize, handleSize);
     ctx.strokeStyle = '#000';
@@ -1354,7 +1432,7 @@ defineCanvasRenderer('Line', function(ctx, shape) {
 });
 
 _drawRawLinePath = function(ctx, points, close, lineCap) {
-  var point, _i, _len, _ref;
+  var i, len, point, ref;
   if (close == null) {
     close = false;
   }
@@ -1373,9 +1451,9 @@ _drawRawLinePath = function(ctx, points, close, lineCap) {
   } else {
     ctx.moveTo(points[0].x + 0.5, points[0].y + 0.5);
   }
-  _ref = points.slice(1);
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    point = _ref[_i];
+  ref = points.slice(1);
+  for (i = 0, len = ref.length; i < len; i++) {
+    point = ref[i];
     if (points[0].size % 2 === 0) {
       ctx.lineTo(point.x, point.y);
     } else {
@@ -1449,7 +1527,32 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes.coffee":7}],6:[function(_dereq_,module,exports){
+},{"./lineEndCapShapes":8}],6:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  imageURLPrefix: 'lib/img',
+  primaryColor: 'hsla(0, 0%, 0%, 1)',
+  secondaryColor: 'hsla(0, 0%, 100%, 1)',
+  backgroundColor: 'transparent',
+  strokeWidths: [1, 2, 5, 10, 20, 30],
+  defaultStrokeWidth: 5,
+  toolbarPosition: 'top',
+  keyboardShortcuts: false,
+  imageSize: { width: 'infinite', height: 'infinite' },
+  backgroundShapes: [],
+  watermarkImage: null,
+  watermarkScale: 1,
+  zoomMin: 0.2,
+  zoomMax: 4.0,
+  zoomStep: 0.2,
+  snapshot: null,
+  tools: [require('../tools/Pencil'), require('../tools/Eraser'), require('../tools/Line'), require('../tools/Rectangle'), require('../tools/Ellipse'), require('../tools/Text'), require('../tools/Polygon'), require('../tools/Pan'), require('../tools/Eyedropper')]
+};
+
+},{"../tools/Ellipse":19,"../tools/Eraser":20,"../tools/Eyedropper":21,"../tools/Line":22,"../tools/Pan":23,"../tools/Pencil":24,"../tools/Polygon":25,"../tools/Rectangle":26,"../tools/Text":28}],7:[function(require,module,exports){
+"use strict";
+
 /**
   This library rewrites the Canvas2D "measureText" function
   so that it returns a more complete metrics object.
@@ -1487,13 +1590,13 @@ module.exports = {
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 **/
-(function(){
-  var NAME = "FontMetrics Library"
+(function () {
+  var NAME = "FontMetrics Library";
   var VERSION = "1-2012.0121.1300";
 
   // if there is no getComputedStyle, this library won't work.
-  if(!document.defaultView.getComputedStyle) {
-    throw("ERROR: 'document.defaultView.getComputedStyle' not found. This library only works in browsers that can report computed CSS values.");
+  if (!document.defaultView.getComputedStyle) {
+    throw "ERROR: 'document.defaultView.getComputedStyle' not found. This library only works in browsers that can report computed CSS values.";
   }
 
   // store the old text metrics function on the Canvas2D prototype
@@ -1502,48 +1605,46 @@ module.exports = {
   /**
    *  shortcut function for getting computed CSS values
    */
-  var getCSSValue = function(element, property) {
-    return document.defaultView.getComputedStyle(element,null).getPropertyValue(property);
+  var getCSSValue = function getCSSValue(element, property) {
+    return document.defaultView.getComputedStyle(element, null).getPropertyValue(property);
   };
 
   // debug function
-  var show = function(canvas, ctx, xstart, w, h, metrics)
-  {
+  var show = function show(canvas, ctx, xstart, w, h, metrics) {
     document.body.appendChild(canvas);
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
 
     ctx.beginPath();
-    ctx.moveTo(xstart,0);
-    ctx.lineTo(xstart,h);
+    ctx.moveTo(xstart, 0);
+    ctx.lineTo(xstart, h);
     ctx.closePath();
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(xstart+metrics.bounds.maxx,0);
-    ctx.lineTo(xstart+metrics.bounds.maxx,h);
+    ctx.moveTo(xstart + metrics.bounds.maxx, 0);
+    ctx.lineTo(xstart + metrics.bounds.maxx, h);
     ctx.closePath();
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(0,h/2-metrics.ascent);
-    ctx.lineTo(w,h/2-metrics.ascent);
+    ctx.moveTo(0, h / 2 - metrics.ascent);
+    ctx.lineTo(w, h / 2 - metrics.ascent);
     ctx.closePath();
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(0,h/2+metrics.descent);
-    ctx.lineTo(w,h/2+metrics.descent);
+    ctx.moveTo(0, h / 2 + metrics.descent);
+    ctx.lineTo(w, h / 2 + metrics.descent);
     ctx.closePath();
     ctx.stroke();
-  }
+  };
 
   /**
    * The new text metrics function
    */
-  CanvasRenderingContext2D.prototype.measureText2 = function(
-      textstring, fontSize, fontString) {
+  CanvasRenderingContext2D.prototype.measureText2 = function (textstring, fontSize, fontString) {
     var metrics = this.measureTextWidth(textstring),
-        isSpace = !(/\S/.test(textstring));
+        isSpace = !/\S/.test(textstring);
     metrics.fontsize = fontSize;
 
     // for text lead values, we meaure a multiline text container.
@@ -1558,71 +1659,79 @@ module.exports = {
     metrics.leading = 1.2 * fontSize;
 
     // then we try to get the real value from the browser
-    var leadDivHeight = getCSSValue(leadDiv,"height");
-    leadDivHeight = leadDivHeight.replace("px","");
-    if (leadDivHeight >= fontSize * 2) { metrics.leading = (leadDivHeight/2) | 0; }
+    var leadDivHeight = getCSSValue(leadDiv, "height");
+    leadDivHeight = leadDivHeight.replace("px", "");
+    if (leadDivHeight >= fontSize * 2) {
+      metrics.leading = leadDivHeight / 2 | 0;
+    }
     document.body.removeChild(leadDiv);
 
     // if we're not dealing with white space, we can compute metrics
     if (!isSpace) {
-        // Have characters, so measure the text
-        var canvas = document.createElement("canvas");
-        var padding = 100;
-        canvas.width = metrics.width + padding;
-        canvas.height = 3*fontSize;
-        canvas.style.opacity = 1;
-        canvas.style.font = fontString;
-        var ctx = canvas.getContext("2d");
-        ctx.font = fontString;
+      // Have characters, so measure the text
+      var canvas = document.createElement("canvas");
+      var padding = 100;
+      canvas.width = metrics.width + padding;
+      canvas.height = 3 * fontSize;
+      canvas.style.opacity = 1;
+      canvas.style.font = fontString;
+      var ctx = canvas.getContext("2d");
+      ctx.font = fontString;
 
-        var w = canvas.width,
-            h = canvas.height,
-            baseline = h/2;
+      var w = canvas.width,
+          h = canvas.height,
+          baseline = h / 2;
 
-        // Set all canvas pixeldata values to 255, with all the content
-        // data being 0. This lets us scan for data[i] != 255.
-        ctx.fillStyle = "white";
-        ctx.fillRect(-1, -1, w+2, h+2);
-        ctx.fillStyle = "black";
-        ctx.fillText(textstring, padding/2, baseline);
-        var pixelData = ctx.getImageData(0, 0, w, h).data;
+      // Set all canvas pixeldata values to 255, with all the content
+      // data being 0. This lets us scan for data[i] != 255.
+      ctx.fillStyle = "white";
+      ctx.fillRect(-1, -1, w + 2, h + 2);
+      ctx.fillStyle = "black";
+      ctx.fillText(textstring, padding / 2, baseline);
+      var pixelData = ctx.getImageData(0, 0, w, h).data;
 
-        // canvas pixel data is w*4 by h*4, because R, G, B and A are separate,
-        // consecutive values in the array, rather than stored as 32 bit ints.
-        var i = 0,
-            w4 = w * 4,
-            len = pixelData.length;
+      // canvas pixel data is w*4 by h*4, because R, G, B and A are separate,
+      // consecutive values in the array, rather than stored as 32 bit ints.
+      var i = 0,
+          w4 = w * 4,
+          len = pixelData.length;
 
-        // Finding the ascent uses a normal, forward scanline
-        while (++i < len && pixelData[i] === 255) {}
-        var ascent = (i/w4)|0;
+      // Finding the ascent uses a normal, forward scanline
+      while (++i < len && pixelData[i] === 255) {}
+      var ascent = i / w4 | 0;
 
-        // Finding the descent uses a reverse scanline
-        i = len - 1;
-        while (--i > 0 && pixelData[i] === 255) {}
-        var descent = (i/w4)|0;
+      // Finding the descent uses a reverse scanline
+      i = len - 1;
+      while (--i > 0 && pixelData[i] === 255) {}
+      var descent = i / w4 | 0;
 
-        // find the min-x coordinate
-        for(i = 0; i<len && pixelData[i] === 255; ) {
-          i += w4;
-          if(i>=len) { i = (i-len) + 4; }}
-        var minx = ((i%w4)/4) | 0;
+      // find the min-x coordinate
+      for (i = 0; i < len && pixelData[i] === 255;) {
+        i += w4;
+        if (i >= len) {
+          i = i - len + 4;
+        }
+      }
+      var minx = i % w4 / 4 | 0;
 
-        // find the max-x coordinate
-        var step = 1;
-        for(i = len-3; i>=0 && pixelData[i] === 255; ) {
-          i -= w4;
-          if(i<0) { i = (len - 3) - (step++)*4; }}
-        var maxx = ((i%w4)/4) + 1 | 0;
+      // find the max-x coordinate
+      var step = 1;
+      for (i = len - 3; i >= 0 && pixelData[i] === 255;) {
+        i -= w4;
+        if (i < 0) {
+          i = len - 3 - step++ * 4;
+        }
+      }
+      var maxx = i % w4 / 4 + 1 | 0;
 
-        // set font metrics
-        metrics.ascent = (baseline - ascent);
-        metrics.descent = (descent - baseline);
-        metrics.bounds = { minx: minx - (padding/2),
-                           maxx: maxx - (padding/2),
-                           miny: 0,
-                           maxy: descent-ascent };
-        metrics.height = 1+(descent - ascent);
+      // set font metrics
+      metrics.ascent = baseline - ascent;
+      metrics.descent = descent - baseline;
+      metrics.bounds = { minx: minx - padding / 2,
+        maxx: maxx - padding / 2,
+        miny: 0,
+        maxy: descent - ascent };
+      metrics.height = 1 + (descent - ascent);
     }
 
     // if we ARE dealing with whitespace, most values will just be zero.
@@ -1631,16 +1740,16 @@ module.exports = {
         metrics.ascent = 0;
         metrics.descent = 0;
         metrics.bounds = { minx: 0,
-                           maxx: metrics.width, // Best guess
-                           miny: 0,
-                           maxy: 0 };
+          maxx: metrics.width, // Best guess
+          miny: 0,
+          maxy: 0 };
         metrics.height = 0;
-    }
+      }
     return metrics;
   };
-}());
+})();
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = {
   arrow: (function() {
     var getPoints;
@@ -1683,7 +1792,7 @@ module.exports = {
         length = length || width;
         points = getPoints(x, y, angle, width, length);
         return "<polygon fill='" + color + "' stroke='none' points='" + (points.map(function(p) {
-          return "" + p.x + "," + p.y;
+          return p.x + "," + p.y;
         })) + "' />";
       }
     };
@@ -1691,8 +1800,8 @@ module.exports = {
 };
 
 
-},{}],8:[function(_dereq_,module,exports){
-var localize, strings, _;
+},{}],9:[function(require,module,exports){
+var _, localize, strings;
 
 strings = {};
 
@@ -1712,22 +1821,22 @@ module.exports = {
 };
 
 
-},{}],9:[function(_dereq_,module,exports){
-var Point, math, normals, unit, util, _slope;
+},{}],10:[function(require,module,exports){
+var Point, _slope, math, normals, unit, util;
 
-Point = _dereq_('./shapes').Point;
+Point = require('./shapes').Point;
 
-util = _dereq_('./util');
+util = require('./util');
 
 math = {};
 
 math.toPoly = function(line) {
-  var index, n, point, polyLeft, polyRight, _i, _len;
+  var i, index, len, n, point, polyLeft, polyRight;
   polyLeft = [];
   polyRight = [];
   index = 0;
-  for (_i = 0, _len = line.length; _i < _len; _i++) {
-    point = line[_i];
+  for (i = 0, len = line.length; i < len; i++) {
+    point = line[i];
     n = normals(point, _slope(line, index));
     polyLeft = polyLeft.concat([n[0]]);
     polyRight = [n[1]].concat(polyRight);
@@ -1801,12 +1910,12 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
 module.exports = math;
 
 
-},{"./shapes":12,"./util":14}],10:[function(_dereq_,module,exports){
+},{"./shapes":13,"./util":15}],11:[function(require,module,exports){
 var INFINITE, JSONToShape, renderWatermark, util;
 
-util = _dereq_('./util');
+util = require('./util');
 
-JSONToShape = _dereq_('./shapes').JSONToShape;
+JSONToShape = require('./shapes').JSONToShape;
 
 INFINITE = 'infinite';
 
@@ -1822,7 +1931,7 @@ renderWatermark = function(ctx, image, scale) {
 };
 
 module.exports = function(snapshot, opts) {
-  var allShapes, backgroundShapes, colors, height, imageSize, s, shapes, watermarkCanvas, watermarkCtx, width;
+  var allShapes, backgroundShapes, colors, imageSize, s, shapes, watermarkCanvas, watermarkCtx;
   if (opts == null) {
     opts = {};
   }
@@ -1830,39 +1939,28 @@ module.exports = function(snapshot, opts) {
     opts.scale = 1;
   }
   shapes = (function() {
-    var _i, _len, _ref, _results;
-    _ref = snapshot.shapes;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      s = _ref[_i];
-      _results.push(JSONToShape(s));
+    var i, len, ref, results;
+    ref = snapshot.shapes;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      s = ref[i];
+      results.push(JSONToShape(s));
     }
-    return _results;
+    return results;
   })();
   backgroundShapes = [];
   if (snapshot.backgroundShapes) {
     backgroundShapes = (function() {
-      var _i, _len, _ref, _results;
-      _ref = snapshot.backgroundShapes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        s = _ref[_i];
-        _results.push(JSONToShape(s));
+      var i, len, ref, results;
+      ref = snapshot.backgroundShapes;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        s = ref[i];
+        results.push(JSONToShape(s));
       }
-      return _results;
+      return results;
     })();
   }
-  imageSize = snapshot.imageSize || {
-    width: INFINITE,
-    height: INFINITE
-  };
-  width = imageSize.width, height = imageSize.height;
-  colors = snapshot.colors || {
-    background: 'transparent'
-  };
-  allShapes = shapes.concat(backgroundShapes);
-  watermarkCanvas = document.createElement('canvas');
-  watermarkCtx = watermarkCanvas.getContext('2d');
   if (opts.margin == null) {
     opts.margin = {
       top: 0,
@@ -1871,21 +1969,32 @@ module.exports = function(snapshot, opts) {
       left: 0
     };
   }
-  if (!opts.rect) {
-    opts.rect = util.getBoundingRect((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = allShapes.length; _i < _len; _i++) {
-        s = allShapes[_i];
-        _results.push(s.getBoundingRect(watermarkCtx));
+  imageSize = snapshot.imageSize || {
+    width: INFINITE,
+    height: INFINITE
+  };
+  colors = snapshot.colors || {
+    background: 'transparent'
+  };
+  allShapes = shapes.concat(backgroundShapes);
+  watermarkCanvas = document.createElement('canvas');
+  watermarkCtx = watermarkCanvas.getContext('2d');
+  if (opts.rect) {
+    opts.rect.x -= opts.margin.left;
+    opts.rect.y -= opts.margin.top;
+    opts.rect.width += opts.margin.left + opts.margin.right;
+    opts.rect.height += opts.margin.top + opts.margin.bottom;
+  } else {
+    opts.rect = util.getDefaultImageRect((function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = allShapes.length; i < len; i++) {
+        s = allShapes[i];
+        results.push(s.getBoundingRect(watermarkCtx));
       }
-      return _results;
-    })(), width === INFINITE ? 0 : width, height === INFINITE ? 0 : height);
+      return results;
+    })(), imageSize, opts.margin);
   }
-  opts.rect.x -= opts.margin.left;
-  opts.rect.y -= opts.margin.top;
-  opts.rect.width += opts.margin.left + opts.margin.right;
-  opts.rect.height += opts.margin.top + opts.margin.bottom;
   watermarkCanvas.width = opts.rect.width * opts.scale;
   watermarkCanvas.height = opts.rect.height * opts.scale;
   watermarkCtx.fillStyle = colors.background;
@@ -1900,54 +2009,43 @@ module.exports = function(snapshot, opts) {
 };
 
 
-},{"./shapes":12,"./util":14}],11:[function(_dereq_,module,exports){
+},{"./shapes":13,"./util":15}],12:[function(require,module,exports){
 var INFINITE, JSONToShape, util;
 
-util = _dereq_('./util');
+util = require('./util');
 
-JSONToShape = _dereq_('./shapes').JSONToShape;
+JSONToShape = require('./shapes').JSONToShape;
 
 INFINITE = 'infinite';
 
 module.exports = function(snapshot, opts) {
-  var allShapes, backgroundShapes, colors, ctx, dummyCanvas, height, imageSize, s, shapes, width;
+  var allShapes, backgroundShapes, colors, ctx, dummyCanvas, imageSize, s, shapes;
   if (opts == null) {
     opts = {};
   }
   shapes = (function() {
-    var _i, _len, _ref, _results;
-    _ref = snapshot.shapes;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      s = _ref[_i];
-      _results.push(JSONToShape(s));
+    var i, len, ref, results;
+    ref = snapshot.shapes;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      s = ref[i];
+      results.push(JSONToShape(s));
     }
-    return _results;
+    return results;
   })();
   backgroundShapes = [];
   if (snapshot.backgroundShapes) {
     backgroundShapes = (function() {
-      var _i, _len, _ref, _results;
-      _ref = snapshot.backgroundShapes;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        s = _ref[_i];
-        _results.push(JSONToShape(s));
+      var i, len, ref, results;
+      ref = snapshot.backgroundShapes;
+      results = [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        s = ref[i];
+        results.push(JSONToShape(s));
       }
-      return _results;
+      return results;
     })();
   }
-  imageSize = snapshot.imageSize || {
-    width: INFINITE,
-    height: INFINITE
-  };
-  width = imageSize.width, height = imageSize.height;
-  colors = snapshot.colors || {
-    background: 'transparent'
-  };
-  allShapes = shapes.concat(backgroundShapes);
-  dummyCanvas = document.createElement('canvas');
-  ctx = dummyCanvas.getContext('2d');
   if (opts.margin == null) {
     opts.margin = {
       top: 0,
@@ -1956,37 +2054,48 @@ module.exports = function(snapshot, opts) {
       left: 0
     };
   }
-  if (!opts.rect) {
-    opts.rect = util.getBoundingRect((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = allShapes.length; _i < _len; _i++) {
-        s = allShapes[_i];
-        _results.push(s.getBoundingRect(ctx));
+  imageSize = snapshot.imageSize || {
+    width: INFINITE,
+    height: INFINITE
+  };
+  colors = snapshot.colors || {
+    background: 'transparent'
+  };
+  allShapes = shapes.concat(backgroundShapes);
+  dummyCanvas = document.createElement('canvas');
+  ctx = dummyCanvas.getContext('2d');
+  if (opts.rect) {
+    opts.rect.x -= opts.margin.left;
+    opts.rect.y -= opts.margin.top;
+    opts.rect.width += opts.margin.left + opts.margin.right;
+    opts.rect.height += opts.margin.top + opts.margin.bottom;
+  } else {
+    opts.rect = util.getDefaultImageRect((function() {
+      var i, len, results;
+      results = [];
+      for (i = 0, len = allShapes.length; i < len; i++) {
+        s = allShapes[i];
+        results.push(s.getBoundingRect(ctx));
       }
-      return _results;
-    })(), width === INFINITE ? 0 : width, height === INFINITE ? 0 : height);
+      return results;
+    })(), imageSize, opts.margin);
   }
-  opts.rect.x -= opts.margin.left;
-  opts.rect.y -= opts.margin.top;
-  opts.rect.width += opts.margin.left + opts.margin.right;
-  opts.rect.height += opts.margin.top + opts.margin.bottom;
   return LC.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
 };
 
 
-},{"./shapes":12,"./util":14}],12:[function(_dereq_,module,exports){
-var JSONToShape, LinePath, TextRenderer, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _ref, _ref1, _refine;
+},{"./shapes":13,"./util":15}],13:[function(require,module,exports){
+var JSONToShape, LinePath, TextRenderer, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _refine, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, ref, ref1, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util;
 
-util = _dereq_('./util');
+util = require('./util');
 
-TextRenderer = _dereq_('./TextRenderer');
+TextRenderer = require('./TextRenderer');
 
-lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
+lineEndCapShapes = require('./lineEndCapShapes');
 
-_ref = _dereq_('./canvasRenderer'), defineCanvasRenderer = _ref.defineCanvasRenderer, renderShapeToContext = _ref.renderShapeToContext;
+ref = require('./canvasRenderer'), defineCanvasRenderer = ref.defineCanvasRenderer, renderShapeToContext = ref.renderShapeToContext;
 
-_ref1 = _dereq_('./svgRenderer'), defineSVGRenderer = _ref1.defineSVGRenderer, renderShapeToSVG = _ref1.renderShapeToSVG;
+ref1 = require('./svgRenderer'), defineSVGRenderer = ref1.defineSVGRenderer, renderShapeToSVG = ref1.renderShapeToSVG;
 
 shapes = {};
 
@@ -2054,9 +2163,9 @@ createShape = function(name, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
   return s;
 };
 
-JSONToShape = function(_arg) {
+JSONToShape = function(arg) {
   var className, data, id, shape;
-  className = _arg.className, data = _arg.data, id = _arg.id;
+  className = arg.className, data = arg.data, id = arg.id;
   if (className in shapes) {
     shape = shapes[className].fromJSON(data);
     if (shape) {
@@ -2090,12 +2199,12 @@ bspline = function(points, order) {
 };
 
 _refine = function(points) {
-  var index, point, refined, _i, _len;
+  var index, len, point, q, refined;
   points = [points[0]].concat(points).concat(util.last(points));
   refined = [];
   index = 0;
-  for (_i = 0, _len = points.length; _i < _len; _i++) {
-    point = points[_i];
+  for (q = 0, len = points.length; q < len; q++) {
+    point = points[q];
     refined[index * 2] = point;
     if (points[index + 1]) {
       refined[index * 2 + 1] = _mid(point, points[index + 1]);
@@ -2106,11 +2215,11 @@ _refine = function(points) {
 };
 
 _dual = function(points) {
-  var dualed, index, point, _i, _len;
+  var dualed, index, len, point, q;
   dualed = [];
   index = 0;
-  for (_i = 0, _len = points.length; _i < _len; _i++) {
-    point = points[_i];
+  for (q = 0, len = points.length; q < len; q++) {
+    point = points[q];
     if (points[index + 1]) {
       dualed[index] = _mid(point, points[index + 1]);
     }
@@ -2142,9 +2251,8 @@ defineShape('Image', {
     return {
       x: this.x,
       y: this.y,
-      width: this.image.width,
-      height: this.image.height,
-      scale: this.scale
+      width: this.image.width * this.scale,
+      height: this.image.height * this.scale
     };
   },
   toJSON: function() {
@@ -2157,9 +2265,9 @@ defineShape('Image', {
     };
   },
   fromJSON: function(data) {
-    var img, _ref2;
+    var img, ref2;
     img = null;
-    if ((_ref2 = data.imageObject) != null ? _ref2.width : void 0) {
+    if ((ref2 = data.imageObject) != null ? ref2.width : void 0) {
       img = data.imageObject;
     } else {
       img = new Image();
@@ -2171,6 +2279,20 @@ defineShape('Image', {
       image: img,
       scale: data.scale
     });
+  },
+  move: function(moveInfo) {
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft: function(upperLeft) {
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
 });
 
@@ -2208,6 +2330,20 @@ defineShape('Rectangle', {
   },
   fromJSON: function(data) {
     return createShape('Rectangle', data);
+  },
+  move: function(moveInfo) {
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft: function(upperLeft) {
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
 });
 
@@ -2245,6 +2381,20 @@ defineShape('Ellipse', {
   },
   fromJSON: function(data) {
     return createShape('Ellipse', data);
+  },
+  move: function(moveInfo) {
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft: function(upperLeft) {
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
 });
 
@@ -2286,18 +2436,40 @@ defineShape('Line', {
   },
   fromJSON: function(data) {
     return createShape('Line', data);
+  },
+  move: function(moveInfo) {
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    this.x1 = this.x1 - moveInfo.xDiff;
+    this.y1 = this.y1 - moveInfo.yDiff;
+    this.x2 = this.x2 - moveInfo.xDiff;
+    return this.y2 = this.y2 - moveInfo.yDiff;
+  },
+  setUpperLeft: function(upperLeft) {
+    var br, xDiff, yDiff;
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    br = this.getBoundingRect();
+    xDiff = br.x - upperLeft.x;
+    yDiff = br.y - upperLeft.y;
+    return this.move({
+      xDiff: xDiff,
+      yDiff: yDiff
+    });
   }
 });
 
 _doAllPointsShareStyle = function(points) {
-  var color, point, size, _i, _len;
+  var color, len, point, q, size;
   if (!points.length) {
     return false;
   }
   size = points[0].size;
   color = points[0].color;
-  for (_i = 0, _len = points.length; _i < _len; _i++) {
-    point = points[_i];
+  for (q = 0, len = points.length; q < len; q++) {
+    point = points[q];
     if (!(point.size === size && point.color === color)) {
       console.log(size, color, point.size, point.color);
     }
@@ -2313,23 +2485,23 @@ _createLinePathFromData = function(shapeName, data) {
   points = null;
   if (data.points) {
     points = (function() {
-      var _i, _len, _ref2, _results;
-      _ref2 = data.points;
-      _results = [];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        pointData = _ref2[_i];
-        _results.push(JSONToShape(pointData));
+      var len, q, ref2, results;
+      ref2 = data.points;
+      results = [];
+      for (q = 0, len = ref2.length; q < len; q++) {
+        pointData = ref2[q];
+        results.push(JSONToShape(pointData));
       }
-      return _results;
+      return results;
     })();
   } else if (data.pointCoordinatePairs) {
     points = (function() {
-      var _i, _len, _ref2, _ref3, _results;
-      _ref2 = data.pointCoordinatePairs;
-      _results = [];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        _ref3 = _ref2[_i], x = _ref3[0], y = _ref3[1];
-        _results.push(JSONToShape({
+      var len, q, ref2, ref3, results;
+      ref2 = data.pointCoordinatePairs;
+      results = [];
+      for (q = 0, len = ref2.length; q < len; q++) {
+        ref3 = ref2[q], x = ref3[0], y = ref3[1];
+        results.push(JSONToShape({
           className: 'Point',
           data: {
             x: x,
@@ -2340,18 +2512,18 @@ _createLinePathFromData = function(shapeName, data) {
           }
         }));
       }
-      return _results;
+      return results;
     })();
   }
   smoothedPoints = null;
   if (data.smoothedPointCoordinatePairs) {
     smoothedPoints = (function() {
-      var _i, _len, _ref2, _ref3, _results;
-      _ref2 = data.smoothedPointCoordinatePairs;
-      _results = [];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        _ref3 = _ref2[_i], x = _ref3[0], y = _ref3[1];
-        _results.push(JSONToShape({
+      var len, q, ref2, ref3, results;
+      ref2 = data.smoothedPointCoordinatePairs;
+      results = [];
+      for (q = 0, len = ref2.length; q < len; q++) {
+        ref3 = ref2[q], x = ref3[0], y = ref3[1];
+        results.push(JSONToShape({
           className: 'Point',
           data: {
             x: x,
@@ -2362,7 +2534,7 @@ _createLinePathFromData = function(shapeName, data) {
           }
         }));
       }
-      return _results;
+      return results;
     })();
   }
   if (!points[0]) {
@@ -2379,7 +2551,7 @@ _createLinePathFromData = function(shapeName, data) {
 
 linePathFuncs = {
   constructor: function(args) {
-    var point, points, _i, _len, _results;
+    var len, point, points, q, results;
     if (args == null) {
       args = {};
     }
@@ -2394,12 +2566,12 @@ linePathFuncs = {
       return this.smoothedPoints = args.smoothedPoints;
     } else {
       this.points = [];
-      _results = [];
-      for (_i = 0, _len = points.length; _i < _len; _i++) {
-        point = points[_i];
-        _results.push(this.addPoint(point));
+      results = [];
+      for (q = 0, len = points.length; q < len; q++) {
+        point = points[q];
+        results.push(this.addPoint(point));
       }
-      return _results;
+      return results;
     }
   },
   getBoundingRect: function() {
@@ -2420,24 +2592,24 @@ linePathFuncs = {
         tailSize: this.tailSize,
         smooth: this.smooth,
         pointCoordinatePairs: (function() {
-          var _i, _len, _ref2, _results;
-          _ref2 = this.points;
-          _results = [];
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            point = _ref2[_i];
-            _results.push([point.x, point.y]);
+          var len, q, ref2, results;
+          ref2 = this.points;
+          results = [];
+          for (q = 0, len = ref2.length; q < len; q++) {
+            point = ref2[q];
+            results.push([point.x, point.y]);
           }
-          return _results;
+          return results;
         }).call(this),
         smoothedPointCoordinatePairs: (function() {
-          var _i, _len, _ref2, _results;
-          _ref2 = this.smoothedPoints;
-          _results = [];
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            point = _ref2[_i];
-            _results.push([point.x, point.y]);
+          var len, q, ref2, results;
+          ref2 = this.smoothedPoints;
+          results = [];
+          for (q = 0, len = ref2.length; q < len; q++) {
+            point = ref2[q];
+            results.push([point.x, point.y]);
           }
-          return _results;
+          return results;
         }).call(this),
         pointSize: this.points[0].size,
         pointColor: this.points[0].color
@@ -2448,14 +2620,14 @@ linePathFuncs = {
         tailSize: this.tailSize,
         smooth: this.smooth,
         points: (function() {
-          var _i, _len, _ref2, _results;
-          _ref2 = this.points;
-          _results = [];
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            p = _ref2[_i];
-            _results.push(shapeToJSON(p));
+          var len, q, ref2, results;
+          ref2 = this.points;
+          results = [];
+          for (q = 0, len = ref2.length; q < len; q++) {
+            p = ref2[q];
+            results.push(shapeToJSON(p));
           }
-          return _results;
+          return results;
         }).call(this)
       };
     }
@@ -2475,6 +2647,35 @@ linePathFuncs = {
       this.tail = util.last(bspline(util.last(this.points, this.sampleSize), this.order), this.segmentSize * this.tailSize);
       return this.smoothedPoints = this.smoothedPoints.slice(0, this.smoothedPoints.length - this.segmentSize * (this.tailSize - 1)).concat(this.tail);
     }
+  },
+  move: function(moveInfo) {
+    var len, pt, pts, q;
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    if (!this.smooth) {
+      pts = this.points;
+    } else {
+      pts = this.smoothedPoints;
+    }
+    for (q = 0, len = pts.length; q < len; q++) {
+      pt = pts[q];
+      pt.move(moveInfo);
+    }
+    return this.points = this.smoothedPoints;
+  },
+  setUpperLeft: function(upperLeft) {
+    var br, xDiff, yDiff;
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    br = this.getBoundingRect();
+    xDiff = br.x - upperLeft.x;
+    yDiff = br.y - upperLeft.y;
+    return this.move({
+      xDiff: xDiff,
+      yDiff: yDiff
+    });
   }
 };
 
@@ -2518,12 +2719,26 @@ defineShape('Point', {
   },
   fromJSON: function(data) {
     return createShape('Point', data);
+  },
+  move: function(moveInfo) {
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft: function(upperLeft) {
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
 });
 
 defineShape('Polygon', {
   constructor: function(args) {
-    var point, _i, _len, _ref2, _results;
+    var len, point, q, ref2, results;
     if (args == null) {
       args = {};
     }
@@ -2536,14 +2751,14 @@ defineShape('Polygon', {
       args.isClosed = true;
     }
     this.isClosed = args.isClosed;
-    _ref2 = this.points;
-    _results = [];
-    for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-      point = _ref2[_i];
+    ref2 = this.points;
+    results = [];
+    for (q = 0, len = ref2.length; q < len; q++) {
+      point = ref2[q];
       point.color = this.strokeColor;
-      _results.push(point.size = this.strokeWidth);
+      results.push(point.size = this.strokeWidth);
     }
-    return _results;
+    return results;
   },
   addPoint: function(x, y) {
     return this.points.push(LC.createShape('Point', {
@@ -2569,9 +2784,9 @@ defineShape('Polygon', {
     };
   },
   fromJSON: function(data) {
-    data.points = data.pointCoordinatePairs.map(function(_arg) {
+    data.points = data.pointCoordinatePairs.map(function(arg) {
       var x, y;
-      x = _arg[0], y = _arg[1];
+      x = arg[0], y = arg[1];
       return createShape('Point', {
         x: x,
         y: y,
@@ -2580,6 +2795,32 @@ defineShape('Polygon', {
       });
     });
     return createShape('Polygon', data);
+  },
+  move: function(moveInfo) {
+    var len, pt, q, ref2, results;
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    ref2 = this.points;
+    results = [];
+    for (q = 0, len = ref2.length; q < len; q++) {
+      pt = ref2[q];
+      results.push(pt.move(moveInfo));
+    }
+    return results;
+  },
+  setUpperLeft: function(upperLeft) {
+    var br, xDiff, yDiff;
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    br = this.getBoundingRect();
+    xDiff = br.x - upperLeft.x;
+    yDiff = br.y - upperLeft.y;
+    return this.move({
+      xDiff: xDiff,
+      yDiff: yDiff
+    });
   }
 });
 
@@ -2671,6 +2912,20 @@ defineShape('Text', {
   },
   fromJSON: function(data) {
     return createShape('Text', data);
+  },
+  move: function(moveInfo) {
+    if (moveInfo == null) {
+      moveInfo = {};
+    }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft: function(upperLeft) {
+    if (upperLeft == null) {
+      upperLeft = {};
+    }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
 });
 
@@ -2680,7 +2935,11 @@ defineShape('SelectionBox', {
       args = {};
     }
     this.shape = args.shape;
-    this.handleSize = 10;
+    if (args.handleSize != null) {
+      this.handleSize = args.handleSize;
+    } else {
+      this.handleSize = 10;
+    }
     this.margin = 4;
     this.backgroundColor = args.backgroundColor || null;
     return this._br = this.shape.getBoundingRect(args.ctx);
@@ -2691,9 +2950,9 @@ defineShape('SelectionBox', {
       backgroundColor: this.backgroundColor
     };
   },
-  fromJSON: function(_arg) {
+  fromJSON: function(arg) {
     var backgroundColor, handleSize, margin, shape;
-    shape = _arg.shape, handleSize = _arg.handleSize, margin = _arg.margin, backgroundColor = _arg.backgroundColor;
+    shape = arg.shape, handleSize = arg.handleSize, margin = arg.margin, backgroundColor = arg.backgroundColor;
     return createShape('SelectionBox', {
       shape: JSONToShape(shape),
       backgroundColor: backgroundColor
@@ -2749,10 +3008,10 @@ module.exports = {
 };
 
 
-},{"./TextRenderer":2,"./canvasRenderer":5,"./lineEndCapShapes.coffee":7,"./svgRenderer":13,"./util":14}],13:[function(_dereq_,module,exports){
+},{"./TextRenderer":2,"./canvasRenderer":5,"./lineEndCapShapes":8,"./svgRenderer":14,"./util":15}],14:[function(require,module,exports){
 var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
 
-lineEndCapShapes = _dereq_('./lineEndCapShapes.coffee');
+lineEndCapShapes = require('./lineEndCapShapes');
 
 renderers = {};
 
@@ -2839,7 +3098,7 @@ defineSVGRenderer('LinePath', function(shape) {
   return "<polyline fill='none' points='" + (shape.smoothedPoints.map(function(p) {
     var offset;
     offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
-    return "" + (p.x + offset) + "," + (p.y + offset);
+    return (p.x + offset) + "," + (p.y + offset);
   }).join(' ')) + "' stroke='" + shape.points[0].color + "' stroke-linecap='round' stroke-width='" + shape.points[0].size + "' />";
 });
 
@@ -2852,17 +3111,17 @@ defineSVGRenderer('Polygon', function(shape) {
     return "<polygon fill='" + shape.fillColor + "' points='" + (shape.points.map(function(p) {
       var offset;
       offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
-      return "" + (p.x + offset) + "," + (p.y + offset);
+      return (p.x + offset) + "," + (p.y + offset);
     }).join(' ')) + "' stroke='" + shape.strokeColor + "' stroke-width='" + shape.strokeWidth + "' />";
   } else {
     return "<polyline fill='" + shape.fillColor + "' points='" + (shape.points.map(function(p) {
       var offset;
       offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
-      return "" + (p.x + offset) + "," + (p.y + offset);
+      return (p.x + offset) + "," + (p.y + offset);
     }).join(' ')) + "' stroke='none' /> <polyline fill='none' points='" + (shape.points.map(function(p) {
       var offset;
       offset = p.strokeWidth % 2 === 0 ? 0.0 : 0.5;
-      return "" + (p.x + offset) + "," + (p.y + offset);
+      return (p.x + offset) + "," + (p.y + offset);
     }).join(' ')) + "' stroke='" + shape.strokeColor + "' stroke-width='" + shape.strokeWidth + "' />";
   }
 });
@@ -2890,15 +3149,15 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes.coffee":7}],14:[function(_dereq_,module,exports){
+},{"./lineEndCapShapes":8}],15:[function(require,module,exports){
 var renderShapeToContext, renderShapeToSVG, slice, util,
-  __slice = [].slice;
+  slice1 = [].slice;
 
 slice = Array.prototype.slice;
 
-renderShapeToContext = _dereq_('./canvasRenderer').renderShapeToContext;
+renderShapeToContext = require('./canvasRenderer').renderShapeToContext;
 
-renderShapeToSVG = _dereq_('./svgRenderer').renderShapeToSVG;
+renderShapeToSVG = require('./svgRenderer').renderShapeToSVG;
 
 util = {
   addImageOnload: function(img, fn) {
@@ -2939,11 +3198,11 @@ util = {
     }
     resize = (function(_this) {
       return function() {
-        var el, _i, _len;
-        for (_i = 0, _len = elementsToResize.length; _i < _len; _i++) {
-          el = elementsToResize[_i];
-          el.style.width = "" + elementToMatch.offsetWidth + "px";
-          el.style.height = "" + elementToMatch.offsetHeight + "px";
+        var el, i, len;
+        for (i = 0, len = elementsToResize.length; i < len; i++) {
+          el = elementsToResize[i];
+          el.style.width = elementToMatch.offsetWidth + "px";
+          el.style.height = elementToMatch.offsetHeight + "px";
           if (el.width != null) {
             el.setAttribute('width', el.offsetWidth * scale);
             el.setAttribute('height', el.offsetHeight * scale);
@@ -2958,25 +3217,25 @@ util = {
     return resize();
   },
   combineCanvases: function() {
-    var c, canvas, canvases, ctx, _i, _j, _len, _len1;
-    canvases = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    var c, canvas, canvases, ctx, i, j, len, len1;
+    canvases = 1 <= arguments.length ? slice1.call(arguments, 0) : [];
     c = document.createElement('canvas');
     c.width = canvases[0].width;
     c.height = canvases[0].height;
-    for (_i = 0, _len = canvases.length; _i < _len; _i++) {
-      canvas = canvases[_i];
+    for (i = 0, len = canvases.length; i < len; i++) {
+      canvas = canvases[i];
       c.width = Math.max(canvas.width, c.width);
       c.height = Math.max(canvas.height, c.height);
     }
     ctx = c.getContext('2d');
-    for (_j = 0, _len1 = canvases.length; _j < _len1; _j++) {
-      canvas = canvases[_j];
+    for (j = 0, len1 = canvases.length; j < len1; j++) {
+      canvas = canvases[j];
       ctx.drawImage(canvas, 0, 0);
     }
     return c;
   },
   renderShapes: function(shapes, bounds, scale, canvas) {
-    var ctx, shape, _i, _len;
+    var ctx, i, len, shape;
     if (scale == null) {
       scale = 1;
     }
@@ -2989,19 +3248,19 @@ util = {
     ctx = canvas.getContext('2d');
     ctx.translate(-bounds.x * scale, -bounds.y * scale);
     ctx.scale(scale, scale);
-    for (_i = 0, _len = shapes.length; _i < _len; _i++) {
-      shape = shapes[_i];
+    for (i = 0, len = shapes.length; i < len; i++) {
+      shape = shapes[i];
       renderShapeToContext(ctx, shape);
     }
     return canvas;
   },
-  renderShapesToSVG: function(shapes, _arg, backgroundColor) {
+  renderShapesToSVG: function(shapes, arg, backgroundColor) {
     var height, width, x, y;
-    x = _arg.x, y = _arg.y, width = _arg.width, height = _arg.height;
+    x = arg.x, y = arg.y, width = arg.width, height = arg.height;
     return ("<svg xmlns='http://www.w3.org/2000/svg' width='" + width + "' height='" + height + "' viewBox='0 0 " + width + " " + height + "'> <rect width='" + width + "' height='" + height + "' x='0' y='0' fill='" + backgroundColor + "' /> <g transform='translate(" + (-x) + ", " + (-y) + ")'> " + (shapes.map(renderShapeToSVG).join('')) + " </g> </svg>").replace(/(\r\n|\n|\r)/gm, "");
   },
   getBoundingRect: function(rects, width, height) {
-    var maxX, maxY, minX, minY, rect, _i, _len;
+    var i, len, maxX, maxY, minX, minY, rect;
     if (!rects.length) {
       return {
         x: 0,
@@ -3014,8 +3273,8 @@ util = {
     minY = rects[0].y;
     maxX = rects[0].x + rects[0].width;
     maxY = rects[0].y + rects[0].height;
-    for (_i = 0, _len = rects.length; _i < _len; _i++) {
-      rect = rects[_i];
+    for (i = 0, len = rects.length; i < len; i++) {
+      rect = rects[i];
       minX = Math.floor(Math.min(rect.x, minX));
       minY = Math.floor(Math.min(rect.y, minY));
       maxX = Math.ceil(Math.max(maxX, rect.x + rect.width));
@@ -3031,6 +3290,30 @@ util = {
       width: maxX - minX,
       height: maxY - minY
     };
+  },
+  getDefaultImageRect: function(shapeBoundingRects, explicitSize, margin) {
+    var height, rect, width;
+    if (explicitSize == null) {
+      explicitSize = {
+        width: 0,
+        height: 0
+      };
+    }
+    if (margin == null) {
+      margin = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0
+      };
+    }
+    width = explicitSize.width, height = explicitSize.height;
+    rect = util.getBoundingRect(shapeBoundingRects, width === 'infinite' ? 0 : width, height === 'infinite' ? 0 : height);
+    rect.x -= margin.left;
+    rect.y -= margin.top;
+    rect.width += margin.left + margin.right;
+    rect.height += margin.top + margin.bottom;
+    return rect;
   },
   getBackingScale: function(context) {
     if (window.devicePixelRatio == null) {
@@ -3083,181 +3366,146 @@ util = {
 module.exports = util;
 
 
-},{"./canvasRenderer":5,"./svgRenderer":13}],15:[function(_dereq_,module,exports){
+},{"./canvasRenderer":5,"./svgRenderer":14}],16:[function(require,module,exports){
+'use strict';
+
 (function () {
-  function CustomEvent ( event, params ) {
+  function CustomEvent(event, params) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
-    var evt = document.createEvent( 'CustomEvent' );
-    evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+    var evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
     return evt;
-   };
+  };
 
   CustomEvent.prototype = window.CustomEvent.prototype;
 
   window.CustomEvent = CustomEvent;
 })();
-},{}],16:[function(_dereq_,module,exports){
+
+},{}],17:[function(require,module,exports){
+"use strict";
+
 var hasWarned = false;
 if (!CanvasRenderingContext2D.prototype.setLineDash) {
-  CanvasRenderingContext2D.prototype.setLineDash = function() {
+  CanvasRenderingContext2D.prototype.setLineDash = function () {
     // no-op
     if (!hasWarned) {
       console.warn("context2D.setLineDash is a no-op in this browser.");
       hasWarned = true;
     }
-  }
+  };
 }
 module.exports = null;
-},{}],17:[function(_dereq_,module,exports){
-var LiterallyCanvas, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultTools, init, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
 
-_dereq_('./ie_customevent');
+},{}],18:[function(require,module,exports){
+var LiterallyCanvasModel, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultOptions, defaultTools, init, initWithoutGUI, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
 
-_dereq_('./ie_setLineDash');
+require('./ie_customevent');
 
-LiterallyCanvas = _dereq_('./core/LiterallyCanvas');
+require('./ie_setLineDash');
 
-canvasRenderer = _dereq_('./core/canvasRenderer');
+LiterallyCanvasModel = require('./core/LiterallyCanvas');
 
-svgRenderer = _dereq_('./core/svgRenderer');
+defaultOptions = require('./core/defaultOptions');
 
-shapes = _dereq_('./core/shapes');
+canvasRenderer = require('./core/canvasRenderer');
 
-util = _dereq_('./core/util');
+svgRenderer = require('./core/svgRenderer');
 
-renderSnapshotToImage = _dereq_('./core/renderSnapshotToImage');
+shapes = require('./core/shapes');
 
-renderSnapshotToSVG = _dereq_('./core/renderSnapshotToSVG');
+util = require('./core/util');
 
-localize = _dereq_('./core/localization').localize;
+renderSnapshotToImage = require('./core/renderSnapshotToImage');
+
+renderSnapshotToSVG = require('./core/renderSnapshotToSVG');
+
+localize = require('./core/localization').localize;
 
 conversion = {
   snapshotToShapes: function(snapshot) {
-    var shape, _i, _len, _ref, _results;
-    _ref = snapshot.shapes;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      shape = _ref[_i];
-      _results.push(shapes.JSONToShape(shape));
+    var i, len, ref, results, shape;
+    ref = snapshot.shapes;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      shape = ref[i];
+      results.push(shapes.JSONToShape(shape));
     }
-    return _results;
+    return results;
   },
   snapshotJSONToShapes: function(json) {
     return conversion.snapshotToShapes(JSON.parse(json));
   }
 };
 
-baseTools = _dereq_('./tools/base');
+baseTools = require('./tools/base');
 
 tools = {
-  Pencil: _dereq_('./tools/Pencil'),
-  Eraser: _dereq_('./tools/Eraser'),
-  Line: _dereq_('./tools/Line'),
-  Rectangle: _dereq_('./tools/Rectangle'),
-  Ellipse: _dereq_('./tools/Ellipse'),
-  Text: _dereq_('./tools/Text'),
-  Polygon: _dereq_('./tools/Polygon'),
-  Pan: _dereq_('./tools/Pan'),
-  Eyedropper: _dereq_('./tools/Eyedropper'),
+  Pencil: require('./tools/Pencil'),
+  Eraser: require('./tools/Eraser'),
+  Line: require('./tools/Line'),
+  Rectangle: require('./tools/Rectangle'),
+  Ellipse: require('./tools/Ellipse'),
+  Text: require('./tools/Text'),
+  Polygon: require('./tools/Polygon'),
+  Pan: require('./tools/Pan'),
+  Eyedropper: require('./tools/Eyedropper'),
+  SelectShape: require('./tools/SelectShape'),
   Tool: baseTools.Tool,
   ToolWithStroke: baseTools.ToolWithStroke
 };
 
-defaultTools = [tools.Pencil, tools.Eraser, tools.Line, tools.Rectangle, tools.Ellipse, tools.Text, tools.Polygon, tools.Pan, tools.Eyedropper];
+defaultTools = defaultOptions.tools;
 
-defaultImageURLPrefix = 'lib/img';
+defaultImageURLPrefix = defaultOptions.imageURLPrefix;
 
 setDefaultImageURLPrefix = function(newDefault) {
-  return defaultImageURLPrefix = newDefault;
+  defaultImageURLPrefix = newDefault;
+  return defaultOptions.imageURLPrefix = newDefault;
 };
 
 init = function(el, opts) {
-  var child, drawingViewElement, lc, teardown, topOrBottomClassName, _i, _len, _ref;
+  var child, i, len, opt, ref;
   if (opts == null) {
     opts = {};
   }
-  if (opts.imageURLPrefix == null) {
-    opts.imageURLPrefix = defaultImageURLPrefix;
+  for (opt in defaultOptions) {
+    if (!(opt in opts)) {
+      opts[opt] = defaultOptions[opt];
+    }
   }
-  if (opts.primaryColor == null) {
-    opts.primaryColor = 'hsla(0, 0%, 0%, 1)';
-  }
-  if (opts.secondaryColor == null) {
-    opts.secondaryColor = 'hsla(0, 0%, 100%, 1)';
-  }
-  if (opts.backgroundColor == null) {
-    opts.backgroundColor = 'transparent';
-  }
-  if (opts.strokeWidths == null) {
-    opts.strokeWidths = [1, 2, 5, 10, 20, 30];
-  }
-  if (opts.defaultStrokeWidth == null) {
-    opts.defaultStrokeWidth = 5;
-  }
-  if (opts.toolbarPosition == null) {
-    opts.toolbarPosition = 'top';
-  }
-  if (opts.keyboardShortcuts == null) {
-    opts.keyboardShortcuts = true;
-  }
-  if (opts.imageSize == null) {
-    opts.imageSize = {
-      width: 'infinite',
-      height: 'infinite'
-    };
-  }
-  if (opts.backgroundShapes == null) {
-    opts.backgroundShapes = [];
-  }
-  if (opts.watermarkImage == null) {
-    opts.watermarkImage = null;
-  }
-  if (opts.watermarkScale == null) {
-    opts.watermarkScale = 1;
-  }
-  if (opts.zoomMin == null) {
-    opts.zoomMin = 0.2;
-  }
-  if (opts.zoomMax == null) {
-    opts.zoomMax = 4.0;
-  }
-  if (opts.zoomStep == null) {
-    opts.zoomStep = 0.2;
-  }
-  if (opts.snapshot == null) {
-    opts.snapshot = null;
-  }
-  if (!('tools' in opts)) {
-    opts.tools = defaultTools;
-  }
-
-  /* henceforth, all pre-existing DOM children shall be destroyed */
-  _ref = el.children;
-  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-    child = _ref[_i];
+  ref = el.children;
+  for (i = 0, len = ref.length; i < len; i++) {
+    child = ref[i];
     el.removeChild(child);
   }
+  return initWithoutGUI(el, opts);
+};
 
-  /* and now we rebuild the city */
+initWithoutGUI = function(el, opts) {
+  var drawingViewElement, lc, originalClassName;
+  originalClassName = el.className;
   if ([' ', ' '].join(el.className).indexOf(' literally ') === -1) {
     el.className = el.className + ' literally';
   }
-  topOrBottomClassName = 'toolbar-hidden';
-  el.className = el.className + ' ' + topOrBottomClassName;
+  el.className = el.className + ' toolbar-hidden';
   drawingViewElement = document.createElement('div');
   drawingViewElement.className = 'lc-drawing';
   el.appendChild(drawingViewElement);
-
-  /* and get to work */
-  lc = new LiterallyCanvas(drawingViewElement, opts);
+  lc = new LiterallyCanvasModel(drawingViewElement, opts);
+  lc.teardown = function() {
+    var child, i, len, ref;
+    lc._teardown();
+    ref = el.children;
+    for (i = 0, len = ref.length; i < len; i++) {
+      child = ref[i];
+      el.removeChild(child);
+    }
+    return el.className = originalClassName;
+  };
   if ('onInit' in opts) {
     opts.onInit(lc);
   }
-  teardown = function() {
-    lc._teardown();
-    return drawingViewElement.remove();
-  };
-  lc.teardown = teardown;
   return lc;
 };
 
@@ -3275,12 +3523,13 @@ registerJQueryPlugin = function(_$) {
   };
 };
 
-window.LC = {
-  init: init
-};
-
-if (window.$) {
-  registerJQueryPlugin(window.$);
+if (typeof window !== 'undefined') {
+  window.LC = {
+    init: init
+  };
+  if (window.$) {
+    registerJQueryPlugin(window.$);
+  }
 }
 
 module.exports = {
@@ -3309,17 +3558,17 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":1,"./core/canvasRenderer":5,"./core/localization":8,"./core/renderSnapshotToImage":10,"./core/renderSnapshotToSVG":11,"./core/shapes":12,"./core/svgRenderer":13,"./core/util":14,"./ie_customevent":15,"./ie_setLineDash":16,"./tools/Ellipse":18,"./tools/Eraser":19,"./tools/Eyedropper":20,"./tools/Line":21,"./tools/Pan":22,"./tools/Pencil":23,"./tools/Polygon":24,"./tools/Rectangle":25,"./tools/Text":26,"./tools/base":27}],18:[function(_dereq_,module,exports){
+},{"./core/LiterallyCanvas":1,"./core/canvasRenderer":5,"./core/defaultOptions":6,"./core/localization":9,"./core/renderSnapshotToImage":11,"./core/renderSnapshotToSVG":12,"./core/shapes":13,"./core/svgRenderer":14,"./core/util":15,"./ie_customevent":16,"./ie_setLineDash":17,"./tools/Ellipse":19,"./tools/Eraser":20,"./tools/Eyedropper":21,"./tools/Line":22,"./tools/Pan":23,"./tools/Pencil":24,"./tools/Polygon":25,"./tools/Rectangle":26,"./tools/SelectShape":27,"./tools/Text":28,"./tools/base":29}],19:[function(require,module,exports){
 var Ellipse, ToolWithStroke, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-ToolWithStroke = _dereq_('./base').ToolWithStroke;
+ToolWithStroke = require('./base').ToolWithStroke;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Ellipse = (function(_super) {
-  __extends(Ellipse, _super);
+module.exports = Ellipse = (function(superClass) {
+  extend(Ellipse, superClass);
 
   function Ellipse() {
     return Ellipse.__super__.constructor.apply(this, arguments);
@@ -3354,17 +3603,17 @@ module.exports = Ellipse = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":12,"./base":27}],19:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],20:[function(require,module,exports){
 var Eraser, Pencil, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-Pencil = _dereq_('./Pencil');
+Pencil = require('./Pencil');
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Eraser = (function(_super) {
-  __extends(Eraser, _super);
+module.exports = Eraser = (function(superClass) {
+  extend(Eraser, superClass);
 
   function Eraser() {
     return Eraser.__super__.constructor.apply(this, arguments);
@@ -3392,28 +3641,52 @@ module.exports = Eraser = (function(_super) {
 })(Pencil);
 
 
-},{"../core/shapes":12,"./Pencil":23}],20:[function(_dereq_,module,exports){
-var Eyedropper, Tool,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+},{"../core/shapes":13,"./Pencil":24}],21:[function(require,module,exports){
+var Eyedropper, Tool, getPixel,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-Tool = _dereq_('./base').Tool;
+Tool = require('./base').Tool;
 
-module.exports = Eyedropper = (function(_super) {
-  __extends(Eyedropper, _super);
-
-  function Eyedropper() {
-    return Eyedropper.__super__.constructor.apply(this, arguments);
+getPixel = function(ctx, arg) {
+  var pixel, x, y;
+  x = arg.x, y = arg.y;
+  pixel = ctx.getImageData(x, y, 1, 1).data;
+  if (pixel[3]) {
+    return "rgb(" + pixel[0] + ", " + pixel[1] + ", " + pixel[2] + ")";
+  } else {
+    return null;
   }
+};
+
+module.exports = Eyedropper = (function(superClass) {
+  extend(Eyedropper, superClass);
 
   Eyedropper.prototype.name = 'Eyedropper';
 
   Eyedropper.prototype.iconName = 'eyedropper';
 
+  Eyedropper.prototype.optionsStyle = 'stroke-or-fill';
+
+  function Eyedropper(lc) {
+    Eyedropper.__super__.constructor.call(this, lc);
+    this.strokeOrFill = 'stroke';
+  }
+
   Eyedropper.prototype.readColor = function(x, y, lc) {
-    var newColor;
-    newColor = lc.getPixel(x, y);
-    return lc.setColor('primary', newColor || lc.getColor('background'));
+    var canvas, color, newColor, offset;
+    offset = lc.getDefaultImageRect();
+    canvas = lc.getImage();
+    newColor = getPixel(canvas.getContext('2d'), {
+      x: x - offset.x,
+      y: y - offset.y
+    });
+    color = newColor || lc.getColor('background');
+    if (this.strokeOrFill === 'stroke') {
+      return lc.setColor('primary', newColor);
+    } else {
+      return lc.setColor('secondary', newColor);
+    }
   };
 
   Eyedropper.prototype.begin = function(x, y, lc) {
@@ -3429,17 +3702,17 @@ module.exports = Eyedropper = (function(_super) {
 })(Tool);
 
 
-},{"./base":27}],21:[function(_dereq_,module,exports){
+},{"./base":29}],22:[function(require,module,exports){
 var Line, ToolWithStroke, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-ToolWithStroke = _dereq_('./base').ToolWithStroke;
+ToolWithStroke = require('./base').ToolWithStroke;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Line = (function(_super) {
-  __extends(Line, _super);
+module.exports = Line = (function(superClass) {
+  extend(Line, superClass);
 
   function Line() {
     return Line.__super__.constructor.apply(this, arguments);
@@ -3486,17 +3759,17 @@ module.exports = Line = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":12,"./base":27}],22:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],23:[function(require,module,exports){
 var Pan, Tool, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-Tool = _dereq_('./base').Tool;
+Tool = require('./base').Tool;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Pan = (function(_super) {
-  __extends(Pan, _super);
+module.exports = Pan = (function(superClass) {
+  extend(Pan, superClass);
 
   function Pan() {
     return Pan.__super__.constructor.apply(this, arguments);
@@ -3513,19 +3786,19 @@ module.exports = Pan = (function(_super) {
     unsubscribeFuncs = [];
     this.unsubscribe = (function(_this) {
       return function() {
-        var func, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = unsubscribeFuncs.length; _i < _len; _i++) {
-          func = unsubscribeFuncs[_i];
-          _results.push(func());
+        var func, i, len, results;
+        results = [];
+        for (i = 0, len = unsubscribeFuncs.length; i < len; i++) {
+          func = unsubscribeFuncs[i];
+          results.push(func());
         }
-        return _results;
+        return results;
       };
     })(this);
     unsubscribeFuncs.push(lc.on('lc-pointerdown', (function(_this) {
-      return function(_arg) {
+      return function(arg) {
         var rawX, rawY;
-        rawX = _arg.rawX, rawY = _arg.rawY;
+        rawX = arg.rawX, rawY = arg.rawY;
         _this.oldPosition = lc.position;
         return _this.pointerStart = {
           x: rawX,
@@ -3534,9 +3807,9 @@ module.exports = Pan = (function(_super) {
       };
     })(this)));
     return unsubscribeFuncs.push(lc.on('lc-pointerdrag', (function(_this) {
-      return function(_arg) {
+      return function(arg) {
         var dp, rawX, rawY;
-        rawX = _arg.rawX, rawY = _arg.rawY;
+        rawX = arg.rawX, rawY = arg.rawY;
         dp = {
           x: (rawX - _this.pointerStart.x) * lc.backingScale,
           y: (rawY - _this.pointerStart.y) * lc.backingScale
@@ -3555,17 +3828,17 @@ module.exports = Pan = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":12,"./base":27}],23:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],24:[function(require,module,exports){
 var Pencil, ToolWithStroke, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-ToolWithStroke = _dereq_('./base').ToolWithStroke;
+ToolWithStroke = require('./base').ToolWithStroke;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Pencil = (function(_super) {
-  __extends(Pencil, _super);
+module.exports = Pencil = (function(superClass) {
+  extend(Pencil, superClass);
 
   function Pencil() {
     return Pencil.__super__.constructor.apply(this, arguments);
@@ -3617,17 +3890,17 @@ module.exports = Pencil = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":12,"./base":27}],24:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],25:[function(require,module,exports){
 var Polygon, ToolWithStroke, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-ToolWithStroke = _dereq_('./base').ToolWithStroke;
+ToolWithStroke = require('./base').ToolWithStroke;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Polygon = (function(_super) {
-  __extends(Polygon, _super);
+module.exports = Polygon = (function(superClass) {
+  extend(Polygon, superClass);
 
   function Polygon() {
     return Polygon.__super__.constructor.apply(this, arguments);
@@ -3645,13 +3918,13 @@ module.exports = Polygon = (function(_super) {
     polygonUnsubscribeFuncs = [];
     this.polygonUnsubscribe = (function(_this) {
       return function() {
-        var func, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = polygonUnsubscribeFuncs.length; _i < _len; _i++) {
-          func = polygonUnsubscribeFuncs[_i];
-          _results.push(func());
+        var func, i, len, results;
+        results = [];
+        for (i = 0, len = polygonUnsubscribeFuncs.length; i < len; i++) {
+          func = polygonUnsubscribeFuncs[i];
+          results.push(func());
         }
-        return _results;
+        return results;
       };
     })(this);
     this.points = null;
@@ -3676,9 +3949,9 @@ module.exports = Polygon = (function(_super) {
       };
     })(this);
     onMove = (function(_this) {
-      return function(_arg) {
+      return function(arg) {
         var x, y;
-        x = _arg.x, y = _arg.y;
+        x = arg.x, y = arg.y;
         if (_this.maybePoint) {
           _this.maybePoint.x = x;
           _this.maybePoint.y = y;
@@ -3688,9 +3961,9 @@ module.exports = Polygon = (function(_super) {
       };
     })(this);
     onDown = (function(_this) {
-      return function(_arg) {
+      return function(arg) {
         var x, y;
-        x = _arg.x, y = _arg.y;
+        x = arg.x, y = arg.y;
         _this.maybePoint = {
           x: x,
           y: y
@@ -3833,17 +4106,17 @@ module.exports = Polygon = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":12,"./base":27}],25:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],26:[function(require,module,exports){
 var Rectangle, ToolWithStroke, createShape,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-ToolWithStroke = _dereq_('./base').ToolWithStroke;
+ToolWithStroke = require('./base').ToolWithStroke;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
-module.exports = Rectangle = (function(_super) {
-  __extends(Rectangle, _super);
+module.exports = Rectangle = (function(superClass) {
+  extend(Rectangle, superClass);
 
   function Rectangle() {
     return Rectangle.__super__.constructor.apply(this, arguments);
@@ -3878,14 +4151,169 @@ module.exports = Rectangle = (function(_super) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":12,"./base":27}],26:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],27:[function(require,module,exports){
+var SelectShape, Tool, createShape,
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+Tool = require('./base').Tool;
+
+createShape = require('../core/shapes').createShape;
+
+module.exports = SelectShape = (function(superClass) {
+  extend(SelectShape, superClass);
+
+  SelectShape.prototype.name = 'SelectShape';
+
+  SelectShape.prototype.usesSimpleAPI = false;
+
+  function SelectShape(lc) {
+    this.selectCanvas = document.createElement('canvas');
+    this.selectCanvas.style['background-color'] = 'transparent';
+    this.selectCtx = this.selectCanvas.getContext('2d');
+  }
+
+  SelectShape.prototype.didBecomeActive = function(lc) {
+    var onDown, onDrag, onUp, selectShapeUnsubscribeFuncs;
+    selectShapeUnsubscribeFuncs = [];
+    this._selectShapeUnsubscribe = (function(_this) {
+      return function() {
+        var func, j, len, results;
+        results = [];
+        for (j = 0, len = selectShapeUnsubscribeFuncs.length; j < len; j++) {
+          func = selectShapeUnsubscribeFuncs[j];
+          results.push(func());
+        }
+        return results;
+      };
+    })(this);
+    onDown = (function(_this) {
+      return function(arg) {
+        var br, shapeIndex, x, y;
+        x = arg.x, y = arg.y;
+        _this.didDrag = false;
+        shapeIndex = _this._getPixel(x, y, lc, _this.selectCtx);
+        _this.selectedShape = lc.shapes[shapeIndex];
+        if (_this.selectedShape != null) {
+          lc.trigger('shapeSelected', {
+            selectedShape: _this.selectedShape
+          });
+          lc.setShapesInProgress([
+            _this.selectedShape, createShape('SelectionBox', {
+              shape: _this.selectedShape,
+              handleSize: 0
+            })
+          ]);
+          lc.repaintLayer('main');
+          br = _this.selectedShape.getBoundingRect();
+          return _this.dragOffset = {
+            x: x - br.x,
+            y: y - br.y
+          };
+        }
+      };
+    })(this);
+    onDrag = (function(_this) {
+      return function(arg) {
+        var x, y;
+        x = arg.x, y = arg.y;
+        if (_this.selectedShape != null) {
+          _this.didDrag = true;
+          _this.selectedShape.setUpperLeft({
+            x: x - _this.dragOffset.x,
+            y: y - _this.dragOffset.y
+          });
+          lc.setShapesInProgress([
+            _this.selectedShape, createShape('SelectionBox', {
+              shape: _this.selectedShape,
+              handleSize: 0
+            })
+          ]);
+          return lc.repaintLayer('main');
+        }
+      };
+    })(this);
+    onUp = (function(_this) {
+      return function(arg) {
+        var x, y;
+        x = arg.x, y = arg.y;
+        if (_this.didDrag) {
+          _this.didDrag = false;
+          lc.trigger('shapeMoved', {
+            shape: _this.selectedShape
+          });
+          lc.trigger('drawingChange', {});
+          lc.repaintLayer('main');
+          return _this._drawSelectCanvas(lc);
+        }
+      };
+    })(this);
+    selectShapeUnsubscribeFuncs.push(lc.on('lc-pointerdown', onDown));
+    selectShapeUnsubscribeFuncs.push(lc.on('lc-pointerdrag', onDrag));
+    selectShapeUnsubscribeFuncs.push(lc.on('lc-pointerup', onUp));
+    return this._drawSelectCanvas(lc);
+  };
+
+  SelectShape.prototype.willBecomeInactive = function(lc) {
+    this._selectShapeUnsubscribe();
+    return lc.setShapesInProgress([]);
+  };
+
+  SelectShape.prototype._drawSelectCanvas = function(lc) {
+    var shapes;
+    this.selectCanvas.width = lc.canvas.width;
+    this.selectCanvas.height = lc.canvas.height;
+    this.selectCtx.clearRect(0, 0, this.selectCanvas.width, this.selectCanvas.height);
+    shapes = lc.shapes.map((function(_this) {
+      return function(shape, index) {
+        return createShape('SelectionBox', {
+          shape: shape,
+          handleSize: 0,
+          backgroundColor: "#" + (_this._intToHex(index))
+        });
+      };
+    })(this));
+    return lc.draw(shapes, this.selectCtx);
+  };
+
+  SelectShape.prototype._intToHex = function(i) {
+    return ("000000" + (i.toString(16))).slice(-6);
+  };
+
+  SelectShape.prototype._getPixel = function(x, y, lc, ctx) {
+    var p, pixel;
+    p = lc.drawingCoordsToClientCoords(x, y);
+    pixel = ctx.getImageData(p.x, p.y, 1, 1).data;
+    if (pixel[3]) {
+      return parseInt(this._rgbToHex(pixel[0], pixel[1], pixel[2]), 16);
+    } else {
+      return null;
+    }
+  };
+
+  SelectShape.prototype._componentToHex = function(c) {
+    var hex;
+    hex = c.toString(16);
+    return ("0" + hex).slice(-2);
+  };
+
+  SelectShape.prototype._rgbToHex = function(r, g, b) {
+    return "" + (this._componentToHex(r)) + (this._componentToHex(g)) + (this._componentToHex(b));
+  };
+
+  return SelectShape;
+
+})(Tool);
+
+
+},{"../core/shapes":13,"./base":29}],28:[function(require,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
-Tool = _dereq_('./base').Tool;
+Tool = require('./base').Tool;
 
-createShape = _dereq_('../core/shapes').createShape;
+createShape = require('../core/shapes').createShape;
 
 getIsPointInBox = function(point, box) {
   if (point.x < box.x) {
@@ -3903,8 +4331,8 @@ getIsPointInBox = function(point, box) {
   return true;
 };
 
-module.exports = Text = (function(_super) {
-  __extends(Text, _super);
+module.exports = Text = (function(superClass) {
+  extend(Text, superClass);
 
   Text.prototype.name = 'Text';
 
@@ -3925,13 +4353,13 @@ module.exports = Text = (function(_super) {
     unsubscribeFuncs = [];
     this.unsubscribe = (function(_this) {
       return function() {
-        var func, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = unsubscribeFuncs.length; _i < _len; _i++) {
-          func = unsubscribeFuncs[_i];
-          _results.push(func());
+        var func, i, len, results;
+        results = [];
+        for (i = 0, len = unsubscribeFuncs.length; i < len; i++) {
+          func = unsubscribeFuncs[i];
+          results.push(func());
         }
-        return _results;
+        return results;
       };
     })(this);
     switchAway = (function(_this) {
@@ -4212,17 +4640,17 @@ module.exports = Text = (function(_super) {
     br = this.currentShape.getBoundingRect(lc.ctx, true);
     this.inputEl.style.font = this.currentShape.font;
     this.inputEl.style.color = this.currentShape.color;
-    this.inputEl.style.left = "" + (lc.position.x / lc.backingScale + br.x * lc.scale - 4) + "px";
-    this.inputEl.style.top = "" + (lc.position.y / lc.backingScale + br.y * lc.scale - 4) + "px";
+    this.inputEl.style.left = (lc.position.x / lc.backingScale + br.x * lc.scale - 4) + "px";
+    this.inputEl.style.top = (lc.position.y / lc.backingScale + br.y * lc.scale - 4) + "px";
     if (withMargin && !this.currentShape.forcedWidth) {
-      this.inputEl.style.width = "" + (br.width + 10 + this.currentShape.renderer.emDashWidth) + "px";
+      this.inputEl.style.width = (br.width + 10 + this.currentShape.renderer.emDashWidth) + "px";
     } else {
-      this.inputEl.style.width = "" + (br.width + 12) + "px";
+      this.inputEl.style.width = (br.width + 12) + "px";
     }
     if (withMargin) {
-      this.inputEl.style.height = "" + (br.height + 10 + this.currentShape.renderer.metrics.leading) + "px";
+      this.inputEl.style.height = (br.height + 10 + this.currentShape.renderer.metrics.leading) + "px";
     } else {
-      this.inputEl.style.height = "" + (br.height + 10) + "px";
+      this.inputEl.style.height = (br.height + 10) + "px";
     }
     transformString = "scale(" + lc.scale + ")";
     this.inputEl.style.transform = transformString;
@@ -4239,10 +4667,10 @@ module.exports = Text = (function(_super) {
 })(Tool);
 
 
-},{"../core/shapes":12,"./base":27}],27:[function(_dereq_,module,exports){
+},{"../core/shapes":13,"./base":29}],29:[function(require,module,exports){
 var Tool, ToolWithStroke, tools,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
 
 tools = {};
 
@@ -4271,8 +4699,8 @@ tools.Tool = Tool = (function() {
 
 })();
 
-tools.ToolWithStroke = ToolWithStroke = (function(_super) {
-  __extends(ToolWithStroke, _super);
+tools.ToolWithStroke = ToolWithStroke = (function(superClass) {
+  extend(ToolWithStroke, superClass);
 
   function ToolWithStroke(lc) {
     this.strokeWidth = lc.opts.defaultStrokeWidth;
@@ -4285,18 +4713,19 @@ tools.ToolWithStroke = ToolWithStroke = (function(_super) {
     unsubscribeFuncs = [];
     this.unsubscribe = (function(_this) {
       return function() {
-        var func, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = unsubscribeFuncs.length; _i < _len; _i++) {
-          func = unsubscribeFuncs[_i];
-          _results.push(func());
+        var func, i, len, results;
+        results = [];
+        for (i = 0, len = unsubscribeFuncs.length; i < len; i++) {
+          func = unsubscribeFuncs[i];
+          results.push(func());
         }
-        return _results;
+        return results;
       };
     })(this);
     return unsubscribeFuncs.push(lc.on('setStrokeWidth', (function(_this) {
       return function(strokeWidth) {
-        return _this.strokeWidth = strokeWidth;
+        _this.strokeWidth = strokeWidth;
+        return lc.trigger('toolDidUpdateOptions');
       };
     })(this)));
   };
@@ -4312,6 +4741,5 @@ tools.ToolWithStroke = ToolWithStroke = (function(_super) {
 module.exports = tools;
 
 
-},{}]},{},[17])
-(17)
+},{}]},{},[18])(18)
 });
