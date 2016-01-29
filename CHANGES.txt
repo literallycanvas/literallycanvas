@@ -1,3 +1,21 @@
+v0.4.12:
+ * Require React 0.14+ (up from 0.13+)
+ * SelectShape tool (no GUI for this yet)
+ * Use <LC.LiterallyCanvasReactComponent /> as a React component!
+ * Rewrote LC.init() (with GUI) to use LiterallyCanvasReactComponent. This
+   causes some initialization of the LiterallyCanvas object to be done one
+   or more frames after the LC.init() call. Please report any resulting
+   bugs on GitHub.
+ * CommonJS build that can be install from NPM with "npm install literallycanvas"
+ * Improved eyedropper tool
+   * Samples background. Should match expected behavior better.
+   * Can be used to set fill color as well as stroke color.
+ * LC.util.getDefaultImageRect() and LiterallyCanvas.getDefaultImageRect()
+   make it easy to figure out the effective bounds of the canvas, whether
+   or not it is "infinite." Mostly useful for tool implementations.
+ * Fixed CSS Z-ordering bug that caused text being edited to show up on top
+   of the color picker
+
 v0.4.11:
  * lc.setWatermarkImage(image)
  * 'scale' parameter for the Image shape
