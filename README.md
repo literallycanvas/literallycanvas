@@ -27,7 +27,7 @@ This is all it takes:
 Developing
 ----------
 
-Setup: `npm install`
+Setup: `npm install --dev`
 
 Watching and serving: `gulp dev`
 
