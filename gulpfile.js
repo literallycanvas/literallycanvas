@@ -8,16 +8,19 @@ var streamify = require('gulp-streamify')
 var uglify = require('gulp-uglify');
 var coffee = require('gulp-coffee');
 var babel = require('gulp-babel');
+var preprocess = require('gulp-preprocess');
 var preprocessify = require('preprocessify');
 var merge = require('merge-stream');
 
 gulp.task('commonjs', function() {
   // https://github.com/gulpjs/gulp/blob/master/docs/recipes/using-multiple-sources-in-one-task.md
   var babelTrans = gulp.src(['./src/**/*.js', './src/**/*.jsx'])
+    .pipe(preprocess({context: { INCLUDE_GUI: true }}))
     .pipe(babel())
     .pipe(gulp.dest('./lib/js/'));
 
   var coffeeTrans = gulp.src('./src/**/*.coffee')
+    .pipe(preprocess({context: { INCLUDE_GUI: true }}))
     .pipe(coffee({ bare: true }))
     .pipe(gulp.dest('./lib/js/'));
 
