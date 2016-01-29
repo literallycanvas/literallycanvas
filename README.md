@@ -10,6 +10,8 @@ send it a message to subscribe)
 
 ### [Full documentation](http://literallycanvas.com)
 
+### [Examples](http://github.com/literallycanvas/literallycanvas-demos)
+
 This is all it takes:
 
 ```javascript
