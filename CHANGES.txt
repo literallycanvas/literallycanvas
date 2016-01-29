@@ -1,4 +1,4 @@
-v0.4.12:
+v0.4.13:
  * Require React 0.14+ (up from 0.13+)
  * SelectShape tool (no GUI for this yet)
  * Use <LC.LiterallyCanvasReactComponent /> as a React component!
@@ -15,6 +15,9 @@ v0.4.12:
    or not it is "infinite." Mostly useful for tool implementations.
  * Fixed CSS Z-ordering bug that caused text being edited to show up on top
    of the color picker
+
+v0.4.12:
+ * Identical to 0.4.13 except for a Readme update to make npm happy.
 
 v0.4.11:
  * lc.setWatermarkImage(image)

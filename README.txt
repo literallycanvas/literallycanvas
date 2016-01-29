@@ -1,4 +1,4 @@
-Literally Canvas v0.4.12
+Literally Canvas v0.4.13
 ========================
 
 Complete documentation can be found at literallycanvas.com.
