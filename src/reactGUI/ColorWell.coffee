@@ -5,7 +5,7 @@ PureRenderMixin = require 'react-addons-pure-render-mixin'
 
 parseHSLAString = (s) ->
   return {hue: 0, sat: 0, light: 0, alpha: 0} if s == 'transparent'
-  return null unless s.substring(0, 4) == 'hsla'
+  return null unless s?.substring(0, 4) == 'hsla'
   firstParen = s.indexOf('(')
   lastParen = s.indexOf(')')
   insideParens = s.substring(firstParen + 1, lastParen - firstParen + 4)
