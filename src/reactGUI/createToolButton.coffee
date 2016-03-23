@@ -1,5 +1,6 @@
 React = require './React-shim'
 {classSet} = require '../core/util'
+{_} = require '../core/localization'
 
 
 createToolButton = (tool) ->
@@ -27,7 +28,7 @@ createToolButton = (tool) ->
       (div {
         className,
         style: {'backgroundImage': "url(#{src})"}
-        onClick: (-> onSelect(tool)), title: displayName})
+        onClick: (-> onSelect(tool)), title: _(displayName)})
 
 
 module.exports = createToolButton

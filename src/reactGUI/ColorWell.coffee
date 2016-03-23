@@ -1,6 +1,7 @@
 React = require './React-shim'
 PureRenderMixin = require 'react-addons-pure-render-mixin'
 {classSet, requestAnimationFrame, cancelAnimationFrame} = require '../core/util'
+{_} = require '../core/localization'
 
 
 parseHSLAString = (s) ->
@@ -202,14 +203,14 @@ ColorWell = React.createClass
 
     (div {className: 'color-picker-popup'},
       renderColor()
-      renderLabel("alpha")
+      renderLabel(_("alpha"))
       (input {
         type: 'range',
         min: 0, max: 1, step: 0.01
         value: @state.alpha,
         onChange: (e) => @setAlpha(parseFloat(e.target.value))
       }),
-      renderLabel("saturation")
+      renderLabel(_("saturation"))
       (input {
         type: 'range',
         min: 0, max: 100,
