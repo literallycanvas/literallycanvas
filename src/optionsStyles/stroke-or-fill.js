@@ -1,6 +1,7 @@
 const React = require('../reactGUI/React-shim');
 const { defineOptionsStyle } = require('./optionsStyles');
 const createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+const _ = require('../core/localization')._;
 
 defineOptionsStyle('stroke-or-fill', React.createClass({
   displayName: 'StrokeOrFillPicker',
@@ -21,18 +22,18 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
     const lc = this.props.lc;
 
     return <form>
-      <span>Color to change: </span>
+      <span> {_('Color to change:')} </span>
       <span>
         <input type="radio" name="stroke-or-fill" value="stroke"
           id="stroke-or-fill-stroke" onChange={this.onChange}
           checked={lc.tool.strokeOrFill == 'stroke'} />
-        <label htmlFor="stroke-or-fill-stroke" className="label"> stroke</label>
+        <label htmlFor="stroke-or-fill-stroke" className="label"> {_("stroke")}</label>
       </span>
       <span>
         <input type="radio" name="stroke-or-fill" value="fill"
           id="stroke-or-fill-fill" onChange={this.onChange}
           checked={lc.tool.strokeOrFill == 'fill'} />
-        <label htmlFor="stroke-or-fill-fill" className="label"> fill</label>
+        <label htmlFor="stroke-or-fill-fill" className="label"> {_("fill")}</label>
       </span>
     </form>;
   }
