@@ -33,7 +33,7 @@ Setup: `npm install --dev`
 
 Watching and serving: `gulp dev`
 
-Browse to `localhost:8000/demo` and modify `demo/index.html` to test code
+Browse to `localhost:8080/demo` and modify `demo/index.html` to test code
 in progress.
 
 To generate a production-ready `.js` file, run `gulp` and pull out either
