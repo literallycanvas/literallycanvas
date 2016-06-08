@@ -37,8 +37,8 @@ const LiterallyCanvas = React.createClass({
     const opts = this.props;
     this.lc.bindToElement(canvasContainerEl);
 
-    if (typeof opts.onInit === 'function') {
-      opts.onInit(this.lc);
+    if (typeof this.lc.opts.onInit === 'function') {
+      this.lc.opts.onInit(this.lc);
     }
   },
 
