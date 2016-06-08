@@ -103,7 +103,7 @@ module.exports = class LiterallyCanvas
     repaintAll()
 
   _teardown: ->
-    @tool.willBecomeInactive(this)
+    @tool?.willBecomeInactive(this)
     @_unsubscribeEvents?()
     @tool = null
     @containerEl = null
