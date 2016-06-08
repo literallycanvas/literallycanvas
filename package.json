@@ -1,6 +1,6 @@
 {
   "name": "literallycanvas",
-  "version": "0.4.13",
+  "version": "0.4.14",
   "description": "HTML5 drawing widget",
   "main": "lib/js",
   "scripts": {
