@@ -1,3 +1,8 @@
+v0.4.14:
+ * lc.teardown() won't crash if no tool was selected
+ * lc.respondToSizeChange() gives you a way to make sure the contents of the
+   widget are correct after you change its size without resizing the window
+
 v0.4.13:
  * Require React 0.14+ (up from 0.13+)
  * SelectShape tool (no GUI for this yet)

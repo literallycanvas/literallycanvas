@@ -38,6 +38,7 @@ util =
     window.addEventListener 'resize', resize
     window.addEventListener 'orientationchange', resize
     resize()
+    return resize
 
   combineCanvases: (canvases...) ->
     c = document.createElement('canvas')

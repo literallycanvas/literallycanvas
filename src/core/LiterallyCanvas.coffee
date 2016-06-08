@@ -75,6 +75,8 @@ module.exports = class LiterallyCanvas
     @isBound = false
     @bindToElement(containerEl) if containerEl
 
+    @respondToSizeChange = ->
+
   bindToElement: (containerEl) ->
     if @containerEl
       console.warn("Trying to bind Literally Canvas to a DOM element more than once is unsupported.")
@@ -92,7 +94,7 @@ module.exports = class LiterallyCanvas
         @keepPanInImageBounds()
         @repaintAllLayers()
 
-    util.matchElementSize(
+    @respondToSizeChange = util.matchElementSize(
       @containerEl, [@backgroundCanvas, @canvas], @backingScale, repaintAll)
 
     if @watermarkImage
