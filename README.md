@@ -12,17 +12,12 @@ send it a message to subscribe)
 
 ### [Examples](http://github.com/literallycanvas/literallycanvas-demos)
 
-This is all it takes:
+Along with the CSS, JS, and image assets, this is all it takes:
 
 ```javascript
-<div class="literally with-jquery"></div>
+<div class="my-drawing"></div>
 <script>
-  $('.literally.with-jquery').literallycanvas();
-</script>
-
-<div class="literally without-jquery"></div>
-<script>
-  LC.init(document.getElementsByClassName('literally without-jquery')[0]);
+  LC.init(document.getElementsByClassName('my-drawing')[0]);
 </script>
 ```
 
