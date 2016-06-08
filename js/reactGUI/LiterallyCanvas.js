@@ -44,8 +44,8 @@ var LiterallyCanvas = React.createClass({
     var opts = this.props;
     this.lc.bindToElement(canvasContainerEl);
 
-    if (typeof opts.onInit === 'function') {
-      opts.onInit(this.lc);
+    if (typeof this.lc.opts.onInit === 'function') {
+      this.lc.opts.onInit(this.lc);
     }
   },
   componentWillMount: function componentWillMount() {
@@ -82,6 +82,7 @@ var LiterallyCanvas = React.createClass({
     var _lc$opts = this.lc.opts;
     var imageURLPrefix = _lc$opts.imageURLPrefix;
     var toolbarPosition = _lc$opts.toolbarPosition;
+
 
     var pickerProps = { lc: lc, toolButtonComponents: toolButtonComponents, imageURLPrefix: imageURLPrefix };
     var topOrBottomClassName = classSet({

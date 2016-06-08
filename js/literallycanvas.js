@@ -1,78 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.LC = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-module.exports = require('react/lib/ReactComponentWithPureRenderMixin');
-},{"react/lib/ReactComponentWithPureRenderMixin":2}],2:[function(require,module,exports){
-/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * @providesModule ReactComponentWithPureRenderMixin
- */
-
-'use strict';
-
-var shallowCompare = require('./shallowCompare');
-
-/**
- * If your React component's render function is "pure", e.g. it will render the
- * same result given the same props and state, provide this Mixin for a
- * considerable performance boost.
- *
- * Most React components have pure render functions.
- *
- * Example:
- *
- *   var ReactComponentWithPureRenderMixin =
- *     require('ReactComponentWithPureRenderMixin');
- *   React.createClass({
- *     mixins: [ReactComponentWithPureRenderMixin],
- *
- *     render: function() {
- *       return <div className={this.props.className}>foo</div>;
- *     }
- *   });
- *
- * Note: This only checks shallow equality for props and state. If these contain
- * complex data structures this mixin may have false-negatives for deeper
- * differences. Only mixin to components which have simple props and state, or
- * use `forceUpdate()` when you know deep data structures have changed.
- */
-var ReactComponentWithPureRenderMixin = {
-  shouldComponentUpdate: function (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
-  }
-};
-
-module.exports = ReactComponentWithPureRenderMixin;
-},{"./shallowCompare":3}],3:[function(require,module,exports){
-/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
-* @providesModule shallowCompare
-*/
-
-'use strict';
-
-var shallowEqual = require('fbjs/lib/shallowEqual');
-
-/**
- * Does a shallow comparison for props and state.
- * See ReactComponentWithPureRenderMixin
- */
-function shallowCompare(instance, nextProps, nextState) {
-  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
-}
-
-module.exports = shallowCompare;
-},{"fbjs/lib/shallowEqual":4}],4:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -123,7 +49,81 @@ function shallowEqual(objA, objB) {
 }
 
 module.exports = shallowEqual;
-},{}],5:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
+module.exports = require('react/lib/ReactComponentWithPureRenderMixin');
+},{"react/lib/ReactComponentWithPureRenderMixin":3}],3:[function(require,module,exports){
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ReactComponentWithPureRenderMixin
+ */
+
+'use strict';
+
+var shallowCompare = require('./shallowCompare');
+
+/**
+ * If your React component's render function is "pure", e.g. it will render the
+ * same result given the same props and state, provide this Mixin for a
+ * considerable performance boost.
+ *
+ * Most React components have pure render functions.
+ *
+ * Example:
+ *
+ *   var ReactComponentWithPureRenderMixin =
+ *     require('ReactComponentWithPureRenderMixin');
+ *   React.createClass({
+ *     mixins: [ReactComponentWithPureRenderMixin],
+ *
+ *     render: function() {
+ *       return <div className={this.props.className}>foo</div>;
+ *     }
+ *   });
+ *
+ * Note: This only checks shallow equality for props and state. If these contain
+ * complex data structures this mixin may have false-negatives for deeper
+ * differences. Only mixin to components which have simple props and state, or
+ * use `forceUpdate()` when you know deep data structures have changed.
+ */
+var ReactComponentWithPureRenderMixin = {
+  shouldComponentUpdate: function (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  }
+};
+
+module.exports = ReactComponentWithPureRenderMixin;
+},{"./shallowCompare":4}],4:[function(require,module,exports){
+/**
+ * Copyright 2013-2015, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+* @providesModule shallowCompare
+*/
+
+'use strict';
+
+var shallowEqual = require('fbjs/lib/shallowEqual');
+
+/**
+ * Does a shallow comparison for props and state.
+ * See ReactComponentWithPureRenderMixin
+ */
+function shallowCompare(instance, nextProps, nextState) {
+  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
+}
+
+module.exports = shallowCompare;
+},{"fbjs/lib/shallowEqual":1}],5:[function(require,module,exports){
 var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, ref, renderShapeToContext, renderShapeToSVG, renderSnapshotToImage, renderSnapshotToSVG, shapeToJSON, util,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   slice = [].slice,
@@ -207,6 +207,7 @@ module.exports = LiterallyCanvas = (function() {
     if (containerEl) {
       this.bindToElement(containerEl);
     }
+    this.respondToSizeChange = function() {};
   }
 
   LiterallyCanvas.prototype.bindToElement = function(containerEl) {
@@ -227,7 +228,7 @@ module.exports = LiterallyCanvas = (function() {
         return _this.repaintAllLayers();
       };
     })(this);
-    util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
+    this.respondToSizeChange = util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
     if (this.watermarkImage) {
       this.watermarkImage.onload = (function(_this) {
         return function() {
@@ -242,7 +243,10 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype._teardown = function() {
-    this.tool.willBecomeInactive(this);
+    var ref1;
+    if ((ref1 = this.tool) != null) {
+      ref1.willBecomeInactive(this);
+    }
     if (typeof this._unsubscribeEvents === "function") {
       this._unsubscribeEvents();
     }
@@ -1672,6 +1676,7 @@ module.exports = {
   zoomMax: 4.0,
   zoomStep: 0.2,
   snapshot: null,
+  onInit: function onInit() {},
   tools: [require('../tools/Pencil'), require('../tools/Eraser'), require('../tools/Line'), require('../tools/Rectangle'), require('../tools/Ellipse'), require('../tools/Text'), require('../tools/Polygon'), require('../tools/Pan'), require('../tools/Eyedropper')]
 };
 
@@ -3339,7 +3344,8 @@ util = {
     elementToMatch.addEventListener('resize', resize);
     window.addEventListener('resize', resize);
     window.addEventListener('orientationchange', resize);
-    return resize();
+    resize();
+    return resize;
   },
   combineCanvases: function() {
     var c, canvas, canvases, ctx, i, j, len, len1;
@@ -3460,11 +3466,11 @@ util = {
     };
   })(),
   requestAnimationFrame: function(f) {
-    if (window.webkitRequestAnimationFrame) {
-      return window.webkitRequestAnimationFrame(f);
-    }
     if (window.requestAnimationFrame) {
       return window.requestAnimationFrame(f);
+    }
+    if (window.webkitRequestAnimationFrame) {
+      return window.webkitRequestAnimationFrame(f);
     }
     if (window.mozRequestAnimationFrame) {
       return window.mozRequestAnimationFrame(f);
@@ -3472,14 +3478,14 @@ util = {
     return setTimeout(f, 0);
   },
   cancelAnimationFrame: function(f) {
+    if (window.cancelAnimationFrame) {
+      return window.cancelAnimationFrame(f);
+    }
     if (window.webkitCancelRequestAnimationFrame) {
       return window.webkitCancelRequestAnimationFrame(f);
     }
     if (window.webkitCancelAnimationFrame) {
       return window.webkitCancelAnimationFrame(f);
-    }
-    if (window.cancelAnimationFrame) {
-      return window.cancelAnimationFrame(f);
     }
     if (window.mozCancelAnimationFrame) {
       return window.mozCancelAnimationFrame(f);
@@ -4128,6 +4134,7 @@ var _require = require('./optionsStyles');
 var defineOptionsStyle = _require.defineOptionsStyle;
 
 var createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+var _ = require('../core/localization')._;
 
 defineOptionsStyle('stroke-or-fill', React.createClass({
   displayName: 'StrokeOrFillPicker',
@@ -4157,7 +4164,9 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
       React.createElement(
         'span',
         null,
-        'Color to change: '
+        ' ',
+        _('Color to change:'),
+        ' '
       ),
       React.createElement(
         'span',
@@ -4168,7 +4177,8 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
         React.createElement(
           'label',
           { htmlFor: 'stroke-or-fill-stroke', className: 'label' },
-          ' stroke'
+          ' ',
+          _("stroke")
         )
       ),
       React.createElement(
@@ -4180,7 +4190,8 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
         React.createElement(
           'label',
           { htmlFor: 'stroke-or-fill-fill', className: 'label' },
-          ' fill'
+          ' ',
+          _("fill")
         )
       )
     );
@@ -4189,7 +4200,7 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
 
 module.exports = {};
 
-},{"../reactGUI/React-shim":35,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],29:[function(require,module,exports){
+},{"../core/localization":13,"../reactGUI/React-shim":35,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],29:[function(require,module,exports){
 var StrokeWidthPicker, defineOptionsStyle;
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
@@ -4249,13 +4260,15 @@ module.exports = ClearButton;
 
 
 },{"../core/localization":13,"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],31:[function(require,module,exports){
-var ColorGrid, ColorWell, PureRenderMixin, React, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
+var ColorGrid, ColorWell, PureRenderMixin, React, _, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
 
 React = require('./React-shim');
 
 PureRenderMixin = require('react-addons-pure-render-mixin');
 
 ref = require('../core/util'), classSet = ref.classSet, requestAnimationFrame = ref.requestAnimationFrame, cancelAnimationFrame = ref.cancelAnimationFrame;
+
+_ = require('../core/localization')._;
 
 parseHSLAString = function(s) {
   var components, firstParen, insideParens, lastParen;
@@ -4267,7 +4280,7 @@ parseHSLAString = function(s) {
       alpha: 0
     };
   }
-  if (s.substring(0, 4) !== 'hsla') {
+  if ((s != null ? s.substring(0, 4) : void 0) !== 'hsla') {
     return null;
   }
   firstParen = s.indexOf('(');
@@ -4582,7 +4595,7 @@ ColorWell = React.createClass({
     })(this);
     return div({
       className: 'color-picker-popup'
-    }, renderColor(), renderLabel("alpha"), input({
+    }, renderColor(), renderLabel(_("alpha")), input({
       type: 'range',
       min: 0,
       max: 1,
@@ -4593,7 +4606,7 @@ ColorWell = React.createClass({
           return _this.setAlpha(parseFloat(e.target.value));
         };
       })(this)
-    }), renderLabel("saturation"), input({
+    }), renderLabel(_("saturation")), input({
       type: 'range',
       min: 0,
       max: 100,
@@ -4615,7 +4628,7 @@ ColorWell = React.createClass({
 module.exports = ColorWell;
 
 
-},{"../core/util":19,"./React-shim":35,"react-addons-pure-render-mixin":1}],32:[function(require,module,exports){
+},{"../core/localization":13,"../core/util":19,"./React-shim":35,"react-addons-pure-render-mixin":2}],32:[function(require,module,exports){
 'use strict';
 
 var React = require('../reactGUI/React-shim');
@@ -4662,8 +4675,8 @@ var LiterallyCanvas = React.createClass({
     var opts = this.props;
     this.lc.bindToElement(canvasContainerEl);
 
-    if (typeof opts.onInit === 'function') {
-      opts.onInit(this.lc);
+    if (typeof this.lc.opts.onInit === 'function') {
+      this.lc.opts.onInit(this.lc);
     }
   },
   componentWillMount: function componentWillMount() {
@@ -4700,6 +4713,7 @@ var LiterallyCanvas = React.createClass({
     var _lc$opts = this.lc.opts;
     var imageURLPrefix = _lc$opts.imageURLPrefix;
     var toolbarPosition = _lc$opts.toolbarPosition;
+
 
     var pickerProps = { lc: lc, toolButtonComponents: toolButtonComponents, imageURLPrefix: imageURLPrefix };
     var topOrBottomClassName = classSet({
@@ -5156,11 +5170,13 @@ module.exports = createSetStateOnEventMixin = function(eventName) {
 
 
 },{"./React-shim":35}],41:[function(require,module,exports){
-var React, classSet, createToolButton;
+var React, _, classSet, createToolButton;
 
 React = require('./React-shim');
 
 classSet = require('../core/util').classSet;
+
+_ = require('../core/localization')._;
 
 createToolButton = function(tool) {
   var displayName, imageName;
@@ -5198,7 +5214,7 @@ createToolButton = function(tool) {
         onClick: (function() {
           return onSelect(tool);
         }),
-        title: displayName
+        title: _(displayName)
       });
     }
   }));
@@ -5207,7 +5223,7 @@ createToolButton = function(tool) {
 module.exports = createToolButton;
 
 
-},{"../core/util":19,"./React-shim":35}],42:[function(require,module,exports){
+},{"../core/localization":13,"../core/util":19,"./React-shim":35}],42:[function(require,module,exports){
 'use strict';
 
 var React = require('./React-shim');

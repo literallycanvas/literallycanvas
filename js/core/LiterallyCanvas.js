@@ -81,6 +81,7 @@ module.exports = LiterallyCanvas = (function() {
     if (containerEl) {
       this.bindToElement(containerEl);
     }
+    this.respondToSizeChange = function() {};
   }
 
   LiterallyCanvas.prototype.bindToElement = function(containerEl) {
@@ -101,7 +102,7 @@ module.exports = LiterallyCanvas = (function() {
         return _this.repaintAllLayers();
       };
     })(this);
-    util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
+    this.respondToSizeChange = util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
     if (this.watermarkImage) {
       this.watermarkImage.onload = (function(_this) {
         return function() {
@@ -116,7 +117,10 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype._teardown = function() {
-    this.tool.willBecomeInactive(this);
+    var ref1;
+    if ((ref1 = this.tool) != null) {
+      ref1.willBecomeInactive(this);
+    }
     if (typeof this._unsubscribeEvents === "function") {
       this._unsubscribeEvents();
     }

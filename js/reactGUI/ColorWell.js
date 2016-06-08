@@ -1,10 +1,12 @@
-var ColorGrid, ColorWell, PureRenderMixin, React, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
+var ColorGrid, ColorWell, PureRenderMixin, React, _, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
 
 React = require('./React-shim');
 
 PureRenderMixin = require('react-addons-pure-render-mixin');
 
 ref = require('../core/util'), classSet = ref.classSet, requestAnimationFrame = ref.requestAnimationFrame, cancelAnimationFrame = ref.cancelAnimationFrame;
+
+_ = require('../core/localization')._;
 
 parseHSLAString = function(s) {
   var components, firstParen, insideParens, lastParen;
@@ -16,7 +18,7 @@ parseHSLAString = function(s) {
       alpha: 0
     };
   }
-  if (s.substring(0, 4) !== 'hsla') {
+  if ((s != null ? s.substring(0, 4) : void 0) !== 'hsla') {
     return null;
   }
   firstParen = s.indexOf('(');
@@ -331,7 +333,7 @@ ColorWell = React.createClass({
     })(this);
     return div({
       className: 'color-picker-popup'
-    }, renderColor(), renderLabel("alpha"), input({
+    }, renderColor(), renderLabel(_("alpha")), input({
       type: 'range',
       min: 0,
       max: 1,
@@ -342,7 +344,7 @@ ColorWell = React.createClass({
           return _this.setAlpha(parseFloat(e.target.value));
         };
       })(this)
-    }), renderLabel("saturation"), input({
+    }), renderLabel(_("saturation")), input({
       type: 'range',
       min: 0,
       max: 100,

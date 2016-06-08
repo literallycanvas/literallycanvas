@@ -82,6 +82,7 @@ module.exports = LiterallyCanvas = (function() {
     if (containerEl) {
       this.bindToElement(containerEl);
     }
+    this.respondToSizeChange = function() {};
   }
 
   LiterallyCanvas.prototype.bindToElement = function(containerEl) {
@@ -102,7 +103,7 @@ module.exports = LiterallyCanvas = (function() {
         return _this.repaintAllLayers();
       };
     })(this);
-    util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
+    this.respondToSizeChange = util.matchElementSize(this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
     if (this.watermarkImage) {
       this.watermarkImage.onload = (function(_this) {
         return function() {
@@ -117,7 +118,10 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype._teardown = function() {
-    this.tool.willBecomeInactive(this);
+    var ref1;
+    if ((ref1 = this.tool) != null) {
+      ref1.willBecomeInactive(this);
+    }
     if (typeof this._unsubscribeEvents === "function") {
       this._unsubscribeEvents();
     }
@@ -1547,6 +1551,7 @@ module.exports = {
   zoomMax: 4.0,
   zoomStep: 0.2,
   snapshot: null,
+  onInit: function onInit() {},
   tools: [require('../tools/Pencil'), require('../tools/Eraser'), require('../tools/Line'), require('../tools/Rectangle'), require('../tools/Ellipse'), require('../tools/Text'), require('../tools/Polygon'), require('../tools/Pan'), require('../tools/Eyedropper')]
 };
 
@@ -3214,7 +3219,8 @@ util = {
     elementToMatch.addEventListener('resize', resize);
     window.addEventListener('resize', resize);
     window.addEventListener('orientationchange', resize);
-    return resize();
+    resize();
+    return resize;
   },
   combineCanvases: function() {
     var c, canvas, canvases, ctx, i, j, len, len1;
@@ -3335,11 +3341,11 @@ util = {
     };
   })(),
   requestAnimationFrame: function(f) {
-    if (window.webkitRequestAnimationFrame) {
-      return window.webkitRequestAnimationFrame(f);
-    }
     if (window.requestAnimationFrame) {
       return window.requestAnimationFrame(f);
+    }
+    if (window.webkitRequestAnimationFrame) {
+      return window.webkitRequestAnimationFrame(f);
     }
     if (window.mozRequestAnimationFrame) {
       return window.mozRequestAnimationFrame(f);
@@ -3347,14 +3353,14 @@ util = {
     return setTimeout(f, 0);
   },
   cancelAnimationFrame: function(f) {
+    if (window.cancelAnimationFrame) {
+      return window.cancelAnimationFrame(f);
+    }
     if (window.webkitCancelRequestAnimationFrame) {
       return window.webkitCancelRequestAnimationFrame(f);
     }
     if (window.webkitCancelAnimationFrame) {
       return window.webkitCancelAnimationFrame(f);
-    }
-    if (window.cancelAnimationFrame) {
-      return window.cancelAnimationFrame(f);
     }
     if (window.mozCancelAnimationFrame) {
       return window.mozCancelAnimationFrame(f);

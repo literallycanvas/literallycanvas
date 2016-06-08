@@ -17,5 +17,6 @@ module.exports = {
   zoomMax: 4.0,
   zoomStep: 0.2,
   snapshot: null,
+  onInit: function onInit() {},
   tools: [require('../tools/Pencil'), require('../tools/Eraser'), require('../tools/Line'), require('../tools/Rectangle'), require('../tools/Ellipse'), require('../tools/Text'), require('../tools/Polygon'), require('../tools/Pan'), require('../tools/Eyedropper')]
 };

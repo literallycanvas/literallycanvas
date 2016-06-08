@@ -62,7 +62,8 @@ util = {
     elementToMatch.addEventListener('resize', resize);
     window.addEventListener('resize', resize);
     window.addEventListener('orientationchange', resize);
-    return resize();
+    resize();
+    return resize;
   },
   combineCanvases: function() {
     var c, canvas, canvases, ctx, i, j, len, len1;
@@ -183,11 +184,11 @@ util = {
     };
   })(),
   requestAnimationFrame: function(f) {
-    if (window.webkitRequestAnimationFrame) {
-      return window.webkitRequestAnimationFrame(f);
-    }
     if (window.requestAnimationFrame) {
       return window.requestAnimationFrame(f);
+    }
+    if (window.webkitRequestAnimationFrame) {
+      return window.webkitRequestAnimationFrame(f);
     }
     if (window.mozRequestAnimationFrame) {
       return window.mozRequestAnimationFrame(f);
@@ -195,14 +196,14 @@ util = {
     return setTimeout(f, 0);
   },
   cancelAnimationFrame: function(f) {
+    if (window.cancelAnimationFrame) {
+      return window.cancelAnimationFrame(f);
+    }
     if (window.webkitCancelRequestAnimationFrame) {
       return window.webkitCancelRequestAnimationFrame(f);
     }
     if (window.webkitCancelAnimationFrame) {
       return window.webkitCancelAnimationFrame(f);
-    }
-    if (window.cancelAnimationFrame) {
-      return window.cancelAnimationFrame(f);
     }
     if (window.mozCancelAnimationFrame) {
       return window.mozCancelAnimationFrame(f);

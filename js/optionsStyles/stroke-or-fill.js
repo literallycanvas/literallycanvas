@@ -7,6 +7,7 @@ var _require = require('./optionsStyles');
 var defineOptionsStyle = _require.defineOptionsStyle;
 
 var createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+var _ = require('../core/localization')._;
 
 defineOptionsStyle('stroke-or-fill', React.createClass({
   displayName: 'StrokeOrFillPicker',
@@ -36,7 +37,9 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
       React.createElement(
         'span',
         null,
-        'Color to change: '
+        ' ',
+        _('Color to change:'),
+        ' '
       ),
       React.createElement(
         'span',
@@ -47,7 +50,8 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
         React.createElement(
           'label',
           { htmlFor: 'stroke-or-fill-stroke', className: 'label' },
-          ' stroke'
+          ' ',
+          _("stroke")
         )
       ),
       React.createElement(
@@ -59,7 +63,8 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
         React.createElement(
           'label',
           { htmlFor: 'stroke-or-fill-fill', className: 'label' },
-          ' fill'
+          ' ',
+          _("fill")
         )
       )
     );

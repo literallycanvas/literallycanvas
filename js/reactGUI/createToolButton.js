@@ -1,8 +1,10 @@
-var React, classSet, createToolButton;
+var React, _, classSet, createToolButton;
 
 React = require('./React-shim');
 
 classSet = require('../core/util').classSet;
+
+_ = require('../core/localization')._;
 
 createToolButton = function(tool) {
   var displayName, imageName;
@@ -40,7 +42,7 @@ createToolButton = function(tool) {
         onClick: (function() {
           return onSelect(tool);
         }),
-        title: displayName
+        title: _(displayName)
       });
     }
   }));
