@@ -12,17 +12,12 @@ send it a message to subscribe)
 
 ### [Examples](http://github.com/literallycanvas/literallycanvas-demos)
 
-This is all it takes:
+Along with the CSS, JS, and image assets, this is all it takes:
 
 ```javascript
-<div class="literally with-jquery"></div>
+<div class="my-drawing"></div>
 <script>
-  $('.literally.with-jquery').literallycanvas();
-</script>
-
-<div class="literally without-jquery"></div>
-<script>
-  LC.init(document.getElementsByClassName('literally without-jquery')[0]);
+  LC.init(document.getElementsByClassName('my-drawing')[0]);
 </script>
 ```
 
@@ -33,7 +28,7 @@ Setup: `npm install --dev`
 
 Watching and serving: `gulp dev`
 
-Browse to `localhost:8000/demo` and modify `demo/index.html` to test code
+Browse to `localhost:8080/demo` and modify `demo/index.html` to test code
 in progress.
 
 To generate a production-ready `.js` file, run `gulp` and pull out either

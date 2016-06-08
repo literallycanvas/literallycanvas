@@ -15,17 +15,12 @@ release-files: all
 	-rm -rf literallycanvas
 	mkdir literallycanvas
 	cp -r lib/* literallycanvas/
-	cp README_release.txt literallycanvas/README.txt
-	cp bower_release.json literallycanvas/bower.json
+	cp README.md literallycanvas/README.md
 
 release-branch: release-files
 	git fetch lc release:release
 	git push origin lc/release:release
 	ghp-import -p -r lc -b release literallycanvas -m "Release"
-
-release-bower:
-	git push lc-bower release:master -f
-	git push lc-bower --tags
 
 release-npm:
 	npm publish

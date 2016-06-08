@@ -15,6 +15,7 @@ module.exports = {
   zoomMax: 4.0,
   zoomStep: 0.2,
   snapshot: null,
+  onInit: function() { },
   tools: [
     require('../tools/Pencil'),
     require('../tools/Eraser'),

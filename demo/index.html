@@ -26,10 +26,6 @@
         height: 100%;
         position: relative;
       }
-
-      .literally img.background, .literally > canvas {
-        position: absolute;
-      }
     </style>
   </head>
 
@@ -37,7 +33,7 @@
     <div class="fs-container">
       <a href="react-component">react-component</a>
       <a href="core_demo.html">core</a>
-      <div class="literally one"></div>
+      <div class="one"></div>
       <a href="javascript:void(0);" id="open-image">Open image</a>
       <br>
       <a href="javascript:void(0);" id="change-size">Change size</a>
@@ -58,7 +54,7 @@
 
     <script src="/demo/jquery-1.8.2.js"></script>
     <script src="/demo/fastclick.js"></script>
-    <script src="/demo/react-0.14.3.js"></script>
+    <script src="/demo/react-0.14.7.js"></script>
     <!--<script src="/demo/react-0.13.3.js"></script>-->
     <!--<script src="/demo/react-0.10.0.js"></script>-->
     <script src="/lib/js/literallycanvas.js"></script>
@@ -86,7 +82,7 @@
       //watermarkImage.src = 'http://literallycanvas.com/_static/watermark.png'
 
       // the only LC-specific thing we have to do
-      var containerOne = document.getElementsByClassName('literally one')[0];
+      var containerOne = document.getElementsByClassName('one')[0];
 
       var MyTool = function() {
         var self = this;
@@ -155,6 +151,9 @@
               'Rectangle',
               {x: 0, y: 0, width: 100, height: 100, strokeColor: '#000'})
           ],
+          onInit: function(lc) {
+            console.log('initialized with', lc)
+          }
           // backgroundColor: '#f00',
           // watermarkImage: watermarkImage//,
           // imageSize: {width: 500, height: 300}
