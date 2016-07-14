@@ -249,13 +249,13 @@ module.exports = class LiterallyCanvas
     @setZoom(newScale)
 
   setZoom: (scale) ->
+    center = @clientCoordsToDrawingCoords(@canvas.width / 2, @canvas.height / 2)
     oldScale = @scale
     @scale = scale
 
-    @position.x = math.scalePositionScalar(
-      @position.x, @canvas.width, oldScale, @scale)
-    @position.y = math.scalePositionScalar(
-      @position.y, @canvas.height, oldScale, @scale)
+    @position.x = @canvas.width / 2 * @backingScale - center.x * @getRenderScale()
+    @position.y = @canvas.height / 2 * @backingScale - center.y * @getRenderScale()
+
     @keepPanInImageBounds()
 
     @repaintAllLayers()
