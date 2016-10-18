@@ -1,6 +1,23 @@
 {Tool} = require './base'
 {createShape} = require '../core/shapes'
 
+getIsPointInBox = (point, box) ->
+  if point.x < box.x then return false
+  if point.y < box.y then return false
+  if point.x > box.x + box.width then return false
+  if point.y > box.y + box.height then return false
+  return true
+
+
+setShapeSize = (shape,width,height) ->
+  shape.width=width
+  shape.height=height
+
+setShapePosition = (shape,x,y) ->
+  shape.x=x
+  shape.y=y
+
+
 module.exports = class SelectShape extends Tool
   name: 'SelectShape'
   usesSimpleAPI: false
@@ -12,22 +29,32 @@ module.exports = class SelectShape extends Tool
     @selectCanvas = document.createElement('canvas')
     @selectCanvas.style['background-color'] = 'transparent'
     @selectCtx = @selectCanvas.getContext('2d')
+    @shiftKeyDown=false
 
+  _selectKeyDownListener:(e) =>
+    if(e.keyCode==46) #delete
+      lc.deleteShape(@selectedShape)
+      @_clearCurrentShape(lc)
+    else if (e.keyCode==16) #shift
+      @shiftKeyDown=true
+
+  _selectKeyUpListener:(e) =>
+    if (e.keyCode==16) #shift
+      @shiftKeyDown=false
 
   _getSelectionShape: (ctx, backgroundColor=null) ->
     createShape('SelectionBox', {shape: @selectedShape, ctx, backgroundColor})
 
 
   _setShapesInProgress: (lc) ->
-    console.log(@currentShapeState)
     switch @currentShapeState
-      when 'selected'
-        
-        lc.setShapesInProgress([@_getSelectionShape(lc.ctx), @selectedShape])
+      when 'selected'        
+        lc.setShapesInProgress([@_getSelectionShape(lc.ctx), @selectedShape])      
       when 'editing'
-        lc.setShapesInProgress([@_getSelectionShape(lc.ctx, '#fff')])
+        lc.setShapesInProgress([@_getSelectionShape(lc.ctx, '#fff')])       
       else
         lc.setShapesInProgress([@selectedShape])
+
 
   _updateInputEl: (lc, withMargin=false) ->
       return unless @inputEl
@@ -59,7 +86,6 @@ module.exports = class SelectShape extends Tool
       @inputEl.style.OTransform= transformString
  
   _ensureNotEditing: (lc) ->
-    console.log("ensure not editing")
     if @currentShapeState == 'editing'
       @_exitEditingState(lc)
 
@@ -71,16 +97,6 @@ module.exports = class SelectShape extends Tool
 
     @_setShapesInProgress(lc)
     lc.repaintLayer('main')
-
-  _clearCurrentShape2: (lc) ->
-    @selectedShape = null
-    @initialShapeBoundingRect = null
-    @currentShapeState = null
-    lc.setShapesInProgress([])
-
-    
-
-
 
   _enterEditingState: (lc) ->
       @currentShapeState = 'editing'
@@ -126,11 +142,12 @@ module.exports = class SelectShape extends Tool
 
   _setCurrentShape: (lc, shape,x,y) ->
     @selectedShape = shape
+    @currentShapeState='selected'
+    @selectedShapeClickCount=0
+
     lc.trigger 'shapeSelected', { @selectedShape }
-    lc.setShapesInProgress [@selectedShape, createShape('SelectionBox', {
-      shape: @selectedShape,
-      handleSize: 0
-    })]        
+
+    @_setShapesInProgress(lc)
     lc.repaintLayer 'main'
 
     br = @selectedShape.getBoundingRect()
@@ -138,18 +155,41 @@ module.exports = class SelectShape extends Tool
       x: x - br.x,
       y: y - br.y
     }
+    document.addEventListener('keydown', @_selectKeyDownListener)
+    document.addEventListener('keyup', @_selectKeyUpListener)
 
 
   _clearCurrentShape: (lc) ->
-    if @selectedShape.hasOwnProperty('text')
-      @_ensureNotEditing(lc)
-      lc.saveShape(@selectedShape) if @selectedShape.text
-      lc.repaintLayer('main')
+    if @selectedShape?
+      if @selectedShape.hasOwnProperty('text')
+        @_ensureNotEditing(lc)
+        lc.updateShape(@selectedShape)
 
     @selectedShape = null
     @initialShapeBoundingRect = null
     @currentShapeState = null
     lc.setShapesInProgress([])
+    lc.repaintLayer('main')
+    document.removeEventListener('keydown', @_selectKeyListener)
+    document.removeEventListener('keyup', @_selectKeyUpListener)
+
+  _getDragAction: (lc,point)->
+    dragAction="none"
+    br = @selectedShape.getBoundingRect(lc.ctx)
+    selectionShape = @_getSelectionShape(lc.ctx)
+    selectionBox = selectionShape.getBoundingRect()
+    if getIsPointInBox(point, br)
+      dragAction = 'move'
+    if getIsPointInBox(point, selectionShape.getBottomRightHandleRect())
+      dragAction = 'resizeBottomRight'
+    if getIsPointInBox(point, selectionShape.getTopLeftHandleRect())
+      dragAction = 'resizeTopLeft'
+    if getIsPointInBox(point, selectionShape.getBottomLeftHandleRect())
+      dragAction = 'resizeBottomLeft'
+    if getIsPointInBox(point, selectionShape.getTopRightHandleRect())
+      dragAction = 'resizeTopRight'
+    
+    return dragAction
 
 
   didBecomeActive: (lc) ->
@@ -157,62 +197,153 @@ module.exports = class SelectShape extends Tool
     @_selectShapeUnsubscribe = =>
       for func in selectShapeUnsubscribeFuncs
         func()
+
+
+  
     
 
     onDown = ({ x, y }) =>
-      console.log("onDown")
+      @dragAction = 'none'
       @didDrag = false
+      noshape=false
 
       shapeIndex = @_getPixel(x, y, lc, @selectCtx)
-
-      if @selectedShape?
-        console.log(@selectedShape.id)
-        console.log(lc.shapes[shapeIndex].id)
-        if @selectedShape.id==lc.shapes[shapeIndex].id
-          #Same shape enter into text mode if text shape
-          
-          
+      if shapeIndex !=null 
+        if @selectedShape?      
+          if @selectedShape.id!=lc.shapes[shapeIndex].id
+            #Switch Shape
+            @_clearCurrentShape(lc)
+            @_setCurrentShape(lc,lc.shapes[shapeIndex],x,y)          
         else
-          #Switch Shape
-          @_clearCurrentShape(lc)
+          #New Shape
           @_setCurrentShape(lc,lc.shapes[shapeIndex],x,y)
 
-      else
-        #New Shape
-        @_setCurrentShape(lc,lc.shapes[shapeIndex],x,y)
+      if @selectedShape?
+        if (@currentShapeState == 'selected' or @currentShapeState == 'editing')
+          point = {x, y}
+          @dragAction=@_getDragAction(lc,point)
+          @initialShapeBoundingRect = @selectedShape.getBoundingRect(lc.ctx)
+          @dragOffset = {
+            x: x - @initialShapeBoundingRect.x,
+            y: y - @initialShapeBoundingRect.y
+          }
+
+          if @dragAction=='none'
+            @_clearCurrentShape(lc)
         
 
                 
       
 
     onDrag = ({ x, y }) =>
-      #console.log("onDrag")
       if @selectedShape?
         @didDrag = true
 
-        @selectedShape.setUpperLeft {
-          x: x - @dragOffset.x,
-          y: y - @dragOffset.y
-        }
-        lc.setShapesInProgress [@selectedShape, createShape('SelectionBox', {
-          shape: @selectedShape,
-          handleSize: 0
-        })]
-        lc.repaintLayer 'main'
+          
+        br = @initialShapeBoundingRect
+        brRight = br.x + br.width
+        brBottom = br.y + br.height
+        switch @dragAction
+          when 'place'
+            @selectedShape.x = x
+            @selectedShape.y = y
+            @didDrag = true
+          when 'move'
+            @selectedShape.x = x - @dragOffset.x
+            @selectedShape.y = y - @dragOffset.y
+            @didDrag = true
+          when 'resizeBottomRight'
+            newWidth = x - (@dragOffset.x - @initialShapeBoundingRect.width) - br.x
+            if @shiftKeyDown
+              newHeight=newWidth
+            else
+              newHeight=y - (@dragOffset.y - @initialShapeBoundingRect.height) - br.y
+            setShapeSize(@selectedShape,newWidth,newHeight)
+
+          when 'resizeTopLeft'
+            
+            newHeight=brBottom - y + @dragOffset.y
+            if @shiftKeyDown
+              newWidth=newHeight
+            else
+              newWidth=brRight - x + @dragOffset.x
+
+            setShapeSize(@selectedShape,newWidth,newHeight)
+
+            newY=y 
+            if @shiftKeyDown
+              offset = br.y-y
+
+              newX=br.x - offset              
+            else
+              newX=x
+              
+            setShapePosition(@selectedShape, newX, newY)
+
+          when 'resizeBottomLeft'
+            newWidth=brRight - x + @dragOffset.x
+            if @shiftKeyDown
+              newHeight=newWidth
+            else
+              newHeight=y - (@dragOffset.y - @initialShapeBoundingRect.height) - br.y
+
+            setShapeSize(@selectedShape,newWidth,newHeight)
+
+            newX=x - @dragOffset.x
+            newY=@selectedShape.y
+            setShapePosition(@selectedShape, newX, newY)
+
+          when 'resizeTopRight'
+
+            newHeight=brBottom - y + @dragOffset.y
+            
+            if @shiftKeyDown
+              newWidth=newHeight
+            else
+              newWidth= x - (@dragOffset.x - @initialShapeBoundingRect.width) - br.x  
+
+            setShapeSize(@selectedShape,newWidth,newHeight)
+
+            newX=@selectedShape.x
+            if @shiftKeyDown
+              newY= y - @dragOffset.y
+            else
+              newY=y - @dragOffset.y            
+            setShapePosition(@selectedShape, newX, newY)
+
+        @_setShapesInProgress(lc)
+        lc.repaintLayer('main')
+
+        ###
+          @selectedShape.setUpperLeft {
+            x: x - @dragOffset.x,
+            y: y - @dragOffset.y
+          }
+
+          lc.setShapesInProgress [@selectedShape, createShape('SelectionBox', {
+            shape: @selectedShape,
+            handleSize: 0
+          })]
+          lc.repaintLayer 'main'
+        ###
 
     onUp = ({ x, y }) =>
-      console.log("onUp",@currentShapeState)
       if @didDrag
         @didDrag = false
         lc.trigger('shapeMoved', { shape: @selectedShape })
         lc.trigger('drawingChange', {})
+
+
+        @currentShapeState='selected'
+        @_setShapesInProgress(lc)
         lc.repaintLayer('main')
         @_drawSelectCanvas(lc)
       else
-        if @selectedShape.hasOwnProperty('text') && !@currentShapeState
-          @currentShapeState='selected'
-        else if @selectedShape.hasOwnProperty('text') && @currentShapeState=='selected'
-          @_enterEditingState(lc)
+        @selectedShapeClickCount++
+        if @selectedShape?
+          if @selectedShape.hasOwnProperty('text') && @currentShapeState=='selected' && @selectedShapeClickCount >= 2
+            @_enterEditingState(lc)
+            lc.repaintLayer('main')
 
 
     
@@ -225,10 +356,10 @@ module.exports = class SelectShape extends Tool
 
 
   willBecomeInactive: (lc) ->
-    console.log("willBecomeInactive")
     @_clearCurrentShape(lc)
     @_selectShapeUnsubscribe()
-    lc.setShapesInProgress []
+    lc.repaintLayer('main')
+    #lc.setShapesInProgress []
 
   _drawSelectCanvas: (lc) ->
     @selectCanvas.width = lc.canvas.width
