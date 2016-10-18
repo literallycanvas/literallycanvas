@@ -213,10 +213,16 @@ module.exports = class LiterallyCanvas
       @trigger('shapeSave', {shape, previousShapeId})
     @trigger('drawingChange')
 
-  updateShape: (shape, triggerShapeSaveEvent=true) ->
+  updateShape: (shape, triggerShapeUpdateEvent=true) ->
     @execute(new actions.UpdateShapeAction(this, shape))
-    if triggerShapeSaveEvent
-      @trigger('shapeSave', {shape})
+    if triggerShapeUpdateEvent
+      @trigger('updateShape', {shape})
+    @trigger('drawingChange')
+
+  deleteShape: (shape, triggerShapeDeleteEvent=true) ->
+    @execute(new actions.DeleteShapeAction(this, shape))
+    if triggerShapeDeleteEvent
+      @trigger('deleteShape', {shape})
     @trigger('drawingChange')
 
   pan: (x, y) ->

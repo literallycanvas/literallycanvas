@@ -72,4 +72,25 @@ class UpdateShapeAction
     @lc.repaintLayer('main')
 
 
-module.exports = {ClearAction, AddShapeAction, UpdateShapeAction}
+class DeleteShapeAction
+
+  constructor: (@lc, @shape) ->
+
+  do: ->
+
+    newShapes = []
+    for shape in @lc.shapes
+      console.log(shape,@shape)
+      if(shape.id!=@shape.id)
+        newShapes.push(shape)
+
+    @lc.shapes = newShapes
+    @lc.repaintLayer('main')
+
+  undo: ->
+    # to be implemented    
+    @lc.repaintLayer('main')
+
+
+
+module.exports = {ClearAction, AddShapeAction, UpdateShapeAction, DeleteShapeAction}
