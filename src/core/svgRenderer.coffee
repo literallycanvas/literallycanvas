@@ -95,7 +95,7 @@ defineSVGRenderer 'Line', (shape) ->
       <line x1='#{x1}' y1='#{y1}' x2='#{x2}' y2='#{y2}'
         #{dashString}
         stroke-linecap='#{shape.capStyle}'
-        stroke='#{shape.color} 'stroke-width='#{shape.strokeWidth}' />
+        stroke='#{shape.color}' stroke-width='#{shape.strokeWidth}' />
       #{capString}
     </g>
   "
