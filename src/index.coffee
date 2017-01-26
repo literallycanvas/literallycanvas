@@ -81,6 +81,9 @@ initWithoutGUI = (el, opts) ->
   if el.className.includes('toolbar-hidden') == false
     el.className = el.className + ' toolbar-hidden'
 
+  if ('imageSize' of opts && 'height' of opts.imageSize)
+    el.style.height = opts.imageSize.height + 'px'
+
   drawingViewElement = document.createElement('div')
   drawingViewElement.className = 'lc-drawing'
   el.appendChild(drawingViewElement)
