@@ -70,7 +70,7 @@ const LiterallyCanvas = React.createClass({
 
   render() {
     const { lc, toolButtonComponents, props } = this;
-    const { imageURLPrefix, toolbarPosition } = this.lc.opts;
+    const { imageURLPrefix, toolbarPosition, imageSize } = this.lc.opts;
     
     const pickerProps = { lc, toolButtonComponents, imageURLPrefix };
     const topOrBottomClassName = classSet({
@@ -78,8 +78,13 @@ const LiterallyCanvas = React.createClass({
       'toolbar-at-bottom': toolbarPosition === 'bottom',
       'toolbar-hidden': toolbarPosition === 'hidden'
     });
+
+    const style = {}
+    if (imageSize.height)
+      style.height = imageSize.height
+
     return (
-      <div className={`literally ${topOrBottomClassName}`}>
+      <div className={`literally ${topOrBottomClassName}`} style={style}>
         <CanvasContainer ref={item => this.canvas = item} />
         <Picker {...pickerProps} />
         <Options lc={lc} imageURLPrefix={imageURLPrefix} />
