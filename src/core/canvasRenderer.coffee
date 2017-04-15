@@ -18,8 +18,12 @@ renderShapeToContext = (ctx, shape, opts={}) ->
 
   if renderers[shape.className]
     if opts.shouldOnlyDrawLatest and renderers[shape.className].drawLatestFunc
-      renderers[shape.className].drawLatestFunc(
-        ctx, bufferCtx, shape, opts.retryCallback)
+      if shape.className == 'LinePath'  # Added by Pankaj on 4/10/2017
+        renderers[shape.className].drawLatestFunc(
+          ctx, ctx, shape, opts.retryCallback)
+      else
+        renderers[shape.className].drawLatestFunc(
+          ctx, bufferCtx, shape, opts.retryCallback)
     else
       renderers[shape.className].drawFunc(ctx, shape, opts.retryCallback)
   else if opts.shouldIgnoreUnsupportedShapes

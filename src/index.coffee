@@ -136,6 +136,7 @@ module.exports = {
   defineSVGRenderer: svgRenderer.defineSVGRenderer,
   renderShapeToSVG: svgRenderer.renderShapeToSVG,
   renderShapesToSVG: util.renderShapesToSVG,
+  renderShapesToSVG2: util.renderShapesToSVG2,
 
   snapshotToShapes: conversion.snapshotToShapes
   snapshotJSONToShapes: conversion.snapshotJSONToShapes
