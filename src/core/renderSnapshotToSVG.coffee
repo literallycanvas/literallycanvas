@@ -29,5 +29,5 @@ module.exports = (snapshot, opts={}) ->
       opts.margin
     )
 
-  return LC.renderShapesToSVG(
+  return util.renderShapesToSVG(
     backgroundShapes.concat(shapes), opts.rect, colors.background)
