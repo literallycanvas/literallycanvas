@@ -6,6 +6,7 @@ math = require './math'
 {renderShapeToSVG} = require './svgRenderer'
 renderSnapshotToImage = require './renderSnapshotToImage'
 renderSnapshotToSVG = require './renderSnapshotToSVG'
+renderSnapshotToSVG2 = require './renderSnapshotToSVG2'
 Pencil = require '../tools/Pencil'
 util = require './util'
 
@@ -329,7 +330,8 @@ module.exports = class LiterallyCanvas
   # without doing a full repaint.
   # The context is restored to its original state before returning.
   drawShapeInProgress: (shape) ->
-    @repaintLayer('main', false)
+    if shape.className != 'LinePath'  # Added by Pankaj on 4/10/2017
+      @repaintLayer('main', false)
     @clipped (=>
       @transformed (=>
         renderShapeToContext(
@@ -476,7 +478,11 @@ module.exports = class LiterallyCanvas
     console.warn("lc.getSnapshotJSON() is deprecated. use JSON.stringify(lc.getSnapshot()) instead.")
     JSON.stringify(@getSnapshot())
 
-  getSVGString: (opts={}) -> renderSnapshotToSVG(@getSnapshot(), opts)
+  getSVGString: (opts={}) -> 
+    if opts.version and opts.version == 2
+      renderSnapshotToSVG2(@getSnapshot(), opts)
+    else
+      renderSnapshotToSVG(@getSnapshot(), opts)
 
   loadSnapshot: (snapshot) ->
     return unless snapshot

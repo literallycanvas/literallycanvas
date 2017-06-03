@@ -78,6 +78,16 @@ util =
       </svg>
     ".replace(/(\r\n|\n|\r)/gm,"")
 
+  renderShapesToSVG2: (shapes, scale, backgroundColor) ->
+    "
+      <svg
+          xmlns='http://www.w3.org/2000/svg' style='width:100%;height:100%;background-color:#{backgroundColor};'>
+        <g transform='scale(#{scale}, #{scale})'>
+          #{shapes.map(renderShapeToSVG).join('')}
+        </g>
+      </svg>
+    ".replace(/(\r\n|\n|\r)/gm,"")
+
   # [{x, y, width, height}]
   getBoundingRect: (rects, width, height) ->
     return {x: 0, y: 0, width: 0 or width, height: 0 or height} unless rects.length
