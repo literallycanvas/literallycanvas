@@ -3,3 +3,4 @@ literallycanvas/
 *.sublime-workspace
 node_modules/
 *.log
+package-lock.json
