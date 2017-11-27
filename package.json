@@ -40,8 +40,8 @@
     "gulp-uglify": "~1.5.1",
     "merge-stream": "^1.0.0",
     "preprocessify": "0.0.6",
-    "react": "^15.1",
-    "react-dom": "^15.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "react-dom-factories": "^1.0.2",
     "streamify": "~0.2.5",
     "uglify-js": "~2.6.1",
@@ -53,8 +53,8 @@
   },
   "peerDependencies": {
     "create-react-class": "^15.6.2",
-    "react": "^0.14.6 || ^15.1",
-    "react-dom": "^0.14.6 || ^15.1",
+    "react": "^0.14.6 || ^15.1 || ^16.0.0",
+    "react-dom": "^0.14.6 || ^15.1 || ^16.0.0",
     "react-dom-factories": "^1.0.2"
   }
 }
