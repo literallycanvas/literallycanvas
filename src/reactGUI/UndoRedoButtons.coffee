@@ -1,8 +1,9 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 
-createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
+createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
   displayName: if undoOrRedo == 'undo' then 'UndoButton' else 'RedoButton'
 
   # We do this a lot, even though it reads as a React no-no.
@@ -41,7 +42,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> React.createClass
 
 UndoButton = React.createFactory createUndoRedoButtonComponent('undo')
 RedoButton = React.createFactory createUndoRedoButtonComponent('redo')
-UndoRedoButtons = React.createClass
+UndoRedoButtons = createReactClass
   displayName: 'UndoRedoButtons'
   render: ->
     {div} = React.DOM

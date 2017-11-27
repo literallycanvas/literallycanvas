@@ -1,10 +1,11 @@
 React = require '../reactGUI/React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
 StrokeWidthPicker = React.createFactory require '../reactGUI/StrokeWidthPicker'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 
-defineOptionsStyle 'line-options-and-stroke-width', React.createClass
+defineOptionsStyle 'line-options-and-stroke-width', createReactClass
   displayName: 'LineOptionsAndStrokeWidth'
   getState: -> {
     strokeWidth: @props.tool.strokeWidth,

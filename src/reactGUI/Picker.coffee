@@ -1,4 +1,5 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 
 ClearButton = React.createFactory require './ClearButton'
 UndoRedoButtons = React.createFactory require './UndoRedoButtons'
@@ -7,7 +8,7 @@ ZoomButtons = React.createFactory require './ZoomButtons'
 {_} = require '../core/localization'
 ColorWell = React.createFactory require './ColorWell'
 
-ColorPickers = React.createFactory React.createClass
+ColorPickers = React.createFactory createReactClass
   displayName: 'ColorPickers'
   render: ->
     {lc} = @props
@@ -19,7 +20,7 @@ ColorPickers = React.createFactory React.createClass
     )
 
 
-Picker = React.createClass
+Picker = createReactClass
   displayName: 'Picker'
   getInitialState: -> {selectedToolIndex: 0}
   renderBody: ->

@@ -1,9 +1,10 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {_} = require '../core/localization'
 {classSet} = require '../core/util'
 
-ClearButton = React.createClass
+ClearButton = createReactClass
   displayName: 'ClearButton'
   getState: -> {isEnabled: @props.lc.canUndo()}
   getInitialState: -> @getState()

@@ -1,4 +1,5 @@
 React = require '../reactGUI/React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
 {_} = require '../core/localization'
 
@@ -55,7 +56,7 @@ for {name, value} in OTHER_FONTS
   FONT_NAME_TO_VALUE[name] = value
 
 
-defineOptionsStyle 'font', React.createClass
+defineOptionsStyle 'font', createReactClass
   displayName: 'FontOptions'
   getInitialState: -> {
     isItalic: false

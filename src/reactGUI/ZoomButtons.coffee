@@ -1,8 +1,9 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 
-createZoomButtonComponent = (inOrOut) -> React.createClass
+createZoomButtonComponent = (inOrOut) -> createReactClass
   displayName: if inOrOut == 'in' then 'ZoomInButton' else 'ZoomOutButton'
 
   getState: -> {
@@ -34,7 +35,7 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
 
 ZoomOutButton = React.createFactory createZoomButtonComponent('out')
 ZoomInButton = React.createFactory createZoomButtonComponent('in')
-ZoomButtons = React.createClass
+ZoomButtons = createReactClass
   displayName: 'ZoomButtons'
   render: ->
     {div} = React.DOM

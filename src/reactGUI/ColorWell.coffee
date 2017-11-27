@@ -1,4 +1,5 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 PureRenderMixin = require 'react-addons-pure-render-mixin'
 {classSet, requestAnimationFrame, cancelAnimationFrame} = require '../core/util'
 {_} = require '../core/localization'
@@ -25,7 +26,7 @@ getHSLString = ({hue, sat, light}) ->
   "hsl(#{hue}, #{sat}%, #{light}%)"
 
 
-ColorGrid = React.createFactory React.createClass
+ColorGrid = React.createFactory createReactClass
   displayName: 'ColorGrid'
   mixins: [PureRenderMixin]
   render: ->
@@ -65,7 +66,7 @@ ColorGrid = React.createFactory React.createClass
     )
 
 
-ColorWell = React.createClass
+ColorWell = createReactClass
   displayName: 'ColorWell'
   mixins: [PureRenderMixin]
   getInitialState: ->

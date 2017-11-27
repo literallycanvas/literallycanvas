@@ -1,8 +1,9 @@
 React = require '../reactGUI/React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
 
 
-defineOptionsStyle 'null', React.createClass
+defineOptionsStyle 'null', createReactClass
   displayName: 'NoOptions'
   render: -> React.DOM.div()
 

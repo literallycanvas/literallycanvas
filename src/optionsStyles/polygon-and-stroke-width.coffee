@@ -1,9 +1,10 @@
 React = require '../reactGUI/React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
 StrokeWidthPicker = React.createFactory require '../reactGUI/StrokeWidthPicker'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 
-defineOptionsStyle 'polygon-and-stroke-width', React.createClass
+defineOptionsStyle 'polygon-and-stroke-width', createReactClass
   displayName: 'PolygonAndStrokeWidth'
   getState: -> {
     strokeWidth: @props.tool.strokeWidth

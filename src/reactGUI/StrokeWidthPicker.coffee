@@ -1,9 +1,10 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 
 
-module.exports = React.createClass
+module.exports = createReactClass
   displayName: 'StrokeWidthPicker'
 
   getState: (tool=@props.tool) -> {strokeWidth: tool.strokeWidth}

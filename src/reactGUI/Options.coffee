@@ -1,9 +1,10 @@
 React = require './React-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {optionsStyles} = require '../optionsStyles/optionsStyles'
 
 
-Options = React.createClass
+Options = createReactClass
   displayName: 'Options'
   getState: -> {
     style: @props.lc.tool?.optionsStyle
