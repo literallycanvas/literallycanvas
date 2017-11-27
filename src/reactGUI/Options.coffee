@@ -1,4 +1,4 @@
-React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
 createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {optionsStyles} = require '../optionsStyles/optionsStyles'
@@ -20,7 +20,7 @@ Options = createReactClass
       lc: @props.lc, tool: @state.tool, imageURLPrefix: @props.imageURLPrefix})
 
   render: ->
-    {div} = React.DOM
+    {div} = DOM
     (div {className: 'lc-options horz-toolbar'},
       this.renderBody()
     )

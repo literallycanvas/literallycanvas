@@ -1,4 +1,4 @@
-React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
 createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 {classSet} = require '../core/util'
@@ -14,7 +14,7 @@ module.exports = createReactClass
   componentWillReceiveProps: (props) -> @setState @getState(props.tool)
 
   render: ->
-    {ul, li, svg, circle, div} = React.DOM
+    {ul, li, svg, circle, div} = DOM
     strokeWidths = @props.lc.opts.strokeWidths
 
     (div {},

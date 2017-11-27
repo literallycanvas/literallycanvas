@@ -1,4 +1,5 @@
 React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
 createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {classSet} = require '../core/util'
@@ -22,7 +23,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
   mixins: [createSetStateOnEventMixin('drawingChange')]
 
   render: ->
-    {div, img} = React.DOM
+    {div, img} = DOM
     {lc, imageURLPrefix} = @props
     title = if undoOrRedo == 'undo' then 'Undo' else 'Redo'
 
@@ -45,7 +46,7 @@ RedoButton = React.createFactory createUndoRedoButtonComponent('redo')
 UndoRedoButtons = createReactClass
   displayName: 'UndoRedoButtons'
   render: ->
-    {div} = React.DOM
+    {div} = DOM
     (div {className: 'lc-undo-redo'}, UndoButton(@props), RedoButton(@props))
 
 module.exports = UndoRedoButtons

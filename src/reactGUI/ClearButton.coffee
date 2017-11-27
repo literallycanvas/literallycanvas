@@ -1,4 +1,4 @@
-React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
 createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {_} = require '../core/localization'
@@ -11,7 +11,7 @@ ClearButton = createReactClass
   mixins: [createSetStateOnEventMixin('drawingChange')]
 
   render: ->
-    {div} = React.DOM
+    {div} = DOM
     {lc} = @props
 
     className = classSet
