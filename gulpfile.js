@@ -40,6 +40,7 @@ gulp.task('browserify-lc-main', function() {
       basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC',
       debug: false
   }).add('./index.coffee')
+    .external('create-react-class')
     .external('react')
     .external('react-dom')
     .transform(preprocessify({ INCLUDE_GUI: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
