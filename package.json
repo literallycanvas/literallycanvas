@@ -42,6 +42,7 @@
     "preprocessify": "0.0.6",
     "react": "^15.1",
     "react-dom": "^15.1",
+    "react-dom-factories": "^1.0.2",
     "streamify": "~0.2.5",
     "uglify-js": "~2.6.1",
     "vinyl-source-stream": "~1.1.0",
@@ -53,6 +54,7 @@
   "peerDependencies": {
     "create-react-class": "^15.6.2",
     "react": "^0.14.6 || ^15.1",
-    "react-dom": "^0.14.6 || ^15.1"
+    "react-dom": "^0.14.6 || ^15.1",
+    "react-dom-factories": "^1.0.2"
   }
 }

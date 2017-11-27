@@ -43,6 +43,7 @@ gulp.task('browserify-lc-main', function() {
     .external('create-react-class')
     .external('react')
     .external('react-dom')
+    .external('react-dom-factories')
     .transform(preprocessify({ INCLUDE_GUI: true }, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
     .transform('babelify')
