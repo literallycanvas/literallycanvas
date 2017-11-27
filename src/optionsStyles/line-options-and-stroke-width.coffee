@@ -1,10 +1,11 @@
-React = require '../reactGUI/React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
 StrokeWidthPicker = React.createFactory require '../reactGUI/StrokeWidthPicker'
 createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 
-defineOptionsStyle 'line-options-and-stroke-width', React.createClass
+defineOptionsStyle 'line-options-and-stroke-width', createReactClass
   displayName: 'LineOptionsAndStrokeWidth'
   getState: -> {
     strokeWidth: @props.tool.strokeWidth,
@@ -15,7 +16,7 @@ defineOptionsStyle 'line-options-and-stroke-width', React.createClass
   mixins: [createSetStateOnEventMixin('toolChange')]
 
   render: ->
-    {div, ul, li, img} = React.DOM
+    {div, ul, li, img} = DOM
     toggleIsDashed = =>
       @props.tool.isDashed = !@props.tool.isDashed
       @setState @getState()

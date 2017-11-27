@@ -1,4 +1,5 @@
-React = require '../reactGUI/React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
 {_} = require '../core/localization'
 
@@ -55,7 +56,7 @@ for {name, value} in OTHER_FONTS
   FONT_NAME_TO_VALUE[name] = value
 
 
-defineOptionsStyle 'font', React.createClass
+defineOptionsStyle 'font', createReactClass
   displayName: 'FontOptions'
   getInitialState: -> {
     isItalic: false
@@ -108,7 +109,7 @@ defineOptionsStyle 'font', React.createClass
   render: ->
     lc = @props.lc
 
-    {div, input, select, option, br, label, span, optgroup} = React.DOM
+    {div, input, select, option, br, label, span, optgroup} = DOM
 
     (div {className: 'lc-font-settings'},
       (select {value: @state.fontSizeIndex, onChange: @handleFontSize},

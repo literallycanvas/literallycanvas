@@ -1,9 +1,9 @@
-const React = require('../reactGUI/React-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
 const { defineOptionsStyle } = require('./optionsStyles');
 const createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 const _ = require('../core/localization')._;
 
-defineOptionsStyle('stroke-or-fill', React.createClass({
+defineOptionsStyle('stroke-or-fill', createReactClass({
   displayName: 'StrokeOrFillPicker',
   getState: function() { return {strokeOrFill: 'stroke'}; },
   getInitialState: function() { return this. getState(); },

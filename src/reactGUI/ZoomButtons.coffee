@@ -1,8 +1,10 @@
 React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {classSet} = require '../core/util'
 
-createZoomButtonComponent = (inOrOut) -> React.createClass
+createZoomButtonComponent = (inOrOut) -> createReactClass
   displayName: if inOrOut == 'in' then 'ZoomInButton' else 'ZoomOutButton'
 
   getState: -> {
@@ -14,7 +16,7 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
   mixins: [createSetStateOnEventMixin('zoom')]
 
   render: ->
-    {div, img} = React.DOM
+    {div, img} = DOM
     {lc, imageURLPrefix} = @props
     title = if inOrOut == 'in' then 'Zoom in' else 'Zoom out'
 
@@ -34,10 +36,10 @@ createZoomButtonComponent = (inOrOut) -> React.createClass
 
 ZoomOutButton = React.createFactory createZoomButtonComponent('out')
 ZoomInButton = React.createFactory createZoomButtonComponent('in')
-ZoomButtons = React.createClass
+ZoomButtons = createReactClass
   displayName: 'ZoomButtons'
   render: ->
-    {div} = React.DOM
+    {div} = DOM
     (div {className: 'lc-zoom'}, ZoomOutButton(@props), ZoomInButton(@props))
 
 

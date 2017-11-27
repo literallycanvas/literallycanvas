@@ -1,4 +1,6 @@
 React = require './React-shim'
+DOM = require '../reactGUI/ReactDOMFactories-shim'
+createReactClass = require '../reactGUI/createReactClass-shim'
 
 ClearButton = React.createFactory require './ClearButton'
 UndoRedoButtons = React.createFactory require './UndoRedoButtons'
@@ -7,11 +9,11 @@ ZoomButtons = React.createFactory require './ZoomButtons'
 {_} = require '../core/localization'
 ColorWell = React.createFactory require './ColorWell'
 
-ColorPickers = React.createFactory React.createClass
+ColorPickers = React.createFactory createReactClass
   displayName: 'ColorPickers'
   render: ->
     {lc} = @props
-    {div} = React.DOM
+    {div} = DOM
     (div {className: 'lc-color-pickers'},
       (ColorWell {lc, colorName: 'primary', label: _('stroke')})
       (ColorWell {lc, colorName: 'secondary', label: _('fill')}),
@@ -19,11 +21,11 @@ ColorPickers = React.createFactory React.createClass
     )
 
 
-Picker = React.createClass
+Picker = createReactClass
   displayName: 'Picker'
   getInitialState: -> {selectedToolIndex: 0}
   renderBody: ->
-    {div} = React.DOM
+    {div} = DOM
     {toolButtonComponents, lc, imageURLPrefix} = @props
     (div {className: 'lc-picker-contents'},
       toolButtonComponents.map((component, ix) =>
@@ -53,7 +55,7 @@ Picker = React.createClass
       )
     )
   render: ->
-    {div} = React.DOM
+    {div} = DOM
     (div {className: 'lc-picker'},
       this.renderBody()
     )

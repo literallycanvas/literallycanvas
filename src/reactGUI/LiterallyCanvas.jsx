@@ -1,4 +1,4 @@
-const React = require('../reactGUI/React-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
 const { findDOMNode } = require('../reactGUI/ReactDOM-shim');
 const { classSet } = require('../core/util');
 const Picker = require('./Picker');
@@ -14,7 +14,7 @@ require('../optionsStyles/polygon-and-stroke-width');
 require('../optionsStyles/null');
 
 
-const CanvasContainer = React.createClass({
+const CanvasContainer = createReactClass({
   displayName: 'CanvasContainer',
   shouldComponentUpdate() {
     // Avoid React trying to control this DOM
@@ -27,7 +27,7 @@ const CanvasContainer = React.createClass({
   }
 })
 
-const LiterallyCanvas = React.createClass({
+const LiterallyCanvas = createReactClass({
   displayName: 'LiterallyCanvas',
 
   getDefaultProps() { return defaultOptions; },

@@ -1,6 +1,6 @@
 const { LiterallyCanvasReactComponent } = window.LC;
 
-const DemoApp = React.createClass({
+const DemoApp = createReactClass({
     getInitialState() {
         const backgroundImage = new Image();
         backgroundImage.src = '/demo/bear.png';
