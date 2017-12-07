@@ -23,6 +23,8 @@ buttonIsDown = (e) ->
 module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
   unsubs = []
 
+  ### MOUSE ###
+
   mouseMoveListener = (e) =>
     e.preventDefault()
     p = position(canvas, e)
@@ -51,28 +53,49 @@ module.exports = bindEvents = (lc, canvas, panWithKeyboard = false) ->
     document.addEventListener 'mousemove', mouseMoveListener
     document.addEventListener 'mouseup', mouseUpListener
 
+  ### TOUCH ###
 
-  touchMoveListener = (e) ->
-    e.preventDefault()
-    lc.pointerMove(coordsForTouchEvent(canvas, e)...)
+  isPollingForTouchEvents = false
+  pollForTouchEvents = (touchStartEvent) ->
+    # handle initial event
+    touchStartEvent.preventDefault()
+    isPollingForTouchEvents = true
+    lc.pointerDown(coordsForTouchEvent(canvas, touchStartEvent)...)
 
-  touchEndListener = (e) ->
-    e.preventDefault()
-    lc.pointerUp(coordsForTouchEvent(canvas, e)...)
-    document.removeEventListener 'touchmove', touchMoveListener
-    document.removeEventListener 'touchend', touchEndListener
-    document.removeEventListener 'touchcancel', touchEndListener
+    # latest event will be stored here; will be fired if there is a change
+    nextEvent = null
+
+    poll = ->
+      return unless isPollingForTouchEvents
+      window.requestAnimationFrame poll
+      return unless nextEvent
+      lc.pointerMove(coordsForTouchEvent(canvas, nextEvent)...)
+      nextEvent = null
+
+    touchMoveListener = (e) ->
+      nextEvent = e
+
+    touchEndListener = (e) ->
+      isPollingForTouchEvents = false
+      e.preventDefault()
+      lc.pointerUp(coordsForTouchEvent(canvas, e)...)
+      document.removeEventListener 'touchmove', touchMoveListener
+      document.removeEventListener 'touchend', touchEndListener
+      document.removeEventListener 'touchcancel', touchEndListener
+
+    document.addEventListener 'touchmove', touchMoveListener
+    document.addEventListener 'touchend', touchEndListener
+    document.addEventListener 'touchcancel', touchEndListener
+
+    window.requestAnimationFrame poll
 
   canvas.addEventListener 'touchstart', (e) ->
+    return if isPollingForTouchEvents
     return if e.target.tagName.toLowerCase() != 'canvas'
-    e.preventDefault()
-    if e.touches.length == 1
-      lc.pointerDown(coordsForTouchEvent(canvas, e)...)
-      document.addEventListener 'touchmove', touchMoveListener
-      document.addEventListener 'touchend', touchEndListener
-      document.addEventListener 'touchcancel', touchEndListener
-    else
-      lc.pointerMove(coordsForTouchEvent(canvas, e)...)
+    return if e.touches.length != 1
+    pollForTouchEvents(e)
+
+  ### KEYBOARD ###
 
   if panWithKeyboard
     console.warn("Keyboard panning is deprecated.")
