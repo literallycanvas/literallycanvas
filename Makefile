@@ -3,7 +3,7 @@
 all: gulp
 
 gulp:
-	gulp
+	npm run gulp
 
 clean:
 	rm -f lib/js/literallycanvas*.js
@@ -12,6 +12,7 @@ serve:
 	gulp serve
 
 release-files: all
+	mkdir -p literallycanvas
 	-rm -rf literallycanvas
 	mkdir literallycanvas
 	cp -r lib/* literallycanvas/

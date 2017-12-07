@@ -6,7 +6,8 @@
   "scripts": {
     "prepublish": "gulp commonjs",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "gulp dev"
+    "dev": "gulp dev",
+    "gulp": "gulp"
   },
   "repository": {
     "type": "git",
