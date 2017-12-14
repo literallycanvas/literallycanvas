@@ -49,8 +49,8 @@
     '`': '&#x60;',
     '=': '&#x3D;'
   };
-  
-  function escapeHtml (string) {
+
+  function escapeHTML (string) {
     return String(string).replace(/[&<>"'`=\/]/g, function (s) {
       return entityMap[s];
     });
