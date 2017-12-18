@@ -18,6 +18,19 @@ renderShapeToSVG = (shape, opts={}) ->
   else
     throw "Can't render shape of type #{shape.className} to SVG"
 
+entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+}
+
+escapeHTML = (string) -> String(string).replace /[&<>"'`=\/]/g, (s) -> entityMap[s]
+
 
 defineSVGRenderer 'Rectangle', (shape) ->
   x1 = shape.x
@@ -171,7 +184,7 @@ defineSVGRenderer 'Text', (shape) ->
       dy = if i == 0 then 0 else '1.2em'
       return "
         <tspan x='#{shape.x}' dy='#{dy}' alignment-baseline='text-before-edge'>
-          #{line}
+          #{escapeHTML(line)}
         </tspan>"
     ).join('')}
   </text>

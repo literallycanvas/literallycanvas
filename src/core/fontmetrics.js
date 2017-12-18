@@ -39,6 +39,23 @@
   var NAME = "FontMetrics Library"
   var VERSION = "1-2012.0121.1300";
 
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  function escapeHTML (string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+      return entityMap[s];
+    });
+  }
+
   // if there is no getComputedStyle, this library won't work.
   if(!document.defaultView.getComputedStyle) {
     throw("ERROR: 'document.defaultView.getComputedStyle' not found. This library only works in browsers that can report computed CSS values.");
@@ -99,7 +116,7 @@
     leadDiv.style.position = "absolute";
     leadDiv.style.opacity = 0;
     leadDiv.style.font = fontString;
-    leadDiv.innerHTML = textstring + "<br/>" + textstring;
+    leadDiv.innerHTML = escapeHTML(textstring) + "<br/>" + escapeHTML(textstring);
     document.body.appendChild(leadDiv);
 
     // make some initial guess at the text leading (using the standard TeX ratio)
