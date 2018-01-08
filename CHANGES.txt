@@ -1,3 +1,9 @@
+v0.5.0:
+ * Support for React 15 & 16
+ * Fix XSS vulnerabilities in text tool (interactive & SVG output)
+ * Fix minor bugs in SVG output
+ * Core build respects imageSize option
+
 v0.4.14:
  * onInit option works again (broke in 0.4.13)
  * Remove Bower support
