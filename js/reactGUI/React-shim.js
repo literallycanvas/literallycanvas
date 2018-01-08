@@ -1,4 +1,4 @@
-var React, error;
+var React;
 
 try {
   React = require('react');

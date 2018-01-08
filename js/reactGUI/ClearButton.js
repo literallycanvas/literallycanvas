@@ -1,6 +1,8 @@
-var ClearButton, React, _, classSet, createSetStateOnEventMixin;
+var ClearButton, DOM, _, classSet, createReactClass, createSetStateOnEventMixin;
 
-React = require('./React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
@@ -8,7 +10,7 @@ _ = require('../core/localization')._;
 
 classSet = require('../core/util').classSet;
 
-ClearButton = React.createClass({
+ClearButton = createReactClass({
   displayName: 'ClearButton',
   getState: function() {
     return {
@@ -21,7 +23,7 @@ ClearButton = React.createClass({
   mixins: [createSetStateOnEventMixin('drawingChange')],
   render: function() {
     var className, div, lc, onClick;
-    div = React.DOM.div;
+    div = DOM.div;
     lc = this.props.lc;
     className = classSet({
       'lc-clear': true,

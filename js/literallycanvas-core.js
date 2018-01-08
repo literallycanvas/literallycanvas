@@ -375,11 +375,12 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.setZoom = function(scale) {
-    var oldScale;
+    var center, oldScale;
+    center = this.clientCoordsToDrawingCoords(this.canvas.width / 2, this.canvas.height / 2);
     oldScale = this.scale;
     this.scale = scale;
-    this.position.x = math.scalePositionScalar(this.position.x, this.canvas.width, oldScale, this.scale);
-    this.position.y = math.scalePositionScalar(this.position.y, this.canvas.height, oldScale, this.scale);
+    this.position.x = this.canvas.width / 2 * this.backingScale - center.x * this.getRenderScale();
+    this.position.y = this.canvas.height / 2 * this.backingScale - center.y * this.getRenderScale();
     this.keepPanInImageBounds();
     this.repaintAllLayers();
     return this.trigger('zoom', {
@@ -1599,6 +1600,23 @@ module.exports = {
   var NAME = "FontMetrics Library";
   var VERSION = "1-2012.0121.1300";
 
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  function escapeHTML(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+      return entityMap[s];
+    });
+  }
+
   // if there is no getComputedStyle, this library won't work.
   if (!document.defaultView.getComputedStyle) {
     throw "ERROR: 'document.defaultView.getComputedStyle' not found. This library only works in browsers that can report computed CSS values.";
@@ -1657,7 +1675,7 @@ module.exports = {
     leadDiv.style.position = "absolute";
     leadDiv.style.opacity = 0;
     leadDiv.style.font = fontString;
-    leadDiv.innerHTML = textstring + "<br/>" + textstring;
+    leadDiv.innerHTML = escapeHTML(textstring) + "<br/>" + escapeHTML(textstring);
     document.body.appendChild(leadDiv);
 
     // make some initial guess at the text leading (using the standard TeX ratio)
@@ -2085,7 +2103,7 @@ module.exports = function(snapshot, opts) {
       return results;
     })(), imageSize, opts.margin);
   }
-  return LC.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
+  return util.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
 };
 
 
@@ -3014,7 +3032,7 @@ module.exports = {
 
 
 },{"./TextRenderer":2,"./canvasRenderer":5,"./lineEndCapShapes":8,"./svgRenderer":14,"./util":15}],14:[function(require,module,exports){
-var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
+var defineSVGRenderer, entityMap, escapeHTML, lineEndCapShapes, renderShapeToSVG, renderers;
 
 lineEndCapShapes = require('./lineEndCapShapes');
 
@@ -3039,6 +3057,23 @@ renderShapeToSVG = function(shape, opts) {
   } else {
     throw "Can't render shape of type " + shape.className + " to SVG";
   }
+};
+
+entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+};
+
+escapeHTML = function(string) {
+  return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+    return entityMap[s];
+  });
 };
 
 defineSVGRenderer('Rectangle', function(shape) {
@@ -3096,7 +3131,7 @@ defineSVGRenderer('Line', function(shape) {
   if (shape.endCapShapes[1]) {
     capString += lineEndCapShapes[shape.endCapShapes[1]].svg(x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color);
   }
-  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + " 'stroke-width='" + shape.strokeWidth + "' /> " + capString + " </g>";
+  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + "' stroke-width='" + shape.strokeWidth + "' /> " + capString + " </g>";
 });
 
 defineSVGRenderer('LinePath', function(shape) {
@@ -3143,7 +3178,7 @@ defineSVGRenderer('Text', function(shape) {
     return function(line, i) {
       var dy;
       dy = i === 0 ? 0 : '1.2em';
-      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + line + " </tspan>";
+      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + (escapeHTML(line)) + " </tspan>";
     };
   })(this)).join('')) + " </text>";
 });
@@ -3494,7 +3529,12 @@ initWithoutGUI = function(el, opts) {
   if ([' ', ' '].join(el.className).indexOf(' literally ') === -1) {
     el.className = el.className + ' literally';
   }
-  el.className = el.className + ' toolbar-hidden';
+  if (el.className.includes('toolbar-hidden') === false) {
+    el.className = el.className + ' toolbar-hidden';
+  }
+  if ('imageSize' in opts && 'height' in opts.imageSize) {
+    el.style.height = opts.imageSize.height + 'px';
+  }
   drawingViewElement = document.createElement('div');
   drawingViewElement.className = 'lc-drawing';
   el.appendChild(drawingViewElement);
@@ -3981,8 +4021,8 @@ module.exports = Polygon = (function(superClass) {
     polygonFinishOpen = (function(_this) {
       return function() {
         _this.maybePoint = {
-          x: Infinity,
-          y: Infinity
+          x: 2e308,
+          y: 2e308
         };
         return _this._close(lc);
       };

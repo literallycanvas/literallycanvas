@@ -374,11 +374,12 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.setZoom = function(scale) {
-    var oldScale;
+    var center, oldScale;
+    center = this.clientCoordsToDrawingCoords(this.canvas.width / 2, this.canvas.height / 2);
     oldScale = this.scale;
     this.scale = scale;
-    this.position.x = math.scalePositionScalar(this.position.x, this.canvas.width, oldScale, this.scale);
-    this.position.y = math.scalePositionScalar(this.position.y, this.canvas.height, oldScale, this.scale);
+    this.position.x = this.canvas.width / 2 * this.backingScale - center.x * this.getRenderScale();
+    this.position.y = this.canvas.height / 2 * this.backingScale - center.y * this.getRenderScale();
     this.keepPanInImageBounds();
     this.repaintAllLayers();
     return this.trigger('zoom', {

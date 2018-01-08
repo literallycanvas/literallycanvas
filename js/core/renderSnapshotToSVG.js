@@ -68,5 +68,5 @@ module.exports = function(snapshot, opts) {
       return results;
     })(), imageSize, opts.margin);
   }
-  return LC.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
+  return util.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
 };

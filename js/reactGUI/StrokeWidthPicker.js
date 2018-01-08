@@ -1,12 +1,14 @@
-var React, classSet, createSetStateOnEventMixin;
+var DOM, classSet, createReactClass, createSetStateOnEventMixin;
 
-React = require('./React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
-module.exports = React.createClass({
+module.exports = createReactClass({
   displayName: 'StrokeWidthPicker',
   getState: function(tool) {
     if (tool == null) {
@@ -24,8 +26,8 @@ module.exports = React.createClass({
     return this.setState(this.getState(props.tool));
   },
   render: function() {
-    var circle, div, li, ref, strokeWidths, svg, ul;
-    ref = React.DOM, ul = ref.ul, li = ref.li, svg = ref.svg, circle = ref.circle, div = ref.div;
+    var circle, div, li, strokeWidths, svg, ul;
+    ul = DOM.ul, li = DOM.li, svg = DOM.svg, circle = DOM.circle, div = DOM.div;
     strokeWidths = this.props.lc.opts.strokeWidths;
     return div({}, strokeWidths.map((function(_this) {
       return function(strokeWidth, ix) {
@@ -45,7 +47,7 @@ module.exports = React.createClass({
         }, svg({
           width: buttonSize - 2,
           height: buttonSize - 2,
-          viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
+          viewport: "0 0 " + strokeWidth + " " + strokeWidth,
           version: "1.1",
           xmlns: "http://www.w3.org/2000/svg"
         }, circle({

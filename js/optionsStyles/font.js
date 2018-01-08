@@ -1,6 +1,8 @@
-var ALL_FONTS, FONT_NAME_TO_VALUE, MONOSPACE_FONTS, OTHER_FONTS, React, SANS_SERIF_FONTS, SERIF_FONTS, _, defineOptionsStyle, i, j, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, value;
+var ALL_FONTS, DOM, FONT_NAME_TO_VALUE, MONOSPACE_FONTS, OTHER_FONTS, SANS_SERIF_FONTS, SERIF_FONTS, _, createReactClass, defineOptionsStyle, i, j, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, value;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
@@ -66,7 +68,7 @@ for (m = 0, len3 = OTHER_FONTS.length; m < len3; m++) {
   FONT_NAME_TO_VALUE[name] = value;
 }
 
-defineOptionsStyle('font', React.createClass({
+defineOptionsStyle('font', createReactClass({
   displayName: 'FontOptions',
   getInitialState: function() {
     return {
@@ -138,9 +140,9 @@ defineOptionsStyle('font', React.createClass({
     return this.updateTool();
   },
   render: function() {
-    var br, div, input, label, lc, optgroup, option, ref4, select, span;
+    var br, div, input, label, lc, optgroup, option, select, span;
     lc = this.props.lc;
-    ref4 = React.DOM, div = ref4.div, input = ref4.input, select = ref4.select, option = ref4.option, br = ref4.br, label = ref4.label, span = ref4.span, optgroup = ref4.optgroup;
+    div = DOM.div, input = DOM.input, select = DOM.select, option = DOM.option, br = DOM.br, label = DOM.label, span = DOM.span, optgroup = DOM.optgroup;
     return div({
       className: 'lc-font-settings'
     }, select({

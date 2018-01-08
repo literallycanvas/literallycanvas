@@ -82,8 +82,8 @@ module.exports = Polygon = (function(superClass) {
     polygonFinishOpen = (function(_this) {
       return function() {
         _this.maybePoint = {
-          x: Infinity,
-          y: Infinity
+          x: 2e308,
+          y: 2e308
         };
         return _this._close(lc);
       };

@@ -1,13 +1,17 @@
-var React, RedoButton, UndoButton, UndoRedoButtons, classSet, createSetStateOnEventMixin, createUndoRedoButtonComponent;
+var DOM, React, RedoButton, UndoButton, UndoRedoButtons, classSet, createReactClass, createSetStateOnEventMixin, createUndoRedoButtonComponent;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
 createUndoRedoButtonComponent = function(undoOrRedo) {
-  return React.createClass({
+  return createReactClass({
     displayName: undoOrRedo === 'undo' ? 'UndoButton' : 'RedoButton',
     getState: function() {
       return {
@@ -26,9 +30,9 @@ createUndoRedoButtonComponent = function(undoOrRedo) {
     },
     mixins: [createSetStateOnEventMixin('drawingChange')],
     render: function() {
-      var className, div, imageURLPrefix, img, lc, onClick, ref, ref1, src, style, title;
-      ref = React.DOM, div = ref.div, img = ref.img;
-      ref1 = this.props, lc = ref1.lc, imageURLPrefix = ref1.imageURLPrefix;
+      var className, div, imageURLPrefix, img, lc, onClick, ref, src, style, title;
+      div = DOM.div, img = DOM.img;
+      ref = this.props, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
       title = undoOrRedo === 'undo' ? 'Undo' : 'Redo';
       className = ("lc-" + undoOrRedo + " ") + classSet({
         'toolbar-button': true,
@@ -67,11 +71,11 @@ UndoButton = React.createFactory(createUndoRedoButtonComponent('undo'));
 
 RedoButton = React.createFactory(createUndoRedoButtonComponent('redo'));
 
-UndoRedoButtons = React.createClass({
+UndoRedoButtons = createReactClass({
   displayName: 'UndoRedoButtons',
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-undo-redo'
     }, UndoButton(this.props), RedoButton(this.props));

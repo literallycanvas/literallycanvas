@@ -1,6 +1,10 @@
-var React, _, classSet, createToolButton;
+var DOM, React, _, classSet, createReactClass, createToolButton;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 classSet = require('../core/util').classSet;
 
@@ -10,7 +14,7 @@ createToolButton = function(tool) {
   var displayName, imageName;
   displayName = tool.name;
   imageName = tool.iconName;
-  return React.createFactory(React.createClass({
+  return React.createFactory(createReactClass({
     displayName: displayName,
     getDefaultProps: function() {
       return {
@@ -24,9 +28,9 @@ createToolButton = function(tool) {
       }
     },
     render: function() {
-      var className, div, imageURLPrefix, img, isSelected, onSelect, ref, ref1, src;
-      ref = React.DOM, div = ref.div, img = ref.img;
-      ref1 = this.props, imageURLPrefix = ref1.imageURLPrefix, isSelected = ref1.isSelected, onSelect = ref1.onSelect;
+      var className, div, imageURLPrefix, img, isSelected, onSelect, ref, src;
+      div = DOM.div, img = DOM.img;
+      ref = this.props, imageURLPrefix = ref.imageURLPrefix, isSelected = ref.isSelected, onSelect = ref.onSelect;
       className = classSet({
         'lc-pick-tool': true,
         'toolbar-button': true,

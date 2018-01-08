@@ -1,4 +1,4 @@
-var ReactDOM, error, error1;
+var ReactDOM;
 
 try {
   ReactDOM = require('react-dom');
@@ -9,7 +9,7 @@ try {
 if (ReactDOM == null) {
   try {
     ReactDOM = require('react');
-  } catch (error1) {
+  } catch (error) {
     ReactDOM = window.React;
   }
 }

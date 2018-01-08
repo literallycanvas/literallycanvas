@@ -1,13 +1,15 @@
-var React, defineOptionsStyle;
+var DOM, createReactClass, defineOptionsStyle;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
-defineOptionsStyle('null', React.createClass({
+defineOptionsStyle('null', createReactClass({
   displayName: 'NoOptions',
   render: function() {
-    return React.DOM.div();
+    return DOM.div();
   }
 }));
 

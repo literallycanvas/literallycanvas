@@ -1,6 +1,10 @@
-var ColorGrid, ColorWell, PureRenderMixin, React, _, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
+var ColorGrid, ColorWell, DOM, PureRenderMixin, React, _, cancelAnimationFrame, classSet, createReactClass, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 PureRenderMixin = require('react-addons-pure-render-mixin');
 
@@ -54,12 +58,12 @@ getHSLString = function(arg) {
   return "hsl(" + hue + ", " + sat + "%, " + light + "%)";
 };
 
-ColorGrid = React.createFactory(React.createClass({
+ColorGrid = React.createFactory(createReactClass({
   displayName: 'ColorGrid',
   mixins: [PureRenderMixin],
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({}, this.props.rows.map((function(_this) {
       return function(row, ix) {
         return div({
@@ -98,7 +102,7 @@ ColorGrid = React.createFactory(React.createClass({
   }
 }));
 
-ColorWell = React.createClass({
+ColorWell = createReactClass({
   displayName: 'ColorWell',
   mixins: [PureRenderMixin],
   getInitialState: function() {
@@ -214,8 +218,8 @@ ColorWell = React.createClass({
     }
   },
   render: function() {
-    var br, div, label, ref1;
-    ref1 = React.DOM, div = ref1.div, label = ref1.label, br = ref1.br;
+    var br, div, label;
+    div = DOM.div, label = DOM.label, br = DOM.br;
     return div({
       className: classSet({
         'color-well': true,
@@ -253,8 +257,8 @@ ColorWell = React.createClass({
     }, " ")), this.renderPicker());
   },
   renderPicker: function() {
-    var div, hue, i, input, j, label, len, onSelectColor, ref1, ref2, renderColor, renderLabel, rows;
-    ref1 = React.DOM, div = ref1.div, label = ref1.label, input = ref1.input;
+    var div, hue, i, input, j, label, len, onSelectColor, ref1, renderColor, renderLabel, rows;
+    div = DOM.div, label = DOM.label, input = DOM.input;
     if (!this.state.isPickerVisible) {
       return null;
     }
@@ -309,9 +313,9 @@ ColorWell = React.createClass({
       }
       return results;
     }).call(this));
-    ref2 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
-    for (j = 0, len = ref2.length; j < len; j++) {
-      hue = ref2[j];
+    ref1 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+    for (j = 0, len = ref1.length; j < len; j++) {
+      hue = ref1[j];
       rows.push((function() {
         var k, results;
         results = [];

@@ -1,13 +1,17 @@
-var React, ZoomButtons, ZoomInButton, ZoomOutButton, classSet, createSetStateOnEventMixin, createZoomButtonComponent;
+var DOM, React, ZoomButtons, ZoomInButton, ZoomOutButton, classSet, createReactClass, createSetStateOnEventMixin, createZoomButtonComponent;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
 createZoomButtonComponent = function(inOrOut) {
-  return React.createClass({
+  return createReactClass({
     displayName: inOrOut === 'in' ? 'ZoomInButton' : 'ZoomOutButton',
     getState: function() {
       return {
@@ -26,9 +30,9 @@ createZoomButtonComponent = function(inOrOut) {
     },
     mixins: [createSetStateOnEventMixin('zoom')],
     render: function() {
-      var className, div, imageURLPrefix, img, lc, onClick, ref, ref1, src, style, title;
-      ref = React.DOM, div = ref.div, img = ref.img;
-      ref1 = this.props, lc = ref1.lc, imageURLPrefix = ref1.imageURLPrefix;
+      var className, div, imageURLPrefix, img, lc, onClick, ref, src, style, title;
+      div = DOM.div, img = DOM.img;
+      ref = this.props, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
       title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
       className = ("lc-zoom-" + inOrOut + " ") + classSet({
         'toolbar-button': true,
@@ -67,11 +71,11 @@ ZoomOutButton = React.createFactory(createZoomButtonComponent('out'));
 
 ZoomInButton = React.createFactory(createZoomButtonComponent('in'));
 
-ZoomButtons = React.createClass({
+ZoomButtons = createReactClass({
   displayName: 'ZoomButtons',
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-zoom'
     }, ZoomOutButton(this.props), ZoomInButton(this.props));

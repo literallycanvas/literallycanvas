@@ -1,6 +1,10 @@
-var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
+var ClearButton, ColorPickers, ColorWell, DOM, Picker, React, UndoRedoButtons, ZoomButtons, _, createReactClass;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 ClearButton = React.createFactory(require('./ClearButton'));
 
@@ -12,12 +16,12 @@ _ = require('../core/localization')._;
 
 ColorWell = React.createFactory(require('./ColorWell'));
 
-ColorPickers = React.createFactory(React.createClass({
+ColorPickers = React.createFactory(createReactClass({
   displayName: 'ColorPickers',
   render: function() {
     var div, lc;
     lc = this.props.lc;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-color-pickers'
     }, ColorWell({
@@ -36,7 +40,7 @@ ColorPickers = React.createFactory(React.createClass({
   }
 }));
 
-Picker = React.createClass({
+Picker = createReactClass({
   displayName: 'Picker',
   getInitialState: function() {
     return {
@@ -45,7 +49,7 @@ Picker = React.createClass({
   },
   renderBody: function() {
     var div, imageURLPrefix, lc, ref, toolButtonComponents;
-    div = React.DOM.div;
+    div = DOM.div;
     ref = this.props, toolButtonComponents = ref.toolButtonComponents, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
     return div({
       className: 'lc-picker-contents'
@@ -87,7 +91,7 @@ Picker = React.createClass({
   },
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-picker'
     }, this.renderBody());

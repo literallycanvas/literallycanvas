@@ -1,6 +1,8 @@
-var React, StrokeWidthPicker, classSet, createSetStateOnEventMixin, defineOptionsStyle;
+var DOM, StrokeWidthPicker, classSet, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
@@ -10,7 +12,7 @@ createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
-defineOptionsStyle('line-options-and-stroke-width', React.createClass({
+defineOptionsStyle('line-options-and-stroke-width', createReactClass({
   displayName: 'LineOptionsAndStrokeWidth',
   getState: function() {
     return {
@@ -24,8 +26,8 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
   },
   mixins: [createSetStateOnEventMixin('toolChange')],
   render: function() {
-    var arrowButtonClass, dashButtonClass, div, img, li, ref, style, toggleIsDashed, togglehasEndArrow, ul;
-    ref = React.DOM, div = ref.div, ul = ref.ul, li = ref.li, img = ref.img;
+    var arrowButtonClass, dashButtonClass, div, img, li, style, toggleIsDashed, togglehasEndArrow, ul;
+    div = DOM.div, ul = DOM.ul, li = DOM.li, img = DOM.img;
     toggleIsDashed = (function(_this) {
       return function() {
         _this.props.tool.isDashed = !_this.props.tool.isDashed;

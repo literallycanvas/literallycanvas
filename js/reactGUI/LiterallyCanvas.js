@@ -1,14 +1,12 @@
 'use strict';
 
-var React = require('../reactGUI/React-shim');
+var createReactClass = require('../reactGUI/createReactClass-shim');
 
-var _require = require('../reactGUI/ReactDOM-shim');
+var _require = require('../reactGUI/ReactDOM-shim'),
+    findDOMNode = _require.findDOMNode;
 
-var findDOMNode = _require.findDOMNode;
-
-var _require2 = require('../core/util');
-
-var classSet = _require2.classSet;
+var _require2 = require('../core/util'),
+    classSet = _require2.classSet;
 
 var Picker = require('./Picker');
 var Options = require('./Options');
@@ -22,7 +20,7 @@ require('../optionsStyles/line-options-and-stroke-width');
 require('../optionsStyles/polygon-and-stroke-width');
 require('../optionsStyles/null');
 
-var CanvasContainer = React.createClass({
+var CanvasContainer = createReactClass({
   displayName: 'CanvasContainer',
   shouldComponentUpdate: function shouldComponentUpdate() {
     // Avoid React trying to control this DOM
@@ -33,7 +31,7 @@ var CanvasContainer = React.createClass({
   }
 });
 
-var LiterallyCanvas = React.createClass({
+var LiterallyCanvas = createReactClass({
   displayName: 'LiterallyCanvas',
 
   getDefaultProps: function getDefaultProps() {
@@ -76,12 +74,13 @@ var LiterallyCanvas = React.createClass({
   render: function render() {
     var _this2 = this;
 
-    var lc = this.lc;
-    var toolButtonComponents = this.toolButtonComponents;
-    var props = this.props;
-    var _lc$opts = this.lc.opts;
-    var imageURLPrefix = _lc$opts.imageURLPrefix;
-    var toolbarPosition = _lc$opts.toolbarPosition;
+    var lc = this.lc,
+        toolButtonComponents = this.toolButtonComponents,
+        props = this.props;
+    var _lc$opts = this.lc.opts,
+        imageURLPrefix = _lc$opts.imageURLPrefix,
+        toolbarPosition = _lc$opts.toolbarPosition,
+        imageSize = _lc$opts.imageSize;
 
 
     var pickerProps = { lc: lc, toolButtonComponents: toolButtonComponents, imageURLPrefix: imageURLPrefix };
@@ -90,9 +89,13 @@ var LiterallyCanvas = React.createClass({
       'toolbar-at-bottom': toolbarPosition === 'bottom',
       'toolbar-hidden': toolbarPosition === 'hidden'
     });
+
+    var style = {};
+    if (imageSize.height) style.height = imageSize.height;
+
     return React.createElement(
       'div',
-      { className: 'literally ' + topOrBottomClassName },
+      { className: 'literally ' + topOrBottomClassName, style: style },
       React.createElement(CanvasContainer, { ref: function ref(item) {
           return _this2.canvas = item;
         } }),

@@ -1,4 +1,4 @@
-var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
+var defineSVGRenderer, entityMap, escapeHTML, lineEndCapShapes, renderShapeToSVG, renderers;
 
 lineEndCapShapes = require('./lineEndCapShapes');
 
@@ -23,6 +23,23 @@ renderShapeToSVG = function(shape, opts) {
   } else {
     throw "Can't render shape of type " + shape.className + " to SVG";
   }
+};
+
+entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+};
+
+escapeHTML = function(string) {
+  return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+    return entityMap[s];
+  });
 };
 
 defineSVGRenderer('Rectangle', function(shape) {
@@ -80,7 +97,7 @@ defineSVGRenderer('Line', function(shape) {
   if (shape.endCapShapes[1]) {
     capString += lineEndCapShapes[shape.endCapShapes[1]].svg(x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color);
   }
-  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + " 'stroke-width='" + shape.strokeWidth + "' /> " + capString + " </g>";
+  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + "' stroke-width='" + shape.strokeWidth + "' /> " + capString + " </g>";
 });
 
 defineSVGRenderer('LinePath', function(shape) {
@@ -127,7 +144,7 @@ defineSVGRenderer('Text', function(shape) {
     return function(line, i) {
       var dy;
       dy = i === 0 ? 0 : '1.2em';
-      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + line + " </tspan>";
+      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + (escapeHTML(line)) + " </tspan>";
     };
   })(this)).join('')) + " </text>";
 });

@@ -1,15 +1,14 @@
 'use strict';
 
-var React = require('../reactGUI/React-shim');
+var createReactClass = require('../reactGUI/createReactClass-shim');
 
-var _require = require('./optionsStyles');
-
-var defineOptionsStyle = _require.defineOptionsStyle;
+var _require = require('./optionsStyles'),
+    defineOptionsStyle = _require.defineOptionsStyle;
 
 var createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 var _ = require('../core/localization')._;
 
-defineOptionsStyle('stroke-or-fill', React.createClass({
+defineOptionsStyle('stroke-or-fill', createReactClass({
   displayName: 'StrokeOrFillPicker',
   getState: function getState() {
     return { strokeOrFill: 'stroke' };

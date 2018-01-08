@@ -106,7 +106,12 @@ initWithoutGUI = function(el, opts) {
   if ([' ', ' '].join(el.className).indexOf(' literally ') === -1) {
     el.className = el.className + ' literally';
   }
-  el.className = el.className + ' toolbar-hidden';
+  if (el.className.includes('toolbar-hidden') === false) {
+    el.className = el.className + ' toolbar-hidden';
+  }
+  if ('imageSize' in opts && 'height' in opts.imageSize) {
+    el.style.height = opts.imageSize.height + 'px';
+  }
   drawingViewElement = document.createElement('div');
   drawingViewElement.className = 'lc-drawing';
   el.appendChild(drawingViewElement);

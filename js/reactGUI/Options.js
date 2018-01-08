@@ -1,12 +1,14 @@
-var Options, React, createSetStateOnEventMixin, optionsStyles;
+var DOM, Options, createReactClass, createSetStateOnEventMixin, optionsStyles;
 
-React = require('./React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
 optionsStyles = require('../optionsStyles/optionsStyles').optionsStyles;
 
-Options = React.createClass({
+Options = createReactClass({
   displayName: 'Options',
   getState: function() {
     var ref;
@@ -30,7 +32,7 @@ Options = React.createClass({
   },
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-options horz-toolbar'
     }, this.renderBody());

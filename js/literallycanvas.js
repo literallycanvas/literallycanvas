@@ -1,20 +1,36 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.LC = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule shallowEqual
  * @typechecks
  * 
  */
 
+/*eslint-disable no-self-compare */
+
 'use strict';
 
 var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * inlined Object.is polyfill to avoid requiring consumers ship their own
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
+ */
+function is(x, y) {
+  // SameValue algorithm
+  if (x === y) {
+    // Steps 1-5, 7-10
+    // Steps 6.b-6.e: +0 != -0
+    // Added the nonzero y check to make Flow happy, but it is redundant
+    return x !== 0 || y !== 0 || 1 / x === 1 / y;
+  } else {
+    // Step 6.a: NaN == NaN
+    return x !== x && y !== y;
+  }
+}
 
 /**
  * Performs equality by iterating through keys on an object and returning false
@@ -22,7 +38,7 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
  * Returns true when the values of all keys are strictly equal.
  */
 function shallowEqual(objA, objB) {
-  if (objA === objB) {
+  if (is(objA, objB)) {
     return true;
   }
 
@@ -38,9 +54,8 @@ function shallowEqual(objA, objB) {
   }
 
   // Test for A's keys different from B.
-  var bHasOwnProperty = hasOwnProperty.bind(objB);
   for (var i = 0; i < keysA.length; i++) {
-    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
       return false;
     }
   }
@@ -50,80 +65,28 @@ function shallowEqual(objA, objB) {
 
 module.exports = shallowEqual;
 },{}],2:[function(require,module,exports){
-module.exports = require('react/lib/ReactComponentWithPureRenderMixin');
-},{"react/lib/ReactComponentWithPureRenderMixin":3}],3:[function(require,module,exports){
 /**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ReactComponentWithPureRenderMixin
  */
-
-'use strict';
-
-var shallowCompare = require('./shallowCompare');
-
-/**
- * If your React component's render function is "pure", e.g. it will render the
- * same result given the same props and state, provide this Mixin for a
- * considerable performance boost.
- *
- * Most React components have pure render functions.
- *
- * Example:
- *
- *   var ReactComponentWithPureRenderMixin =
- *     require('ReactComponentWithPureRenderMixin');
- *   React.createClass({
- *     mixins: [ReactComponentWithPureRenderMixin],
- *
- *     render: function() {
- *       return <div className={this.props.className}>foo</div>;
- *     }
- *   });
- *
- * Note: This only checks shallow equality for props and state. If these contain
- * complex data structures this mixin may have false-negatives for deeper
- * differences. Only mixin to components which have simple props and state, or
- * use `forceUpdate()` when you know deep data structures have changed.
- */
-var ReactComponentWithPureRenderMixin = {
-  shouldComponentUpdate: function (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
-  }
-};
-
-module.exports = ReactComponentWithPureRenderMixin;
-},{"./shallowCompare":4}],4:[function(require,module,exports){
-/**
- * Copyright 2013-2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
-* @providesModule shallowCompare
-*/
 
 'use strict';
 
 var shallowEqual = require('fbjs/lib/shallowEqual');
 
-/**
- * Does a shallow comparison for props and state.
- * See ReactComponentWithPureRenderMixin
- */
-function shallowCompare(instance, nextProps, nextState) {
-  return !shallowEqual(instance.props, nextProps) || !shallowEqual(instance.state, nextState);
-}
+module.exports = {
+  shouldComponentUpdate: function(nextProps, nextState) {
+    return (
+      !shallowEqual(this.props, nextProps) ||
+      !shallowEqual(this.state, nextState)
+    );
+  }
+};
 
-module.exports = shallowCompare;
-},{"fbjs/lib/shallowEqual":1}],5:[function(require,module,exports){
+},{"fbjs/lib/shallowEqual":1}],3:[function(require,module,exports){
 var INFINITE, JSONToShape, LiterallyCanvas, Pencil, actions, bindEvents, createShape, math, ref, renderShapeToContext, renderShapeToSVG, renderSnapshotToImage, renderSnapshotToSVG, shapeToJSON, util,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   slice = [].slice,
@@ -500,11 +463,12 @@ module.exports = LiterallyCanvas = (function() {
   };
 
   LiterallyCanvas.prototype.setZoom = function(scale) {
-    var oldScale;
+    var center, oldScale;
+    center = this.clientCoordsToDrawingCoords(this.canvas.width / 2, this.canvas.height / 2);
     oldScale = this.scale;
     this.scale = scale;
-    this.position.x = math.scalePositionScalar(this.position.x, this.canvas.width, oldScale, this.scale);
-    this.position.y = math.scalePositionScalar(this.position.y, this.canvas.height, oldScale, this.scale);
+    this.position.x = this.canvas.width / 2 * this.backingScale - center.x * this.getRenderScale();
+    this.position.y = this.canvas.height / 2 * this.backingScale - center.y * this.getRenderScale();
     this.keepPanInImageBounds();
     this.repaintAllLayers();
     return this.trigger('zoom', {
@@ -974,7 +938,7 @@ module.exports = LiterallyCanvas = (function() {
 })();
 
 
-},{"../tools/Pencil":48,"./actions":7,"./bindEvents":8,"./canvasRenderer":9,"./math":14,"./renderSnapshotToImage":15,"./renderSnapshotToSVG":16,"./shapes":17,"./svgRenderer":18,"./util":19}],6:[function(require,module,exports){
+},{"../tools/Pencil":48,"./actions":5,"./bindEvents":6,"./canvasRenderer":7,"./math":12,"./renderSnapshotToImage":13,"./renderSnapshotToSVG":14,"./shapes":15,"./svgRenderer":16,"./util":17}],4:[function(require,module,exports){
 var TextRenderer, getLinesToRender, getNextLine, parseFontString;
 
 require('./fontmetrics.js');
@@ -1178,7 +1142,7 @@ TextRenderer = (function() {
 module.exports = TextRenderer;
 
 
-},{"./fontmetrics.js":11}],7:[function(require,module,exports){
+},{"./fontmetrics.js":9}],5:[function(require,module,exports){
 var AddShapeAction, ClearAction;
 
 ClearAction = (function() {
@@ -1261,7 +1225,7 @@ module.exports = {
 };
 
 
-},{}],8:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var bindEvents, buttonIsDown, coordsForTouchEvent, position;
 
 coordsForTouchEvent = function(el, e) {
@@ -1395,7 +1359,7 @@ module.exports = bindEvents = function(lc, canvas, panWithKeyboard) {
 };
 
 
-},{}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 var _drawRawLinePath, defineCanvasRenderer, drawErasedLinePath, drawErasedLinePathLatest, drawLinePath, drawLinePathLatest, lineEndCapShapes, noop, renderShapeToCanvas, renderShapeToContext, renderers;
 
 lineEndCapShapes = require('./lineEndCapShapes');
@@ -1656,7 +1620,7 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes":12}],10:[function(require,module,exports){
+},{"./lineEndCapShapes":10}],8:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -1680,7 +1644,7 @@ module.exports = {
   tools: [require('../tools/Pencil'), require('../tools/Eraser'), require('../tools/Line'), require('../tools/Rectangle'), require('../tools/Ellipse'), require('../tools/Text'), require('../tools/Polygon'), require('../tools/Pan'), require('../tools/Eyedropper')]
 };
 
-},{"../tools/Ellipse":43,"../tools/Eraser":44,"../tools/Eyedropper":45,"../tools/Line":46,"../tools/Pan":47,"../tools/Pencil":48,"../tools/Polygon":49,"../tools/Rectangle":50,"../tools/Text":52}],11:[function(require,module,exports){
+},{"../tools/Ellipse":43,"../tools/Eraser":44,"../tools/Eyedropper":45,"../tools/Line":46,"../tools/Pan":47,"../tools/Pencil":48,"../tools/Polygon":49,"../tools/Rectangle":50,"../tools/Text":52}],9:[function(require,module,exports){
 "use strict";
 
 /**
@@ -1723,6 +1687,23 @@ module.exports = {
 (function () {
   var NAME = "FontMetrics Library";
   var VERSION = "1-2012.0121.1300";
+
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  };
+
+  function escapeHTML(string) {
+    return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+      return entityMap[s];
+    });
+  }
 
   // if there is no getComputedStyle, this library won't work.
   if (!document.defaultView.getComputedStyle) {
@@ -1782,7 +1763,7 @@ module.exports = {
     leadDiv.style.position = "absolute";
     leadDiv.style.opacity = 0;
     leadDiv.style.font = fontString;
-    leadDiv.innerHTML = textstring + "<br/>" + textstring;
+    leadDiv.innerHTML = escapeHTML(textstring) + "<br/>" + escapeHTML(textstring);
     document.body.appendChild(leadDiv);
 
     // make some initial guess at the text leading (using the standard TeX ratio)
@@ -1879,7 +1860,7 @@ module.exports = {
   };
 })();
 
-},{}],12:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = {
   arrow: (function() {
     var getPoints;
@@ -1930,7 +1911,7 @@ module.exports = {
 };
 
 
-},{}],13:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var _, localize, strings;
 
 strings = {};
@@ -1951,7 +1932,7 @@ module.exports = {
 };
 
 
-},{}],14:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var Point, _slope, math, normals, unit, util;
 
 Point = require('./shapes').Point;
@@ -2040,7 +2021,7 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
 module.exports = math;
 
 
-},{"./shapes":17,"./util":19}],15:[function(require,module,exports){
+},{"./shapes":15,"./util":17}],13:[function(require,module,exports){
 var INFINITE, JSONToShape, renderWatermark, util;
 
 util = require('./util');
@@ -2139,7 +2120,7 @@ module.exports = function(snapshot, opts) {
 };
 
 
-},{"./shapes":17,"./util":19}],16:[function(require,module,exports){
+},{"./shapes":15,"./util":17}],14:[function(require,module,exports){
 var INFINITE, JSONToShape, util;
 
 util = require('./util');
@@ -2210,11 +2191,11 @@ module.exports = function(snapshot, opts) {
       return results;
     })(), imageSize, opts.margin);
   }
-  return LC.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
+  return util.renderShapesToSVG(backgroundShapes.concat(shapes), opts.rect, colors.background);
 };
 
 
-},{"./shapes":17,"./util":19}],17:[function(require,module,exports){
+},{"./shapes":15,"./util":17}],15:[function(require,module,exports){
 var JSONToShape, LinePath, TextRenderer, _createLinePathFromData, _doAllPointsShareStyle, _dual, _mid, _refine, bspline, createShape, defineCanvasRenderer, defineSVGRenderer, defineShape, lineEndCapShapes, linePathFuncs, ref, ref1, renderShapeToContext, renderShapeToSVG, shapeToJSON, shapes, util;
 
 util = require('./util');
@@ -3138,8 +3119,8 @@ module.exports = {
 };
 
 
-},{"./TextRenderer":6,"./canvasRenderer":9,"./lineEndCapShapes":12,"./svgRenderer":18,"./util":19}],18:[function(require,module,exports){
-var defineSVGRenderer, lineEndCapShapes, renderShapeToSVG, renderers;
+},{"./TextRenderer":4,"./canvasRenderer":7,"./lineEndCapShapes":10,"./svgRenderer":16,"./util":17}],16:[function(require,module,exports){
+var defineSVGRenderer, entityMap, escapeHTML, lineEndCapShapes, renderShapeToSVG, renderers;
 
 lineEndCapShapes = require('./lineEndCapShapes');
 
@@ -3164,6 +3145,23 @@ renderShapeToSVG = function(shape, opts) {
   } else {
     throw "Can't render shape of type " + shape.className + " to SVG";
   }
+};
+
+entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;'
+};
+
+escapeHTML = function(string) {
+  return String(string).replace(/[&<>"'`=\/]/g, function(s) {
+    return entityMap[s];
+  });
 };
 
 defineSVGRenderer('Rectangle', function(shape) {
@@ -3221,7 +3219,7 @@ defineSVGRenderer('Line', function(shape) {
   if (shape.endCapShapes[1]) {
     capString += lineEndCapShapes[shape.endCapShapes[1]].svg(x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color);
   }
-  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + " 'stroke-width='" + shape.strokeWidth + "' /> " + capString + " </g>";
+  return "<g> <line x1='" + x1 + "' y1='" + y1 + "' x2='" + x2 + "' y2='" + y2 + "' " + dashString + " stroke-linecap='" + shape.capStyle + "' stroke='" + shape.color + "' stroke-width='" + shape.strokeWidth + "' /> " + capString + " </g>";
 });
 
 defineSVGRenderer('LinePath', function(shape) {
@@ -3268,7 +3266,7 @@ defineSVGRenderer('Text', function(shape) {
     return function(line, i) {
       var dy;
       dy = i === 0 ? 0 : '1.2em';
-      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + line + " </tspan>";
+      return "<tspan x='" + shape.x + "' dy='" + dy + "' alignment-baseline='text-before-edge'> " + (escapeHTML(line)) + " </tspan>";
     };
   })(this)).join('')) + " </text>";
 });
@@ -3279,7 +3277,7 @@ module.exports = {
 };
 
 
-},{"./lineEndCapShapes":12}],19:[function(require,module,exports){
+},{"./lineEndCapShapes":10}],17:[function(require,module,exports){
 var renderShapeToContext, renderShapeToSVG, slice, util,
   slice1 = [].slice;
 
@@ -3497,7 +3495,7 @@ util = {
 module.exports = util;
 
 
-},{"./canvasRenderer":9,"./svgRenderer":18}],20:[function(require,module,exports){
+},{"./canvasRenderer":7,"./svgRenderer":16}],18:[function(require,module,exports){
 'use strict';
 
 (function () {
@@ -3513,7 +3511,7 @@ module.exports = util;
   window.CustomEvent = CustomEvent;
 })();
 
-},{}],21:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 var hasWarned = false;
@@ -3528,7 +3526,7 @@ if (!CanvasRenderingContext2D.prototype.setLineDash) {
 }
 module.exports = null;
 
-},{}],22:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var LiterallyCanvasModel, LiterallyCanvasReactComponent, baseTools, canvasRenderer, conversion, defaultImageURLPrefix, defaultOptions, defaultTools, defineOptionsStyle, init, initReactDOM, initWithoutGUI, localize, registerJQueryPlugin, renderSnapshotToImage, renderSnapshotToSVG, setDefaultImageURLPrefix, shapes, svgRenderer, tools, util;
 
 require('./ie_customevent');
@@ -3637,7 +3635,12 @@ initWithoutGUI = function(el, opts) {
   if ([' ', ' '].join(el.className).indexOf(' literally ') === -1) {
     el.className = el.className + ' literally';
   }
-  el.className = el.className + ' toolbar-hidden';
+  if (el.className.includes('toolbar-hidden') === false) {
+    el.className = el.className + ' toolbar-hidden';
+  }
+  if ('imageSize' in opts && 'height' in opts.imageSize) {
+    el.style.height = opts.imageSize.height + 'px';
+  }
   drawingViewElement = document.createElement('div');
   drawingViewElement.className = 'lc-drawing';
   el.appendChild(drawingViewElement);
@@ -3709,10 +3712,12 @@ module.exports = {
 };
 
 
-},{"./core/LiterallyCanvas":5,"./core/canvasRenderer":9,"./core/defaultOptions":10,"./core/localization":13,"./core/renderSnapshotToImage":15,"./core/renderSnapshotToSVG":16,"./core/shapes":17,"./core/svgRenderer":18,"./core/util":19,"./ie_customevent":20,"./ie_setLineDash":21,"./optionsStyles/font":23,"./optionsStyles/line-options-and-stroke-width":24,"./optionsStyles/null":25,"./optionsStyles/optionsStyles":26,"./optionsStyles/polygon-and-stroke-width":27,"./optionsStyles/stroke-or-fill":28,"./optionsStyles/stroke-width":29,"./reactGUI/LiterallyCanvas":32,"./reactGUI/initDOM":42,"./tools/Ellipse":43,"./tools/Eraser":44,"./tools/Eyedropper":45,"./tools/Line":46,"./tools/Pan":47,"./tools/Pencil":48,"./tools/Polygon":49,"./tools/Rectangle":50,"./tools/SelectShape":51,"./tools/Text":52,"./tools/base":53}],23:[function(require,module,exports){
-var ALL_FONTS, FONT_NAME_TO_VALUE, MONOSPACE_FONTS, OTHER_FONTS, React, SANS_SERIF_FONTS, SERIF_FONTS, _, defineOptionsStyle, i, j, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, value;
+},{"./core/LiterallyCanvas":3,"./core/canvasRenderer":7,"./core/defaultOptions":8,"./core/localization":11,"./core/renderSnapshotToImage":13,"./core/renderSnapshotToSVG":14,"./core/shapes":15,"./core/svgRenderer":16,"./core/util":17,"./ie_customevent":18,"./ie_setLineDash":19,"./optionsStyles/font":21,"./optionsStyles/line-options-and-stroke-width":22,"./optionsStyles/null":23,"./optionsStyles/optionsStyles":24,"./optionsStyles/polygon-and-stroke-width":25,"./optionsStyles/stroke-or-fill":26,"./optionsStyles/stroke-width":27,"./reactGUI/LiterallyCanvas":30,"./reactGUI/initDOM":42,"./tools/Ellipse":43,"./tools/Eraser":44,"./tools/Eyedropper":45,"./tools/Line":46,"./tools/Pan":47,"./tools/Pencil":48,"./tools/Polygon":49,"./tools/Rectangle":50,"./tools/SelectShape":51,"./tools/Text":52,"./tools/base":53}],21:[function(require,module,exports){
+var ALL_FONTS, DOM, FONT_NAME_TO_VALUE, MONOSPACE_FONTS, OTHER_FONTS, SANS_SERIF_FONTS, SERIF_FONTS, _, createReactClass, defineOptionsStyle, i, j, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, value;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
@@ -3778,7 +3783,7 @@ for (m = 0, len3 = OTHER_FONTS.length; m < len3; m++) {
   FONT_NAME_TO_VALUE[name] = value;
 }
 
-defineOptionsStyle('font', React.createClass({
+defineOptionsStyle('font', createReactClass({
   displayName: 'FontOptions',
   getInitialState: function() {
     return {
@@ -3850,9 +3855,9 @@ defineOptionsStyle('font', React.createClass({
     return this.updateTool();
   },
   render: function() {
-    var br, div, input, label, lc, optgroup, option, ref4, select, span;
+    var br, div, input, label, lc, optgroup, option, select, span;
     lc = this.props.lc;
-    ref4 = React.DOM, div = ref4.div, input = ref4.input, select = ref4.select, option = ref4.option, br = ref4.br, label = ref4.label, span = ref4.span, optgroup = ref4.optgroup;
+    div = DOM.div, input = DOM.input, select = DOM.select, option = DOM.option, br = DOM.br, label = DOM.label, span = DOM.span, optgroup = DOM.optgroup;
     return div({
       className: 'lc-font-settings'
     }, select({
@@ -3903,10 +3908,12 @@ defineOptionsStyle('font', React.createClass({
 module.exports = {};
 
 
-},{"../core/localization":13,"../reactGUI/React-shim":35,"./optionsStyles":26}],24:[function(require,module,exports){
-var React, StrokeWidthPicker, classSet, createSetStateOnEventMixin, defineOptionsStyle;
+},{"../core/localization":11,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./optionsStyles":24}],22:[function(require,module,exports){
+var DOM, StrokeWidthPicker, classSet, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
@@ -3916,7 +3923,7 @@ createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
-defineOptionsStyle('line-options-and-stroke-width', React.createClass({
+defineOptionsStyle('line-options-and-stroke-width', createReactClass({
   displayName: 'LineOptionsAndStrokeWidth',
   getState: function() {
     return {
@@ -3930,8 +3937,8 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
   },
   mixins: [createSetStateOnEventMixin('toolChange')],
   render: function() {
-    var arrowButtonClass, dashButtonClass, div, img, li, ref, style, toggleIsDashed, togglehasEndArrow, ul;
-    ref = React.DOM, div = ref.div, ul = ref.ul, li = ref.li, img = ref.img;
+    var arrowButtonClass, dashButtonClass, div, img, li, style, toggleIsDashed, togglehasEndArrow, ul;
+    div = DOM.div, ul = DOM.ul, li = DOM.li, img = DOM.img;
     toggleIsDashed = (function(_this) {
       return function() {
         _this.props.tool.isDashed = !_this.props.tool.isDashed;
@@ -3978,24 +3985,26 @@ defineOptionsStyle('line-options-and-stroke-width', React.createClass({
 module.exports = {};
 
 
-},{"../core/util":19,"../reactGUI/React-shim":35,"../reactGUI/StrokeWidthPicker":37,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],25:[function(require,module,exports){
-var React, defineOptionsStyle;
+},{"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/StrokeWidthPicker":36,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],23:[function(require,module,exports){
+var DOM, createReactClass, defineOptionsStyle;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
-defineOptionsStyle('null', React.createClass({
+defineOptionsStyle('null', createReactClass({
   displayName: 'NoOptions',
   render: function() {
-    return React.DOM.div();
+    return DOM.div();
   }
 }));
 
 module.exports = {};
 
 
-},{"../reactGUI/React-shim":35,"./optionsStyles":26}],26:[function(require,module,exports){
+},{"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./optionsStyles":24}],24:[function(require,module,exports){
 var React, defineOptionsStyle, optionsStyles;
 
 React = require('../reactGUI/React-shim');
@@ -4012,10 +4021,12 @@ module.exports = {
 };
 
 
-},{"../reactGUI/React-shim":35}],27:[function(require,module,exports){
-var React, StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
+},{"../reactGUI/React-shim":33}],25:[function(require,module,exports){
+var DOM, StrokeWidthPicker, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
@@ -4023,7 +4034,7 @@ StrokeWidthPicker = React.createFactory(require('../reactGUI/StrokeWidthPicker')
 
 createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 
-defineOptionsStyle('polygon-and-stroke-width', React.createClass({
+defineOptionsStyle('polygon-and-stroke-width', createReactClass({
   displayName: 'PolygonAndStrokeWidth',
   getState: function() {
     return {
@@ -4072,9 +4083,9 @@ defineOptionsStyle('polygon-and-stroke-width', React.createClass({
     return this.unsubscribe();
   },
   render: function() {
-    var div, img, lc, polygonCancel, polygonFinishClosed, polygonFinishOpen, polygonToolStyle, ref;
+    var div, img, lc, polygonCancel, polygonFinishClosed, polygonFinishOpen, polygonToolStyle;
     lc = this.props.lc;
-    ref = React.DOM, div = ref.div, img = ref.img;
+    div = DOM.div, img = DOM.img;
     polygonFinishOpen = (function(_this) {
       return function() {
         return lc.trigger('lc-polygon-finishopen');
@@ -4124,19 +4135,18 @@ defineOptionsStyle('polygon-and-stroke-width', React.createClass({
 module.exports = {};
 
 
-},{"../reactGUI/React-shim":35,"../reactGUI/StrokeWidthPicker":37,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],28:[function(require,module,exports){
+},{"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/StrokeWidthPicker":36,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],26:[function(require,module,exports){
 'use strict';
 
-var React = require('../reactGUI/React-shim');
+var createReactClass = require('../reactGUI/createReactClass-shim');
 
-var _require = require('./optionsStyles');
-
-var defineOptionsStyle = _require.defineOptionsStyle;
+var _require = require('./optionsStyles'),
+    defineOptionsStyle = _require.defineOptionsStyle;
 
 var createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 var _ = require('../core/localization')._;
 
-defineOptionsStyle('stroke-or-fill', React.createClass({
+defineOptionsStyle('stroke-or-fill', createReactClass({
   displayName: 'StrokeOrFillPicker',
   getState: function getState() {
     return { strokeOrFill: 'stroke' };
@@ -4200,7 +4210,7 @@ defineOptionsStyle('stroke-or-fill', React.createClass({
 
 module.exports = {};
 
-},{"../core/localization":13,"../reactGUI/React-shim":35,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":26}],29:[function(require,module,exports){
+},{"../core/localization":11,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],27:[function(require,module,exports){
 var StrokeWidthPicker, defineOptionsStyle;
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
@@ -4212,10 +4222,12 @@ defineOptionsStyle('stroke-width', StrokeWidthPicker);
 module.exports = {};
 
 
-},{"../reactGUI/StrokeWidthPicker":37,"./optionsStyles":26}],30:[function(require,module,exports){
-var ClearButton, React, _, classSet, createSetStateOnEventMixin;
+},{"../reactGUI/StrokeWidthPicker":36,"./optionsStyles":24}],28:[function(require,module,exports){
+var ClearButton, DOM, _, classSet, createReactClass, createSetStateOnEventMixin;
 
-React = require('./React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
@@ -4223,7 +4235,7 @@ _ = require('../core/localization')._;
 
 classSet = require('../core/util').classSet;
 
-ClearButton = React.createClass({
+ClearButton = createReactClass({
   displayName: 'ClearButton',
   getState: function() {
     return {
@@ -4236,7 +4248,7 @@ ClearButton = React.createClass({
   mixins: [createSetStateOnEventMixin('drawingChange')],
   render: function() {
     var className, div, lc, onClick;
-    div = React.DOM.div;
+    div = DOM.div;
     lc = this.props.lc;
     className = classSet({
       'lc-clear': true,
@@ -4259,10 +4271,14 @@ ClearButton = React.createClass({
 module.exports = ClearButton;
 
 
-},{"../core/localization":13,"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],31:[function(require,module,exports){
-var ColorGrid, ColorWell, PureRenderMixin, React, _, cancelAnimationFrame, classSet, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
+},{"../core/localization":11,"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./createSetStateOnEventMixin":40}],29:[function(require,module,exports){
+var ColorGrid, ColorWell, DOM, PureRenderMixin, React, _, cancelAnimationFrame, classSet, createReactClass, getHSLAString, getHSLString, parseHSLAString, ref, requestAnimationFrame;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 PureRenderMixin = require('react-addons-pure-render-mixin');
 
@@ -4316,12 +4332,12 @@ getHSLString = function(arg) {
   return "hsl(" + hue + ", " + sat + "%, " + light + "%)";
 };
 
-ColorGrid = React.createFactory(React.createClass({
+ColorGrid = React.createFactory(createReactClass({
   displayName: 'ColorGrid',
   mixins: [PureRenderMixin],
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({}, this.props.rows.map((function(_this) {
       return function(row, ix) {
         return div({
@@ -4360,7 +4376,7 @@ ColorGrid = React.createFactory(React.createClass({
   }
 }));
 
-ColorWell = React.createClass({
+ColorWell = createReactClass({
   displayName: 'ColorWell',
   mixins: [PureRenderMixin],
   getInitialState: function() {
@@ -4476,8 +4492,8 @@ ColorWell = React.createClass({
     }
   },
   render: function() {
-    var br, div, label, ref1;
-    ref1 = React.DOM, div = ref1.div, label = ref1.label, br = ref1.br;
+    var br, div, label;
+    div = DOM.div, label = DOM.label, br = DOM.br;
     return div({
       className: classSet({
         'color-well': true,
@@ -4515,8 +4531,8 @@ ColorWell = React.createClass({
     }, " ")), this.renderPicker());
   },
   renderPicker: function() {
-    var div, hue, i, input, j, label, len, onSelectColor, ref1, ref2, renderColor, renderLabel, rows;
-    ref1 = React.DOM, div = ref1.div, label = ref1.label, input = ref1.input;
+    var div, hue, i, input, j, label, len, onSelectColor, ref1, renderColor, renderLabel, rows;
+    div = DOM.div, label = DOM.label, input = DOM.input;
     if (!this.state.isPickerVisible) {
       return null;
     }
@@ -4571,9 +4587,9 @@ ColorWell = React.createClass({
       }
       return results;
     }).call(this));
-    ref2 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
-    for (j = 0, len = ref2.length; j < len; j++) {
-      hue = ref2[j];
+    ref1 = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+    for (j = 0, len = ref1.length; j < len; j++) {
+      hue = ref1[j];
       rows.push((function() {
         var k, results;
         results = [];
@@ -4628,18 +4644,16 @@ ColorWell = React.createClass({
 module.exports = ColorWell;
 
 
-},{"../core/localization":13,"../core/util":19,"./React-shim":35,"react-addons-pure-render-mixin":2}],32:[function(require,module,exports){
+},{"../core/localization":11,"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./React-shim":33,"react-addons-pure-render-mixin":2}],30:[function(require,module,exports){
 'use strict';
 
-var React = require('../reactGUI/React-shim');
+var createReactClass = require('../reactGUI/createReactClass-shim');
 
-var _require = require('../reactGUI/ReactDOM-shim');
+var _require = require('../reactGUI/ReactDOM-shim'),
+    findDOMNode = _require.findDOMNode;
 
-var findDOMNode = _require.findDOMNode;
-
-var _require2 = require('../core/util');
-
-var classSet = _require2.classSet;
+var _require2 = require('../core/util'),
+    classSet = _require2.classSet;
 
 var Picker = require('./Picker');
 var Options = require('./Options');
@@ -4653,7 +4667,7 @@ require('../optionsStyles/line-options-and-stroke-width');
 require('../optionsStyles/polygon-and-stroke-width');
 require('../optionsStyles/null');
 
-var CanvasContainer = React.createClass({
+var CanvasContainer = createReactClass({
   displayName: 'CanvasContainer',
   shouldComponentUpdate: function shouldComponentUpdate() {
     // Avoid React trying to control this DOM
@@ -4664,7 +4678,7 @@ var CanvasContainer = React.createClass({
   }
 });
 
-var LiterallyCanvas = React.createClass({
+var LiterallyCanvas = createReactClass({
   displayName: 'LiterallyCanvas',
 
   getDefaultProps: function getDefaultProps() {
@@ -4707,12 +4721,13 @@ var LiterallyCanvas = React.createClass({
   render: function render() {
     var _this2 = this;
 
-    var lc = this.lc;
-    var toolButtonComponents = this.toolButtonComponents;
-    var props = this.props;
-    var _lc$opts = this.lc.opts;
-    var imageURLPrefix = _lc$opts.imageURLPrefix;
-    var toolbarPosition = _lc$opts.toolbarPosition;
+    var lc = this.lc,
+        toolButtonComponents = this.toolButtonComponents,
+        props = this.props;
+    var _lc$opts = this.lc.opts,
+        imageURLPrefix = _lc$opts.imageURLPrefix,
+        toolbarPosition = _lc$opts.toolbarPosition,
+        imageSize = _lc$opts.imageSize;
 
 
     var pickerProps = { lc: lc, toolButtonComponents: toolButtonComponents, imageURLPrefix: imageURLPrefix };
@@ -4721,9 +4736,13 @@ var LiterallyCanvas = React.createClass({
       'toolbar-at-bottom': toolbarPosition === 'bottom',
       'toolbar-hidden': toolbarPosition === 'hidden'
     });
+
+    var style = {};
+    if (imageSize.height) style.height = imageSize.height;
+
     return React.createElement(
       'div',
-      { className: 'literally ' + topOrBottomClassName },
+      { className: 'literally ' + topOrBottomClassName, style: style },
       React.createElement(CanvasContainer, { ref: function ref(item) {
           return _this2.canvas = item;
         } }),
@@ -4735,16 +4754,18 @@ var LiterallyCanvas = React.createClass({
 
 module.exports = LiterallyCanvas;
 
-},{"../core/LiterallyCanvas":5,"../core/defaultOptions":10,"../core/util":19,"../optionsStyles/font":23,"../optionsStyles/line-options-and-stroke-width":24,"../optionsStyles/null":25,"../optionsStyles/polygon-and-stroke-width":27,"../optionsStyles/stroke-width":29,"../reactGUI/React-shim":35,"../reactGUI/ReactDOM-shim":36,"./Options":33,"./Picker":34,"./createToolButton":41}],33:[function(require,module,exports){
-var Options, React, createSetStateOnEventMixin, optionsStyles;
+},{"../core/LiterallyCanvas":3,"../core/defaultOptions":8,"../core/util":17,"../optionsStyles/font":21,"../optionsStyles/line-options-and-stroke-width":22,"../optionsStyles/null":23,"../optionsStyles/polygon-and-stroke-width":25,"../optionsStyles/stroke-width":27,"../reactGUI/ReactDOM-shim":34,"../reactGUI/createReactClass-shim":39,"./Options":31,"./Picker":32,"./createToolButton":41}],31:[function(require,module,exports){
+var DOM, Options, createReactClass, createSetStateOnEventMixin, optionsStyles;
 
-React = require('./React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
 optionsStyles = require('../optionsStyles/optionsStyles').optionsStyles;
 
-Options = React.createClass({
+Options = createReactClass({
   displayName: 'Options',
   getState: function() {
     var ref;
@@ -4768,7 +4789,7 @@ Options = React.createClass({
   },
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-options horz-toolbar'
     }, this.renderBody());
@@ -4778,10 +4799,14 @@ Options = React.createClass({
 module.exports = Options;
 
 
-},{"../optionsStyles/optionsStyles":26,"./React-shim":35,"./createSetStateOnEventMixin":40}],34:[function(require,module,exports){
-var ClearButton, ColorPickers, ColorWell, Picker, React, UndoRedoButtons, ZoomButtons, _;
+},{"../optionsStyles/optionsStyles":24,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./createSetStateOnEventMixin":40}],32:[function(require,module,exports){
+var ClearButton, ColorPickers, ColorWell, DOM, Picker, React, UndoRedoButtons, ZoomButtons, _, createReactClass;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 ClearButton = React.createFactory(require('./ClearButton'));
 
@@ -4793,12 +4818,12 @@ _ = require('../core/localization')._;
 
 ColorWell = React.createFactory(require('./ColorWell'));
 
-ColorPickers = React.createFactory(React.createClass({
+ColorPickers = React.createFactory(createReactClass({
   displayName: 'ColorPickers',
   render: function() {
     var div, lc;
     lc = this.props.lc;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-color-pickers'
     }, ColorWell({
@@ -4817,7 +4842,7 @@ ColorPickers = React.createFactory(React.createClass({
   }
 }));
 
-Picker = React.createClass({
+Picker = createReactClass({
   displayName: 'Picker',
   getInitialState: function() {
     return {
@@ -4826,7 +4851,7 @@ Picker = React.createClass({
   },
   renderBody: function() {
     var div, imageURLPrefix, lc, ref, toolButtonComponents;
-    div = React.DOM.div;
+    div = DOM.div;
     ref = this.props, toolButtonComponents = ref.toolButtonComponents, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
     return div({
       className: 'lc-picker-contents'
@@ -4868,7 +4893,7 @@ Picker = React.createClass({
   },
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-picker'
     }, this.renderBody());
@@ -4878,8 +4903,8 @@ Picker = React.createClass({
 module.exports = Picker;
 
 
-},{"../core/localization":13,"./ClearButton":30,"./ColorWell":31,"./React-shim":35,"./UndoRedoButtons":38,"./ZoomButtons":39}],35:[function(require,module,exports){
-var React, error;
+},{"../core/localization":11,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./ClearButton":28,"./ColorWell":29,"./React-shim":33,"./UndoRedoButtons":37,"./ZoomButtons":38}],33:[function(require,module,exports){
+var React;
 
 try {
   React = require('react');
@@ -4894,8 +4919,8 @@ if (React == null) {
 module.exports = React;
 
 
-},{"react":"react"}],36:[function(require,module,exports){
-var ReactDOM, error, error1;
+},{"react":"react"}],34:[function(require,module,exports){
+var ReactDOM;
 
 try {
   ReactDOM = require('react-dom');
@@ -4906,7 +4931,7 @@ try {
 if (ReactDOM == null) {
   try {
     ReactDOM = require('react');
-  } catch (error1) {
+  } catch (error) {
     ReactDOM = window.React;
   }
 }
@@ -4918,16 +4943,43 @@ if (ReactDOM == null) {
 module.exports = ReactDOM;
 
 
-},{"react":"react","react-dom":"react-dom"}],37:[function(require,module,exports){
-var React, classSet, createSetStateOnEventMixin;
+},{"react":"react","react-dom":"react-dom"}],35:[function(require,module,exports){
+var DOM, React;
 
-React = require('./React-shim');
+try {
+  DOM = require('react-dom-factories');
+} catch (error) {
+  DOM = window.ReactDOMFactories;
+}
+
+if (DOM == null) {
+  try {
+    React = require('react');
+    DOM = React.DOM;
+  } catch (error) {
+    DOM = window.React.DOM;
+  }
+}
+
+if (DOM == null) {
+  throw "Can't find DOM";
+}
+
+module.exports = DOM;
+
+
+},{"react":"react","react-dom-factories":"react-dom-factories"}],36:[function(require,module,exports){
+var DOM, classSet, createReactClass, createSetStateOnEventMixin;
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
-module.exports = React.createClass({
+module.exports = createReactClass({
   displayName: 'StrokeWidthPicker',
   getState: function(tool) {
     if (tool == null) {
@@ -4945,8 +4997,8 @@ module.exports = React.createClass({
     return this.setState(this.getState(props.tool));
   },
   render: function() {
-    var circle, div, li, ref, strokeWidths, svg, ul;
-    ref = React.DOM, ul = ref.ul, li = ref.li, svg = ref.svg, circle = ref.circle, div = ref.div;
+    var circle, div, li, strokeWidths, svg, ul;
+    ul = DOM.ul, li = DOM.li, svg = DOM.svg, circle = DOM.circle, div = DOM.div;
     strokeWidths = this.props.lc.opts.strokeWidths;
     return div({}, strokeWidths.map((function(_this) {
       return function(strokeWidth, ix) {
@@ -4966,7 +5018,7 @@ module.exports = React.createClass({
         }, svg({
           width: buttonSize - 2,
           height: buttonSize - 2,
-          viewPort: "0 0 " + strokeWidth + " " + strokeWidth,
+          viewport: "0 0 " + strokeWidth + " " + strokeWidth,
           version: "1.1",
           xmlns: "http://www.w3.org/2000/svg"
         }, circle({
@@ -4980,17 +5032,21 @@ module.exports = React.createClass({
 });
 
 
-},{"../core/util":19,"../reactGUI/createSetStateOnEventMixin":40,"./React-shim":35}],38:[function(require,module,exports){
-var React, RedoButton, UndoButton, UndoRedoButtons, classSet, createSetStateOnEventMixin, createUndoRedoButtonComponent;
+},{"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40}],37:[function(require,module,exports){
+var DOM, React, RedoButton, UndoButton, UndoRedoButtons, classSet, createReactClass, createSetStateOnEventMixin, createUndoRedoButtonComponent;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
 createUndoRedoButtonComponent = function(undoOrRedo) {
-  return React.createClass({
+  return createReactClass({
     displayName: undoOrRedo === 'undo' ? 'UndoButton' : 'RedoButton',
     getState: function() {
       return {
@@ -5009,9 +5065,9 @@ createUndoRedoButtonComponent = function(undoOrRedo) {
     },
     mixins: [createSetStateOnEventMixin('drawingChange')],
     render: function() {
-      var className, div, imageURLPrefix, img, lc, onClick, ref, ref1, src, style, title;
-      ref = React.DOM, div = ref.div, img = ref.img;
-      ref1 = this.props, lc = ref1.lc, imageURLPrefix = ref1.imageURLPrefix;
+      var className, div, imageURLPrefix, img, lc, onClick, ref, src, style, title;
+      div = DOM.div, img = DOM.img;
+      ref = this.props, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
       title = undoOrRedo === 'undo' ? 'Undo' : 'Redo';
       className = ("lc-" + undoOrRedo + " ") + classSet({
         'toolbar-button': true,
@@ -5050,11 +5106,11 @@ UndoButton = React.createFactory(createUndoRedoButtonComponent('undo'));
 
 RedoButton = React.createFactory(createUndoRedoButtonComponent('redo'));
 
-UndoRedoButtons = React.createClass({
+UndoRedoButtons = createReactClass({
   displayName: 'UndoRedoButtons',
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-undo-redo'
     }, UndoButton(this.props), RedoButton(this.props));
@@ -5064,17 +5120,21 @@ UndoRedoButtons = React.createClass({
 module.exports = UndoRedoButtons;
 
 
-},{"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],39:[function(require,module,exports){
-var React, ZoomButtons, ZoomInButton, ZoomOutButton, classSet, createSetStateOnEventMixin, createZoomButtonComponent;
+},{"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./React-shim":33,"./createSetStateOnEventMixin":40}],38:[function(require,module,exports){
+var DOM, React, ZoomButtons, ZoomInButton, ZoomOutButton, classSet, createReactClass, createSetStateOnEventMixin, createZoomButtonComponent;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
 
 classSet = require('../core/util').classSet;
 
 createZoomButtonComponent = function(inOrOut) {
-  return React.createClass({
+  return createReactClass({
     displayName: inOrOut === 'in' ? 'ZoomInButton' : 'ZoomOutButton',
     getState: function() {
       return {
@@ -5093,9 +5153,9 @@ createZoomButtonComponent = function(inOrOut) {
     },
     mixins: [createSetStateOnEventMixin('zoom')],
     render: function() {
-      var className, div, imageURLPrefix, img, lc, onClick, ref, ref1, src, style, title;
-      ref = React.DOM, div = ref.div, img = ref.img;
-      ref1 = this.props, lc = ref1.lc, imageURLPrefix = ref1.imageURLPrefix;
+      var className, div, imageURLPrefix, img, lc, onClick, ref, src, style, title;
+      div = DOM.div, img = DOM.img;
+      ref = this.props, lc = ref.lc, imageURLPrefix = ref.imageURLPrefix;
       title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
       className = ("lc-zoom-" + inOrOut + " ") + classSet({
         'toolbar-button': true,
@@ -5134,11 +5194,11 @@ ZoomOutButton = React.createFactory(createZoomButtonComponent('out'));
 
 ZoomInButton = React.createFactory(createZoomButtonComponent('in'));
 
-ZoomButtons = React.createClass({
+ZoomButtons = createReactClass({
   displayName: 'ZoomButtons',
   render: function() {
     var div;
-    div = React.DOM.div;
+    div = DOM.div;
     return div({
       className: 'lc-zoom'
     }, ZoomOutButton(this.props), ZoomInButton(this.props));
@@ -5148,7 +5208,32 @@ ZoomButtons = React.createClass({
 module.exports = ZoomButtons;
 
 
-},{"../core/util":19,"./React-shim":35,"./createSetStateOnEventMixin":40}],40:[function(require,module,exports){
+},{"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./React-shim":33,"./createSetStateOnEventMixin":40}],39:[function(require,module,exports){
+var React, createReactClass;
+
+try {
+  createReactClass = require('create-react-class');
+} catch (error) {
+  createReactClass = window.createReactClass;
+}
+
+if (createReactClass == null) {
+  try {
+    React = require('react');
+    createReactClass = React.createClass;
+  } catch (error) {
+    createReactClass = window.React.createClass;
+  }
+}
+
+if (createReactClass == null) {
+  throw "Can't find createReactClass";
+}
+
+module.exports = createReactClass;
+
+
+},{"create-react-class":"create-react-class","react":"react"}],40:[function(require,module,exports){
 var React, createSetStateOnEventMixin;
 
 React = require('./React-shim');
@@ -5169,10 +5254,14 @@ module.exports = createSetStateOnEventMixin = function(eventName) {
 };
 
 
-},{"./React-shim":35}],41:[function(require,module,exports){
-var React, _, classSet, createToolButton;
+},{"./React-shim":33}],41:[function(require,module,exports){
+var DOM, React, _, classSet, createReactClass, createToolButton;
 
 React = require('./React-shim');
+
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 classSet = require('../core/util').classSet;
 
@@ -5182,7 +5271,7 @@ createToolButton = function(tool) {
   var displayName, imageName;
   displayName = tool.name;
   imageName = tool.iconName;
-  return React.createFactory(React.createClass({
+  return React.createFactory(createReactClass({
     displayName: displayName,
     getDefaultProps: function() {
       return {
@@ -5196,9 +5285,9 @@ createToolButton = function(tool) {
       }
     },
     render: function() {
-      var className, div, imageURLPrefix, img, isSelected, onSelect, ref, ref1, src;
-      ref = React.DOM, div = ref.div, img = ref.img;
-      ref1 = this.props, imageURLPrefix = ref1.imageURLPrefix, isSelected = ref1.isSelected, onSelect = ref1.onSelect;
+      var className, div, imageURLPrefix, img, isSelected, onSelect, ref, src;
+      div = DOM.div, img = DOM.img;
+      ref = this.props, imageURLPrefix = ref.imageURLPrefix, isSelected = ref.isSelected, onSelect = ref.onSelect;
       className = classSet({
         'lc-pick-tool': true,
         'toolbar-button': true,
@@ -5223,7 +5312,7 @@ createToolButton = function(tool) {
 module.exports = createToolButton;
 
 
-},{"../core/localization":13,"../core/util":19,"./React-shim":35}],42:[function(require,module,exports){
+},{"../core/localization":11,"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./React-shim":33}],42:[function(require,module,exports){
 'use strict';
 
 var React = require('./React-shim');
@@ -5247,7 +5336,7 @@ function init(el, opts) {
 
 module.exports = init;
 
-},{"../core/LiterallyCanvas":5,"./LiterallyCanvas":32,"./React-shim":35,"./ReactDOM-shim":36}],43:[function(require,module,exports){
+},{"../core/LiterallyCanvas":3,"./LiterallyCanvas":30,"./React-shim":33,"./ReactDOM-shim":34}],43:[function(require,module,exports){
 var Ellipse, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5292,7 +5381,7 @@ module.exports = Ellipse = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":17,"./base":53}],44:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],44:[function(require,module,exports){
 var Eraser, Pencil, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5330,7 +5419,7 @@ module.exports = Eraser = (function(superClass) {
 })(Pencil);
 
 
-},{"../core/shapes":17,"./Pencil":48}],45:[function(require,module,exports){
+},{"../core/shapes":15,"./Pencil":48}],45:[function(require,module,exports){
 var Eyedropper, Tool, getPixel,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5448,7 +5537,7 @@ module.exports = Line = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":17,"./base":53}],47:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],47:[function(require,module,exports){
 var Pan, Tool, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5517,7 +5606,7 @@ module.exports = Pan = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":17,"./base":53}],48:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],48:[function(require,module,exports){
 var Pencil, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5579,7 +5668,7 @@ module.exports = Pencil = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":17,"./base":53}],49:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],49:[function(require,module,exports){
 var Polygon, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5664,8 +5753,8 @@ module.exports = Polygon = (function(superClass) {
     polygonFinishOpen = (function(_this) {
       return function() {
         _this.maybePoint = {
-          x: Infinity,
-          y: Infinity
+          x: 2e308,
+          y: 2e308
         };
         return _this._close(lc);
       };
@@ -5795,7 +5884,7 @@ module.exports = Polygon = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":17,"./base":53}],50:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],50:[function(require,module,exports){
 var Rectangle, ToolWithStroke, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5840,7 +5929,7 @@ module.exports = Rectangle = (function(superClass) {
 })(ToolWithStroke);
 
 
-},{"../core/shapes":17,"./base":53}],51:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],51:[function(require,module,exports){
 var SelectShape, Tool, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -5995,7 +6084,7 @@ module.exports = SelectShape = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":17,"./base":53}],52:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],52:[function(require,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6356,7 +6445,7 @@ module.exports = Text = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":17,"./base":53}],53:[function(require,module,exports){
+},{"../core/shapes":15,"./base":53}],53:[function(require,module,exports){
 var Tool, ToolWithStroke, tools,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -6430,5 +6519,5 @@ tools.ToolWithStroke = ToolWithStroke = (function(superClass) {
 module.exports = tools;
 
 
-},{}]},{},[22])(22)
+},{}]},{},[20])(20)
 });

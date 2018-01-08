@@ -1,6 +1,8 @@
-var React, StrokeWidthPicker, createSetStateOnEventMixin, defineOptionsStyle;
+var DOM, StrokeWidthPicker, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
 
-React = require('../reactGUI/React-shim');
+DOM = require('../reactGUI/ReactDOMFactories-shim');
+
+createReactClass = require('../reactGUI/createReactClass-shim');
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
 
@@ -8,7 +10,7 @@ StrokeWidthPicker = React.createFactory(require('../reactGUI/StrokeWidthPicker')
 
 createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 
-defineOptionsStyle('polygon-and-stroke-width', React.createClass({
+defineOptionsStyle('polygon-and-stroke-width', createReactClass({
   displayName: 'PolygonAndStrokeWidth',
   getState: function() {
     return {
@@ -57,9 +59,9 @@ defineOptionsStyle('polygon-and-stroke-width', React.createClass({
     return this.unsubscribe();
   },
   render: function() {
-    var div, img, lc, polygonCancel, polygonFinishClosed, polygonFinishOpen, polygonToolStyle, ref;
+    var div, img, lc, polygonCancel, polygonFinishClosed, polygonFinishOpen, polygonToolStyle;
     lc = this.props.lc;
-    ref = React.DOM, div = ref.div, img = ref.img;
+    div = DOM.div, img = DOM.img;
     polygonFinishOpen = (function(_this) {
       return function() {
         return lc.trigger('lc-polygon-finishopen');
