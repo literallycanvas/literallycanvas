@@ -1,13 +1,18 @@
-strings = {}
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let strings = {};
 
-localize = (localStrings) ->
-  strings = localStrings
+const localize = localStrings => strings = localStrings;
 
-_ = (string) ->
-  translation = strings[string]
-  return translation or string
+const _ = function(string) {
+  const translation = strings[string];
+  return translation || string;
+};
 
 module.exports = {
-  localize: localize,
-  _: _
-}
+  localize,
+  _
+};

@@ -1,552 +1,720 @@
-util = require './util'
-TextRenderer = require './TextRenderer'
-lineEndCapShapes = require './lineEndCapShapes'
-{defineCanvasRenderer, renderShapeToContext} = require './canvasRenderer'
-{defineSVGRenderer, renderShapeToSVG} = require './svgRenderer'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS201: Simplify complex destructure assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const util = require('./util');
+const TextRenderer = require('./TextRenderer');
+const lineEndCapShapes = require('./lineEndCapShapes');
+const {defineCanvasRenderer, renderShapeToContext} = require('./canvasRenderer');
+const {defineSVGRenderer, renderShapeToSVG} = require('./svgRenderer');
 
-shapes = {}
-
-
-defineShape = (name, props) ->
-  # improve Chrome JIT perf by not using arguments object
-  Shape = (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) ->
-    props.constructor.call(this, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p)
-    this
-  Shape.prototype.className = name
-  Shape.fromJSON = props.fromJSON
-
-  # support old style of defining canvas drawing methods on shapes
-  if props.draw
-    legacyDrawFunc = props.draw
-    legacyDrawLatestFunc = props.draw or (ctx, bufferCtx, retryCallback) ->
-      @draw(ctx, bufferCtx, retryCallback)
-    drawFunc = (ctx, shape, retryCallback) ->
-      legacyDrawFunc.call(shape, ctx, retryCallback)
-    drawLatestFunc = (ctx, bufferCtx, shape, retryCallback) ->
-      legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback)
-    delete props.draw
-    delete props.drawLatest if props.drawLatest
-
-    defineCanvasRenderer(name, drawFunc, drawLatestFunc)
-
-  # support old style of defining SVG drawing methods on shapes
-  if props.toSVG
-    legacySVGFunc = props.toSVG
-    svgFunc = (shape) -> legacySVGFunc.call(shape)
-    delete props.toSVG
-    defineSVGRenderer(name, svgFunc)
-
-  Shape.prototype.draw = (ctx, retryCallback) ->
-    renderShapeToContext(ctx, this, {retryCallback})
-  Shape.prototype.drawLatest = (ctx, bufferCtx, retryCallback) ->
-    renderShapeToContext(
-      ctx, this, {retryCallback, bufferCtx, shouldOnlyDrawLatest: true})
-  Shape.prototype.toSVG = ->
-    renderShapeToSVG(this)
-
-  for k of props
-    if k != 'fromJSON'
-      Shape.prototype[k] = props[k]
-
-  shapes[name] = Shape
-  Shape
+const shapes = {};
 
 
-# improve Chrome JIT perf by not using arguments object
-createShape = (name, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) ->
-  s = new shapes[name](a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p)
-  s.id = util.getGUID()
-  s
+const defineShape = function(name, props) {
+  // improve Chrome JIT perf by not using arguments object
+  const Shape = function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+    props.constructor.call(this, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+    return this;
+  };
+  Shape.prototype.className = name;
+  Shape.fromJSON = props.fromJSON;
+
+  // support old style of defining canvas drawing methods on shapes
+  if (props.draw) {
+    const legacyDrawFunc = props.draw;
+    const legacyDrawLatestFunc = props.draw || function(ctx, bufferCtx, retryCallback) {
+      return this.draw(ctx, bufferCtx, retryCallback);
+    };
+    const drawFunc = (ctx, shape, retryCallback) => legacyDrawFunc.call(shape, ctx, retryCallback);
+    const drawLatestFunc = (ctx, bufferCtx, shape, retryCallback) => legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback);
+    delete props.draw;
+    if (props.drawLatest) { delete props.drawLatest; }
+
+    defineCanvasRenderer(name, drawFunc, drawLatestFunc);
+  }
+
+  // support old style of defining SVG drawing methods on shapes
+  if (props.toSVG) {
+    const legacySVGFunc = props.toSVG;
+    const svgFunc = shape => legacySVGFunc.call(shape);
+    delete props.toSVG;
+    defineSVGRenderer(name, svgFunc);
+  }
+
+  Shape.prototype.draw = function(ctx, retryCallback) {
+    return renderShapeToContext(ctx, this, {retryCallback});
+  };
+  Shape.prototype.drawLatest = function(ctx, bufferCtx, retryCallback) {
+    return renderShapeToContext(
+      ctx, this, {retryCallback, bufferCtx, shouldOnlyDrawLatest: true});
+  };
+  Shape.prototype.toSVG = function() {
+    return renderShapeToSVG(this);
+  };
+
+  for (let k in props) {
+    if (k !== 'fromJSON') {
+      Shape.prototype[k] = props[k];
+    }
+  }
+
+  shapes[name] = Shape;
+  return Shape;
+};
 
 
-JSONToShape = ({className, data, id}) ->
-  if className of shapes
-    shape = shapes[className].fromJSON(data)
-    if shape
-      shape.id = id if id
-      return shape
-    else
-      console.log 'Unreadable shape:', className, data
-      return null
-  else
-    console.log "Unknown shape:", className, data
-    return null
+// improve Chrome JIT perf by not using arguments object
+const createShape = function(name, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+  const s = new (shapes[name])(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
+  s.id = util.getGUID();
+  return s;
+};
 
 
-shapeToJSON = (shape) ->
-  {className: shape.className, data: shape.toJSON(), id: shape.id}
+const JSONToShape = function({className, data, id}) {
+  if (className in shapes) {
+    const shape = shapes[className].fromJSON(data);
+    if (shape) {
+      if (id) { shape.id = id; }
+      return shape;
+    } else {
+      console.log('Unreadable shape:', className, data);
+      return null;
+    }
+  } else {
+    console.log("Unknown shape:", className, data);
+    return null;
+  }
+};
 
 
-# this fn depends on Point, but LinePathShape depends on it, so it can't be
-# moved out of this file yet.
-bspline = (points, order) ->
-  if not order
-    return points
-  return bspline(_dual(_dual(_refine(points))), order - 1)
+const shapeToJSON = shape => ({className: shape.className, data: shape.toJSON(), id: shape.id});
 
-_refine = (points) ->
-  points = [points[0]].concat(points).concat(util.last(points))
-  refined = []
 
-  index = 0
-  for point in points
-    refined[index * 2] = point
-    refined[index * 2 + 1] = _mid point, points[index + 1] if points[index + 1]
-    index += 1
+// this fn depends on Point, but LinePathShape depends on it, so it can't be
+// moved out of this file yet.
+var bspline = function(points, order) {
+  if (!order) {
+    return points;
+  }
+  return bspline(_dual(_dual(_refine(points))), order - 1);
+};
 
-  return refined
+var _refine = function(points) {
+  points = [points[0]].concat(points).concat(util.last(points));
+  const refined = [];
 
-_dual = (points) ->
-  dualed = []
+  let index = 0;
+  for (let point of Array.from(points)) {
+    refined[index * 2] = point;
+    if (points[index + 1]) { refined[(index * 2) + 1] = _mid(point, points[index + 1]); }
+    index += 1;
+  }
 
-  index = 0
-  for point in points
-    dualed[index] = _mid point, points[index + 1] if points[index + 1]
-    index += 1
+  return refined;
+};
 
-  return dualed
+var _dual = function(points) {
+  const dualed = [];
 
-_mid = (a, b) ->
+  let index = 0;
+  for (let point of Array.from(points)) {
+    if (points[index + 1]) { dualed[index] = _mid(point, points[index + 1]); }
+    index += 1;
+  }
+
+  return dualed;
+};
+
+var _mid = (a, b) =>
   createShape('Point', {
     x: a.x + ((b.x - a.x) / 2),
     y: a.y + ((b.y - a.y) / 2),
     size: a.size + ((b.size - a.size) / 2),
     color: a.color
   })
+;
 
 
-defineShape 'Image',
-  # TODO: allow resizing/filling
-  constructor: (args={}) ->
-    @x = args.x or 0
-    @y = args.y or 0
-    @scale = args.scale or 1
-    @image = args.image or null
-  getBoundingRect: ->
-    {@x, @y, width: @image.width * @scale, height: @image.height * @scale}
-  toJSON: -> {@x, @y, imageSrc: @image.src, imageObject: @image, @scale}
-  fromJSON: (data) ->
-    img = null
-    if data.imageObject?.width
-      img = data.imageObject
-    else
-      img = new Image()
-      img.src = data.imageSrc
-    createShape('Image', {x: data.x, y: data.y, image: img, scale: data.scale})
-  move: ( moveInfo={} ) ->
-    @x = @x - moveInfo.xDiff
-    @y = @y - moveInfo.yDiff
-  setUpperLeft: (upperLeft={}) ->
-    @x = upperLeft.x
-    @y = upperLeft.y
-
-
-defineShape 'Rectangle',
-  constructor: (args={}) ->
-    @x = args.x or 0
-    @y = args.y or 0
-    @width = args.width or 0
-    @height = args.height or 0
-    @strokeWidth = args.strokeWidth or 1
-    @strokeColor = args.strokeColor or 'black'
-    @fillColor = args.fillColor or 'transparent'
-
-  getBoundingRect: -> {
-    x: @x - @strokeWidth / 2,
-    y: @y - @strokeWidth / 2,
-    width: @width + @strokeWidth,
-    height: @height + @strokeWidth,
+defineShape('Image', {
+  // TODO: allow resizing/filling
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.x = args.x || 0;
+    this.y = args.y || 0;
+    this.scale = args.scale || 1;
+    return this.image = args.image || null;
+  },
+  getBoundingRect() {
+    return {x: this.x, y: this.y, width: this.image.width * this.scale, height: this.image.height * this.scale};
+  },
+  toJSON() { return {x: this.x, y: this.y, imageSrc: this.image.src, imageObject: this.image, scale: this.scale}; },
+  fromJSON(data) {
+    let img = null;
+    if (data.imageObject != null ? data.imageObject.width : undefined) {
+      img = data.imageObject;
+    } else {
+      img = new Image();
+      img.src = data.imageSrc;
+    }
+    return createShape('Image', {x: data.x, y: data.y, image: img, scale: data.scale});
+  },
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
-  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
-  fromJSON: (data) -> createShape('Rectangle', data)
-  move: ( moveInfo={} ) ->
-    @x = @x - moveInfo.xDiff
-    @y = @y - moveInfo.yDiff
-  setUpperLeft: (upperLeft={}) ->
-    @x = upperLeft.x
-    @y = upperLeft.y
+}
+);
 
 
-# this is pretty similar to the Rectangle shape. maybe consolidate somehow.
-defineShape 'Ellipse',
-  constructor: (args={}) ->
-    @x = args.x or 0
-    @y = args.y or 0
-    @width = args.width or 0
-    @height = args.height or 0
-    @strokeWidth = args.strokeWidth or 1
-    @strokeColor = args.strokeColor or 'black'
-    @fillColor = args.fillColor or 'transparent'
+defineShape('Rectangle', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.x = args.x || 0;
+    this.y = args.y || 0;
+    this.width = args.width || 0;
+    this.height = args.height || 0;
+    this.strokeWidth = args.strokeWidth || 1;
+    this.strokeColor = args.strokeColor || 'black';
+    return this.fillColor = args.fillColor || 'transparent';
+  },
 
-  getBoundingRect: -> {
-    x: @x - @strokeWidth / 2,
-    y: @y - @strokeWidth / 2,
-    width: @width + @strokeWidth,
-    height: @height + @strokeWidth,
+  getBoundingRect() { return {
+    x: this.x - (this.strokeWidth / 2),
+    y: this.y - (this.strokeWidth / 2),
+    width: this.width + this.strokeWidth,
+    height: this.height + this.strokeWidth,
+  }; },
+  toJSON() { return {x: this.x, y: this.y, width: this.width, height: this.height, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, fillColor: this.fillColor}; },
+  fromJSON(data) { return createShape('Rectangle', data); },
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
-  toJSON: -> {@x, @y, @width, @height, @strokeWidth, @strokeColor, @fillColor}
-  fromJSON: (data) -> createShape('Ellipse', data)
-  move: ( moveInfo={} ) ->
-    @x = @x - moveInfo.xDiff
-    @y = @y - moveInfo.yDiff
-  setUpperLeft: (upperLeft={}) ->
-    @x = upperLeft.x
-    @y = upperLeft.y
+}
+);
 
 
-defineShape 'Line',
-  constructor: (args={}) ->
-    @x1 = args.x1 or 0
-    @y1 = args.y1 or 0
-    @x2 = args.x2 or 0
-    @y2 = args.y2 or 0
-    @strokeWidth = args.strokeWidth or 1
-    @color = args.color or 'black'
-    @capStyle = args.capStyle or 'round'
-    @endCapShapes = args.endCapShapes or [null, null]
-    @dash = args.dash or null
+// this is pretty similar to the Rectangle shape. maybe consolidate somehow.
+defineShape('Ellipse', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.x = args.x || 0;
+    this.y = args.y || 0;
+    this.width = args.width || 0;
+    this.height = args.height || 0;
+    this.strokeWidth = args.strokeWidth || 1;
+    this.strokeColor = args.strokeColor || 'black';
+    return this.fillColor = args.fillColor || 'transparent';
+  },
 
-  getBoundingRect: -> {
-    x: Math.min(@x1, @x2) - @strokeWidth / 2,
-    y: Math.min(@y1, @y2) - @strokeWidth / 2,
-    width: Math.abs(@x2 - @x1) + @strokeWidth / 2,
-    height: Math.abs(@y2 - @y1) + @strokeWidth / 2,
+  getBoundingRect() { return {
+    x: this.x - (this.strokeWidth / 2),
+    y: this.y - (this.strokeWidth / 2),
+    width: this.width + this.strokeWidth,
+    height: this.height + this.strokeWidth,
+  }; },
+  toJSON() { return {x: this.x, y: this.y, width: this.width, height: this.height, strokeWidth: this.strokeWidth, strokeColor: this.strokeColor, fillColor: this.fillColor}; },
+  fromJSON(data) { return createShape('Ellipse', data); },
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
   }
-  toJSON: ->
-    {@x1, @y1, @x2, @y2, @strokeWidth, @color, @capStyle, @dash, @endCapShapes}
-  fromJSON: (data) -> createShape('Line', data)
-  move: ( moveInfo={} ) ->
-    @x1 = @x1 - moveInfo.xDiff
-    @y1 = @y1 - moveInfo.yDiff
-    @x2 = @x2 - moveInfo.xDiff
-    @y2 = @y2 - moveInfo.yDiff
-  setUpperLeft: (upperLeft={}) ->
-    br = @getBoundingRect()
-    xDiff = br.x - upperLeft.x
-    yDiff = br.y - upperLeft.y
-    @move({ xDiff, yDiff })
+}
+);
 
 
-# returns false if no points because there are no points to share style
-_doAllPointsShareStyle = (points) ->
-  return false unless points.length
-  size = points[0].size
-  color = points[0].color
-  for point in points
-    unless point.size == size and point.color == color
-      console.log size, color, point.size, point.color
-    return false unless point.size == size and point.color == color
-  return true
+defineShape('Line', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.x1 = args.x1 || 0;
+    this.y1 = args.y1 || 0;
+    this.x2 = args.x2 || 0;
+    this.y2 = args.y2 || 0;
+    this.strokeWidth = args.strokeWidth || 1;
+    this.color = args.color || 'black';
+    this.capStyle = args.capStyle || 'round';
+    this.endCapShapes = args.endCapShapes || [null, null];
+    return this.dash = args.dash || null;
+  },
+
+  getBoundingRect() { return {
+    x: Math.min(this.x1, this.x2) - (this.strokeWidth / 2),
+    y: Math.min(this.y1, this.y2) - (this.strokeWidth / 2),
+    width: Math.abs(this.x2 - this.x1) + (this.strokeWidth / 2),
+    height: Math.abs(this.y2 - this.y1) + (this.strokeWidth / 2),
+  }; },
+  toJSON() {
+    return {x1: this.x1, y1: this.y1, x2: this.x2, y2: this.y2, strokeWidth: this.strokeWidth, color: this.color, capStyle: this.capStyle, dash: this.dash, endCapShapes: this.endCapShapes};
+  },
+  fromJSON(data) { return createShape('Line', data); },
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    this.x1 = this.x1 - moveInfo.xDiff;
+    this.y1 = this.y1 - moveInfo.yDiff;
+    this.x2 = this.x2 - moveInfo.xDiff;
+    return this.y2 = this.y2 - moveInfo.yDiff;
+  },
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    const br = this.getBoundingRect();
+    const xDiff = br.x - upperLeft.x;
+    const yDiff = br.y - upperLeft.y;
+    return this.move({ xDiff, yDiff });
+  }
+}
+);
 
 
-_createLinePathFromData = (shapeName, data) ->
-  points = null
-  if data.points
-    points = (JSONToShape(pointData) for pointData in data.points)
-  else if data.pointCoordinatePairs
-    points = (JSONToShape({
-      className: 'Point',
-      data: {
-        x: x, y: y, size: data.pointSize, color: data.pointColor
-        smooth: data.smooth
+// returns false if no points because there are no points to share style
+const _doAllPointsShareStyle = function(points) {
+  if (!points.length) { return false; }
+  const { size } = points[0];
+  const { color } = points[0];
+  for (let point of Array.from(points)) {
+    if ((point.size !== size) || (point.color !== color)) {
+      console.log(size, color, point.size, point.color);
+    }
+    if ((point.size !== size) || (point.color !== color)) { return false; }
+  }
+  return true;
+};
+
+
+const _createLinePathFromData = function(shapeName, data) {
+  let x, y;
+  let points = null;
+  if (data.points) {
+    points = (Array.from(data.points).map((pointData) => JSONToShape(pointData)));
+  } else if (data.pointCoordinatePairs) {
+    points = ((() => {
+      const result = [];
+      for ([x, y] of Array.from(data.pointCoordinatePairs)) {         result.push(JSONToShape({
+          className: 'Point',
+          data: {
+            x, y, size: data.pointSize, color: data.pointColor,
+            smooth: data.smooth
+          }
+        }));
       }
-    }) for [x, y] in data.pointCoordinatePairs)
+      return result;
+    })());
+  }
 
-  smoothedPoints = null
-  if data.smoothedPointCoordinatePairs
-    smoothedPoints = (JSONToShape({
-      className: 'Point',
-      data: {
-        x: x, y: y, size: data.pointSize, color: data.pointColor
-        smooth: data.smooth
+  let smoothedPoints = null;
+  if (data.smoothedPointCoordinatePairs) {
+    smoothedPoints = ((() => {
+      const result1 = [];
+      for ([x, y] of Array.from(data.smoothedPointCoordinatePairs)) {         result1.push(JSONToShape({
+          className: 'Point',
+          data: {
+            x, y, size: data.pointSize, color: data.pointColor,
+            smooth: data.smooth
+          }
+        }));
       }
-    }) for [x, y] in data.smoothedPointCoordinatePairs)
+      return result1;
+    })());
+  }
 
-  return null unless points[0]
-  createShape(shapeName, {
+  if (!points[0]) { return null; }
+  return createShape(shapeName, {
     points, smoothedPoints,
     order: data.order, tailSize: data.tailSize, smooth: data.smooth
-  })
+  });
+};
 
 
-linePathFuncs =
-  constructor: (args={}) ->
-    points = args.points or []
-    @order = args.order or 3
-    @tailSize = args.tailSize or 3
-    @smooth = if 'smooth' of args then args.smooth else true
+const linePathFuncs = {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    const points = args.points || [];
+    this.order = args.order || 3;
+    this.tailSize = args.tailSize || 3;
+    this.smooth = 'smooth' in args ? args.smooth : true;
 
-    # The number of smoothed points generated for each point added
-    @segmentSize = Math.pow(2, @order)
+    // The number of smoothed points generated for each point added
+    this.segmentSize = Math.pow(2, this.order);
 
-    # The number of points used to calculate the bspline to the newest point
-    @sampleSize = @tailSize + 1
+    // The number of points used to calculate the bspline to the newest point
+    this.sampleSize = this.tailSize + 1;
 
-    if args.smoothedPoints
-      @points = args.points
-      @smoothedPoints = args.smoothedPoints
-    else
-      @points = []
-      for point in points
-        @addPoint(point)
+    if (args.smoothedPoints) {
+      this.points = args.points;
+      return this.smoothedPoints = args.smoothedPoints;
+    } else {
+      this.points = [];
+      return Array.from(points).map((point) =>
+        this.addPoint(point));
+    }
+  },
 
-  getBoundingRect: ->
-    util.getBoundingRect @points.map (p) -> {
-      x: p.x - p.size / 2,
-      y: p.y - p.size / 2,
+  getBoundingRect() {
+    return util.getBoundingRect(this.points.map(p => ({
+      x: p.x - (p.size / 2),
+      y: p.y - (p.size / 2),
       width: p.size,
       height: p.size,
+    }) ));
+  },
+
+  toJSON() {
+    let point;
+    if (_doAllPointsShareStyle(this.points)) {
+      return {
+        order: this.order, tailSize: this.tailSize, smooth: this.smooth,
+        pointCoordinatePairs: ((() => {
+          const result = [];
+          for (point of Array.from(this.points)) {             result.push([point.x, point.y]);
+          }
+          return result;
+        })()),
+        smoothedPointCoordinatePairs: ((() => {
+          const result1 = [];
+          
+          for (point of Array.from(this.smoothedPoints)) {             result1.push([point.x, point.y]);
+          }
+          return result1;
+        })()),
+        pointSize: this.points[0].size,
+        pointColor: this.points[0].color
+      };
+    } else {
+      return {order: this.order, tailSize: this.tailSize, smooth: this.smooth, points: (Array.from(this.points).map((p) => shapeToJSON(p)))};
+    }
+  },
+
+  fromJSON(data) { return _createLinePathFromData('LinePath', data); },
+
+  addPoint(point) {
+    this.points.push(point);
+
+    if (!this.smooth) {
+      this.smoothedPoints = this.points;
+      return;
     }
 
-  toJSON: ->
-    if _doAllPointsShareStyle(@points)
-      {
-        @order, @tailSize, @smooth,
-        pointCoordinatePairs: ([point.x, point.y] for point in @points),
-        smoothedPointCoordinatePairs: (
-          [point.x, point.y] for point in @smoothedPoints),
-        pointSize: @points[0].size,
-        pointColor: @points[0].color
+    if (!this.smoothedPoints || (this.points.length < this.sampleSize)) {
+      return this.smoothedPoints = bspline(this.points, this.order);
+    } else {
+      this.tail = util.last(
+        bspline(util.last(this.points, this.sampleSize), this.order),
+                   this.segmentSize * this.tailSize);
+
+      // Remove the last @tailSize - 1 segments from @smoothedPoints
+      // then concat the tail. This is done because smoothed points
+      // close to the end of the path will change as new points are
+      // added.
+      return this.smoothedPoints = this.smoothedPoints.slice(
+        0, this.smoothedPoints.length - (this.segmentSize * (this.tailSize - 1))
+      ).concat(this.tail);
+    }
+  },
+
+  move( moveInfo ) {
+    let pts;
+    if (moveInfo == null) { moveInfo = {}; }
+    if (!this.smooth) {
+      pts = this.points;
+    } else {
+      pts = this.smoothedPoints;
+    }
+
+    for (let pt of Array.from(pts)) {
+      pt.move(moveInfo);
+    }
+
+    return this.points = this.smoothedPoints;
+  },
+
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    const br = this.getBoundingRect();
+    const xDiff = br.x - upperLeft.x;
+    const yDiff = br.y - upperLeft.y;
+    return this.move({ xDiff, yDiff });
+  }
+};
+
+const LinePath = defineShape('LinePath', linePathFuncs);
+
+
+defineShape('ErasedLinePath', {
+  constructor: linePathFuncs.constructor,
+  toJSON: linePathFuncs.toJSON,
+  addPoint: linePathFuncs.addPoint,
+  getBoundingRect: linePathFuncs.getBoundingRect,
+
+  fromJSON(data) { return _createLinePathFromData('ErasedLinePath', data); }
+}
+);
+
+
+// this is currently just used for LinePath/ErasedLinePath internal storage.
+defineShape('Point', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.x = args.x || 0;
+    this.y = args.y || 0;
+    this.size = args.size || 0;
+    return this.color = args.color || '';
+  },
+  getBoundingRect() {
+    return {x: this.x - (this.size / 2), y: this.y - (this.size / 2), width: this.size, height: this.size};
+  },
+  toJSON() { return {x: this.x, y: this.y, size: this.size, color: this.color}; },
+  fromJSON(data) { return createShape('Point', data); },
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
+  }
+}
+);
+
+
+defineShape('Polygon', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.points = args.points;
+    this.fillColor = args.fillColor || 'white';
+    this.strokeColor = args.strokeColor || 'black';
+    this.strokeWidth = args.strokeWidth;
+    this.dash = args.dash || null;
+
+    if (args.isClosed == null) { args.isClosed = true; }
+    this.isClosed = args.isClosed;
+
+    // ignore point values
+    return (() => {
+      const result = [];
+      for (let point of Array.from(this.points)) {
+        point.color = this.strokeColor;
+        result.push(point.size = this.strokeWidth);
       }
-    else
-      {@order, @tailSize, @smooth, points: (shapeToJSON(p) for p in @points)}
+      return result;
+    })();
+  },
 
-  fromJSON: (data) -> _createLinePathFromData('LinePath', data)
+  addPoint(x, y) {
+    return this.points.push(LC.createShape('Point', {x, y}));
+  },
 
-  addPoint: (point) ->
-    @points.push(point)
+  getBoundingRect() {
+    return util.getBoundingRect(this.points.map(p => p.getBoundingRect()));
+  },
 
-    if !@smooth
-      @smoothedPoints = @points
-      return
-
-    if not @smoothedPoints or @points.length < @sampleSize
-      @smoothedPoints = bspline(@points, @order)
-    else
-      @tail = util.last(
-        bspline(util.last(@points, @sampleSize), @order),
-                   @segmentSize * @tailSize)
-
-      # Remove the last @tailSize - 1 segments from @smoothedPoints
-      # then concat the tail. This is done because smoothed points
-      # close to the end of the path will change as new points are
-      # added.
-      @smoothedPoints = @smoothedPoints.slice(
-        0, @smoothedPoints.length - @segmentSize * (@tailSize - 1)
-      ).concat(@tail)
-
-  move: ( moveInfo={} ) ->
-    if !@smooth
-      pts = @points
-    else
-      pts = @smoothedPoints
-
-    for pt in pts
-      pt.move(moveInfo)
-
-    @points = @smoothedPoints
-
-  setUpperLeft: (upperLeft={}) ->
-    br = @getBoundingRect()
-    xDiff = br.x - upperLeft.x
-    yDiff = br.y - upperLeft.y
-    @move({ xDiff, yDiff })
-
-LinePath = defineShape 'LinePath', linePathFuncs
-
-
-defineShape 'ErasedLinePath',
-  constructor: linePathFuncs.constructor
-  toJSON: linePathFuncs.toJSON
-  addPoint: linePathFuncs.addPoint
-  getBoundingRect: linePathFuncs.getBoundingRect
-
-  fromJSON: (data) -> _createLinePathFromData('ErasedLinePath', data)
-
-
-# this is currently just used for LinePath/ErasedLinePath internal storage.
-defineShape 'Point',
-  constructor: (args={}) ->
-    @x = args.x or 0
-    @y = args.y or 0
-    @size = args.size or 0
-    @color = args.color or ''
-  getBoundingRect: ->
-    {x: @x - @size / 2, y: @y - @size / 2, width: @size, height: @size}
-  toJSON: -> {@x, @y, @size, @color}
-  fromJSON: (data) -> createShape('Point', data)
-  move: ( moveInfo={} ) ->
-    @x = @x - moveInfo.xDiff
-    @y = @y - moveInfo.yDiff
-  setUpperLeft: (upperLeft={}) ->
-    @x = upperLeft.x
-    @y = upperLeft.y
-
-
-defineShape 'Polygon',
-  constructor: (args={}) ->
-    @points = args.points
-    @fillColor = args.fillColor or 'white'
-    @strokeColor = args.strokeColor or 'black'
-    @strokeWidth = args.strokeWidth
-    @dash = args.dash or null
-
-    args.isClosed ?= true
-    @isClosed = args.isClosed
-
-    # ignore point values
-    for point in @points
-      point.color = @strokeColor
-      point.size = @strokeWidth
-
-  addPoint: (x, y) ->
-    @points.push LC.createShape('Point', {x, y})
-
-  getBoundingRect: ->
-    return util.getBoundingRect(@points.map((p) -> p.getBoundingRect()))
-
-  toJSON: ->
-    {
-      @strokeWidth, @fillColor, @strokeColor, @dash, @isClosed
-      pointCoordinatePairs: @points.map (p) -> [p.x, p.y]
-    }
-  fromJSON: (data) ->
-    data.points = data.pointCoordinatePairs.map ([x, y]) ->
-      createShape('Point', {
+  toJSON() {
+    return {
+      strokeWidth: this.strokeWidth, fillColor: this.fillColor, strokeColor: this.strokeColor, dash: this.dash, isClosed: this.isClosed,
+      pointCoordinatePairs: this.points.map(p => [p.x, p.y])
+    };
+  },
+  fromJSON(data) {
+    data.points = data.pointCoordinatePairs.map(function(...args) {
+      const [x, y] = Array.from(args[0]);
+      return createShape('Point', {
         x, y, size: data.strokeWidth, color: data.strokeColor
-      })
-    createShape('Polygon', data)
+      });
+    });
+    return createShape('Polygon', data);
+  },
 
-  move: ( moveInfo={} ) ->
-    for pt in @points
-      pt.move(moveInfo)
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    return Array.from(this.points).map((pt) =>
+      pt.move(moveInfo));
+  },
 
-  setUpperLeft: (upperLeft={}) ->
-    br = @getBoundingRect()
-    xDiff = br.x - upperLeft.x
-    yDiff = br.y - upperLeft.y
-    @move({ xDiff, yDiff })
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    const br = this.getBoundingRect();
+    const xDiff = br.x - upperLeft.x;
+    const yDiff = br.y - upperLeft.y;
+    return this.move({ xDiff, yDiff });
+  }
+}
+);
 
 
-defineShape 'Text',
-  constructor: (args={}) ->
-    @x = args.x or 0
-    @y = args.y or 0
-    @v = args.v or 0  # version (<1 needs position repaired)
-    @text = args.text or ''
-    @color = args.color or 'black'
-    @font  = args.font or '18px sans-serif'
-    @forcedWidth = args.forcedWidth or null
-    @forcedHeight = args.forcedHeight or null
+defineShape('Text', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.x = args.x || 0;
+    this.y = args.y || 0;
+    this.v = args.v || 0;  // version (<1 needs position repaired)
+    this.text = args.text || '';
+    this.color = args.color || 'black';
+    this.font  = args.font || '18px sans-serif';
+    this.forcedWidth = args.forcedWidth || null;
+    return this.forcedHeight = args.forcedHeight || null;
+  },
 
-  _makeRenderer: (ctx) ->
-    ctx.lineHeight = 1.2
-    @renderer = new TextRenderer(
-      ctx, @text, @font, @forcedWidth, @forcedHeight)
+  _makeRenderer(ctx) {
+    ctx.lineHeight = 1.2;
+    this.renderer = new TextRenderer(
+      ctx, this.text, this.font, this.forcedWidth, this.forcedHeight);
 
-    if @v < 1
-      console.log 'repairing baseline'
-      @v = 1
-      @x -= @renderer.metrics.bounds.minx
-      @y -= @renderer.metrics.leading - @renderer.metrics.descent
+    if (this.v < 1) {
+      console.log('repairing baseline');
+      this.v = 1;
+      this.x -= this.renderer.metrics.bounds.minx;
+      return this.y -= this.renderer.metrics.leading - this.renderer.metrics.descent;
+    }
+  },
 
-  setText: (text) ->
-    @text = text
-    @renderer = null
+  setText(text) {
+    this.text = text;
+    return this.renderer = null;
+  },
 
-  setFont: (font) ->
-    @font = font
-    @renderer = null
+  setFont(font) {
+    this.font = font;
+    return this.renderer = null;
+  },
 
-  setPosition: (x, y) ->
-    @x = x
-    @y = y
+  setPosition(x, y) {
+    this.x = x;
+    return this.y = y;
+  },
 
-  setSize: (forcedWidth, forcedHeight) ->
-    @forcedWidth = Math.max(forcedWidth, 0)
-    @forcedHeight = Math.max(forcedHeight, 0)
-    @renderer = null
+  setSize(forcedWidth, forcedHeight) {
+    this.forcedWidth = Math.max(forcedWidth, 0);
+    this.forcedHeight = Math.max(forcedHeight, 0);
+    return this.renderer = null;
+  },
 
-  enforceMaxBoundingRect: (lc) ->
-    br = @getBoundingRect(lc.ctx)
-    lcBoundingRect = {
+  enforceMaxBoundingRect(lc) {
+    const br = this.getBoundingRect(lc.ctx);
+    const lcBoundingRect = {
       x: -lc.position.x / lc.scale,
       y: -lc.position.y / lc.scale,
       width: lc.canvas.width / lc.scale,
       height: lc.canvas.height / lc.scale
+    };
+    // really just enforce max width
+    if ((br.x + br.width) > (lcBoundingRect.x + lcBoundingRect.width)) {
+      const dx = br.x - lcBoundingRect.x;
+      this.forcedWidth = lcBoundingRect.width - dx - 10;
+      return this.renderer = null;
     }
-    # really just enforce max width
-    if br.x + br.width > lcBoundingRect.x + lcBoundingRect.width
-      dx = br.x - lcBoundingRect.x
-      @forcedWidth = lcBoundingRect.width - dx - 10
-      @renderer = null
+  },
 
-  getBoundingRect: (ctx, isEditing=false) ->
-    # if isEditing == true, add X padding to account for carat
-    unless @renderer
-      if ctx
-        @_makeRenderer(ctx)
-      else
-        throw "Must pass ctx if text hasn't been rendered yet"
-    {
-      x: Math.floor(@x), y: Math.floor(@y),
-      width: Math.ceil(@renderer.getWidth(true)),
-      height: Math.ceil(@renderer.getHeight())
+  getBoundingRect(ctx, isEditing) {
+    // if isEditing == true, add X padding to account for carat
+    if (isEditing == null) { isEditing = false; }
+    if (!this.renderer) {
+      if (ctx) {
+        this._makeRenderer(ctx);
+      } else {
+        throw "Must pass ctx if text hasn't been rendered yet";
+      }
     }
-  toJSON: -> {@x, @y, @text, @color, @font, @forcedWidth, @forcedHeight, @v}
-  fromJSON: (data) -> createShape('Text', data)
-  move: ( moveInfo={} ) ->
-    @x = @x - moveInfo.xDiff
-    @y = @y - moveInfo.yDiff
-  setUpperLeft: (upperLeft={}) ->
-    @x = upperLeft.x
-    @y = upperLeft.y
+    return {
+      x: Math.floor(this.x), y: Math.floor(this.y),
+      width: Math.ceil(this.renderer.getWidth(true)),
+      height: Math.ceil(this.renderer.getHeight())
+    };
+  },
+  toJSON() { return {x: this.x, y: this.y, text: this.text, color: this.color, font: this.font, forcedWidth: this.forcedWidth, forcedHeight: this.forcedHeight, v: this.v}; },
+  fromJSON(data) { return createShape('Text', data); },
+  move( moveInfo ) {
+    if (moveInfo == null) { moveInfo = {}; }
+    this.x = this.x - moveInfo.xDiff;
+    return this.y = this.y - moveInfo.yDiff;
+  },
+  setUpperLeft(upperLeft) {
+    if (upperLeft == null) { upperLeft = {}; }
+    this.x = upperLeft.x;
+    return this.y = upperLeft.y;
+  }
+}
+);
 
 
-defineShape 'SelectionBox',
-  constructor: (args={}) ->
-    @shape = args.shape
-    if args.handleSize?
-      @handleSize = args.handleSize
-    else
-      @handleSize = 10
-    @margin = 4
-    @backgroundColor = args.backgroundColor or null
-    @_br = @shape.getBoundingRect(args.ctx)
-
-  toJSON: -> {shape: shapeToJSON(@shape), @backgroundColor}
-  fromJSON: ({shape, handleSize, margin, backgroundColor}) ->
-    createShape('SelectionBox', {shape: JSONToShape(shape), backgroundColor})
-
-  getTopLeftHandleRect: ->
-    {
-      x: @_br.x - @handleSize - @margin, y: @_br.y - @handleSize - @margin,
-      width: @handleSize, height: @handleSize
+defineShape('SelectionBox', {
+  constructor(args) {
+    if (args == null) { args = {}; }
+    this.shape = args.shape;
+    if (args.handleSize != null) {
+      this.handleSize = args.handleSize;
+    } else {
+      this.handleSize = 10;
     }
+    this.margin = 4;
+    this.backgroundColor = args.backgroundColor || null;
+    return this._br = this.shape.getBoundingRect(args.ctx);
+  },
 
-  getBottomLeftHandleRect: ->
-    {
-      x: @_br.x - @handleSize - @margin, y: @_br.y + @_br.height + @margin,
-      width: @handleSize, height: @handleSize
-    }
+  toJSON() { return {shape: shapeToJSON(this.shape), backgroundColor: this.backgroundColor}; },
+  fromJSON({shape, handleSize, margin, backgroundColor}) {
+    return createShape('SelectionBox', {shape: JSONToShape(shape), backgroundColor});
+  },
 
-  getTopRightHandleRect: ->
-    {
-      x: @_br.x + @_br.width + @margin, y: @_br.y - @handleSize - @margin,
-      width: @handleSize, height: @handleSize
-    }
+  getTopLeftHandleRect() {
+    return {
+      x: this._br.x - this.handleSize - this.margin, y: this._br.y - this.handleSize - this.margin,
+      width: this.handleSize, height: this.handleSize
+    };
+  },
 
-  getBottomRightHandleRect: ->
-    {
-      x: @_br.x + @_br.width + @margin, y: @_br.y + @_br.height + @margin,
-      width: @handleSize, height: @handleSize
-    }
+  getBottomLeftHandleRect() {
+    return {
+      x: this._br.x - this.handleSize - this.margin, y: this._br.y + this._br.height + this.margin,
+      width: this.handleSize, height: this.handleSize
+    };
+  },
 
-  getBoundingRect: ->
-    {
-      x: @_br.x - @margin, y: @_br.y - @margin,
-      width: @_br.width + @margin * 2, height: @_br.height + @margin * 2
-    }
+  getTopRightHandleRect() {
+    return {
+      x: this._br.x + this._br.width + this.margin, y: this._br.y - this.handleSize - this.margin,
+      width: this.handleSize, height: this.handleSize
+    };
+  },
+
+  getBottomRightHandleRect() {
+    return {
+      x: this._br.x + this._br.width + this.margin, y: this._br.y + this._br.height + this.margin,
+      width: this.handleSize, height: this.handleSize
+    };
+  },
+
+  getBoundingRect() {
+    return {
+      x: this._br.x - this.margin, y: this._br.y - this.margin,
+      width: this._br.width + (this.margin * 2), height: this._br.height + (this.margin * 2)
+    };
+  }
+});
 
 
-module.exports = {defineShape, createShape, JSONToShape, shapeToJSON}
+module.exports = {defineShape, createShape, JSONToShape, shapeToJSON};

@@ -1,27 +1,46 @@
-{ToolWithStroke} = require './base'
-{createShape} = require '../core/shapes'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let Line;
+const {ToolWithStroke} = require('./base');
+const {createShape} = require('../core/shapes');
 
 
-module.exports = class Line extends ToolWithStroke
+module.exports = (Line = (function() {
+  Line = class Line extends ToolWithStroke {
+    static initClass() {
+  
+      this.prototype.name = 'Line';
+      this.prototype.iconName = 'line';
+  
+      this.prototype.optionsStyle = 'line-options-and-stroke-width';
+    }
 
-  name: 'Line'
-  iconName: 'line'
+    begin(x, y, lc) {
+      return this.currentShape = createShape('Line', {
+        x1: x, y1: y, x2: x, y2: y, strokeWidth: this.strokeWidth,
+        dash: (() => { switch (false) {
+          case !this.isDashed: return [this.strokeWidth * 2, this.strokeWidth * 4];
+          default: return null;
+        } })(),
+        endCapShapes: this.hasEndArrow ? [null, 'arrow'] : null,
+        color: lc.getColor('primary')});
+    }
 
-  optionsStyle: 'line-options-and-stroke-width'
+    continue(x, y, lc) {
+      this.currentShape.x2 = x;
+      this.currentShape.y2 = y;
+      return lc.drawShapeInProgress(this.currentShape);
+    }
 
-  begin: (x, y, lc) ->
-    @currentShape = createShape('Line', {
-      x1: x, y1: y, x2: x, y2: y, @strokeWidth,
-      dash: switch
-        when @isDashed then [@strokeWidth * 2, @strokeWidth * 4]
-        else null
-      endCapShapes: if @hasEndArrow then [null, 'arrow'] else null
-      color: lc.getColor('primary')})
-
-  continue: (x, y, lc) ->
-    @currentShape.x2 = x
-    @currentShape.y2 = y
-    lc.drawShapeInProgress(@currentShape)
-
-  end: (x, y, lc) ->
-    lc.saveShape(@currentShape)
+    end(x, y, lc) {
+      return lc.saveShape(this.currentShape);
+    }
+  };
+  Line.initClass();
+  return Line;
+})());

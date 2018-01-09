@@ -1,17 +1,28 @@
-try
-  DOM = require 'react-dom-factories'
-catch
-  DOM = window.ReactDOMFactories
+/*
+ * decaffeinate suggestions:
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let DOM;
+try {
+  DOM = require('react-dom-factories');
+} catch (error) {
+  DOM = window.ReactDOMFactories;
+}
 
-# can fall back to normal React until 16.0
-unless DOM?
-  try
-    React = require 'react'
-    DOM = React.DOM
-  catch
-    DOM = window.React.DOM
+// can fall back to normal React until 16.0
+if (DOM == null) {
+  let React;
+  try {
+    React = require('react');
+    ({ DOM } = React);
+  } catch (error1) {
+    ({ DOM } = window.React);
+  }
+}
 
-unless DOM?
-  throw "Can't find DOM"
+if (DOM == null) {
+  throw "Can't find DOM";
+}
 
-module.exports = DOM
+module.exports = DOM;

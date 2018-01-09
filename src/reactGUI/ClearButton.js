@@ -1,27 +1,35 @@
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-createSetStateOnEventMixin = require './createSetStateOnEventMixin'
-{_} = require '../core/localization'
-{classSet} = require '../core/util'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+const {_} = require('../core/localization');
+const {classSet} = require('../core/util');
 
-ClearButton = createReactClass
-  displayName: 'ClearButton'
-  getState: -> {isEnabled: @props.lc.canUndo()}
-  getInitialState: -> @getState()
-  mixins: [createSetStateOnEventMixin('drawingChange')]
+const ClearButton = createReactClass({
+  displayName: 'ClearButton',
+  getState() { return {isEnabled: this.props.lc.canUndo()}; },
+  getInitialState() { return this.getState(); },
+  mixins: [createSetStateOnEventMixin('drawingChange')],
 
-  render: ->
-    {div} = DOM
-    {lc} = @props
+  render() {
+    const {div} = DOM;
+    const {lc} = this.props;
 
-    className = classSet
-      'lc-clear': true
-      'toolbar-button': true
-      'fat-button': true
-      'disabled': not @state.isEnabled
-    onClick = if lc.canUndo() then (=> lc.clear()) else ->
+    const className = classSet({
+      'lc-clear': true,
+      'toolbar-button': true,
+      'fat-button': true,
+      'disabled': !this.state.isEnabled
+    });
+    const onClick = lc.canUndo() ? (() => lc.clear()) : function() {};
 
-    (div {className, onClick}, _('Clear'))
+    return (div({className, onClick}, _('Clear')));
+  }
+});
 
 
-module.exports = ClearButton
+module.exports = ClearButton;

@@ -1,51 +1,60 @@
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-createSetStateOnEventMixin = require '../reactGUI/createSetStateOnEventMixin'
-{classSet} = require '../core/util'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
+const {classSet} = require('../core/util');
 
 
-module.exports = createReactClass
-  displayName: 'StrokeWidthPicker'
+module.exports = createReactClass({
+  displayName: 'StrokeWidthPicker',
 
-  getState: (tool=@props.tool) -> {strokeWidth: tool.strokeWidth}
-  getInitialState: -> @getState()
-  mixins: [createSetStateOnEventMixin('toolDidUpdateOptions')]
+  getState(tool) { if (tool == null) { ({ tool } = this.props); } return {strokeWidth: tool.strokeWidth}; },
+  getInitialState() { return this.getState(); },
+  mixins: [createSetStateOnEventMixin('toolDidUpdateOptions')],
 
-  componentWillReceiveProps: (props) -> @setState @getState(props.tool)
+  componentWillReceiveProps(props) { return this.setState(this.getState(props.tool)); },
 
-  render: ->
-    {ul, li, svg, circle, div} = DOM
-    strokeWidths = @props.lc.opts.strokeWidths
+  render() {
+    const {ul, li, svg, circle, div} = DOM;
+    const { strokeWidths } = this.props.lc.opts;
 
-    (div {},
-      strokeWidths.map((strokeWidth, ix) =>
-        buttonClassName = classSet
-          'square-toolbar-button': true
-          'selected': strokeWidth == @state.strokeWidth
-        buttonSize = 28
-        (div {
+    return (div({},
+      strokeWidths.map((strokeWidth, ix) => {
+        const buttonClassName = classSet({
+          'square-toolbar-button': true,
+          'selected': strokeWidth === this.state.strokeWidth
+        });
+        const buttonSize = 28;
+        return (div({
             key: strokeWidth
           },
-          (div \
+          (div( 
             {
               className: buttonClassName,
-              onClick: => @props.lc.trigger 'setStrokeWidth', strokeWidth
+              onClick: () => this.props.lc.trigger('setStrokeWidth', strokeWidth)
             },
-            (svg \
+            (svg( 
               {
-                width: buttonSize-2
-                height: buttonSize-2
-                viewport: "0 0 #{strokeWidth} #{strokeWidth}"
-                version: "1.1"
+                width: buttonSize-2,
+                height: buttonSize-2,
+                viewport: `0 0 ${strokeWidth} ${strokeWidth}`,
+                version: "1.1",
                 xmlns: "http://www.w3.org/2000/svg"
               },
-              (circle {
-                cx: Math.ceil(buttonSize/2-1),
-                cy: Math.ceil(buttonSize/2-1),
+              (circle({
+                cx: Math.ceil((buttonSize/2)-1),
+                cy: Math.ceil((buttonSize/2)-1),
                 r: strokeWidth/2
-              })
-            )
-          )
-        )
-      )
-    )
+              }))
+            ))
+          ))
+        ));
+      })
+    ));
+  }
+});

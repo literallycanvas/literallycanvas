@@ -1,510 +1,659 @@
-actions = require './actions'
-bindEvents = require './bindEvents'
-math = require './math'
-{createShape, shapeToJSON, JSONToShape} = require './shapes'
-{renderShapeToContext} = require './canvasRenderer'
-{renderShapeToSVG} = require './svgRenderer'
-renderSnapshotToImage = require './renderSnapshotToImage'
-renderSnapshotToSVG = require './renderSnapshotToSVG'
-Pencil = require '../tools/Pencil'
-util = require './util'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let LiterallyCanvas;
+const actions = require('./actions');
+const bindEvents = require('./bindEvents');
+const math = require('./math');
+const {createShape, shapeToJSON, JSONToShape} = require('./shapes');
+const {renderShapeToContext} = require('./canvasRenderer');
+const {renderShapeToSVG} = require('./svgRenderer');
+const renderSnapshotToImage = require('./renderSnapshotToImage');
+const renderSnapshotToSVG = require('./renderSnapshotToSVG');
+const Pencil = require('../tools/Pencil');
+const util = require('./util');
 
-INFINITE = 'infinite'
+const INFINITE = 'infinite';
 
-module.exports = class LiterallyCanvas
+module.exports = (LiterallyCanvas = class LiterallyCanvas {
 
-  constructor: (arg1, arg2) ->
-    opts = null
-    containerEl = null
-    if arg1 instanceof HTMLElement
-      containerEl = arg1
-      opts = arg2
-    else
-      opts = arg1
+  constructor(arg1, arg2) {
+    this.setImageSize = this.setImageSize.bind(this);
+    let opts = null;
+    let containerEl = null;
+    if (arg1 instanceof HTMLElement) {
+      containerEl = arg1;
+      opts = arg2;
+    } else {
+      opts = arg1;
+    }
 
-    @opts = opts or {}
+    this.opts = opts || {};
 
-    @config =
-      zoomMin: opts.zoomMin or 0.2
-      zoomMax: opts.zoomMax or 4.0
-      zoomStep: opts.zoomStep or 0.2
+    this.config = {
+      zoomMin: opts.zoomMin || 0.2,
+      zoomMax: opts.zoomMax || 4.0,
+      zoomStep: opts.zoomStep || 0.2
+    };
 
-    @colors =
-      primary: opts.primaryColor or '#000'
-      secondary: opts.secondaryColor or '#fff'
-      background: opts.backgroundColor or 'transparent'
+    this.colors = {
+      primary: opts.primaryColor || '#000',
+      secondary: opts.secondaryColor || '#fff',
+      background: opts.backgroundColor || 'transparent'
+    };
 
-    @watermarkImage = opts.watermarkImage
-    @watermarkScale = opts.watermarkScale or 1
+    this.watermarkImage = opts.watermarkImage;
+    this.watermarkScale = opts.watermarkScale || 1;
 
-    @backgroundCanvas = document.createElement('canvas')
-    @backgroundCtx = @backgroundCanvas.getContext('2d')
+    this.backgroundCanvas = document.createElement('canvas');
+    this.backgroundCtx = this.backgroundCanvas.getContext('2d');
 
-    @canvas = document.createElement('canvas')
-    @canvas.style['background-color'] = 'transparent'
+    this.canvas = document.createElement('canvas');
+    this.canvas.style['background-color'] = 'transparent';
 
-    @buffer = document.createElement('canvas')
-    @buffer.style['background-color'] = 'transparent'
-    @ctx = @canvas.getContext('2d')
-    @bufferCtx = @buffer.getContext('2d')
+    this.buffer = document.createElement('canvas');
+    this.buffer.style['background-color'] = 'transparent';
+    this.ctx = this.canvas.getContext('2d');
+    this.bufferCtx = this.buffer.getContext('2d');
 
-    @backingScale = util.getBackingScale(@ctx)
+    this.backingScale = util.getBackingScale(this.ctx);
 
-    @backgroundShapes = opts.backgroundShapes || []
-    @_shapesInProgress = []
-    @shapes = []
-    @undoStack = []
-    @redoStack = []
+    this.backgroundShapes = opts.backgroundShapes || [];
+    this._shapesInProgress = [];
+    this.shapes = [];
+    this.undoStack = [];
+    this.redoStack = [];
 
-    @isDragging = false
-    @position = {x: 0, y: 0}
-    @scale = 1.0
-    # GUI immediately replaces this value, but it's initialized so you can have
-    # something really simple
-    @setTool(new @opts.tools[0](this))
+    this.isDragging = false;
+    this.position = {x: 0, y: 0};
+    this.scale = 1.0;
+    // GUI immediately replaces this value, but it's initialized so you can have
+    // something really simple
+    this.setTool(new (this.opts.tools[0])(this));
 
-    @width = opts.imageSize.width or INFINITE
-    @height = opts.imageSize.height or INFINITE
+    this.width = opts.imageSize.width || INFINITE;
+    this.height = opts.imageSize.height || INFINITE;
 
-    # This will ensure that we are zoomed to @scale, panned to @position, and
-    # that all layers are repainted.
-    @setZoom(@scale)
+    // This will ensure that we are zoomed to @scale, panned to @position, and
+    // that all layers are repainted.
+    this.setZoom(this.scale);
 
-    @loadSnapshot(opts.snapshot) if opts.snapshot
+    if (opts.snapshot) { this.loadSnapshot(opts.snapshot); }
 
-    @isBound = false
-    @bindToElement(containerEl) if containerEl
+    this.isBound = false;
+    if (containerEl) { this.bindToElement(containerEl); }
 
-    @respondToSizeChange = ->
+    this.respondToSizeChange = function() {};
+  }
 
-  bindToElement: (containerEl) ->
-    if @containerEl
-      console.warn("Trying to bind Literally Canvas to a DOM element more than once is unsupported.")
-      return
+  bindToElement(containerEl) {
+    if (this.containerEl) {
+      console.warn("Trying to bind Literally Canvas to a DOM element more than once is unsupported.");
+      return;
+    }
 
-    @containerEl = containerEl
-    @_unsubscribeEvents = bindEvents(this, @containerEl, @opts.keyboardShortcuts)
-    @containerEl.style['background-color'] = @colors.background
-    @containerEl.appendChild(@backgroundCanvas)
-    @containerEl.appendChild(@canvas)
+    this.containerEl = containerEl;
+    this._unsubscribeEvents = bindEvents(this, this.containerEl, this.opts.keyboardShortcuts);
+    this.containerEl.style['background-color'] = this.colors.background;
+    this.containerEl.appendChild(this.backgroundCanvas);
+    this.containerEl.appendChild(this.canvas);
 
-    @isBound = true
+    this.isBound = true;
 
-    repaintAll = =>
-        @keepPanInImageBounds()
-        @repaintAllLayers()
+    const repaintAll = () => {
+        this.keepPanInImageBounds();
+        return this.repaintAllLayers();
+      };
 
-    @respondToSizeChange = util.matchElementSize(
-      @containerEl, [@backgroundCanvas, @canvas], @backingScale, repaintAll)
+    this.respondToSizeChange = util.matchElementSize(
+      this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
 
-    if @watermarkImage
-      @watermarkImage.onload = => @repaintLayer('background')
+    if (this.watermarkImage) {
+      this.watermarkImage.onload = () => this.repaintLayer('background');
+    }
 
-    @tool?.didBecomeActive(this)
+    if (this.tool != null) {
+      this.tool.didBecomeActive(this);
+    }
 
-    repaintAll()
+    return repaintAll();
+  }
 
-  _teardown: ->
-    @tool?.willBecomeInactive(this)
-    @_unsubscribeEvents?()
-    @tool = null
-    @containerEl = null
-    @isBound = false
+  _teardown() {
+    if (this.tool != null) {
+      this.tool.willBecomeInactive(this);
+    }
+    if (typeof this._unsubscribeEvents === 'function') {
+      this._unsubscribeEvents();
+    }
+    this.tool = null;
+    this.containerEl = null;
+    return this.isBound = false;
+  }
 
-  trigger: (name, data) ->
-    @canvas.dispatchEvent(new CustomEvent(name, detail: data))
-    # dispatchEvent has a boolean value that doesn't mean anything to us, so
-    # don't let CoffeeScript send it back
-    null
+  trigger(name, data) {
+    this.canvas.dispatchEvent(new CustomEvent(name, {detail: data}));
+    // dispatchEvent has a boolean value that doesn't mean anything to us, so
+    // don't let CoffeeScript send it back
+    return null;
+  }
 
-  on: (name, fn) ->
-    wrapper = (e) -> fn e.detail
-    @canvas.addEventListener(name, wrapper)
-    =>
-      @canvas.removeEventListener(name, wrapper)
+  on(name, fn) {
+    const wrapper = e => fn(e.detail);
+    this.canvas.addEventListener(name, wrapper);
+    return () => {
+      return this.canvas.removeEventListener(name, wrapper);
+    };
+  }
 
-  # actual ratio of drawing-space pixels to perceived pixels, accounting for
-  # both zoom and displayPixelWidth. use this when converting between
-  # drawing-space and screen-space.
-  getRenderScale: -> @scale * @backingScale
+  // actual ratio of drawing-space pixels to perceived pixels, accounting for
+  // both zoom and displayPixelWidth. use this when converting between
+  // drawing-space and screen-space.
+  getRenderScale() { return this.scale * this.backingScale; }
 
-  clientCoordsToDrawingCoords: (x, y) ->
-    x: (x * @backingScale - @position.x) / @getRenderScale(),
-    y: (y * @backingScale - @position.y) / @getRenderScale(),
+  clientCoordsToDrawingCoords(x, y) {
+    return {
+      x: ((x * this.backingScale) - this.position.x) / this.getRenderScale(),
+      y: ((y * this.backingScale) - this.position.y) / this.getRenderScale(),
+    };
+  }
 
-  drawingCoordsToClientCoords: (x, y) ->
-    x: x * @getRenderScale() + @position.x,
-    y: y * @getRenderScale() + @position.y
+  drawingCoordsToClientCoords(x, y) {
+    return {
+      x: (x * this.getRenderScale()) + this.position.x,
+      y: (y * this.getRenderScale()) + this.position.y
+    };
+  }
 
-  setImageSize: (width, height) =>
-    @width = width or INFINITE
-    @height = height or INFINITE
-    @keepPanInImageBounds()
-    @repaintAllLayers()
-    @trigger('imageSizeChange', {@width, @height})
+  setImageSize(width, height) {
+    this.width = width || INFINITE;
+    this.height = height || INFINITE;
+    this.keepPanInImageBounds();
+    this.repaintAllLayers();
+    return this.trigger('imageSizeChange', {width: this.width, height: this.height});
+  }
 
-  setTool: (tool) ->
-    if @isBound
-      @tool?.willBecomeInactive(this)
-    @tool = tool
-    @trigger('toolChange', {tool})
-    if @isBound
-      @tool.didBecomeActive(this)
+  setTool(tool) {
+    if (this.isBound) {
+      if (this.tool != null) {
+        this.tool.willBecomeInactive(this);
+      }
+    }
+    this.tool = tool;
+    this.trigger('toolChange', {tool});
+    if (this.isBound) {
+      return this.tool.didBecomeActive(this);
+    }
+  }
 
-  setShapesInProgress: (newVal) -> @_shapesInProgress = newVal
+  setShapesInProgress(newVal) { return this._shapesInProgress = newVal; }
 
-  pointerDown: (x, y) ->
-    p = @clientCoordsToDrawingCoords(x, y)
-    if @tool.usesSimpleAPI
-      @tool.begin p.x, p.y, this
-      @isDragging = true
-      @trigger("drawStart", {tool: @tool})
-    else
-      @isDragging = true
-      @trigger("lc-pointerdown", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
+  pointerDown(x, y) {
+    const p = this.clientCoordsToDrawingCoords(x, y);
+    if (this.tool.usesSimpleAPI) {
+      this.tool.begin(p.x, p.y, this);
+      this.isDragging = true;
+      return this.trigger("drawStart", {tool: this.tool});
+    } else {
+      this.isDragging = true;
+      return this.trigger("lc-pointerdown", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+    }
+  }
 
-  pointerMove: (x, y) ->
-    util.requestAnimationFrame () =>
-      p = @clientCoordsToDrawingCoords(x, y)
-      if @tool?.usesSimpleAPI
-        if @isDragging
-          @tool.continue p.x, p.y, this
-          @trigger("drawContinue", {tool: @tool})
-      else
-        if @isDragging
-          @trigger("lc-pointerdrag", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
-        else
-          @trigger("lc-pointermove", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
+  pointerMove(x, y) {
+    return util.requestAnimationFrame(() => {
+      const p = this.clientCoordsToDrawingCoords(x, y);
+      if (this.tool != null ? this.tool.usesSimpleAPI : undefined) {
+        if (this.isDragging) {
+          this.tool.continue(p.x, p.y, this);
+          return this.trigger("drawContinue", {tool: this.tool});
+        }
+      } else {
+        if (this.isDragging) {
+          return this.trigger("lc-pointerdrag", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+        } else {
+          return this.trigger("lc-pointermove", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+        }
+      }
+    });
+  }
 
-  pointerUp: (x, y) ->
-    p = @clientCoordsToDrawingCoords(x, y)
-    if @tool.usesSimpleAPI
-      if @isDragging
-        @tool.end p.x, p.y, this
-        @isDragging = false
-        @trigger("drawEnd", {tool: @tool})
-    else
-      @isDragging = false
-      @trigger("lc-pointerup", {tool: @tool, x: p.x, y: p.y, rawX: x, rawY: y})
+  pointerUp(x, y) {
+    const p = this.clientCoordsToDrawingCoords(x, y);
+    if (this.tool.usesSimpleAPI) {
+      if (this.isDragging) {
+        this.tool.end(p.x, p.y, this);
+        this.isDragging = false;
+        return this.trigger("drawEnd", {tool: this.tool});
+      }
+    } else {
+      this.isDragging = false;
+      return this.trigger("lc-pointerup", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+    }
+  }
 
-  setColor: (name, color) ->
-    @colors[name] = color
-    return unless @isBound
-    switch name
-      when 'background'
-        @containerEl.style.backgroundColor = @colors.background
-        @repaintLayer('background')
-      when 'primary'
-        @repaintLayer('main')
-      when 'secondary'
-        @repaintLayer('main')
-    @trigger "#{name}ColorChange", @colors[name]
-    @trigger "drawingChange" if name == 'background'
+  setColor(name, color) {
+    this.colors[name] = color;
+    if (!this.isBound) { return; }
+    switch (name) {
+      case 'background':
+        this.containerEl.style.backgroundColor = this.colors.background;
+        this.repaintLayer('background');
+        break;
+      case 'primary':
+        this.repaintLayer('main');
+        break;
+      case 'secondary':
+        this.repaintLayer('main');
+        break;
+    }
+    this.trigger(`${name}ColorChange`, this.colors[name]);
+    if (name === 'background') { return this.trigger("drawingChange"); }
+  }
 
-  getColor: (name) -> @colors[name]
+  getColor(name) { return this.colors[name]; }
 
-  saveShape: (shape, triggerShapeSaveEvent=true, previousShapeId=null) ->
-    unless previousShapeId
-      previousShapeId = if @shapes.length \
-        then @shapes[@shapes.length-1].id \
-        else null
-    @execute(new actions.AddShapeAction(this, shape, previousShapeId))
-    if triggerShapeSaveEvent
-      @trigger('shapeSave', {shape, previousShapeId})
-    @trigger('drawingChange')
+  saveShape(shape, triggerShapeSaveEvent, previousShapeId=null) {
+    if (triggerShapeSaveEvent == null) { triggerShapeSaveEvent = true; }
+    if (!previousShapeId) {
+      previousShapeId = this.shapes.length 
+        ? this.shapes[this.shapes.length-1].id 
+        : null;
+    }
+    this.execute(new actions.AddShapeAction(this, shape, previousShapeId));
+    if (triggerShapeSaveEvent) {
+      this.trigger('shapeSave', {shape, previousShapeId});
+    }
+    return this.trigger('drawingChange');
+  }
 
-  pan: (x, y) ->
-    # Subtract because we are moving the viewport
-    @setPan(@position.x - x, @position.y - y)
+  pan(x, y) {
+    // Subtract because we are moving the viewport
+    return this.setPan(this.position.x - x, this.position.y - y);
+  }
 
-  keepPanInImageBounds: ->
-    renderScale = @getRenderScale()
-    {x, y} = @position
+  keepPanInImageBounds() {
+    const renderScale = this.getRenderScale();
+    let {x, y} = this.position;
 
-    if @width != INFINITE
-      if @canvas.width > @width * renderScale
-        x = (@canvas.width - @width * renderScale) / 2
-      else
-        x = Math.max(Math.min(0, x), @canvas.width - @width * renderScale)
+    if (this.width !== INFINITE) {
+      if (this.canvas.width > (this.width * renderScale)) {
+        x = (this.canvas.width - (this.width * renderScale)) / 2;
+      } else {
+        x = Math.max(Math.min(0, x), this.canvas.width - (this.width * renderScale));
+      }
+    }
 
-    if @height != INFINITE
-      if @canvas.height > @height * renderScale
-        y = (@canvas.height - @height * renderScale) / 2
-      else
-        y = Math.max(Math.min(0, y), @canvas.height - @height * renderScale)
+    if (this.height !== INFINITE) {
+      if (this.canvas.height > (this.height * renderScale)) {
+        y = (this.canvas.height - (this.height * renderScale)) / 2;
+      } else {
+        y = Math.max(Math.min(0, y), this.canvas.height - (this.height * renderScale));
+      }
+    }
 
-    @position = {x, y}
+    return this.position = {x, y};
+  }
 
-  setPan: (x, y) ->
-    @position = {x, y}
-    @keepPanInImageBounds()
-    @repaintAllLayers()
-    @trigger('pan', {x: @position.x, y: @position.y})
+  setPan(x, y) {
+    this.position = {x, y};
+    this.keepPanInImageBounds();
+    this.repaintAllLayers();
+    return this.trigger('pan', {x: this.position.x, y: this.position.y});
+  }
 
-  zoom: (factor) ->
-    newScale = @scale + factor
-    newScale = Math.max(newScale, @config.zoomMin)
-    newScale = Math.min(newScale, @config.zoomMax)
-    newScale = Math.round(newScale * 100) / 100
-    @setZoom(newScale)
+  zoom(factor) {
+    let newScale = this.scale + factor;
+    newScale = Math.max(newScale, this.config.zoomMin);
+    newScale = Math.min(newScale, this.config.zoomMax);
+    newScale = Math.round(newScale * 100) / 100;
+    return this.setZoom(newScale);
+  }
 
-  setZoom: (scale) ->
-    center = @clientCoordsToDrawingCoords(@canvas.width / 2, @canvas.height / 2)
-    oldScale = @scale
-    @scale = scale
+  setZoom(scale) {
+    const center = this.clientCoordsToDrawingCoords(this.canvas.width / 2, this.canvas.height / 2);
+    const oldScale = this.scale;
+    this.scale = scale;
 
-    @position.x = @canvas.width / 2 * @backingScale - center.x * @getRenderScale()
-    @position.y = @canvas.height / 2 * @backingScale - center.y * @getRenderScale()
+    this.position.x = ((this.canvas.width / 2) * this.backingScale) - (center.x * this.getRenderScale());
+    this.position.y = ((this.canvas.height / 2) * this.backingScale) - (center.y * this.getRenderScale());
 
-    @keepPanInImageBounds()
+    this.keepPanInImageBounds();
 
-    @repaintAllLayers()
-    @trigger('zoom', {oldScale: oldScale, newScale: @scale})
+    this.repaintAllLayers();
+    return this.trigger('zoom', {oldScale, newScale: this.scale});
+  }
 
-  setWatermarkImage: (newImage) ->
-    @watermarkImage = newImage
-    util.addImageOnload newImage, => @repaintLayer('background')
-    @repaintLayer('background') if newImage.width
+  setWatermarkImage(newImage) {
+    this.watermarkImage = newImage;
+    util.addImageOnload(newImage, () => this.repaintLayer('background'));
+    if (newImage.width) { return this.repaintLayer('background'); }
+  }
 
-  repaintAllLayers: ->
-    for key in ['background', 'main']
-      @repaintLayer(key)
-    null
+  repaintAllLayers() {
+    for (let key of ['background', 'main']) {
+      this.repaintLayer(key);
+    }
+    return null;
+  }
 
-  # Repaints the canvas.
-  # If dirty is true then all saved shapes are completely redrawn,
-  # otherwise the back buffer is simply copied to the screen as is.
-  repaintLayer: (repaintLayerKey, dirty=(repaintLayerKey == 'main')) ->
-    return unless @isBound
-    switch repaintLayerKey
-      when 'background'
-        @backgroundCtx.clearRect(
-          0, 0, @backgroundCanvas.width, @backgroundCanvas.height)
-        retryCallback = => @repaintLayer('background')
-        if @watermarkImage
-          @_renderWatermark(@backgroundCtx, true, retryCallback)
-        @draw(@backgroundShapes, @backgroundCtx, retryCallback)
-      when 'main'
-        retryCallback = => @repaintLayer('main', true)
-        if dirty
-          @buffer.width = @canvas.width
-          @buffer.height = @canvas.height
-          @bufferCtx.clearRect(0, 0, @buffer.width, @buffer.height)
-          @draw(@shapes, @bufferCtx, retryCallback)
-        @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-        if @canvas.width > 0 and @canvas.height > 0
-          @ctx.fillStyle = '#ccc'
-          @ctx.fillRect(0, 0, @canvas.width, @canvas.height)
-          @clipped (=>
-            @ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-            @ctx.drawImage @buffer, 0, 0
-          ), @ctx
+  // Repaints the canvas.
+  // If dirty is true then all saved shapes are completely redrawn,
+  // otherwise the back buffer is simply copied to the screen as is.
+  repaintLayer(repaintLayerKey, dirty) {
+    if (dirty == null) { dirty = repaintLayerKey === 'main'; }
+    if (!this.isBound) { return; }
+    switch (repaintLayerKey) {
+      case 'background':
+        this.backgroundCtx.clearRect(
+          0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
+        var retryCallback = () => this.repaintLayer('background');
+        if (this.watermarkImage) {
+          this._renderWatermark(this.backgroundCtx, true, retryCallback);
+        }
+        this.draw(this.backgroundShapes, this.backgroundCtx, retryCallback);
+        break;
+      case 'main':
+        retryCallback = () => this.repaintLayer('main', true);
+        if (dirty) {
+          this.buffer.width = this.canvas.width;
+          this.buffer.height = this.canvas.height;
+          this.bufferCtx.clearRect(0, 0, this.buffer.width, this.buffer.height);
+          this.draw(this.shapes, this.bufferCtx, retryCallback);
+        }
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        if ((this.canvas.width > 0) && (this.canvas.height > 0)) {
+          this.ctx.fillStyle = '#ccc';
+          this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+          this.clipped((() => {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            return this.ctx.drawImage(this.buffer, 0, 0);
+          }
+          ), this.ctx);
 
-          @clipped (=>
-            @transformed (=>
-              for shape in @_shapesInProgress
+          this.clipped((() => {
+            return this.transformed((() => {
+              return Array.from(this._shapesInProgress).map((shape) =>
                 renderShapeToContext(
-                  @ctx, shape, {@bufferCtx, shouldOnlyDrawLatest: true})
-            ), @ctx, @bufferCtx
-          ), @ctx, @bufferCtx
+                  this.ctx, shape, {bufferCtx: this.bufferCtx, shouldOnlyDrawLatest: true}));
+            }
+            ), this.ctx, this.bufferCtx);
+          }
+          ), this.ctx, this.bufferCtx);
+        }
+        break;
+    }
 
-    @trigger('repaint', {layerKey: repaintLayerKey})
+    return this.trigger('repaint', {layerKey: repaintLayerKey});
+  }
 
-  _renderWatermark: (ctx, worryAboutRetina=true, retryCallback) ->
-    unless @watermarkImage.width
-      @watermarkImage.onload = retryCallback
-      return
+  _renderWatermark(ctx, worryAboutRetina, retryCallback) {
+    if (worryAboutRetina == null) { worryAboutRetina = true; }
+    if (!this.watermarkImage.width) {
+      this.watermarkImage.onload = retryCallback;
+      return;
+    }
 
-    ctx.save()
-    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2)
-    ctx.scale(@watermarkScale, @watermarkScale)
-    ctx.scale(@backingScale, @backingScale) if worryAboutRetina
+    ctx.save();
+    ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
+    ctx.scale(this.watermarkScale, this.watermarkScale);
+    if (worryAboutRetina) { ctx.scale(this.backingScale, this.backingScale); }
     ctx.drawImage(
-      @watermarkImage, -@watermarkImage.width / 2, -@watermarkImage.height / 2)
-    ctx.restore()
+      this.watermarkImage, -this.watermarkImage.width / 2, -this.watermarkImage.height / 2);
+    return ctx.restore();
+  }
 
-  # Redraws the back buffer to the screen in its current state
-  # then draws the given shape translated and scaled on top of that.
-  # This is used for updating a shape while it is being drawn
-  # without doing a full repaint.
-  # The context is restored to its original state before returning.
-  drawShapeInProgress: (shape) ->
-    @repaintLayer('main', false)
-    @clipped (=>
-      @transformed (=>
-        renderShapeToContext(
-          @ctx, shape, {@bufferCtx, shouldOnlyDrawLatest: true})
-      ), @ctx, @bufferCtx
-    ), @ctx, @bufferCtx
+  // Redraws the back buffer to the screen in its current state
+  // then draws the given shape translated and scaled on top of that.
+  // This is used for updating a shape while it is being drawn
+  // without doing a full repaint.
+  // The context is restored to its original state before returning.
+  drawShapeInProgress(shape) {
+    this.repaintLayer('main', false);
+    return this.clipped((() => {
+      return this.transformed((() => {
+        return renderShapeToContext(
+          this.ctx, shape, {bufferCtx: this.bufferCtx, shouldOnlyDrawLatest: true});
+      }
+      ), this.ctx, this.bufferCtx);
+    }
+    ), this.ctx, this.bufferCtx);
+  }
 
-  # Draws the given shapes translated and scaled to the given context.
-  # The context is restored to its original state before returning.
-  draw: (shapes, ctx, retryCallback) ->
-    return unless shapes.length
-    drawShapes = =>
-      for shape in shapes
-        renderShapeToContext(ctx, shape, {retryCallback})
-    @clipped (=> @transformed(drawShapes, ctx)), ctx
+  // Draws the given shapes translated and scaled to the given context.
+  // The context is restored to its original state before returning.
+  draw(shapes, ctx, retryCallback) {
+    if (!shapes.length) { return; }
+    const drawShapes = () => {
+      return Array.from(shapes).map((shape) =>
+        renderShapeToContext(ctx, shape, {retryCallback}));
+    };
+    return this.clipped((() => this.transformed(drawShapes, ctx)), ctx);
+  }
 
-  # Executes the given function after clipping the canvas to the image size.
-  # The context is restored to its original state before returning.
-  # This should not be called inside an @transformed block.
-  clipped: (fn, contexts...) ->
-    x = if @width == INFINITE then 0 else @position.x
-    y = if @height == INFINITE then 0 else @position.y
-    width = switch @width
-      when INFINITE then @canvas.width
-      else @width * @getRenderScale()
-    height = switch @height
-      when INFINITE then @canvas.height
-      else @height * @getRenderScale()
+  // Executes the given function after clipping the canvas to the image size.
+  // The context is restored to its original state before returning.
+  // This should not be called inside an @transformed block.
+  clipped(fn, ...contexts) {
+    const x = this.width === INFINITE ? 0 : this.position.x;
+    const y = this.height === INFINITE ? 0 : this.position.y;
+    const width = (() => { switch (this.width) {
+      case INFINITE: return this.canvas.width;
+      default: return this.width * this.getRenderScale();
+    } })();
+    const height = (() => { switch (this.height) {
+      case INFINITE: return this.canvas.height;
+      default: return this.height * this.getRenderScale();
+    } })();
 
-    for ctx in contexts
-      ctx.save()
-      ctx.beginPath()
-      ctx.rect(x, y, width, height)
-      ctx.clip()
+    for (var ctx of Array.from(contexts)) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x, y, width, height);
+      ctx.clip();
+    }
 
-    fn()
+    fn();
 
-    for ctx in contexts
-      ctx.restore()
+    return (() => {
+      const result = [];
+      for (ctx of Array.from(contexts)) {
+        result.push(ctx.restore());
+      }
+      return result;
+    })();
+  }
 
-  # Executes the given function after translating and scaling the context.
-  # The context is restored to its original state before returning.
-  transformed: (fn, contexts...) ->
-    for ctx in contexts
-      ctx.save()
-      ctx.translate Math.floor(@position.x), Math.floor(@position.y)
-      scale = @getRenderScale()
-      ctx.scale scale, scale
+  // Executes the given function after translating and scaling the context.
+  // The context is restored to its original state before returning.
+  transformed(fn, ...contexts) {
+    for (var ctx of Array.from(contexts)) {
+      ctx.save();
+      ctx.translate(Math.floor(this.position.x), Math.floor(this.position.y));
+      const scale = this.getRenderScale();
+      ctx.scale(scale, scale);
+    }
 
-    fn()
+    fn();
 
-    for ctx in contexts
-      ctx.restore()
+    return (() => {
+      const result = [];
+      for (ctx of Array.from(contexts)) {
+        result.push(ctx.restore());
+      }
+      return result;
+    })();
+  }
 
-  clear: (triggerClearEvent=true) ->
-    oldShapes = @shapes
-    newShapes = []
-    @setShapesInProgress []
-    @execute(new actions.ClearAction(this, oldShapes, newShapes))
-    @repaintLayer('main')
-    if triggerClearEvent
-      @trigger('clear', null)
-    @trigger('drawingChange', {})
+  clear(triggerClearEvent) {
+    if (triggerClearEvent == null) { triggerClearEvent = true; }
+    const oldShapes = this.shapes;
+    const newShapes = [];
+    this.setShapesInProgress([]);
+    this.execute(new actions.ClearAction(this, oldShapes, newShapes));
+    this.repaintLayer('main');
+    if (triggerClearEvent) {
+      this.trigger('clear', null);
+    }
+    return this.trigger('drawingChange', {});
+  }
 
-  execute: (action) ->
-    @undoStack.push(action)
-    action.do()
-    @redoStack = []
+  execute(action) {
+    this.undoStack.push(action);
+    action.do();
+    return this.redoStack = [];
+  }
 
-  undo: ->
-    return unless @undoStack.length
-    action = @undoStack.pop()
-    action.undo()
-    @redoStack.push(action)
-    @trigger('undo', {action})
-    @trigger('drawingChange', {})
+  undo() {
+    if (!this.undoStack.length) { return; }
+    const action = this.undoStack.pop();
+    action.undo();
+    this.redoStack.push(action);
+    this.trigger('undo', {action});
+    return this.trigger('drawingChange', {});
+  }
 
-  redo: ->
-    return unless @redoStack.length
-    action = @redoStack.pop()
-    @undoStack.push(action)
-    action.do()
-    @trigger('redo', {action})
-    @trigger('drawingChange', {})
+  redo() {
+    if (!this.redoStack.length) { return; }
+    const action = this.redoStack.pop();
+    this.undoStack.push(action);
+    action.do();
+    this.trigger('redo', {action});
+    return this.trigger('drawingChange', {});
+  }
 
-  canUndo: -> !!@undoStack.length
-  canRedo: -> !!@redoStack.length
+  canUndo() { return !!this.undoStack.length; }
+  canRedo() { return !!this.redoStack.length; }
 
-  getPixel: (x, y) ->
-    p = @drawingCoordsToClientCoords x, y
-    pixel = @ctx.getImageData(p.x, p.y, 1, 1).data
-    if pixel[3]
-      "rgb(#{pixel[0]}, #{pixel[1]}, #{pixel[2]})"
-    else
-      null
+  getPixel(x, y) {
+    const p = this.drawingCoordsToClientCoords(x, y);
+    const pixel = this.ctx.getImageData(p.x, p.y, 1, 1).data;
+    if (pixel[3]) {
+      return `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+    } else {
+      return null;
+    }
+  }
 
-  getContentBounds: ->
-    util.getBoundingRect(
-      (@shapes.concat(@backgroundShapes)).map((s) -> s.getBoundingRect()),
-      if @width == INFINITE then 0 else @width,
-      if @height == INFINITE then 0 else @height)
+  getContentBounds() {
+    return util.getBoundingRect(
+      (this.shapes.concat(this.backgroundShapes)).map(s => s.getBoundingRect()),
+      this.width === INFINITE ? 0 : this.width,
+      this.height === INFINITE ? 0 : this.height);
+  }
 
-  getDefaultImageRect: (
-      explicitSize={width: 0, height: 0},
-      margin={top: 0, right: 0, bottom: 0, left: 0}) ->
-    return util.getDefaultImageRect(
-      (s.getBoundingRect(@ctx) for s in @shapes.concat(@backgroundShapes)),
+  getDefaultImageRect(
       explicitSize,
-      margin )
+      margin) {
+    if (explicitSize == null) { explicitSize = {width: 0, height: 0}; }
+    if (margin == null) { margin = {top: 0, right: 0, bottom: 0, left: 0}; }
+    return util.getDefaultImageRect(
+      (Array.from(this.shapes.concat(this.backgroundShapes)).map((s) => s.getBoundingRect(this.ctx))),
+      explicitSize,
+      margin );
+  }
 
-  getImage: (opts={}) ->
-    opts.includeWatermark ?= true
-    opts.scaleDownRetina ?= true
-    opts.scale ?= 1
-    opts.scale *= @backingScale unless opts.scaleDownRetina
+  getImage(opts) {
+    if (opts == null) { opts = {}; }
+    if (opts.includeWatermark == null) { opts.includeWatermark = true; }
+    if (opts.scaleDownRetina == null) { opts.scaleDownRetina = true; }
+    if (opts.scale == null) { opts.scale = 1; }
+    if (!opts.scaleDownRetina) { opts.scale *= this.backingScale; }
 
-    if opts.includeWatermark
-      opts.watermarkImage = @watermarkImage
-      opts.watermarkScale = @watermarkScale
-      opts.watermarkScale *= @backingScale unless opts.scaleDownRetina
-    return renderSnapshotToImage(@getSnapshot(), opts)
+    if (opts.includeWatermark) {
+      opts.watermarkImage = this.watermarkImage;
+      opts.watermarkScale = this.watermarkScale;
+      if (!opts.scaleDownRetina) { opts.watermarkScale *= this.backingScale; }
+    }
+    return renderSnapshotToImage(this.getSnapshot(), opts);
+  }
 
-  canvasForExport: ->
-    @repaintAllLayers()
-    util.combineCanvases(@backgroundCanvas, @canvas)
+  canvasForExport() {
+    this.repaintAllLayers();
+    return util.combineCanvases(this.backgroundCanvas, this.canvas);
+  }
 
-  canvasWithBackground: (backgroundImageOrCanvas) ->
-    util.combineCanvases(backgroundImageOrCanvas, @canvasForExport())
+  canvasWithBackground(backgroundImageOrCanvas) {
+    return util.combineCanvases(backgroundImageOrCanvas, this.canvasForExport());
+  }
 
-  getSnapshot: (keys=null) ->
-    keys ?= ['shapes', 'imageSize', 'colors', 'position', 'scale', 'backgroundShapes']
-    snapshot = {}
-    for k in ['colors', 'position', 'scale']
-      snapshot[k] = this[k] if k in keys
-    if 'shapes' in keys
-      snapshot.shapes = (shapeToJSON(shape) for shape in @shapes)
-    if 'backgroundShapes' in keys
-      snapshot.backgroundShapes = (shapeToJSON(shape) for shape in @backgroundShapes)
-    if 'imageSize' in keys
-      snapshot.imageSize = {@width, @height}
+  getSnapshot(keys=null) {
+    let shape;
+    if (keys == null) { keys = ['shapes', 'imageSize', 'colors', 'position', 'scale', 'backgroundShapes']; }
+    const snapshot = {};
+    for (let k of ['colors', 'position', 'scale']) {
+      if (Array.from(keys).includes(k)) { snapshot[k] = this[k]; }
+    }
+    if (Array.from(keys).includes('shapes')) {
+      snapshot.shapes = ((() => {
+        const result = [];
+        for (shape of Array.from(this.shapes)) {           result.push(shapeToJSON(shape));
+        }
+        return result;
+      })());
+    }
+    if (Array.from(keys).includes('backgroundShapes')) {
+      snapshot.backgroundShapes = ((() => {
+        const result1 = [];
+        for (shape of Array.from(this.backgroundShapes)) {           result1.push(shapeToJSON(shape));
+        }
+        return result1;
+      })());
+    }
+    if (Array.from(keys).includes('imageSize')) {
+      snapshot.imageSize = {width: this.width, height: this.height};
+    }
 
-    snapshot
-  getSnapshotJSON: ->
-    console.warn("lc.getSnapshotJSON() is deprecated. use JSON.stringify(lc.getSnapshot()) instead.")
-    JSON.stringify(@getSnapshot())
+    return snapshot;
+  }
+  getSnapshotJSON() {
+    console.warn("lc.getSnapshotJSON() is deprecated. use JSON.stringify(lc.getSnapshot()) instead.");
+    return JSON.stringify(this.getSnapshot());
+  }
 
-  getSVGString: (opts={}) -> renderSnapshotToSVG(@getSnapshot(), opts)
+  getSVGString(opts) { if (opts == null) { opts = {}; } return renderSnapshotToSVG(this.getSnapshot(), opts); }
 
-  loadSnapshot: (snapshot) ->
-    return unless snapshot
+  loadSnapshot(snapshot) {
+    if (!snapshot) { return; }
 
-    if snapshot.colors
-      for k in ['primary', 'secondary', 'background']
-        @setColor(k, snapshot.colors[k])
+    if (snapshot.colors) {
+      for (let k of ['primary', 'secondary', 'background']) {
+        this.setColor(k, snapshot.colors[k]);
+      }
+    }
 
-    if snapshot.shapes
-      @shapes = []
-      for shapeRepr in snapshot.shapes
-        shape = JSONToShape(shapeRepr)
-        @execute(new actions.AddShapeAction(this, shape)) if shape
+    if (snapshot.shapes) {
+      this.shapes = [];
+      for (let shapeRepr of Array.from(snapshot.shapes)) {
+        const shape = JSONToShape(shapeRepr);
+        if (shape) { this.execute(new actions.AddShapeAction(this, shape)); }
+      }
+    }
 
-    if snapshot.backgroundShapes
-      @backgroundShapes = (JSONToShape(s) for s in snapshot.backgroundShapes)
+    if (snapshot.backgroundShapes) {
+      this.backgroundShapes = (Array.from(snapshot.backgroundShapes).map((s) => JSONToShape(s)));
+    }
 
-    if snapshot.imageSize
-      @width = snapshot.imageSize.width
-      @height = snapshot.imageSize.height
+    if (snapshot.imageSize) {
+      this.width = snapshot.imageSize.width;
+      this.height = snapshot.imageSize.height;
+    }
 
-    @position = snapshot.position if snapshot.position
-    @scale = snapshot.scale if snapshot.scale
+    if (snapshot.position) { this.position = snapshot.position; }
+    if (snapshot.scale) { this.scale = snapshot.scale; }
 
-    @repaintAllLayers()
-    @trigger('snapshotLoad')
-    @trigger('drawingChange', {})
+    this.repaintAllLayers();
+    this.trigger('snapshotLoad');
+    return this.trigger('drawingChange', {});
+  }
 
-  loadSnapshotJSON: (str) ->
-    console.warn("lc.loadSnapshotJSON() is deprecated. use lc.loadSnapshot(JSON.parse(snapshot)) instead.")
-    @loadSnapshot(JSON.parse(str))
+  loadSnapshotJSON(str) {
+    console.warn("lc.loadSnapshotJSON() is deprecated. use lc.loadSnapshot(JSON.parse(snapshot)) instead.");
+    return this.loadSnapshot(JSON.parse(str));
+  }
+});

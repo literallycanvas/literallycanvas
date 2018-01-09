@@ -1,46 +1,59 @@
-React = require './React-shim'
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-createSetStateOnEventMixin = require './createSetStateOnEventMixin'
-{classSet} = require '../core/util'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const React = require('./React-shim');
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+const {classSet} = require('../core/util');
 
-createZoomButtonComponent = (inOrOut) -> createReactClass
-  displayName: if inOrOut == 'in' then 'ZoomInButton' else 'ZoomOutButton'
+const createZoomButtonComponent = function(inOrOut) { return createReactClass({
+  displayName: inOrOut === 'in' ? 'ZoomInButton' : 'ZoomOutButton',
 
-  getState: -> {
-    isEnabled: switch
-      when inOrOut == 'in' then @props.lc.scale < @props.lc.config.zoomMax
-      when inOrOut == 'out' then  @props.lc.scale > @props.lc.config.zoomMin
+  getState() { return {
+    isEnabled: (() => { switch (false) {
+      case inOrOut !== 'in': return this.props.lc.scale < this.props.lc.config.zoomMax;
+      case inOrOut !== 'out': return this.props.lc.scale > this.props.lc.config.zoomMin;
+    } })()
+  }; },
+  getInitialState() { return this.getState(); },
+  mixins: [createSetStateOnEventMixin('zoom')],
+
+  render() {
+    const {div, img} = DOM;
+    const {lc, imageURLPrefix} = this.props;
+    const title = inOrOut === 'in' ? 'Zoom in' : 'Zoom out';
+
+    const className = `lc-zoom-${inOrOut} ` + classSet({
+      'toolbar-button': true,
+      'thin-button': true,
+      'disabled': !this.state.isEnabled
+    });
+    const onClick = (() => { switch (false) {
+      case !!this.state.isEnabled: return function() {};
+      case inOrOut !== 'in': return () => lc.zoom(lc.config.zoomStep);
+      case inOrOut !== 'out': return () => lc.zoom(-lc.config.zoomStep);
+    } })();
+    const src = `${imageURLPrefix}/zoom-${inOrOut}.png`;
+    const style = {backgroundImage: `url(${src})`};
+
+    return (div({className, onClick, title, style}));
   }
-  getInitialState: -> @getState()
-  mixins: [createSetStateOnEventMixin('zoom')]
-
-  render: ->
-    {div, img} = DOM
-    {lc, imageURLPrefix} = @props
-    title = if inOrOut == 'in' then 'Zoom in' else 'Zoom out'
-
-    className = "lc-zoom-#{inOrOut} " + classSet
-      'toolbar-button': true
-      'thin-button': true
-      'disabled': not @state.isEnabled
-    onClick = switch
-      when !@state.isEnabled then ->
-      when inOrOut == 'in' then -> lc.zoom(lc.config.zoomStep)
-      when inOrOut == 'out' then -> lc.zoom(-lc.config.zoomStep)
-    src = "#{imageURLPrefix}/zoom-#{inOrOut}.png"
-    style = {backgroundImage: "url(#{src})"}
-
-    (div {className, onClick, title, style})
+}); };
 
 
-ZoomOutButton = React.createFactory createZoomButtonComponent('out')
-ZoomInButton = React.createFactory createZoomButtonComponent('in')
-ZoomButtons = createReactClass
-  displayName: 'ZoomButtons'
-  render: ->
-    {div} = DOM
-    (div {className: 'lc-zoom'}, ZoomOutButton(@props), ZoomInButton(@props))
+const ZoomOutButton = React.createFactory(createZoomButtonComponent('out'));
+const ZoomInButton = React.createFactory(createZoomButtonComponent('in'));
+const ZoomButtons = createReactClass({
+  displayName: 'ZoomButtons',
+  render() {
+    const {div} = DOM;
+    return (div({className: 'lc-zoom'}, ZoomOutButton(this.props), ZoomInButton(this.props)));
+  }
+});
 
 
-module.exports = ZoomButtons
+module.exports = ZoomButtons;

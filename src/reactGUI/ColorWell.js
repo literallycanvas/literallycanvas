@@ -1,226 +1,275 @@
-React = require './React-shim'
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-PureRenderMixin = require 'react-addons-pure-render-mixin'
-{classSet, requestAnimationFrame, cancelAnimationFrame} = require '../core/util'
-{_} = require '../core/localization'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const React = require('./React-shim');
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const PureRenderMixin = require('react-addons-pure-render-mixin');
+const {classSet, requestAnimationFrame, cancelAnimationFrame} = require('../core/util');
+const {_} = require('../core/localization');
 
 
-parseHSLAString = (s) ->
-  return {hue: 0, sat: 0, light: 0, alpha: 0} if s == 'transparent'
-  return null unless s?.substring(0, 4) == 'hsla'
-  firstParen = s.indexOf('(')
-  lastParen = s.indexOf(')')
-  insideParens = s.substring(firstParen + 1, lastParen - firstParen + 4)
-  components = (s.trim() for s in insideParens.split(','))
+const parseHSLAString = function(s) {
+  var s;
+  if (s === 'transparent') { return {hue: 0, sat: 0, light: 0, alpha: 0}; }
+  if ((s != null ? s.substring(0, 4) : undefined) !== 'hsla') { return null; }
+  const firstParen = s.indexOf('(');
+  const lastParen = s.indexOf(')');
+  const insideParens = s.substring(firstParen + 1, (lastParen - firstParen) + 4);
+  const components = ((() => {
+    const result = [];
+    for (s of Array.from(insideParens.split(','))) {       result.push(s.trim());
+    }
+    return result;
+  })());
   return {
-    hue: parseInt(components[0], 10)
-    sat: parseInt(components[1].substring(0, components[1].length - 1), 10)
-    light: parseInt(components[2].substring(0, components[2].length - 1), 10)
+    hue: parseInt(components[0], 10),
+    sat: parseInt(components[1].substring(0, components[1].length - 1), 10),
+    light: parseInt(components[2].substring(0, components[2].length - 1), 10),
     alpha: parseFloat(components[3])
-  }
+  };
+};
 
 
-getHSLAString = ({hue, sat, light, alpha}) ->
-  "hsla(#{hue}, #{sat}%, #{light}%, #{alpha})"
-getHSLString = ({hue, sat, light}) ->
-  "hsl(#{hue}, #{sat}%, #{light}%)"
+const getHSLAString = ({hue, sat, light, alpha}) => `hsla(${hue}, ${sat}%, ${light}%, ${alpha})`;
+const getHSLString = ({hue, sat, light}) => `hsl(${hue}, ${sat}%, ${light}%)`;
 
 
-ColorGrid = React.createFactory createReactClass
-  displayName: 'ColorGrid'
-  mixins: [PureRenderMixin]
-  render: ->
-    {div} = DOM
-    (div {},
-      @props.rows.map((row, ix) =>
-        return (div \
+const ColorGrid = React.createFactory(createReactClass({
+  displayName: 'ColorGrid',
+  mixins: [PureRenderMixin],
+  render() {
+    const {div} = DOM;
+    return (div({},
+      this.props.rows.map((row, ix) => {
+        return (div( 
           {
             className: 'color-row',
             key: ix,
             style: {width: 20 * row.length}
           },
-          row.map((cellColor, ix2) =>
-            {hue, sat, light, alpha} = cellColor
-            colorString = getHSLAString(cellColor)
-            colorStringNoAlpha = "hsl(#{hue}, #{sat}%, #{light}%)"
-            className = classSet
-              'color-cell': true
-              'selected': @props.selectedColor == colorString
-            update = (e) =>
-              @props.onChange(cellColor, colorString)
-              e.stopPropagation()
-              e.preventDefault()
-            (div \
+          row.map((cellColor, ix2) => {
+            const {hue, sat, light, alpha} = cellColor;
+            const colorString = getHSLAString(cellColor);
+            const colorStringNoAlpha = `hsl(${hue}, ${sat}%, ${light}%)`;
+            const className = classSet({
+              'color-cell': true,
+              'selected': this.props.selectedColor === colorString
+            });
+            const update = e => {
+              this.props.onChange(cellColor, colorString);
+              e.stopPropagation();
+              return e.preventDefault();
+            };
+            return (div( 
               {
                 className,
-                onTouchStart: update
-                onTouchMove: update
-                onClick: update
-                style: {backgroundColor: colorStringNoAlpha}
+                onTouchStart: update,
+                onTouchMove: update,
+                onClick: update,
+                style: {backgroundColor: colorStringNoAlpha},
                 key: ix2
-              }
-            )
-          )
-        )
-      )
-    )
+              })
+            );
+          })
+        ));
+      })
+    ));
+  }
+})
+);
 
 
-ColorWell = createReactClass
-  displayName: 'ColorWell'
-  mixins: [PureRenderMixin]
-  getInitialState: ->
-    colorString = @props.lc.colors[@props.colorName]
-    hsla = parseHSLAString(colorString)
-    hsla ?= {}
-    hsla.alpha ?= 1
-    hsla.sat ?= 100
-    hsla.hue ?= 0
-    hsla.light ?= 50
+const ColorWell = createReactClass({
+  displayName: 'ColorWell',
+  mixins: [PureRenderMixin],
+  getInitialState() {
+    const colorString = this.props.lc.colors[this.props.colorName];
+    let hsla = parseHSLAString(colorString);
+    if (hsla == null) { hsla = {}; }
+    if (hsla.alpha == null) { hsla.alpha = 1; }
+    if (hsla.sat == null) { hsla.sat = 100; }
+    if (hsla.hue == null) { hsla.hue = 0; }
+    if (hsla.light == null) { hsla.light = 50; }
 
-    {
+    return {
       colorString,
-      alpha: hsla.alpha
-      sat: if hsla.sat == 0 then 100 else hsla.sat
+      alpha: hsla.alpha,
+      sat: hsla.sat === 0 ? 100 : hsla.sat,
       isPickerVisible: false,
-      hsla: hsla
+      hsla
+    };
+  },
+
+  // our color state tracks lc's
+  componentDidMount() {
+    return this.unsubscribe = this.props.lc.on(`${this.props.colorName}ColorChange`, () => {
+      const colorString = this.props.lc.colors[this.props.colorName];
+      this.setState({colorString});
+      return this.setHSLAFromColorString(colorString);
+    });
+  },
+  componentWillUnmount() { return this.unsubscribe(); },
+
+  setHSLAFromColorString(c) {
+    const hsla = parseHSLAString(c);
+    if (hsla) {
+      return this.setState({hsla, alpha: hsla.alpha, sat: hsla.sat});
+    } else {
+      return this.setState({hsla: null, alpha: 1, sat: 100});
     }
+  },
 
-  # our color state tracks lc's
-  componentDidMount: ->
-    @unsubscribe = @props.lc.on "#{@props.colorName}ColorChange", =>
-      colorString = @props.lc.colors[@props.colorName]
-      @setState({colorString})
-      @setHSLAFromColorString(colorString)
-  componentWillUnmount: -> @unsubscribe()
+  closePicker() { return this.setState({isPickerVisible: false}); },
+  togglePicker() {
+    const isPickerVisible = !this.state.isPickerVisible;
+    const shouldResetSat = isPickerVisible && (this.state.sat === 0);
+    this.setHSLAFromColorString(this.state.colorString);
+    return this.setState({isPickerVisible, sat: shouldResetSat ? 100 : this.state.sat});
+  },
 
-  setHSLAFromColorString: (c) ->
-    hsla = parseHSLAString(c)
-    if hsla
-      @setState({hsla, alpha: hsla.alpha, sat: hsla.sat})
-    else
-      @setState({hsla: null, alpha: 1, sat: 100})
+  setColor(c) {
+    this.setState({colorString: c});
+    this.setHSLAFromColorString(c);
+    return this.props.lc.setColor(this.props.colorName, c);
+  },
 
-  closePicker: -> @setState({isPickerVisible: false})
-  togglePicker: ->
-    isPickerVisible = not @state.isPickerVisible
-    shouldResetSat = isPickerVisible && @state.sat == 0
-    @setHSLAFromColorString(@state.colorString)
-    @setState({isPickerVisible, sat: if shouldResetSat then 100 else @state.sat})
+  setAlpha(alpha) {
+    this.setState({alpha});
+    if (this.state.hsla) {
+      const { hsla } = this.state;
+      hsla.alpha = alpha;
+      this.setState({hsla});
+      return this.setColor(getHSLAString(hsla));
+    }
+  },
 
-  setColor: (c) ->
-    @setState({colorString: c})
-    @setHSLAFromColorString(c)
-    @props.lc.setColor(@props.colorName, c)
+  setSat(sat) {
+    this.setState({sat});
+    if (isNaN(sat)) { throw "SAT"; }
+    if (this.state.hsla) {
+      const { hsla } = this.state;
+      hsla.sat = sat;
+      this.setState({hsla});
+      return this.setColor(getHSLAString(hsla));
+    }
+  },
 
-  setAlpha: (alpha) ->
-    @setState({alpha})
-    if @state.hsla
-      hsla = @state.hsla
-      hsla.alpha = alpha
-      @setState({hsla})
-      @setColor(getHSLAString(hsla))
-
-  setSat: (sat) ->
-    @setState({sat})
-    throw "SAT" if isNaN(sat)
-    if @state.hsla
-      hsla = @state.hsla
-      hsla.sat = sat
-      @setState({hsla})
-      @setColor(getHSLAString(hsla))
-
-  render: ->
-    {div, label, br} = DOM
-    (div \
+  render() {
+    const {div, label, br} = DOM;
+    return (div( 
       {
         className: classSet({
           'color-well': true,
-          'open': @state.isPickerVisible ,
+          'open': this.state.isPickerVisible ,
         }),
-        onMouseLeave: @closePicker
+        onMouseLeave: this.closePicker,
         style: {float: 'left', textAlign: 'center'}
       },
-      (label {float: 'left'}, @props.label),
-      (br {}),
-      (div \
+      (label({float: 'left'}, this.props.label)),
+      (br({})),
+      (div( 
         {
-          className: classSet
-            'color-well-color-container': true
-            'selected': @state.isPickerVisible
-          style: {backgroundColor: 'white'}
-          onClick: @togglePicker
+          className: classSet({
+            'color-well-color-container': true,
+            'selected': this.state.isPickerVisible
+          }),
+          style: {backgroundColor: 'white'},
+          onClick: this.togglePicker
         },
-        (div {className: 'color-well-checker color-well-checker-top-left'}),
-        (div {
+        (div({className: 'color-well-checker color-well-checker-top-left'})),
+        (div({
           className: 'color-well-checker color-well-checker-bottom-right',
           style: {left: '50%', top: '50%'}
-        }),
-        (div \
+        })),
+        (div( 
           {
             className: 'color-well-color',
-            style: {backgroundColor: @state.colorString}
+            style: {backgroundColor: this.state.colorString}
           },
           " "
-        )
-      ),
-      @renderPicker()
-    )
+        ))
+      )),
+      this.renderPicker()
+    ));
+  },
 
-  renderPicker: ->
-    {div, label, input} = DOM
-    return null unless @state.isPickerVisible
+  renderPicker() {
+    let i;
+    const {div, label, input} = DOM;
+    if (!this.state.isPickerVisible) { return null; }
 
-    renderLabel = (text) =>
-      (div {
+    const renderLabel = text => {
+      return (div({
         className: 'color-row label', key: text, style: {
-          lineHeight: '20px'
+          lineHeight: '20px',
           height: 16
         }
-      }, text)
+      }, text));
+    };
 
-    renderColor = =>
-      checkerboardURL = "#{@props.lc.opts.imageURLPrefix}/checkerboard-8x8.png"
-      (div {
+    const renderColor = () => {
+      const checkerboardURL = `${this.props.lc.opts.imageURLPrefix}/checkerboard-8x8.png`;
+      return (div({
         className: 'color-row', key: "color", style: {
-          position: 'relative'
-          backgroundImage: "url(#{checkerboardURL})"
-          backgroundRepeat: 'repeat'
+          position: 'relative',
+          backgroundImage: `url(${checkerboardURL})`,
+          backgroundRepeat: 'repeat',
           height: 24
         }},
-        (div {style: {
+        (div({style: {
           position: 'absolute',
-          top: 0, right: 0, bottom: 0, left: 0
-          backgroundColor: @state.colorString
-        }})
-      )
+          top: 0, right: 0, bottom: 0, left: 0,
+          backgroundColor: this.state.colorString
+        }}))
+      ));
+    };
 
-    rows = []
-    rows.push ({hue: 0, sat: 0, light: i, alpha: @state.alpha} for i in [0..100] by 10)
-    for hue in [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
-      rows.push ({hue, sat: @state.sat, light: i, alpha: @state.alpha} for i in [10..90] by 8)
+    const rows = [];
+    rows.push(((() => {
+      const result = [];
+      for (i = 0; i <= 100; i += 10) {
+        result.push({hue: 0, sat: 0, light: i, alpha: this.state.alpha});
+      }
+      return result;
+    })()));
+    for (var hue of [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]) {
+      rows.push(((() => {
+        const result1 = [];
+        for (i = 10; i <= 90; i += 8) {
+          result1.push({hue, sat: this.state.sat, light: i, alpha: this.state.alpha});
+        }
+        return result1;
+      })()));
+    }
 
-    onSelectColor = (hsla, s) => @setColor(s)
+    const onSelectColor = (hsla, s) => this.setColor(s);
 
-    (div {className: 'color-picker-popup'},
-      renderColor()
-      renderLabel(_("alpha"))
-      (input {
+    return (div({className: 'color-picker-popup'},
+      renderColor(),
+      renderLabel(_("alpha")),
+      (input({
         type: 'range',
-        min: 0, max: 1, step: 0.01
-        value: @state.alpha,
-        onChange: (e) => @setAlpha(parseFloat(e.target.value))
-      }),
-      renderLabel(_("saturation"))
-      (input {
+        min: 0, max: 1, step: 0.01,
+        value: this.state.alpha,
+        onChange: e => this.setAlpha(parseFloat(e.target.value))
+      })),
+      renderLabel(_("saturation")),
+      (input({
         type: 'range',
         min: 0, max: 100,
-        value: @state.sat, max: 100,
-        onChange: (e) => @setSat(parseInt(e.target.value, 10))
-      }),
-      (ColorGrid {rows, selectedColor: @state.colorString, onChange: onSelectColor})
-    )
+        value: this.state.sat, max: 100,
+        onChange: e => this.setSat(parseInt(e.target.value, 10))
+      })),
+      (ColorGrid({rows, selectedColor: this.state.colorString, onChange: onSelectColor}))
+    ));
+  }
+});
 
 
-module.exports = ColorWell
+module.exports = ColorWell;

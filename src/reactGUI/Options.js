@@ -1,28 +1,37 @@
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-createSetStateOnEventMixin = require './createSetStateOnEventMixin'
-{optionsStyles} = require '../optionsStyles/optionsStyles'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const createSetStateOnEventMixin = require('./createSetStateOnEventMixin');
+const {optionsStyles} = require('../optionsStyles/optionsStyles');
 
 
-Options = createReactClass
-  displayName: 'Options'
-  getState: -> {
-    style: @props.lc.tool?.optionsStyle
-    tool: @props.lc.tool
-  }
-  getInitialState: -> @getState()
-  mixins: [createSetStateOnEventMixin('toolChange')]
+const Options = createReactClass({
+  displayName: 'Options',
+  getState() { return {
+    style: (this.props.lc.tool != null ? this.props.lc.tool.optionsStyle : undefined),
+    tool: this.props.lc.tool
+  }; },
+  getInitialState() { return this.getState(); },
+  mixins: [createSetStateOnEventMixin('toolChange')],
 
-  renderBody: ->
-    # style can be null; cast it as a string
-    style = "" + @state.style
-    optionsStyles[style] && optionsStyles[style]({
-      lc: @props.lc, tool: @state.tool, imageURLPrefix: @props.imageURLPrefix})
+  renderBody() {
+    // style can be null; cast it as a string
+    const style = `${this.state.style}`;
+    return optionsStyles[style] && optionsStyles[style]({
+      lc: this.props.lc, tool: this.state.tool, imageURLPrefix: this.props.imageURLPrefix});
+  },
 
-  render: ->
-    {div} = DOM
-    (div {className: 'lc-options horz-toolbar'},
+  render() {
+    const {div} = DOM;
+    return (div({className: 'lc-options horz-toolbar'},
       this.renderBody()
-    )
+    ));
+  }
+});
 
-module.exports = Options
+module.exports = Options;

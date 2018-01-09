@@ -1,22 +1,30 @@
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-{defineOptionsStyle} = require './optionsStyles'
-{_} = require '../core/localization'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS201: Simplify complex destructure assignments
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const {defineOptionsStyle} = require('./optionsStyles');
+const {_} = require('../core/localization');
 
 
-SANS_SERIF_FONTS = [
+const SANS_SERIF_FONTS = [
   ['Arial', 'Arial,"Helvetica Neue",Helvetica,sans-serif'],
   ['Arial Black', '"Arial Black","Arial Bold",Gadget,sans-serif'],
   ['Arial Narrow', '"Arial Narrow",Arial,sans-serif'],
   ['Gill Sans', '"Gill Sans","Gill Sans MT",Calibri,sans-serif'],
-  ['Helvetica', '"Helvetica Neue",Helvetica,Arial,sans-serif']
+  ['Helvetica', '"Helvetica Neue",Helvetica,Arial,sans-serif'],
   ['Impact', 'Impact,Haettenschweiler,"Franklin Gothic Bold",Charcoal,"Helvetica Inserat","Bitstream Vera Sans Bold","Arial Black",sans-serif'],
   ['Tahoma', 'Tahoma,Verdana,Segoe,sans-serif'],
   ['Trebuchet MS', '"Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif'],
   ['Verdana', 'Verdana,Geneva,sans-serif'],
-].map ([name, value]) -> {name: _(name), value}
+].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value}; });
 
-SERIF_FONTS = [
+const SERIF_FONTS = [
   ['Baskerville', 'Baskerville,"Baskerville Old Face","Hoefler Text",Garamond,"Times New Roman",serif'],
   ['Garamond', 'Garamond,Baskerville,"Baskerville Old Face","Hoefler Text","Times New Roman",serif'],
   ['Georgia', 'Georgia,Times,"Times New Roman",serif'],
@@ -24,128 +32,145 @@ SERIF_FONTS = [
   ['Lucida Bright', '"Lucida Bright",Georgia,serif'],
   ['Palatino', 'Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif'],
   ['Times New Roman', 'TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif'],
-].map ([name, value]) -> {name: _(name), value}
+].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value}; });
 
-MONOSPACE_FONTS = [
+const MONOSPACE_FONTS = [
   ['Consolas/Monaco', 'Consolas,monaco,"Lucida Console",monospace'],
   ['Courier New', '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'],
   ['Lucida Sans Typewriter', '"Lucida Sans Typewriter","Lucida Console",monaco,"Bitstream Vera Sans Mono",monospace'],
-].map ([name, value]) -> {name: _(name), value}
+].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value}; });
 
-OTHER_FONTS = [
+const OTHER_FONTS = [
   ['Copperplate', 'Copperplate,"Copperplate Gothic Light",fantasy'],
   ['Papyrus', 'Papyrus,fantasy'],
   ['Script', '"Brush Script MT",cursive'],
-].map ([name, value]) -> {name: _(name), value}
+].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value}; });
 
-ALL_FONTS = [
+const ALL_FONTS = [
   [_('Sans Serif'), SANS_SERIF_FONTS],
   [_('Serif'), SERIF_FONTS],
   [_('Monospace'), MONOSPACE_FONTS],
   [_('Other'), OTHER_FONTS],
-]
+];
 
-FONT_NAME_TO_VALUE = {}
-for {name, value} in SANS_SERIF_FONTS
-  FONT_NAME_TO_VALUE[name] = value
-for {name, value} in SERIF_FONTS
-  FONT_NAME_TO_VALUE[name] = value
-for {name, value} in MONOSPACE_FONTS
-  FONT_NAME_TO_VALUE[name] = value
-for {name, value} in OTHER_FONTS
-  FONT_NAME_TO_VALUE[name] = value
+const FONT_NAME_TO_VALUE = {};
+for (var {name, value} of Array.from(SANS_SERIF_FONTS)) {
+  FONT_NAME_TO_VALUE[name] = value;
+}
+for ({name, value} of Array.from(SERIF_FONTS)) {
+  FONT_NAME_TO_VALUE[name] = value;
+}
+for ({name, value} of Array.from(MONOSPACE_FONTS)) {
+  FONT_NAME_TO_VALUE[name] = value;
+}
+for ({name, value} of Array.from(OTHER_FONTS)) {
+  FONT_NAME_TO_VALUE[name] = value;
+}
 
 
-defineOptionsStyle 'font', createReactClass
-  displayName: 'FontOptions'
-  getInitialState: -> {
-    isItalic: false
-    isBold: false
+defineOptionsStyle('font', createReactClass({
+  displayName: 'FontOptions',
+  getInitialState() { return {
+    isItalic: false,
+    isBold: false,
     fontName: 'Helvetica',
     fontSizeIndex: 4
-  }
+  }; },
 
-  getFontSizes: -> [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288]
+  getFontSizes() { return [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288]; },
 
-  # LC's text tool API is a little funky: it just has a 'font' string you can
-  # set.
-  updateTool: (newState = {}) ->
-    for k of @state
-      unless k of newState
-        newState[k] = @state[k]
-    fontSize = @getFontSizes()[newState.fontSizeIndex]
-    items = []
-    items.push('italic') if newState.isItalic
-    items.push('bold') if newState.isBold
-    items.push("#{fontSize}px")
-    items.push(FONT_NAME_TO_VALUE[newState.fontName])
-    @props.lc.tool.font = items.join(' ')
-    @props.lc.trigger 'setFont', items.join(' ')
-
-  handleFontSize: (event) ->
-    newState = {fontSizeIndex: event.target.value}
-    @setState(newState)
-    @updateTool(newState)
-
-  handleFontFamily: (event) ->
-    newState = {
-      fontName: event.target.selectedOptions[0].innerHTML,
+  // LC's text tool API is a little funky: it just has a 'font' string you can
+  // set.
+  updateTool(newState) {
+    if (newState == null) { newState = {}; }
+    for (let k in this.state) {
+      if (!(k in newState)) {
+        newState[k] = this.state[k];
+      }
     }
-    @setState(newState)
-    @updateTool(newState)
+    const fontSize = this.getFontSizes()[newState.fontSizeIndex];
+    const items = [];
+    if (newState.isItalic) { items.push('italic'); }
+    if (newState.isBold) { items.push('bold'); }
+    items.push(`${fontSize}px`);
+    items.push(FONT_NAME_TO_VALUE[newState.fontName]);
+    this.props.lc.tool.font = items.join(' ');
+    return this.props.lc.trigger('setFont', items.join(' '));
+  },
 
-  handleItalic: (event) ->
-    newState = {isItalic: !@state.isItalic}
-    @setState(newState)
-    @updateTool(newState)
+  handleFontSize(event) {
+    const newState = {fontSizeIndex: event.target.value};
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
 
-  handleBold: (event) ->
-    newState = {isBold: !@state.isBold}
-    @setState(newState)
-    @updateTool(newState)
+  handleFontFamily(event) {
+    const newState = {
+      fontName: event.target.selectedOptions[0].innerHTML,
+    };
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
 
-  componentDidMount: -> @updateTool()
+  handleItalic(event) {
+    const newState = {isItalic: !this.state.isItalic};
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
 
-  render: ->
-    lc = @props.lc
+  handleBold(event) {
+    const newState = {isBold: !this.state.isBold};
+    this.setState(newState);
+    return this.updateTool(newState);
+  },
 
-    {div, input, select, option, br, label, span, optgroup} = DOM
+  componentDidMount() { return this.updateTool(); },
 
-    (div {className: 'lc-font-settings'},
-      (select {value: @state.fontSizeIndex, onChange: @handleFontSize},
-        @getFontSizes().map((size, ix) =>
-          (option {value: ix, key: ix}, "#{size}px")
-        )
-      )
-      (select {value: @state.fontName, onChange: @handleFontFamily},
-        ALL_FONTS.map ([label, fonts]) =>
-          (optgroup {key: label, label}, fonts.map (family, ix) ->
-            (option {value: family.name, key: ix}, family.name)
-          )
-      )
-      (span {},
-        (label {htmlFor: 'italic'}, _("italic")),
-        (input \
+  render() {
+    const { lc } = this.props;
+
+    const {div, input, select, option, br, label, span, optgroup} = DOM;
+
+    return (div({className: 'lc-font-settings'},
+      (select({value: this.state.fontSizeIndex, onChange: this.handleFontSize},
+        this.getFontSizes().map((size, ix) => {
+          return (option({value: ix, key: ix}, `${size}px`));
+        })
+      )),
+      (select({value: this.state.fontName, onChange: this.handleFontFamily},
+        ALL_FONTS.map((...args) => {
+          let fonts;
+          let label;
+          [label, fonts] = Array.from(args[0]);
+          return (optgroup({key: label, label}, fonts.map((family, ix) => option({value: family.name, key: ix}, family.name))));
+      })
+      )),
+      (span({},
+        (label({htmlFor: 'italic'}, _("italic"))),
+        (input( 
           {
             type: 'checkbox',
             id: 'italic',
-            checked: @state.isItalic,
-            onChange: @handleItalic
-          }
+            checked: this.state.isItalic,
+            onChange: this.handleItalic
+          })
         )
-      )
-      (span {},
-        (label {htmlFor: 'bold'}, _("bold")),
-        (input \
+      )),
+      (span({},
+        (label({htmlFor: 'bold'}, _("bold"))),
+        (input( 
           {
             type: 'checkbox',
             id: 'bold',
-            checked: @state.isBold,
-            onChange: @handleBold,
-          }
+            checked: this.state.isBold,
+            onChange: this.handleBold,
+          })
         )
-      )
-    )
+      ))
+    ));
+  }
+})
+);
 
 
-module.exports = {}
+module.exports = {};

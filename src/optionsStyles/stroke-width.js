@@ -1,6 +1,6 @@
-{defineOptionsStyle} = require './optionsStyles'
-StrokeWidthPicker = require '../reactGUI/StrokeWidthPicker'
+const {defineOptionsStyle} = require('./optionsStyles');
+const StrokeWidthPicker = require('../reactGUI/StrokeWidthPicker');
 
-defineOptionsStyle 'stroke-width', StrokeWidthPicker
+defineOptionsStyle('stroke-width', StrokeWidthPicker);
 
-module.exports = {}
+module.exports = {};

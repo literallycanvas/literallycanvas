@@ -1,36 +1,48 @@
-React = require './React-shim'
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-{classSet} = require '../core/util'
-{_} = require '../core/localization'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const React = require('./React-shim');
+const DOM = require('../reactGUI/ReactDOMFactories-shim');
+const createReactClass = require('../reactGUI/createReactClass-shim');
+const {classSet} = require('../core/util');
+const {_} = require('../core/localization');
 
 
-createToolButton = (tool) ->
-  displayName = tool.name
-  imageName = tool.iconName
-  React.createFactory createReactClass
-    displayName: displayName,
-    getDefaultProps: -> {isSelected: false, lc: null}
-    componentWillMount: ->
-      if @props.isSelected
-        # prevent race condition with options, tools getting set
-        # (I've already forgotten the specifics of this; should reinvestigate
-        # and explain here. --steve)
-        @props.lc.setTool(tool)
-    render: ->
-      {div, img} = DOM
-      {imageURLPrefix, isSelected, onSelect} = @props
+const createToolButton = function(tool) {
+  const displayName = tool.name;
+  const imageName = tool.iconName;
+  return React.createFactory(createReactClass({
+    displayName,
+    getDefaultProps() { return {isSelected: false, lc: null}; },
+    componentWillMount() {
+      if (this.props.isSelected) {
+        // prevent race condition with options, tools getting set
+        // (I've already forgotten the specifics of this; should reinvestigate
+        // and explain here. --steve)
+        return this.props.lc.setTool(tool);
+      }
+    },
+    render() {
+      const {div, img} = DOM;
+      const {imageURLPrefix, isSelected, onSelect} = this.props;
 
-      className = classSet
-        'lc-pick-tool': true
-        'toolbar-button': true
-        'thin-button': true
+      const className = classSet({
+        'lc-pick-tool': true,
+        'toolbar-button': true,
+        'thin-button': true,
         'selected': isSelected
-      src = "#{imageURLPrefix}/#{imageName}.png"
-      (div {
+      });
+      const src = `${imageURLPrefix}/${imageName}.png`;
+      return (div({
         className,
-        style: {'backgroundImage': "url(#{src})"}
-        onClick: (-> onSelect(tool)), title: _(displayName)})
+        style: {'backgroundImage': `url(${src})`},
+        onClick() { return onSelect(tool); }, title: _(displayName)}));
+    }
+  })
+  );
+};
 
 
-module.exports = createToolButton
+module.exports = createToolButton;

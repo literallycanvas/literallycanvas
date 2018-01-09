@@ -1,8 +1,12 @@
-React = require '../reactGUI/React-shim'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+const React = require('../reactGUI/React-shim');
 
-optionsStyles = {}
+const optionsStyles = {};
 
-defineOptionsStyle = (name, style) ->
-  optionsStyles[name] = React.createFactory(style)
+const defineOptionsStyle = (name, style) => optionsStyles[name] = React.createFactory(style);
 
-module.exports = {optionsStyles, defineOptionsStyle}
+module.exports = {optionsStyles, defineOptionsStyle};
