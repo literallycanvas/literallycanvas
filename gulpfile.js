@@ -39,7 +39,7 @@ gulp.task('browserify-lc-main', function() {
   var bundleStream = browserify({
       basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC',
       debug: false
-  }).add('./index.coffee')
+  }).add('./index.js')
     .external('create-react-class')
     .external('react')
     .external('react-dom')
@@ -55,7 +55,7 @@ gulp.task('browserify-lc-main', function() {
     });
 
   return bundleStream
-    .pipe(source('./src/index.coffee'))
+    .pipe(source('./src/index.js'))
     .pipe(rename('literallycanvas.js'))
     .pipe(gulp.dest('./lib/js/'))
     .pipe(connect.reload());
@@ -65,7 +65,7 @@ gulp.task('browserify-lc-core', function() {
   var bundleStream = browserify({
       basedir: 'src', extensions: ['.js', '.jsx', '.coffee'], debug: true, standalone: 'LC',
       debug: false
-  }).add('./index.coffee')
+  }).add('./index.js')
     .transform(preprocessify({}, {includeExtensions: ['.coffee'], type: 'coffee'}))
     .transform('coffeeify')
     .transform('babelify')
@@ -77,7 +77,7 @@ gulp.task('browserify-lc-core', function() {
     });
 
   return bundleStream
-    .pipe(source('./src/index.coffee'))
+    .pipe(source('./src/index.js'))
     .pipe(rename('literallycanvas-core.js'))
     .pipe(gulp.dest('./lib/js/'))
     .pipe(connect.reload());
