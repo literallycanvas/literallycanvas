@@ -1,3 +1,4 @@
+React = require '../reactGUI/React-shim'
 actions = require './actions'
 bindEvents = require './bindEvents'
 math = require './math'

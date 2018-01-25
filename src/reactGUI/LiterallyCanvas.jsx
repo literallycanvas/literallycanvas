@@ -1,3 +1,4 @@
+const React = require('../reactGUI/React-shim');
 const createReactClass = require('../reactGUI/createReactClass-shim');
 const { findDOMNode } = require('../reactGUI/ReactDOM-shim');
 const { classSet } = require('../core/util');
@@ -71,7 +72,7 @@ const LiterallyCanvas = createReactClass({
   render() {
     const { lc, toolButtonComponents, props } = this;
     const { imageURLPrefix, toolbarPosition, imageSize } = this.lc.opts;
-    
+
     const pickerProps = { lc, toolButtonComponents, imageURLPrefix };
     const topOrBottomClassName = classSet({
       'toolbar-at-top': toolbarPosition === 'top',
@@ -92,7 +93,7 @@ const LiterallyCanvas = createReactClass({
     );
   }
 });
-  
+
 
 
 module.exports = LiterallyCanvas

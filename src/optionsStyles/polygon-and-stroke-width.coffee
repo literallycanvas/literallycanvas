@@ -1,3 +1,4 @@
+React = require '../reactGUI/React-shim'
 DOM = require '../reactGUI/ReactDOMFactories-shim'
 createReactClass = require '../reactGUI/createReactClass-shim'
 {defineOptionsStyle} = require './optionsStyles'
