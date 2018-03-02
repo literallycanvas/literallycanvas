@@ -13,6 +13,25 @@ class ClearAction
     @lc.repaintLayer('main')
 
 
+class MoveAction
+
+  constructor: (@lc, @selectedShape, @previousPosition, @newPosition) ->
+
+  do: ->
+    @selectedShape.setUpperLeft {
+      x: @newPosition.x,
+      y: @newPosition.y
+    }
+    @lc.repaintLayer('main')
+
+  undo: ->
+    @selectedShape.setUpperLeft {
+      x: @previousPosition.x,
+      y: @previousPosition.y
+    }
+    @lc.repaintLayer('main')
+
+
 class AddShapeAction
 
   constructor: (@lc, @shape, @previousShapeId=null) ->
@@ -51,4 +70,4 @@ class AddShapeAction
     @lc.repaintLayer('main')
 
 
-module.exports = {ClearAction, AddShapeAction}
+module.exports = {ClearAction, MoveAction, AddShapeAction}
