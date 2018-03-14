@@ -1,4 +1,5 @@
 const createReactClass = require('../reactGUI/createReactClass-shim');
+const React = require('../reactGUI/React-shim');
 const { defineOptionsStyle } = require('./optionsStyles');
 const createSetStateOnEventMixin = require('../reactGUI/createSetStateOnEventMixin');
 const _ = require('../core/localization')._;
