@@ -73,7 +73,7 @@ util =
         <rect width='#{width}' height='#{height}' x='0' y='0'
           fill='#{backgroundColor}' />
         <g transform='translate(#{-x}, #{-y})'>
-          #{shapes.map(renderShapeToSVG).join('')}
+          #{shapes.map((shape) -> renderShapeToSVG(shape)).join('')}
         </g>
       </svg>
     ".replace(/(\r\n|\n|\r)/gm,"")
