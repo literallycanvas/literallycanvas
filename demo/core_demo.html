@@ -86,6 +86,8 @@
         <a href="javascript:void(0);" class='tool' id="hide-lc">Teardown</a>
         <a href="javascript:void(0);" class='tool' id="show-lc">Setup</a>
         <a href="javascript:void(0);" class='tool' id="clear-lc">Clear</a>
+        <a href="javascript:void(0);" class='tool' id="undo-lc">Undo</a>
+        <a href="javascript:void(0);" class='tool' id="redo-lc">Redo</a>
       </div>
 
       <div class="toolset">
@@ -202,6 +204,14 @@
 
         $("#clear-lc").click(function() {
           lc.clear();
+        });
+
+        $("#undo-lc").click(function() {
+          lc.undo();
+        });
+
+        $("#redo-lc").click(function() {
+          lc.redo();
         });
 
         // Set up our own tools...
