@@ -122,9 +122,14 @@ defineShape 'Image',
     @y = args.y or 0
     @scale = args.scale or 1
     @image = args.image or null
+    @crossOrigin = (args.image and args.image.crossOrigin) or null
   getBoundingRect: ->
     {@x, @y, width: @image.width * @scale, height: @image.height * @scale}
-  toJSON: -> {@x, @y, imageSrc: @image.src, imageObject: @image, @scale}
+  toJSON: () ->
+    toJSONData = {@x, @y, imageSrc: @image.src, imageObject: @image, @scale}
+    if @crossOrigin
+      toJSONData['crossOrigin'] = @crossOrigin
+    return toJSONData
   fromJSON: (data) ->
     img = null
     if data.imageObject?.width
@@ -132,6 +137,8 @@ defineShape 'Image',
     else
       img = new Image()
       img.src = data.imageSrc
+      if data.crossOrigin
+        img.crossOrigin = data.crossOrigin
     createShape('Image', {x: data.x, y: data.y, image: img, scale: data.scale})
   move: ( moveInfo={} ) ->
     @x = @x - moveInfo.xDiff
