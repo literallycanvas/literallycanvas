@@ -21,6 +21,15 @@ Along with the CSS, JS, and image assets, this is all it takes:
 </script>
 ```
 
+State of the project
+--------------------
+
+No one is maintaining this project. If you report a bug, the ticket will be a
+helpful place for discussion, but no one will fix it unless you submit a pull
+request. Feature requests will likewise be ignored.
+
+Pull requests will be merged promptly if they are basically OK.
+
 Developing
 ----------
 
