@@ -1,4 +1,6 @@
-var DOM, StrokeWidthPicker, classSet, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
+var DOM, React, StrokeWidthPicker, classSet, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
+
+React = require('../reactGUI/React-shim');
 
 DOM = require('../reactGUI/ReactDOMFactories-shim');
 

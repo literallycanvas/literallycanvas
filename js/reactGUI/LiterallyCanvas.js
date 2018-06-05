@@ -1,5 +1,6 @@
 'use strict';
 
+var React = require('../reactGUI/React-shim');
 var createReactClass = require('../reactGUI/createReactClass-shim');
 
 var _require = require('../reactGUI/ReactDOM-shim'),

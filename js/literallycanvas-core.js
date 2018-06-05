@@ -1055,7 +1055,7 @@ module.exports = TextRenderer;
 
 
 },{"./fontmetrics.js":7}],3:[function(require,module,exports){
-var AddShapeAction, ClearAction;
+var AddShapeAction, ClearAction, MoveAction;
 
 ClearAction = (function() {
   function ClearAction(lc1, oldShapes, newShapes1) {
@@ -1075,6 +1075,34 @@ ClearAction = (function() {
   };
 
   return ClearAction;
+
+})();
+
+MoveAction = (function() {
+  function MoveAction(lc1, selectedShape, previousPosition, newPosition) {
+    this.lc = lc1;
+    this.selectedShape = selectedShape;
+    this.previousPosition = previousPosition;
+    this.newPosition = newPosition;
+  }
+
+  MoveAction.prototype["do"] = function() {
+    this.selectedShape.setUpperLeft({
+      x: this.newPosition.x,
+      y: this.newPosition.y
+    });
+    return this.lc.repaintLayer('main');
+  };
+
+  MoveAction.prototype.undo = function() {
+    this.selectedShape.setUpperLeft({
+      x: this.previousPosition.x,
+      y: this.previousPosition.y
+    });
+    return this.lc.repaintLayer('main');
+  };
+
+  return MoveAction;
 
 })();
 
@@ -1133,6 +1161,7 @@ AddShapeAction = (function() {
 
 module.exports = {
   ClearAction: ClearAction,
+  MoveAction: MoveAction,
   AddShapeAction: AddShapeAction
 };
 
@@ -4198,9 +4227,11 @@ module.exports = Rectangle = (function(superClass) {
 
 
 },{"../core/shapes":13,"./base":29}],27:[function(require,module,exports){
-var SelectShape, Tool, createShape,
+var SelectShape, Tool, actions, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
+
+actions = require('../core/actions');
 
 Tool = require('./base').Tool;
 
@@ -4252,9 +4283,13 @@ module.exports = SelectShape = (function(superClass) {
           ]);
           lc.repaintLayer('main');
           br = _this.selectedShape.getBoundingRect();
-          return _this.dragOffset = {
+          _this.dragOffset = {
             x: x - br.x,
             y: y - br.y
+          };
+          return _this.initialPosition = {
+            x: br.x,
+            y: br.y
           };
         }
       };
@@ -4281,10 +4316,16 @@ module.exports = SelectShape = (function(superClass) {
     })(this);
     onUp = (function(_this) {
       return function(arg) {
-        var x, y;
+        var br, newPosition, x, y;
         x = arg.x, y = arg.y;
         if (_this.didDrag) {
           _this.didDrag = false;
+          br = _this.selectedShape.getBoundingRect();
+          newPosition = {
+            x: br.x,
+            y: br.y
+          };
+          lc.execute(new actions.MoveAction(lc, _this.selectedShape, _this.initialPosition, newPosition));
           lc.trigger('shapeMoved', {
             shape: _this.selectedShape
           });
@@ -4352,7 +4393,7 @@ module.exports = SelectShape = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":13,"./base":29}],28:[function(require,module,exports){
+},{"../core/actions":3,"../core/shapes":13,"./base":29}],28:[function(require,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;

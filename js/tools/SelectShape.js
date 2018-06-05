@@ -1,6 +1,8 @@
-var SelectShape, Tool, createShape,
+var SelectShape, Tool, actions, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
+
+actions = require('../core/actions');
 
 Tool = require('./base').Tool;
 
@@ -52,9 +54,13 @@ module.exports = SelectShape = (function(superClass) {
           ]);
           lc.repaintLayer('main');
           br = _this.selectedShape.getBoundingRect();
-          return _this.dragOffset = {
+          _this.dragOffset = {
             x: x - br.x,
             y: y - br.y
+          };
+          return _this.initialPosition = {
+            x: br.x,
+            y: br.y
           };
         }
       };
@@ -81,10 +87,16 @@ module.exports = SelectShape = (function(superClass) {
     })(this);
     onUp = (function(_this) {
       return function(arg) {
-        var x, y;
+        var br, newPosition, x, y;
         x = arg.x, y = arg.y;
         if (_this.didDrag) {
           _this.didDrag = false;
+          br = _this.selectedShape.getBoundingRect();
+          newPosition = {
+            x: br.x,
+            y: br.y
+          };
+          lc.execute(new actions.MoveAction(lc, _this.selectedShape, _this.initialPosition, newPosition));
           lc.trigger('shapeMoved', {
             shape: _this.selectedShape
           });

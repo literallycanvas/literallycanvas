@@ -1,4 +1,4 @@
-var AddShapeAction, ClearAction;
+var AddShapeAction, ClearAction, MoveAction;
 
 ClearAction = (function() {
   function ClearAction(lc1, oldShapes, newShapes1) {
@@ -18,6 +18,34 @@ ClearAction = (function() {
   };
 
   return ClearAction;
+
+})();
+
+MoveAction = (function() {
+  function MoveAction(lc1, selectedShape, previousPosition, newPosition) {
+    this.lc = lc1;
+    this.selectedShape = selectedShape;
+    this.previousPosition = previousPosition;
+    this.newPosition = newPosition;
+  }
+
+  MoveAction.prototype["do"] = function() {
+    this.selectedShape.setUpperLeft({
+      x: this.newPosition.x,
+      y: this.newPosition.y
+    });
+    return this.lc.repaintLayer('main');
+  };
+
+  MoveAction.prototype.undo = function() {
+    this.selectedShape.setUpperLeft({
+      x: this.previousPosition.x,
+      y: this.previousPosition.y
+    });
+    return this.lc.repaintLayer('main');
+  };
+
+  return MoveAction;
 
 })();
 
@@ -76,5 +104,6 @@ AddShapeAction = (function() {
 
 module.exports = {
   ClearAction: ClearAction,
+  MoveAction: MoveAction,
   AddShapeAction: AddShapeAction
 };

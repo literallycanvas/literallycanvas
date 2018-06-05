@@ -1,6 +1,7 @@
 'use strict';
 
 var createReactClass = require('../reactGUI/createReactClass-shim');
+var React = require('../reactGUI/React-shim');
 
 var _require = require('./optionsStyles'),
     defineOptionsStyle = _require.defineOptionsStyle;

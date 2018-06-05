@@ -1143,7 +1143,7 @@ module.exports = TextRenderer;
 
 
 },{"./fontmetrics.js":9}],5:[function(require,module,exports){
-var AddShapeAction, ClearAction;
+var AddShapeAction, ClearAction, MoveAction;
 
 ClearAction = (function() {
   function ClearAction(lc1, oldShapes, newShapes1) {
@@ -1163,6 +1163,34 @@ ClearAction = (function() {
   };
 
   return ClearAction;
+
+})();
+
+MoveAction = (function() {
+  function MoveAction(lc1, selectedShape, previousPosition, newPosition) {
+    this.lc = lc1;
+    this.selectedShape = selectedShape;
+    this.previousPosition = previousPosition;
+    this.newPosition = newPosition;
+  }
+
+  MoveAction.prototype["do"] = function() {
+    this.selectedShape.setUpperLeft({
+      x: this.newPosition.x,
+      y: this.newPosition.y
+    });
+    return this.lc.repaintLayer('main');
+  };
+
+  MoveAction.prototype.undo = function() {
+    this.selectedShape.setUpperLeft({
+      x: this.previousPosition.x,
+      y: this.previousPosition.y
+    });
+    return this.lc.repaintLayer('main');
+  };
+
+  return MoveAction;
 
 })();
 
@@ -1221,6 +1249,7 @@ AddShapeAction = (function() {
 
 module.exports = {
   ClearAction: ClearAction,
+  MoveAction: MoveAction,
   AddShapeAction: AddShapeAction
 };
 
@@ -3909,7 +3938,9 @@ module.exports = {};
 
 
 },{"../core/localization":11,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./optionsStyles":24}],22:[function(require,module,exports){
-var DOM, StrokeWidthPicker, classSet, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
+var DOM, React, StrokeWidthPicker, classSet, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
+
+React = require('../reactGUI/React-shim');
 
 DOM = require('../reactGUI/ReactDOMFactories-shim');
 
@@ -3985,7 +4016,7 @@ defineOptionsStyle('line-options-and-stroke-width', createReactClass({
 module.exports = {};
 
 
-},{"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/StrokeWidthPicker":36,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],23:[function(require,module,exports){
+},{"../core/util":17,"../reactGUI/React-shim":33,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/StrokeWidthPicker":36,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],23:[function(require,module,exports){
 var DOM, createReactClass, defineOptionsStyle;
 
 DOM = require('../reactGUI/ReactDOMFactories-shim');
@@ -4022,7 +4053,9 @@ module.exports = {
 
 
 },{"../reactGUI/React-shim":33}],25:[function(require,module,exports){
-var DOM, StrokeWidthPicker, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
+var DOM, React, StrokeWidthPicker, createReactClass, createSetStateOnEventMixin, defineOptionsStyle;
+
+React = require('../reactGUI/React-shim');
 
 DOM = require('../reactGUI/ReactDOMFactories-shim');
 
@@ -4135,10 +4168,11 @@ defineOptionsStyle('polygon-and-stroke-width', createReactClass({
 module.exports = {};
 
 
-},{"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/StrokeWidthPicker":36,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],26:[function(require,module,exports){
+},{"../reactGUI/React-shim":33,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/StrokeWidthPicker":36,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],26:[function(require,module,exports){
 'use strict';
 
 var createReactClass = require('../reactGUI/createReactClass-shim');
+var React = require('../reactGUI/React-shim');
 
 var _require = require('./optionsStyles'),
     defineOptionsStyle = _require.defineOptionsStyle;
@@ -4210,7 +4244,7 @@ defineOptionsStyle('stroke-or-fill', createReactClass({
 
 module.exports = {};
 
-},{"../core/localization":11,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],27:[function(require,module,exports){
+},{"../core/localization":11,"../reactGUI/React-shim":33,"../reactGUI/createReactClass-shim":39,"../reactGUI/createSetStateOnEventMixin":40,"./optionsStyles":24}],27:[function(require,module,exports){
 var StrokeWidthPicker, defineOptionsStyle;
 
 defineOptionsStyle = require('./optionsStyles').defineOptionsStyle;
@@ -4647,6 +4681,7 @@ module.exports = ColorWell;
 },{"../core/localization":11,"../core/util":17,"../reactGUI/ReactDOMFactories-shim":35,"../reactGUI/createReactClass-shim":39,"./React-shim":33,"react-addons-pure-render-mixin":2}],30:[function(require,module,exports){
 'use strict';
 
+var React = require('../reactGUI/React-shim');
 var createReactClass = require('../reactGUI/createReactClass-shim');
 
 var _require = require('../reactGUI/ReactDOM-shim'),
@@ -4754,7 +4789,7 @@ var LiterallyCanvas = createReactClass({
 
 module.exports = LiterallyCanvas;
 
-},{"../core/LiterallyCanvas":3,"../core/defaultOptions":8,"../core/util":17,"../optionsStyles/font":21,"../optionsStyles/line-options-and-stroke-width":22,"../optionsStyles/null":23,"../optionsStyles/polygon-and-stroke-width":25,"../optionsStyles/stroke-width":27,"../reactGUI/ReactDOM-shim":34,"../reactGUI/createReactClass-shim":39,"./Options":31,"./Picker":32,"./createToolButton":41}],31:[function(require,module,exports){
+},{"../core/LiterallyCanvas":3,"../core/defaultOptions":8,"../core/util":17,"../optionsStyles/font":21,"../optionsStyles/line-options-and-stroke-width":22,"../optionsStyles/null":23,"../optionsStyles/polygon-and-stroke-width":25,"../optionsStyles/stroke-width":27,"../reactGUI/React-shim":33,"../reactGUI/ReactDOM-shim":34,"../reactGUI/createReactClass-shim":39,"./Options":31,"./Picker":32,"./createToolButton":41}],31:[function(require,module,exports){
 var DOM, Options, createReactClass, createSetStateOnEventMixin, optionsStyles;
 
 DOM = require('../reactGUI/ReactDOMFactories-shim');
@@ -5930,9 +5965,11 @@ module.exports = Rectangle = (function(superClass) {
 
 
 },{"../core/shapes":15,"./base":53}],51:[function(require,module,exports){
-var SelectShape, Tool, createShape,
+var SelectShape, Tool, actions, createShape,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
+
+actions = require('../core/actions');
 
 Tool = require('./base').Tool;
 
@@ -5984,9 +6021,13 @@ module.exports = SelectShape = (function(superClass) {
           ]);
           lc.repaintLayer('main');
           br = _this.selectedShape.getBoundingRect();
-          return _this.dragOffset = {
+          _this.dragOffset = {
             x: x - br.x,
             y: y - br.y
+          };
+          return _this.initialPosition = {
+            x: br.x,
+            y: br.y
           };
         }
       };
@@ -6013,10 +6054,16 @@ module.exports = SelectShape = (function(superClass) {
     })(this);
     onUp = (function(_this) {
       return function(arg) {
-        var x, y;
+        var br, newPosition, x, y;
         x = arg.x, y = arg.y;
         if (_this.didDrag) {
           _this.didDrag = false;
+          br = _this.selectedShape.getBoundingRect();
+          newPosition = {
+            x: br.x,
+            y: br.y
+          };
+          lc.execute(new actions.MoveAction(lc, _this.selectedShape, _this.initialPosition, newPosition));
           lc.trigger('shapeMoved', {
             shape: _this.selectedShape
           });
@@ -6084,7 +6131,7 @@ module.exports = SelectShape = (function(superClass) {
 })(Tool);
 
 
-},{"../core/shapes":15,"./base":53}],52:[function(require,module,exports){
+},{"../core/actions":5,"../core/shapes":15,"./base":53}],52:[function(require,module,exports){
 var Text, Tool, createShape, getIsPointInBox,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
