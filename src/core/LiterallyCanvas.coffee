@@ -486,7 +486,11 @@ module.exports = class LiterallyCanvas
         @setColor(k, snapshot.colors[k])
 
     if snapshot.shapes
+      # reset shapes
       @shapes = []
+      # reset undostack aswell when loading a snapshot
+      @undostack = []
+
       for shapeRepr in snapshot.shapes
         shape = JSONToShape(shapeRepr)
         @execute(new actions.AddShapeAction(this, shape)) if shape

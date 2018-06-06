@@ -1,4 +1,4 @@
-Literally Canvas v0.5.1
+Literally Canvas v0.5.2
 =======================
 
 Literally Canvas is an extensible, open source (BSD-licensed), HTML5 drawing
