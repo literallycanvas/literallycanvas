@@ -804,6 +804,7 @@ module.exports = LiterallyCanvas = (function() {
     }
     if (snapshot.shapes) {
       this.shapes = [];
+      this.undostack = [];
       ref2 = snapshot.shapes;
       for (j = 0, len1 = ref2.length; j < len1; j++) {
         shapeRepr = ref2[j];
@@ -2297,7 +2298,8 @@ defineShape('Image', {
     this.x = args.x || 0;
     this.y = args.y || 0;
     this.scale = args.scale || 1;
-    return this.image = args.image || null;
+    this.image = args.image || null;
+    return this.crossOrigin = (args.image && args.image.crossOrigin) || null;
   },
   getBoundingRect: function() {
     return {
@@ -2308,13 +2310,18 @@ defineShape('Image', {
     };
   },
   toJSON: function() {
-    return {
+    var toJSONData;
+    toJSONData = {
       x: this.x,
       y: this.y,
       imageSrc: this.image.src,
       imageObject: this.image,
       scale: this.scale
     };
+    if (this.crossOrigin) {
+      toJSONData['crossOrigin'] = this.crossOrigin;
+    }
+    return toJSONData;
   },
   fromJSON: function(data) {
     var img, ref2;
@@ -2324,6 +2331,9 @@ defineShape('Image', {
     } else {
       img = new Image();
       img.src = data.imageSrc;
+      if (data.crossOrigin) {
+        img.crossOrigin = data.crossOrigin;
+      }
     }
     return createShape('Image', {
       x: data.x,

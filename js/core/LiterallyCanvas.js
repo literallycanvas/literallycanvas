@@ -803,6 +803,7 @@ module.exports = LiterallyCanvas = (function() {
     }
     if (snapshot.shapes) {
       this.shapes = [];
+      this.undostack = [];
       ref2 = snapshot.shapes;
       for (j = 0, len1 = ref2.length; j < len1; j++) {
         shapeRepr = ref2[j];
