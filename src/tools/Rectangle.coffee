@@ -19,4 +19,7 @@ module.exports = class Rectangle extends ToolWithStroke
     lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
+    # If there is no height or width, dont save
+    if @currentShape.height == 0 or @currentShape.width == 0
+      return
     lc.saveShape(@currentShape)

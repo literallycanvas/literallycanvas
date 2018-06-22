@@ -24,4 +24,9 @@ module.exports = class Line extends ToolWithStroke
     lc.drawShapeInProgress(@currentShape)
 
   end: (x, y, lc) ->
+    # If start == end, dont save
+    sameX = @currentShape.x1 == @currentShape.x2
+    sameY = @currentShape.y1 == @currentShape.y2
+    if sameX and sameY
+      return
     lc.saveShape(@currentShape)
