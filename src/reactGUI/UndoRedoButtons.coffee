@@ -3,6 +3,7 @@ DOM = require '../reactGUI/ReactDOMFactories-shim'
 createReactClass = require '../reactGUI/createReactClass-shim'
 createSetStateOnEventMixin = require './createSetStateOnEventMixin'
 {classSet} = require '../core/util'
+{_} = require '../core/localization'
 
 createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
   displayName: if undoOrRedo == 'undo' then 'UndoButton' else 'RedoButton'
@@ -26,7 +27,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
     {div, img} = DOM
     {lc, imageURLPrefix} = @props
     title = if undoOrRedo == 'undo' then 'Undo' else 'Redo'
-
+    
     className = "lc-#{undoOrRedo} " + classSet
       'toolbar-button': true
       'thin-button': true
@@ -38,7 +39,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
     src = "#{imageURLPrefix}/#{undoOrRedo}.png"
     style = {backgroundImage: "url(#{src})"}
 
-    (div {className, onClick, title, style})
+    (div {className, onClick, _(title), style})
 
 
 UndoButton = React.createFactory createUndoRedoButtonComponent('undo')
