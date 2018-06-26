@@ -5,11 +5,11 @@
  */
 let React;
 try {
-  React = require('react');
+    React = require("react");
 } catch (error) {
-  ({ React } = window);
+    ({ React } = window);
 }
 if (React == null) {
-  throw "Can't find React";
+    throw "Can't find React";
 }
 export default React;

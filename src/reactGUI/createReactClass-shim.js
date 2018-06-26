@@ -5,24 +5,24 @@
  */
 let createReactClass;
 try {
-  createReactClass = require('create-react-class');
+    createReactClass = require("create-react-class");
 } catch (error) {
-  ({ createReactClass } = window);
+    ({ createReactClass } = window);
 }
 
 // can fall back to normal React until 16.0
 if (createReactClass == null) {
-  let React;
-  try {
-    React = require('react');
-    createReactClass = React.createClass;
-  } catch (error1) {
-    createReactClass = window.React.createClass;
-  }
+    let React;
+    try {
+        React = require("react");
+        createReactClass = React.createClass;
+    } catch (error1) {
+        createReactClass = window.React.createClass;
+    }
 }
 
 if (createReactClass == null) {
-  throw "Can't find createReactClass";
+    throw "Can't find createReactClass";
 }
   
 export default createReactClass;

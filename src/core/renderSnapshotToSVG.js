@@ -5,56 +5,56 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-import util from './util';
-import { JSONToShape } from './shapes';
+import util from "./util";
+import { JSONToShape } from "./shapes";
 
-const INFINITE = 'infinite';
+const INFINITE = "infinite";
 export default function(snapshot, opts) {
-  let s;
-  if (opts == null) { opts = {}; }
-  const shapes = ((() => {
-    const result = [];
-    for (s of Array.from(snapshot.shapes)) {       result.push(JSONToShape(s));
-    }
-    return result;
-  })());
-  let backgroundShapes = [];
-  if (snapshot.backgroundShapes) {
-    backgroundShapes = ((() => {
-      const result1 = [];
-      for (s of Array.from(snapshot.backgroundShapes)) {         result1.push(JSONToShape(s));
-      }
-      return result1;
+    let s;
+    if (opts == null) { opts = {} }
+    const shapes = ((() => {
+        const result = [];
+        for (s of Array.from(snapshot.shapes)) {       result.push(JSONToShape(s));
+        }
+        return result;
     })());
-  }
+    let backgroundShapes = [];
+    if (snapshot.backgroundShapes) {
+        backgroundShapes = ((() => {
+            const result1 = [];
+            for (s of Array.from(snapshot.backgroundShapes)) {         result1.push(JSONToShape(s));
+            }
+            return result1;
+        })());
+    }
 
-  if (opts.margin == null) { opts.margin = {top: 0, right: 0, bottom: 0, left: 0}; }
-  const imageSize = snapshot.imageSize || {width: INFINITE, height: INFINITE};
+    if (opts.margin == null) { opts.margin = {top: 0, right: 0, bottom: 0, left: 0} }
+    const imageSize = snapshot.imageSize || {width: INFINITE, height: INFINITE};
 
-  const colors = snapshot.colors || {background: 'transparent'};
-  const allShapes = shapes.concat(backgroundShapes);
+    const colors = snapshot.colors || {background: "transparent"};
+    const allShapes = shapes.concat(backgroundShapes);
 
-  const dummyCanvas = document.createElement('canvas');
-  const ctx = dummyCanvas.getContext('2d');
+    const dummyCanvas = document.createElement("canvas");
+    const ctx = dummyCanvas.getContext("2d");
 
-  if (opts.rect) {
-    opts.rect.x -= opts.margin.left;
-    opts.rect.y -= opts.margin.top;
-    opts.rect.width += opts.margin.left + opts.margin.right;
-    opts.rect.height += opts.margin.top + opts.margin.bottom;
-  } else {
-    opts.rect = util.getDefaultImageRect(
-      ((() => {
-      const result2 = [];
-      for (s of Array.from(allShapes)) {         result2.push(s.getBoundingRect(ctx));
-      }
-      return result2;
-    })()),
-      imageSize,
-      opts.margin
-    );
-  }
+    if (opts.rect) {
+        opts.rect.x -= opts.margin.left;
+        opts.rect.y -= opts.margin.top;
+        opts.rect.width += opts.margin.left + opts.margin.right;
+        opts.rect.height += opts.margin.top + opts.margin.bottom;
+    } else {
+        opts.rect = util.getDefaultImageRect(
+            ((() => {
+                const result2 = [];
+                for (s of Array.from(allShapes)) {         result2.push(s.getBoundingRect(ctx));
+                }
+                return result2;
+            })()),
+            imageSize,
+            opts.margin
+        );
+    }
 
-  return util.renderShapesToSVG(
-    backgroundShapes.concat(shapes), opts.rect, colors.background);
-};
+    return util.renderShapesToSVG(
+        backgroundShapes.concat(shapes), opts.rect, colors.background);
+}

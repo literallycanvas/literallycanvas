@@ -8,11 +8,11 @@ let strings = {};
 const localize = localStrings => strings = localStrings;
 
 const _ = function(string) {
-  const translation = strings[string];
-  return translation || string;
+    const translation = strings[string];
+    return translation || string;
 };
 
 export default {
-  localize,
-  _
+    localize,
+    _
 };
