@@ -1,33 +1,54 @@
-{Tool} = require './base'
-{createShape} = require '../core/shapes'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let Pan;
+import { Tool } from './base';
+import { createShape } from '../core/shapes';
 
 
-module.exports = class Pan extends Tool
+export default (Pan = (function() {
+  Pan = class Pan extends Tool {
+    static initClass() {
+  
+      this.prototype.name = 'Pan';
+      this.prototype.iconName = 'pan';
+      this.prototype.usesSimpleAPI = false;
+    }
 
-  name: 'Pan'
-  iconName: 'pan'
-  usesSimpleAPI: false
+    didBecomeActive(lc) {
+      const unsubscribeFuncs = [];
+      this.unsubscribe = () => {
+        return Array.from(unsubscribeFuncs).map((func) =>
+          func());
+      };
 
-  didBecomeActive: (lc) ->
-    unsubscribeFuncs = []
-    @unsubscribe = =>
-      for func in unsubscribeFuncs
-        func()
+      unsubscribeFuncs.push(lc.on('lc-pointerdown', ({rawX, rawY}) => {
+        this.oldPosition = lc.position;
+        return this.pointerStart = {x: rawX, y: rawY};
+    }));
 
-    unsubscribeFuncs.push lc.on 'lc-pointerdown', ({rawX, rawY}) =>
-      @oldPosition = lc.position
-      @pointerStart = {x: rawX, y: rawY}
+      return unsubscribeFuncs.push(lc.on('lc-pointerdrag', ({rawX, rawY}) => {
+        // okay, so this is really bad:
+        // lc.position is "buggy screen coordinates": correct on non-retina,
+        // probably wrong on retina. compensate here; in v0.5 we should put the
+        // offset in drawing coordinates.
+        const dp = {
+          x: (rawX - this.pointerStart.x) * lc.backingScale,
+          y: (rawY - this.pointerStart.y) * lc.backingScale
+        };
+        return lc.setPan(this.oldPosition.x + dp.x, this.oldPosition.y + dp.y);
+      })
+      );
+    }
 
-    unsubscribeFuncs.push lc.on 'lc-pointerdrag', ({rawX, rawY}) =>
-      # okay, so this is really bad:
-      # lc.position is "buggy screen coordinates": correct on non-retina,
-      # probably wrong on retina. compensate here; in v0.5 we should put the
-      # offset in drawing coordinates.
-      dp = {
-        x: (rawX - @pointerStart.x) * lc.backingScale,
-        y: (rawY - @pointerStart.y) * lc.backingScale
-      }
-      lc.setPan(@oldPosition.x + dp.x, @oldPosition.y + dp.y)
-
-  willBecomeInactive: (lc) ->
-    @unsubscribe()
+    willBecomeInactive(lc) {
+      return this.unsubscribe();
+    }
+  };
+  Pan.initClass();
+  return Pan;
+})());

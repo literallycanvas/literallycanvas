@@ -1,11 +1,13 @@
-DOM = require '../reactGUI/ReactDOMFactories-shim'
-createReactClass = require '../reactGUI/createReactClass-shim'
-{defineOptionsStyle} = require './optionsStyles'
+import DOM from '../reactGUI/ReactDOMFactories-shim';
+import createReactClass from '../reactGUI/createReactClass-shim';
+import { defineOptionsStyle } from './optionsStyles';
 
 
-defineOptionsStyle 'null', createReactClass
-  displayName: 'NoOptions'
-  render: -> DOM.div()
+defineOptionsStyle('null', createReactClass({
+  displayName: 'NoOptions',
+  render() { return DOM.div(); }
+})
+);
 
 
-module.exports = {}
+export default {};

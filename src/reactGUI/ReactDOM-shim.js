@@ -1,16 +1,26 @@
-try
-  ReactDOM = require 'react-dom'
-catch
-  ReactDOM = window.ReactDOM
+/*
+ * decaffeinate suggestions:
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let ReactDOM;
+try {
+  ReactDOM = require('react-dom');
+} catch (error) {
+  ({ ReactDOM } = window);
+}
 
-# can fall back to normal React until 0.15
-unless ReactDOM?
-  try
-    ReactDOM = require 'react'
-  catch
-    ReactDOM = window.React
+// can fall back to normal React until 0.15
+if (ReactDOM == null) {
+  try {
+    ReactDOM = require('react');
+  } catch (error1) {
+    ReactDOM = window.React;
+  }
+}
 
-unless ReactDOM?
-  throw "Can't find ReactDOM"
+if (ReactDOM == null) {
+  throw "Can't find ReactDOM";
+}
   
-module.exports = ReactDOM
+export default ReactDOM;

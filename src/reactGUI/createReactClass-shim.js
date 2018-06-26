@@ -1,17 +1,28 @@
-try
-  createReactClass = require 'create-react-class'
-catch
-  createReactClass = window.createReactClass
+/*
+ * decaffeinate suggestions:
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
+ */
+let createReactClass;
+try {
+  createReactClass = require('create-react-class');
+} catch (error) {
+  ({ createReactClass } = window);
+}
 
-# can fall back to normal React until 16.0
-unless createReactClass?
-  try
-    React = require 'react'
-    createReactClass = React.createClass
-  catch
-    createReactClass = window.React.createClass
+// can fall back to normal React until 16.0
+if (createReactClass == null) {
+  let React;
+  try {
+    React = require('react');
+    createReactClass = React.createClass;
+  } catch (error1) {
+    createReactClass = window.React.createClass;
+  }
+}
 
-unless createReactClass?
-  throw "Can't find createReactClass"
+if (createReactClass == null) {
+  throw "Can't find createReactClass";
+}
   
-module.exports = createReactClass
+export default createReactClass;
