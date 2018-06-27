@@ -1,13 +1,11 @@
+import "React" from "react";
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import { defineOptionsStyle } from "./optionsStyles";
 
 
-defineOptionsStyle("null", createReactClass({
-    displayName: "NoOptions",
+class NoOptions extends React.Component {
     render() { return DOM.div() }
-})
-);
+}
 
 
-export default {};
+defineOptionsStyle("null", NoOptions);

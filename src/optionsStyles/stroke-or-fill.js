@@ -1,26 +1,35 @@
-import createReactClass from "create-react-class";
 import React from "react";
 import { defineOptionsStyle } from "./optionsStyles";
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { _ } from "../core/localization";
 
 
-defineOptionsStyle("stroke-or-fill", createReactClass({
-    displayName: "StrokeOrFillPicker",
-    getState: function() { return {strokeOrFill: "stroke"} },
-    getInitialState: function() { return this. getState() },
-    mixins: [createSetStateOnEventMixin("toolChange")],
+class StrokeOrFillPicker extends React.Component {
+    constructor() {
+        super();
+        this.onChange = this.onChange.bind(this);
+    }
 
-    onChange: function(e) {
+    getState() {
+        return {strokeOrFill: "stroke"};
+    }
+
+    getInitialState() {
+        return this.getState();
+    }
+
+    mixins = [createSetStateOnEventMixin("toolChange")];
+
+    onChange(e) {
         if (e.target.id == "stroke-or-fill-stroke") {
             this.props.lc.tool.strokeOrFill = "stroke";
         } else {
             this.props.lc.tool.strokeOrFill = "fill";
         }
         this.setState(this.getState());
-    },
+    }
 
-    render: function() {
+    render() {
         const lc = this.props.lc;
 
         return <form>
@@ -39,4 +48,7 @@ defineOptionsStyle("stroke-or-fill", createReactClass({
             </span>
         </form>;
     }
-}));
+}
+
+
+defineOptionsStyle("stroke-or-fill", StrokeOrFillPicker);

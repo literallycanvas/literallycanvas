@@ -1,6 +1,5 @@
 import React from "react";
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import { _ } from "../core/localization";
 
 const ColorWell = React.createFactory(require("./ColorWell"));
@@ -9,8 +8,7 @@ const UndoRedoButtons = React.createFactory(require("./UndoRedoButtons"));
 const ZoomButtons = React.createFactory(require("./ZoomButtons"));
 
 
-const ColorPickers = React.createFactory(createReactClass({
-    displayName: "ColorPickers",
+class ColorPickers extends React.Component {
     render() {
         const {lc} = this.props;
         const {div} = DOM;
@@ -20,13 +18,16 @@ const ColorPickers = React.createFactory(createReactClass({
             (ColorWell({lc, colorName: "background", label: _("bg")}))
         ));
     }
-})
-);
+}
+
+const ColorPickersFactory = React.createFactory(ColorPickers);
 
 
-const Picker = createReactClass({
-    displayName: "Picker",
-    getInitialState() { return {selectedToolIndex: 0} },
+class Picker extends React.Component {
+    getInitialState() {
+        return {selectedToolIndex: 0}
+    }
+
     renderBody() {
         const {div} = DOM;
         const {toolButtonComponents, lc, imageURLPrefix} = this.props;
@@ -53,20 +54,21 @@ const Picker = createReactClass({
                 right: 0,
             }
             },
-            ColorPickers({lc: this.props.lc}),
+            ColorPickersFactory({lc: this.props.lc}),
             UndoRedoButtons({lc, imageURLPrefix}),
             ZoomButtons({lc, imageURLPrefix}),
             ClearButton({lc})
             ))
         ));
-    },
+    }
+
     render() {
         const {div} = DOM;
         return (div({className: "lc-picker"},
             this.renderBody()
         ));
     }
-});
+}
 
 
 export default Picker;

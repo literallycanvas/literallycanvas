@@ -1,10 +1,9 @@
 import React from "react";
-import createReactClass from "createReactClass";
 import { findDOMNode } from "react-dom";
 import { classSet } from "../core/util";
 import Picker from "./Picker";
 import Options from "./Options";
-import createToolButton from "./createToolButton";
+import ToolButton from "./ToolButton";
 import LiterallyCanvasModel from "../core/LiterallyCanvas";
 import defaultOptions from "../core/defaultOptions";
 
@@ -15,23 +14,24 @@ import "../optionsStyles/polygon-and-stroke-width";
 import "../optionsStyles/null";
 
 
-const CanvasContainer = createReactClass({
-    displayName: "CanvasContainer",
+class CanvasContainer extends React.Component {
     shouldComponentUpdate() {
-    // Avoid React trying to control this DOM
+        // Avoid React trying to control this DOM
         return false;
-    },
+    }
+
     render() {
         return (
             <div key="literallycanvas" className="lc-drawing with-gui" />
         );
     }
-});
+}
 
-const LiterallyCanvas = createReactClass({
-    displayName: "LiterallyCanvas",
 
-    getDefaultProps() { return defaultOptions },
+class LiterallyCanvas extends React.Component {
+    getDefaultProps() {
+        return defaultOptions
+    }
 
     bindToModel() {
         const canvasContainerEl = findDOMNode(this.canvas);
@@ -41,9 +41,9 @@ const LiterallyCanvas = createReactClass({
         if (typeof this.lc.opts.onInit === "function") {
             this.lc.opts.onInit(this.lc);
         }
-    },
+    }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         if (this.lc) return;
 
         if (this.props.lc) {
@@ -53,21 +53,22 @@ const LiterallyCanvas = createReactClass({
         }
 
         this.toolButtonComponents = this.lc.opts.tools.map(ToolClass => {
-            return createToolButton(new ToolClass(this.lc));
+            // FIXME: the tool must now be supplied as prop on the component
+            return ToolButton(new ToolClass(this.lc));
         });
-    },
+    }
 
     componentDidMount() {
         if (!this.lc.isBound) {
             this.bindToModel();
         }
-    },
+    }
 
     componentWillUnmount() {
         if (this.lc) {
             this.lc._teardown();
         }
-    },
+    }
 
     render() {
         const { lc, toolButtonComponents, props } = this;
@@ -92,7 +93,7 @@ const LiterallyCanvas = createReactClass({
             </div>
         );
     }
-});
+}
 
 
 export default LiterallyCanvas;

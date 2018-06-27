@@ -4,8 +4,8 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
+import React from "react";
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import { defineOptionsStyle } from "./optionsStyles";
 import { _ } from "../core/localization";
 
@@ -66,16 +66,20 @@ for ({name, value} of OTHER_FONTS) {
 }
 
 
-defineOptionsStyle("font", createReactClass({
-    displayName: "FontOptions",
-    getInitialState() { return {
-        isItalic: false,
-        isBold: false,
-        fontName: "Helvetica",
-        fontSizeIndex: 4
-    }; },
+class FontOptions extends React.Component {
 
-    getFontSizes() { return [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288] },
+    getInitialState() {
+        return {
+            isItalic: false,
+            isBold: false,
+            fontName: "Helvetica",
+            fontSizeIndex: 4
+        };
+    }
+
+    getFontSizes() {
+        return [9, 10, 12, 14, 18, 24, 36, 48, 64, 72, 96, 144, 288]
+    }
 
     // LC's text tool API is a little funky: it just has a 'font' string you can
     // set.
@@ -94,13 +98,13 @@ defineOptionsStyle("font", createReactClass({
         items.push(FONT_NAME_TO_VALUE[newState.fontName]);
         this.props.lc.tool.font = items.join(" ");
         return this.props.lc.trigger("setFont", items.join(" "));
-    },
+    }
 
     handleFontSize(event) {
         const newState = {fontSizeIndex: event.target.value};
         this.setState(newState);
         return this.updateTool(newState);
-    },
+    }
 
     handleFontFamily(event) {
         const newState = {
@@ -108,21 +112,23 @@ defineOptionsStyle("font", createReactClass({
         };
         this.setState(newState);
         return this.updateTool(newState);
-    },
+    }
 
     handleItalic(event) {
         const newState = {isItalic: !this.state.isItalic};
         this.setState(newState);
         return this.updateTool(newState);
-    },
+    }
 
     handleBold(event) {
         const newState = {isBold: !this.state.isBold};
         this.setState(newState);
         return this.updateTool(newState);
-    },
+    }
 
-    componentDidMount() { return this.updateTool() },
+    componentDidMount() {
+        return this.updateTool()
+    }
 
     render() {
         const { lc } = this.props;
@@ -167,8 +173,7 @@ defineOptionsStyle("font", createReactClass({
             ))
         ));
     }
-})
-);
+}
 
 
-export default {};
+defineOptionsStyle("font", FontOptions);

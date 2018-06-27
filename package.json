@@ -57,7 +57,6 @@
     "react-addons-pure-render-mixin": "^15.1"
   },
   "peerDependencies": {
-    "create-react-class": "^15.6.2",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-dom-factories": "^1.0.2"

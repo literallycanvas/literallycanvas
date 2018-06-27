@@ -1,21 +1,25 @@
 import React from "react";
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import { defineOptionsStyle } from "./optionsStyles";
 const StrokeWidthPicker = React.createFactory(require("../reactGUI/StrokeWidthPicker"));
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 
 
-defineOptionsStyle("line-options-and-stroke-width", createReactClass({
-    displayName: "LineOptionsAndStrokeWidth",
-    getState() { return {
-        strokeWidth: this.props.tool.strokeWidth,
-        isDashed: this.props.tool.isDashed,
-        hasEndArrow: this.props.tool.hasEndArrow,
-    }; },
-    getInitialState() { return this.getState() },
-    mixins: [createSetStateOnEventMixin("toolChange")],
+class LineOptionsAndStrokeWidth extends React.Component {
+    getState() {
+        return {
+            strokeWidth: this.props.tool.strokeWidth,
+            isDashed: this.props.tool.isDashed,
+            hasEndArrow: this.props.tool.hasEndArrow,
+        };
+    }
+
+    getInitialState() {
+        return this.getState();
+    }
+
+    mixins = [createSetStateOnEventMixin("toolChange")];
 
     render() {
         const {div, ul, li, img} = DOM;
@@ -48,7 +52,7 @@ defineOptionsStyle("line-options-and-stroke-width", createReactClass({
             (StrokeWidthPicker({tool: this.props.tool, lc: this.props.lc}))
         ));
     }
-})
-);
+}
 
-export default {};
+
+defineOptionsStyle("line-options-and-stroke-width", LineOptionsAndStrokeWidth);

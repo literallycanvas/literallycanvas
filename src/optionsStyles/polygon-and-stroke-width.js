@@ -1,19 +1,24 @@
 import React from "react";
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import { defineOptionsStyle } from "./optionsStyles";
 const StrokeWidthPicker = React.createFactory(require("../reactGUI/StrokeWidthPicker"));
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 
 
-defineOptionsStyle("polygon-and-stroke-width", createReactClass({
-    displayName: "PolygonAndStrokeWidth",
-    getState() { return {
-        strokeWidth: this.props.tool.strokeWidth,
-        inProgress: false
-    }; },
-    getInitialState() { return this.getState() },
-    mixins: [createSetStateOnEventMixin("toolChange")],
+class PolygonAndStrokeWidth extends React.Component {
+
+    getState() {
+        return {
+            strokeWidth: this.props.tool.strokeWidth,
+            inProgress: false
+        };
+    }
+
+    getInitialState() {
+        return this.getState();
+    }
+
+    mixins = [createSetStateOnEventMixin("toolChange")];
 
     componentDidMount() {
         const unsubscribeFuncs = [];
@@ -32,11 +37,11 @@ defineOptionsStyle("polygon-and-stroke-width", createReactClass({
 
         unsubscribeFuncs.push(this.props.lc.on("lc-polygon-started", showPolygonTools));
         return unsubscribeFuncs.push(this.props.lc.on("lc-polygon-stopped", hidePolygonTools));
-    },
+    }
 
     componentWillUnmount() {
         return this.unsubscribe();
-    },
+    }
 
     render() {
         const { lc } = this.props;
@@ -70,8 +75,7 @@ defineOptionsStyle("polygon-and-stroke-width", createReactClass({
                 (StrokeWidthPicker({tool: this.props.tool, lc: this.props.lc})))
         );
     }
-})
-);
+}
 
 
-export default {};
+defineOptionsStyle("polygon-and-stroke-width", PolygonAndStrokeWidth);

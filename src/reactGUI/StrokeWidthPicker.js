@@ -1,17 +1,25 @@
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 
 
-const StrokeWidthPicker = createReactClass({
-    displayName: "StrokeWidthPicker",
+class StrokeWidthPicker extends React.Component {
+    getState(tool) {
+        if (tool == null)
+            tool = this.props.tool;
 
-    getState(tool) { if (tool == null) { ({ tool } = this.props) } return {strokeWidth: tool.strokeWidth} },
-    getInitialState() { return this.getState() },
-    mixins: [createSetStateOnEventMixin("toolDidUpdateOptions")],
+        return {strokeWidth: tool.strokeWidth};
+    }
 
-    componentWillReceiveProps(props) { return this.setState(this.getState(props.tool)) },
+    getInitialState() {
+        return this.getState();
+    }
+
+    mixins = [createSetStateOnEventMixin("toolDidUpdateOptions")];
+
+    UNSAFE_componentWillReceiveProps(props) {
+        return this.setState(this.getState(props.tool));
+    }
 
     render() {
         const {ul, li, svg, circle, div} = DOM;
@@ -51,7 +59,7 @@ const StrokeWidthPicker = createReactClass({
             })
         ));
     }
-});
+}
 
 
 export default StrokeWidthPicker;

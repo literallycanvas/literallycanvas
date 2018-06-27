@@ -1,6 +1,5 @@
 import React from "react";
 import DOM from "react-dom-factories";
-import createReactClass from "create-react-class";
 import PureRenderMixin from "react-addons-pure-render-mixin";
 import { classSet } from "../core/util";
 import { _ } from "../core/localization";
@@ -34,9 +33,9 @@ const getHSLAString = ({hue, sat, light, alpha}) => `hsla(${hue}, ${sat}%, ${lig
 const getHSLString = ({hue, sat, light}) => `hsl(${hue}, ${sat}%, ${light}%)`;
 
 
-const ColorGrid = React.createFactory(createReactClass({
-    displayName: "ColorGrid",
-    mixins: [PureRenderMixin],
+class ColorGrid extends React.Component {
+    mixins= [PureRenderMixin];
+
     render() {
         const {div} = DOM;
         return (div({},
@@ -75,13 +74,12 @@ const ColorGrid = React.createFactory(createReactClass({
             })
         ));
     }
-})
-);
+}
 
 
-const ColorWell = createReactClass({
-    displayName: "ColorWell",
-    mixins: [PureRenderMixin],
+class ColorWell extends React.Component {
+    mixins = [PureRenderMixin];
+
     getInitialState() {
         const colorString = this.props.lc.colors[this.props.colorName];
         let hsla = parseHSLAString(colorString);
@@ -98,7 +96,7 @@ const ColorWell = createReactClass({
             isPickerVisible: false,
             hsla
         };
-    },
+    }
 
     // our color state tracks lc's
     componentDidMount() {
@@ -107,8 +105,11 @@ const ColorWell = createReactClass({
             this.setState({colorString});
             return this.setHSLAFromColorString(colorString);
         });
-    },
-    componentWillUnmount() { return this.unsubscribe() },
+    }
+
+    componentWillUnmount() {
+        return this.unsubscribe()
+    }
 
     setHSLAFromColorString(c) {
         const hsla = parseHSLAString(c);
@@ -117,21 +118,24 @@ const ColorWell = createReactClass({
         } else {
             return this.setState({hsla: null, alpha: 1, sat: 100});
         }
-    },
+    }
 
-    closePicker() { return this.setState({isPickerVisible: false}) },
+    closePicker() {
+        return this.setState({isPickerVisible: false})
+    }
+
     togglePicker() {
         const isPickerVisible = !this.state.isPickerVisible;
         const shouldResetSat = isPickerVisible && (this.state.sat === 0);
         this.setHSLAFromColorString(this.state.colorString);
         return this.setState({isPickerVisible, sat: shouldResetSat ? 100 : this.state.sat});
-    },
+    }
 
     setColor(c) {
         this.setState({colorString: c});
         this.setHSLAFromColorString(c);
         return this.props.lc.setColor(this.props.colorName, c);
-    },
+    }
 
     setAlpha(alpha) {
         this.setState({alpha});
@@ -141,7 +145,7 @@ const ColorWell = createReactClass({
             this.setState({hsla});
             return this.setColor(getHSLAString(hsla));
         }
-    },
+    }
 
     setSat(sat) {
         this.setState({sat});
@@ -152,7 +156,7 @@ const ColorWell = createReactClass({
             this.setState({hsla});
             return this.setColor(getHSLAString(hsla));
         }
-    },
+    }
 
     render() {
         const {div, label, br} = DOM;
@@ -191,7 +195,7 @@ const ColorWell = createReactClass({
             )),
             this.renderPicker()
         ));
-    },
+    }
 
     renderPicker() {
         let i;
@@ -265,7 +269,7 @@ const ColorWell = createReactClass({
             (ColorGrid({rows, selectedColor: this.state.colorString, onChange: onSelectColor}))
         ));
     }
-});
+}
 
 
 export default ColorWell;
