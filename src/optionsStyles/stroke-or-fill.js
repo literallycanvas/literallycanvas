@@ -1,5 +1,5 @@
-import createReactClass from "../reactGUI/createReactClass-shim";
-import React from "../reactGUI/React-shim";
+import createReactClass from "create-react-class";
+import React from "react";
 import { defineOptionsStyle } from "./optionsStyles";
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { _ } from "../core/localization";

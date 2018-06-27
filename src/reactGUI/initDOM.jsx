@@ -1,5 +1,5 @@
-import React from "./React-shim";
-import ReactDOM from "./ReactDOM-shim";
+import React from "react";
+import ReactDOM from "react-dom";
 import LiterallyCanvasModel from "../core/LiterallyCanvas";
 import LiterallyCanvasReactComponent from "./LiterallyCanvas";
 

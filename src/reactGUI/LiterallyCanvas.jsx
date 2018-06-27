@@ -1,6 +1,6 @@
-import React from "../reactGUI/React-shim";
-import createReactClass from "../reactGUI/createReactClass-shim";
-import { findDOMNode } from "../reactGUI/ReactDOM-shim";
+import React from "react";
+import createReactClass from "createReactClass";
+import { findDOMNode } from "react-dom";
 import { classSet } from "../core/util";
 import Picker from "./Picker";
 import Options from "./Options";

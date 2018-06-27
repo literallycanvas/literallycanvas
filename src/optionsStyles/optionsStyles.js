@@ -1,4 +1,4 @@
-import React from "../reactGUI/React-shim";
+import React from "react";
 
 const optionsStyles = {};
 

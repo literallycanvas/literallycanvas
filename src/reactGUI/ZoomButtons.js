@@ -1,6 +1,6 @@
-import React from "./React-shim";
-import DOM from "../reactGUI/ReactDOMFactories-shim";
-import createReactClass from "../reactGUI/createReactClass-shim";
+import React from "react";
+import DOM from "react-dom-factories";
+import createReactClass from "create-react-class";
 import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 import { _ } from "../core/localization";
