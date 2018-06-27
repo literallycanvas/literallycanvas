@@ -1,7 +1,6 @@
 import React from "react";
 import { defineOptionsStyle } from "./optionsStyles";
 import StrokeWidthPicker from "../reactGUI/StrokeWidthPicker";
-import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 
 
@@ -18,7 +17,11 @@ class LineOptionsAndStrokeWidth extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("toolChange")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     render() {
         const toggleIsDashed = () => {

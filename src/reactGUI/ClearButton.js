@@ -1,5 +1,4 @@
 import React from "react";
-import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { _ } from "../core/localization";
 import { classSet } from "../core/util";
 
@@ -14,7 +13,11 @@ class ClearButton extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("drawingChange")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("drawingChange", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     render() {
         const {lc} = this.props;

@@ -1,5 +1,4 @@
 import React from "react";
-import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { optionsStyles } from "../optionsStyles/optionsStyles";
 
 
@@ -15,7 +14,11 @@ class Options extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("toolChange")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     renderBody() {
         // style can be null; cast it as a string

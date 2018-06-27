@@ -1,6 +1,5 @@
 import React from "react";
 import { defineOptionsStyle } from "./optionsStyles";
-import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { _ } from "../core/localization";
 
 
@@ -18,7 +17,11 @@ class StrokeOrFillPicker extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("toolChange")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     onChange(e) {
         if (e.target.id == "stroke-or-fill-stroke") {

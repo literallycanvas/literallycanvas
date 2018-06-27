@@ -1,5 +1,4 @@
 import React from "react";
-import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 import { _ } from "../core/localization";
 
@@ -18,7 +17,11 @@ class ZoomButton extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("zoom")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("zoom", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     render() {
         const {lc, imageURLPrefix} = this.props;

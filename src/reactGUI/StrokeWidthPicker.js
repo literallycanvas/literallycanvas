@@ -1,5 +1,4 @@
 import React from "react";
-import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 
 
@@ -15,7 +14,11 @@ class StrokeWidthPicker extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("toolDidUpdateOptions")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("toolDidUpdateOptions", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     UNSAFE_componentWillReceiveProps(props) {
         return this.setState(this.getState(props.tool));

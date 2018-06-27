@@ -1,7 +1,6 @@
 import React from "react";
 import { defineOptionsStyle } from "./optionsStyles";
 import StrokeWidthPicker from "../reactGUI/StrokeWidthPicker";
-import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 
 
 class PolygonAndStrokeWidth extends React.Component {
@@ -17,7 +16,11 @@ class PolygonAndStrokeWidth extends React.Component {
         return this.getState();
     }
 
-    mixins = [createSetStateOnEventMixin("toolChange")];
+    componentDidMount() {
+        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState(this.getState()));
+    }
+
+    componentWillUnmount() { this.unsubscribe() }
 
     componentDidMount() {
         const unsubscribeFuncs = [];
