@@ -1,5 +1,4 @@
 import React from "react";
-import DOM from "react-dom-factories";
 import { classSet } from "../core/util";
 import { _ } from "../core/localization";
 
@@ -19,7 +18,6 @@ class ToolButton extends React.Component {
     }
 
     render() {
-        const {div, img} = DOM;
         const {imageURLPrefix, isSelected, onSelect, tool} = this.props;
 
         const className = classSet({
@@ -29,10 +27,14 @@ class ToolButton extends React.Component {
             "selected": isSelected
         });
         const src = `${imageURLPrefix}/${tool.imageName}.png`;
-        return (div({
-            className,
-            style: {"backgroundImage": `url(${src})`},
-            onClick() { return onSelect(tool) }, title: _(tool.displayName)}));
+        return (
+            <div
+                className={className}
+                style={{"backgroundImage": `url(${src})`}}
+                onClick={ () => { return onSelect(tool) } }
+                title={_(tool.displayName)}
+            />
+        );
     }
 }
 

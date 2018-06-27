@@ -1,6 +1,4 @@
 import React from "react";
-import DOM from "react-dom-factories";
-import PureRenderMixin from "react-addons-pure-render-mixin";
 import { classSet } from "../core/util";
 import { _ } from "../core/localization";
 
@@ -33,53 +31,50 @@ const getHSLAString = ({hue, sat, light, alpha}) => `hsla(${hue}, ${sat}%, ${lig
 const getHSLString = ({hue, sat, light}) => `hsl(${hue}, ${sat}%, ${light}%)`;
 
 
-class ColorGrid extends React.Component {
-    mixins= [PureRenderMixin];
-
+class ColorGrid extends React.PureComponent {
     render() {
-        const {div} = DOM;
-        return (div({},
-            this.props.rows.map((row, ix) => {
-                return (div(
-                    {
-                        className: "color-row",
-                        key: ix,
-                        style: {width: 20 * row.length}
-                    },
-                    row.map((cellColor, ix2) => {
-                        const {hue, sat, light, alpha} = cellColor;
-                        const colorString = getHSLAString(cellColor);
-                        const colorStringNoAlpha = `hsl(${hue}, ${sat}%, ${light}%)`;
-                        const className = classSet({
-                            "color-cell": true,
-                            "selected": this.props.selectedColor === colorString
-                        });
-                        const update = e => {
-                            this.props.onChange(cellColor, colorString);
-                            e.stopPropagation();
-                            return e.preventDefault();
-                        };
-                        return (div(
-                            {
-                                className,
-                                onTouchStart: update,
-                                onTouchMove: update,
-                                onClick: update,
-                                style: {backgroundColor: colorStringNoAlpha},
-                                key: ix2
-                            })
-                        );
-                    })
-                ));
-            })
-        ));
+        return (
+            <div>
+                { this.props.rows.map(
+                    (row, ix) => (
+                        <div className="color-row" key={ix} style={{width: 20 * row.length}}>
+                            { row.map(
+                                (cellColor, ix2) => {
+                                    const {hue, sat, light, alpha} = cellColor;
+                                    const colorString = getHSLAString(cellColor);
+                                    const colorStringNoAlpha = `hsl(${hue}, ${sat}%, ${light}%)`;
+                                    const className = classSet({
+                                        "color-cell": true,
+                                        "selected": this.props.selectedColor === colorString
+                                    });
+                                    const update = e => {
+                                        this.props.onChange(cellColor, colorString);
+                                        e.stopPropagation();
+                                        return e.preventDefault();
+                                    };
+
+                                    return (
+                                        <div
+                                            className={className}
+                                            onTouchStart={update}
+                                            onTouchMove={update}
+                                            onClick={update}
+                                            style={{backgroundColor: colorStringNoAlpha}}
+                                            key={ix2}
+                                        />
+                                    );
+                                }
+                            )}
+                        </div>
+                    )
+                )}
+            </div>
+        );
     }
 }
 
 
-class ColorWell extends React.Component {
-    mixins = [PureRenderMixin];
-
+class ColorWell extends React.PureComponent {
     getInitialState() {
         const colorString = this.props.lc.colors[this.props.colorName];
         let hsla = parseHSLAString(colorString);
@@ -108,7 +103,7 @@ class ColorWell extends React.Component {
     }
 
     componentWillUnmount() {
-        return this.unsubscribe()
+        return this.unsubscribe();
     }
 
     setHSLAFromColorString(c) {
@@ -121,7 +116,7 @@ class ColorWell extends React.Component {
     }
 
     closePicker() {
-        return this.setState({isPickerVisible: false})
+        return this.setState({isPickerVisible: false});
     }
 
     togglePicker() {
@@ -159,115 +154,121 @@ class ColorWell extends React.Component {
     }
 
     render() {
-        const {div, label, br} = DOM;
-        return (div(
-            {
-                className: classSet({
-                    "color-well": true,
-                    "open": this.state.isPickerVisible ,
-                }),
-                onMouseLeave: this.closePicker,
-                style: {float: "left", textAlign: "center"}
-            },
-            (label({float: "left"}, this.props.label)),
-            (br({})),
-            (div(
-                {
-                    className: classSet({
-                        "color-well-color-container": true,
-                        "selected": this.state.isPickerVisible
-                    }),
-                    style: {backgroundColor: "white"},
-                    onClick: this.togglePicker
-                },
-                (div({className: "color-well-checker color-well-checker-top-left"})),
-                (div({
-                    className: "color-well-checker color-well-checker-bottom-right",
-                    style: {left: "50%", top: "50%"}
-                })),
-                (div(
-                    {
-                        className: "color-well-color",
-                        style: {backgroundColor: this.state.colorString}
-                    },
-                    " "
-                ))
-            )),
-            this.renderPicker()
-        ));
+        let className = classSet({
+            "color-well": true,
+            "open": this.state.isPickerVisible ,
+        });
+
+        let className2 = classSet({
+            "color-well-color-container": true,
+            "selected": this.state.isPickerVisible
+        });
+
+        return (
+            <div className={className} onMouseLeave={this.closePicker} style={{ float: "left", textAlign: "center" }} >
+                <label float="left">
+                    {this.props.label}
+                </label>
+
+                <br />
+
+                <div className={className2} style={{backgroundColor: "white"}} onClick={this.togglePicker} >
+                    <div className="color-well-checker color-well-checker-top-left" />
+                    <div className="color-well-checker color-well-checker-bottom-right" style={{ left: "50%", top: "50%" }} />
+                    <div className="color-well-color" style={{ backgroundColor: this.state.colorString }}> </div>
+                </div>
+
+                {this.renderPicker()}
+            </div>
+        );
     }
 
-    renderPicker() {
-        let i;
-        const {div, label, input} = DOM;
-        if (!this.state.isPickerVisible) { return null }
+    renderLabel(text) {
+        return (
+            <div className="color-row label" key={text} style={{ lineHeight: "20px", height: 16 }}>
+                {text}
+            </div>
+        );
+    }
 
-        const renderLabel = text => {
-            return (div({
-                className: "color-row label", key: text, style: {
-                    lineHeight: "20px",
-                    height: 16
-                }
-            }, text));
-        };
+    renderColor() {
+        const checkerboardURL = `${this.props.lc.opts.imageURLPrefix}/checkerboard-8x8.png`;
 
-        const renderColor = () => {
-            const checkerboardURL = `${this.props.lc.opts.imageURLPrefix}/checkerboard-8x8.png`;
-            return (div({
-                className: "color-row", key: "color", style: {
+        return (
+            <div
+                className="color-row"
+                key="color"
+                style={{
                     position: "relative",
                     backgroundImage: `url(${checkerboardURL})`,
                     backgroundRepeat: "repeat",
                     height: 24
-                }},
-                (div({style: {
-                    position: "absolute",
-                    top: 0, right: 0, bottom: 0, left: 0,
-                    backgroundColor: this.state.colorString
-                }}))
-            ));
-        };
+                }}
+            >
+                <div
+                    style={{
+                        position: "absolute",
+                        top: 0, right: 0, bottom: 0, left: 0,
+                        backgroundColor: this.state.colorString
+                    }}
+                />
+            </div>
+        );
+    }
 
+    buildColorGrid() {
         const rows = [];
-        rows.push(((() => {
-            // FIXME: Decaffeinate IIFE
-            const result = [];
-            for (i = 0; i <= 100; i += 10) {
-                result.push({hue: 0, sat: 0, light: i, alpha: this.state.alpha});
-            }
-            return result;
-        })()));
+
+        let row = [];
+        for (let i = 0; i <= 100; i += 10) {
+            row.push({hue: 0, sat: 0, light: i, alpha: this.state.alpha});
+        }
+        rows.push(row);
+
         for (var hue of [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]) {
-            rows.push(((() => {
-                // FIXME: Decaffeinate IIFE
-                const result1 = [];
-                for (i = 10; i <= 90; i += 8) {
-                    result1.push({hue, sat: this.state.sat, light: i, alpha: this.state.alpha});
-                }
-                return result1;
-            })()));
+            row = [];
+            for (let i = 10; i <= 90; i += 8) {
+                row.push({hue, sat: this.state.sat, light: i, alpha: this.state.alpha});
+            }
+            rows.push(row);
         }
 
+        return rows;
+    }
+
+    renderPicker() {
+        if (!this.state.isPickerVisible) { return null }
+
+        const rows = this.buildColorGrid();
         const onSelectColor = (hsla, s) => this.setColor(s);
 
-        return (div({className: "color-picker-popup"},
-            renderColor(),
-            renderLabel(_("alpha")),
-            (input({
-                type: "range",
-                min: 0, max: 1, step: 0.01,
-                value: this.state.alpha,
-                onChange: e => this.setAlpha(parseFloat(e.target.value))
-            })),
-            renderLabel(_("saturation")),
-            (input({
-                type: "range",
-                min: 0, max: 100,
-                value: this.state.sat, max: 100,
-                onChange: e => this.setSat(parseInt(e.target.value, 10))
-            })),
-            (ColorGrid({rows, selectedColor: this.state.colorString, onChange: onSelectColor}))
-        ));
+        return (
+            <div className="color-picker-popup">
+                {this.renderColor()}
+
+                {this.renderLabel(_("alpha"))}
+                <input
+                    type="range"
+                    min={0} max={1} step={0.01}
+                    value={this.state.alpha}
+                    onChange={ e => this.setAlpha(parseFloat(e.target.value)) }
+                />
+
+                {this.renderLabel(_("saturation"))}
+                <input
+                    type="range"
+                    min={0} max={100}
+                    value={this.state.sat}
+                    onChange={ e => this.setSat(parseInt(e.target.value, 10)) }
+                />
+
+                <ColorGrid
+                    rows={rows}
+                    selectedColor={this.state.colorString}
+                    onChange={onSelectColor}
+                />
+            </div>
+        );
     }
 }
 

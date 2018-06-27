@@ -5,7 +5,6 @@
  */
 
 import React from "react";
-import DOM from "react-dom-factories";
 import { defineOptionsStyle } from "./optionsStyles";
 import { _ } from "../core/localization";
 
@@ -67,6 +66,14 @@ for ({name, value} of OTHER_FONTS) {
 
 
 class FontOptions extends React.Component {
+    constructor() {
+        super();
+
+        this.handleFontFamily = this.handleFontFamily.bind(this);
+        this.handleFontSize = this.handleFontSize.bind(this);
+        this.handleBold = this.handleBold.bind(this);
+        this.handleItalic = this.handleItalic.bind(this);
+    }
 
     getInitialState() {
         return {
@@ -127,51 +134,62 @@ class FontOptions extends React.Component {
     }
 
     componentDidMount() {
-        return this.updateTool()
+        return this.updateTool();
     }
 
     render() {
         const { lc } = this.props;
 
-        const {div, input, select, option, br, label, span, optgroup} = DOM;
+        return (
+            <div className="lc-font-settings">
+                <select value={this.state.fontSizeIndex} onChange={this.handleFontSize}>
+                    {this.getFontSizes().map(
+                        (size, ix) => (
+                            <option value={ix} key={ix}>
+                                {`${size}px`}
+                            </option>
+                        )
+                    )}
+                </select>
 
-        return (div({className: "lc-font-settings"},
-            (select({value: this.state.fontSizeIndex, onChange: this.handleFontSize},
-                this.getFontSizes().map((size, ix) => {
-                    return (option({value: ix, key: ix}, `${size}px`));
-                })
-            )),
-            (select({value: this.state.fontName, onChange: this.handleFontFamily},
-                ALL_FONTS.map((...args) => {
-                    let fonts;
-                    let label;
-                    [label, fonts] = args[0];
-                    return (optgroup({key: label, label}, fonts.map((family, ix) => option({value: family.name, key: ix}, family.name))));
-                })
-            )),
-            (span({},
-                (label({htmlFor: "italic"}, _("italic"))),
-                (input(
-                    {
-                        type: "checkbox",
-                        id: "italic",
-                        checked: this.state.isItalic,
-                        onChange: this.handleItalic
-                    })
-                )
-            )),
-            (span({},
-                (label({htmlFor: "bold"}, _("bold"))),
-                (input(
-                    {
-                        type: "checkbox",
-                        id: "bold",
-                        checked: this.state.isBold,
-                        onChange: this.handleBold,
-                    })
-                )
-            ))
-        ));
+                <select value={this.state.fontName} onChange={this.handleFontFamily}>
+                    {ALL_FONTS.map(
+                        ([label, fonts]) => (
+                            <optgroup key={label}>
+                                {label}
+                                {fonts.map(
+                                    (family, ix) => (
+                                        <option value={family.name} key={ix}>
+                                            {family.name}
+                                        </option>
+                                    )
+                                )}
+                            </optgroup>
+                        )
+                    )}
+                </select>
+
+                <span>
+                    <label htmlFor="italic"> {_("italic")} </label>
+                    <input
+                        type="checkbox"
+                        id="italic"
+                        checked={this.state.isItalic}
+                        onChange={this.handleItalic}
+                    />
+                </span>
+
+                <span>
+                    <label htmlFor="bold"> {_("bold")} </label>
+                    <input
+                        type="checkbox"
+                        id="bold"
+                        checked={this.state.isBold}
+                        onChange={this.handleBold}
+                    />
+                </span>
+            </div>
+        );
     }
 }
 

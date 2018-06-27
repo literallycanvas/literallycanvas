@@ -1,4 +1,4 @@
-import DOM from "react-dom-factories";
+import React from "react";
 import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { _ } from "../core/localization";
 import { classSet } from "../core/util";
@@ -17,7 +17,6 @@ class ClearButton extends React.Component {
     mixins = [createSetStateOnEventMixin("drawingChange")];
 
     render() {
-        const {div} = DOM;
         const {lc} = this.props;
 
         const className = classSet({
@@ -28,7 +27,11 @@ class ClearButton extends React.Component {
         });
         const onClick = lc.canUndo() ? (() => lc.clear()) : function() {};
 
-        return (div({className, onClick}, _("Clear")));
+        return (
+            <div className={className} onClick={onClick}>
+                {_("Clear")}
+            </div>
+        );
     }
 }
 

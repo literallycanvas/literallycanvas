@@ -1,72 +1,75 @@
 import React from "react";
-import DOM from "react-dom-factories";
 import { _ } from "../core/localization";
-
-const ColorWell = React.createFactory(require("./ColorWell"));
-const ClearButton = React.createFactory(require("./ClearButton"));
-const UndoRedoButtons = React.createFactory(require("./UndoRedoButtons"));
-const ZoomButtons = React.createFactory(require("./ZoomButtons"));
+import ColorWell from "./ColorWell";
+import ClearButton from "./ClearButton";
+import UndoRedoButtons from "./UndoRedoButtons";
+import ZoomButtons from "./ZoomButtons";
 
 
 class ColorPickers extends React.Component {
     render() {
         const {lc} = this.props;
-        const {div} = DOM;
-        return (div({className: "lc-color-pickers"},
-            (ColorWell({lc, colorName: "primary", label: _("stroke")})),
-            (ColorWell({lc, colorName: "secondary", label: _("fill")})),
-            (ColorWell({lc, colorName: "background", label: _("bg")}))
-        ));
+
+        return (
+            <div className="lc-color-pickers">
+                <ColorWell lc={lc} colorName="primary" label={_("stroke")} />
+                <ColorWell lc={lc} colorName="secondary" label={_("fill")} />
+                <ColorWell lc={lc} colorName="background" label={_("bg")} />
+            </div>
+        );
     }
 }
-
-const ColorPickersFactory = React.createFactory(ColorPickers);
 
 
 class Picker extends React.Component {
     getInitialState() {
-        return {selectedToolIndex: 0}
+        return {selectedToolIndex: 0};
     }
 
     renderBody() {
-        const {div} = DOM;
         const {toolButtonComponents, lc, imageURLPrefix} = this.props;
-        return (div({className: "lc-picker-contents"},
-            toolButtonComponents.map((component, ix) => {
-                return (component(
-                    {
-                        lc, imageURLPrefix,
-                        key: ix,
-                        isSelected: ix === this.state.selectedToolIndex,
-                        onSelect: tool => {
-                            lc.setTool(tool);
-                            return this.setState({selectedToolIndex: ix});
-                        }
-                    })
-                );
-            }),
-            (toolButtonComponents.length % 2) !== 0 ?
-                (div({className: "toolbar-button thin-button disabled"})) : undefined,
-            (div({style: {
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                right: 0,
-            }
-            },
-            ColorPickersFactory({lc: this.props.lc}),
-            UndoRedoButtons({lc, imageURLPrefix}),
-            ZoomButtons({lc, imageURLPrefix}),
-            ClearButton({lc})
-            ))
-        ));
+
+        return (
+            <div className="lc-picker-contents">
+                {toolButtonComponents.map((Component, ix) => {
+                    return (
+                        <Component
+                            lc={lc}
+                            imageURLPrefix={imageURLPrefix}
+                            key={ix}
+                            isSelected={ix === this.state.selectedToolIndex}
+                            onSelect={ (tool) => {
+                                lc.setTool(tool);
+                                this.setState({selectedToolIndex: ix});
+                            }}
+                        />
+                    );
+                })}
+
+                { ((toolButtonComponents.length % 2) !== 0) &&
+                    <div className="toolbar-button thin-button disabled" /> }
+
+                <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                }} />
+
+                <ColorPickers lc={lc} />
+                <UndoRedoButtons lc={lc} imageURLPrefix={imageURLPrefix} />
+                <ZoomButtons lc={lc} imageURLPrefix={imageURLPrefix} />
+                <ClearButton lc={lc} />
+            </div>
+        );
     }
 
     render() {
-        const {div} = DOM;
-        return (div({className: "lc-picker"},
-            this.renderBody()
-        ));
+        return (
+            <div className="lc-picker">
+                {this.renderBody()}
+            </div>
+        );
     }
 }
 

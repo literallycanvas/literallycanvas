@@ -1,16 +1,9 @@
 import React from "react";
-import DOM from "react-dom-factories";
 import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import React from "./React-shim";
 
 
 class UndoRedoButton extends React.Component {
-    constructor(undoOrRedo) {
-        super();
-
-        // FIXME: Replace by a prop once JSX has been introduced
-        this.undoOrRedo = undoOrRedo;
-    }
 
     // We do this a lot, even though it reads as a React no-no.
     // The reason is that '@props.lc' is a monolithic state bucket for
@@ -22,7 +15,7 @@ class UndoRedoButton extends React.Component {
     getState() {
         return {
             isEnabled:
-                (this.undoOrRedo !== "undo")
+                (this.props.action === "undo")
                     ? this.props.lc.canUndo()
                     : this.props.lc.canRedo(),
         };
@@ -35,11 +28,10 @@ class UndoRedoButton extends React.Component {
     mixins = [createSetStateOnEventMixin("drawingChange")];
 
     render() {
-        const {div, img} = DOM;
         const {lc, imageURLPrefix} = this.props;
-        const title = this.undoOrRedo === "undo" ? "Undo" : "Redo";
+        const title = this.props.action === "undo" ? "Undo" : "Redo";
 
-        const className = `lc-${this.undoOrRedo} ` + classSet({
+        const className = `lc-${this.props.action} ` + classSet({
             "toolbar-button": true,
             "thin-button": true,
             "disabled": !this.state.isEnabled
@@ -52,36 +44,24 @@ class UndoRedoButton extends React.Component {
                     ? (() => lc.undo())
                     : (() => lc.redo());
 
-        const src = `${imageURLPrefix}/${this.undoOrRedo}.png`;
+        const src = `${imageURLPrefix}/${this.props.action}.png`;
         const style = {backgroundImage: `url(${src})`};
 
-        return (div({className, onClick, title:_(title), style}));
+        return (
+            <div className={className} onClick={onClick} title={_(title)} style={style} />
+        );
     }
 }
 
-
-// FIXME: Remove this class once JSX has been introduced
-class UndoButton_ extends UndoRedoButton {
-    constructor() {
-        super("undo");
-    }
-}
-
-// FIXME: Remove this class once JSX has been introduced
-class RedoButton_ extends UndoRedoButton {
-    constructor() {
-        super("redo");
-    }
-}
-
-
-const UndoButton = React.createFactory(UndoButton_);
-const RedoButton = React.createFactory(RedoButton_);
 
 class UndoRedoButtons extends React.Component {
     render() {
-        const {div} = DOM;
-        return (div({className: "lc-undo-redo"}, UndoButton(this.props), RedoButton(this.props)));
+        return (
+            <div className="lc-undo-redo">
+                <UndoRedoButton action="undo" {...this.props} />
+                <UndoRedoButton action="redo" {...this.props} />
+            </div>
+        );
     }
 }
 

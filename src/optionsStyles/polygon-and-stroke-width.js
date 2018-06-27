@@ -1,7 +1,6 @@
 import React from "react";
-import DOM from "react-dom-factories";
 import { defineOptionsStyle } from "./optionsStyles";
-const StrokeWidthPicker = React.createFactory(require("../reactGUI/StrokeWidthPicker"));
+import StrokeWidthPicker from "../reactGUI/StrokeWidthPicker";
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 
 
@@ -45,7 +44,6 @@ class PolygonAndStrokeWidth extends React.Component {
 
     render() {
         const { lc } = this.props;
-        const {div, img} = DOM;
 
         const polygonFinishOpen = () => {
             return lc.trigger("lc-polygon-finishopen");
@@ -62,17 +60,24 @@ class PolygonAndStrokeWidth extends React.Component {
         let polygonToolStyle = {};
         if (!this.state.inProgress) { polygonToolStyle = {display: "none"} }
 
-        return div({},
-            div({className: "polygon-toolbar horz-toolbar", style: polygonToolStyle},
-                (div({className: "square-toolbar-button", onClick: polygonFinishOpen},
-                    img({src: `${this.props.imageURLPrefix}/polygon-open.png`}))),
-                (div({className: "square-toolbar-button", onClick: polygonFinishClosed},
-                    img({src: `${this.props.imageURLPrefix}/polygon-closed.png`}))),
-                (div({className: "square-toolbar-button", onClick: polygonCancel},
-                    img({src: `${this.props.imageURLPrefix}/polygon-cancel.png`})))
-            ),
-            div({},
-                (StrokeWidthPicker({tool: this.props.tool, lc: this.props.lc})))
+        return (
+            <div>
+                <div className="polygon-toolbar horz-toolbar" style={polygonToolStyle}>
+                    <div className="square-toolbar-button" onClick={polygonFinishOpen}>
+                        <img src={`${this.props.imageURLPrefix}/polygon-open.png`} />
+                    </div>
+                    <div className="square-toolbar-button" onClick={polygonFinishClosed}>
+                        <img src={`${this.props.imageURLPrefix}/polygon-closed.png`} />
+                    </div>
+                    <div className="square-toolbar-button" onClick={polygonCancel}>
+                        <img src={`${this.props.imageURLPrefix}/polygon-cancel.png`} />
+                    </div>
+                </div>
+
+                <div>
+                    <StrokeWidthPicker tool={this.props.tool} lc={this.props.lc} />
+                </div>
+            </div>
         );
     }
 }

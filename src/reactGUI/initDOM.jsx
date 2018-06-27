@@ -6,7 +6,9 @@ import LiterallyCanvasReactComponent from "./LiterallyCanvas";
 function init(el, opts) {
     const originalClassName = el.className;
     const lc = new LiterallyCanvasModel(opts);
+
     ReactDOM.render(<LiterallyCanvasReactComponent lc={lc} />, el);
+
     lc.teardown = function() {
         lc._teardown();
         for (var i=0; i<el.children.length; i++) {
@@ -14,6 +16,7 @@ function init(el, opts) {
         }
         el.className = originalClassName;
     };
+
     return lc;
 }
 

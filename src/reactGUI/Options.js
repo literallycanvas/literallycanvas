@@ -1,4 +1,3 @@
-import DOM from "react-dom-factories";
 import React from "react";
 import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { optionsStyles } from "../optionsStyles/optionsStyles";
@@ -26,10 +25,11 @@ class Options extends React.Component {
     }
 
     render() {
-        const {div} = DOM;
-        return (div({className: "lc-options horz-toolbar"},
-            this.renderBody()
-        ));
+        return (
+            <div className="lc-options horz-toolbar">
+                { this.renderBody() }
+            </div>
+        );
     }
 }
 
