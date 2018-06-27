@@ -1,29 +1,23 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import React from "./React-shim";
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
 import PureRenderMixin from "react-addons-pure-render-mixin";
-import { classSet, requestAnimationFrame, cancelAnimationFrame } from "../core/util";
+import { classSet } from "../core/util";
 import { _ } from "../core/localization";
 
 
 const parseHSLAString = function(s) {
-    var s;
     if (s === "transparent") { return {hue: 0, sat: 0, light: 0, alpha: 0} }
     if ((s != null ? s.substring(0, 4) : undefined) !== "hsla") { return null }
+
     const firstParen = s.indexOf("(");
     const lastParen = s.indexOf(")");
     const insideParens = s.substring(firstParen + 1, (lastParen - firstParen) + 4);
     const components = ((() => {
+        // FIXME: Decaffeinate IIFE
         const result = [];
-        for (s of Array.from(insideParens.split(","))) {       result.push(s.trim());
+        for (s of insideParens.split(",")) {
+            result.push(s.trim());
         }
         return result;
     })());
@@ -47,7 +41,7 @@ const ColorGrid = React.createFactory(createReactClass({
         const {div} = DOM;
         return (div({},
             this.props.rows.map((row, ix) => {
-                return (div( 
+                return (div(
                     {
                         className: "color-row",
                         key: ix,
@@ -66,7 +60,7 @@ const ColorGrid = React.createFactory(createReactClass({
                             e.stopPropagation();
                             return e.preventDefault();
                         };
-                        return (div( 
+                        return (div(
                             {
                                 className,
                                 onTouchStart: update,
@@ -162,7 +156,7 @@ const ColorWell = createReactClass({
 
     render() {
         const {div, label, br} = DOM;
-        return (div( 
+        return (div(
             {
                 className: classSet({
                     "color-well": true,
@@ -173,7 +167,7 @@ const ColorWell = createReactClass({
             },
             (label({float: "left"}, this.props.label)),
             (br({})),
-            (div( 
+            (div(
                 {
                     className: classSet({
                         "color-well-color-container": true,
@@ -187,7 +181,7 @@ const ColorWell = createReactClass({
                     className: "color-well-checker color-well-checker-bottom-right",
                     style: {left: "50%", top: "50%"}
                 })),
-                (div( 
+                (div(
                     {
                         className: "color-well-color",
                         style: {backgroundColor: this.state.colorString}
@@ -232,6 +226,7 @@ const ColorWell = createReactClass({
 
         const rows = [];
         rows.push(((() => {
+            // FIXME: Decaffeinate IIFE
             const result = [];
             for (i = 0; i <= 100; i += 10) {
                 result.push({hue: 0, sat: 0, light: i, alpha: this.state.alpha});
@@ -240,6 +235,7 @@ const ColorWell = createReactClass({
         })()));
         for (var hue of [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]) {
             rows.push(((() => {
+                // FIXME: Decaffeinate IIFE
                 const result1 = [];
                 for (i = 10; i <= 90; i += 8) {
                     result1.push({hue, sat: this.state.sat, light: i, alpha: this.state.alpha});

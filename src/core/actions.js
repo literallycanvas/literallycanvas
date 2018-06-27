@@ -1,9 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 // maybe add checks to these in the future to make sure you never double-undo or
 // double-redo
 class ClearAction {
@@ -62,7 +56,7 @@ class AddShapeAction {
     }
 
     do() {
-    // common case: just add it to the end
+        // common case: just add it to the end
         if (!this.lc.shapes.length ||
         (this.lc.shapes[this.lc.shapes.length-1].id === this.previousShapeId) ||
         (this.previousShapeId === null)) {
@@ -71,7 +65,7 @@ class AddShapeAction {
         } else {
             const newShapes = [];
             let found = false;
-            for (let shape of Array.from(this.lc.shapes)) {
+            for (let shape of this.lc.shapes) {
                 newShapes.push(shape);
                 if (shape.id === this.previousShapeId) {
                     newShapes.push(this.shape);
@@ -88,13 +82,13 @@ class AddShapeAction {
     }
 
     undo() {
-    // common case: it's the most recent shape
+        // common case: it's the most recent shape
         if (this.lc.shapes[this.lc.shapes.length-1].id === this.shape.id) {
             this.lc.shapes.pop();
             // uncommon case: it's in the array somewhere
         } else {
             const newShapes = [];
-            for (let shape of Array.from(this.lc.shapes)) {
+            for (let shape of this.lc.shapes) {
                 if (shape.id !== this.shape.id) { newShapes.push(shape) }
             }
             lc.shapes = newShapes;

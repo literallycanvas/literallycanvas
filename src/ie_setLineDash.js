@@ -8,4 +8,3 @@ if (!CanvasRenderingContext2D.prototype.setLineDash) {
         }
     };
 }
-module.exports = null;

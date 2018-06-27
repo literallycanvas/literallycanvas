@@ -1,7 +1,7 @@
-const React = require("./React-shim");
-const ReactDOM = require("./ReactDOM-shim");
-const LiterallyCanvasModel = require("../core/LiterallyCanvas");
-const LiterallyCanvasReactComponent = require("./LiterallyCanvas");
+import React from "./React-shim";
+import ReactDOM from "./ReactDOM-shim";
+import LiterallyCanvasModel from "../core/LiterallyCanvas";
+import LiterallyCanvasReactComponent from "./LiterallyCanvas";
 
 function init(el, opts) {
     const originalClassName = el.className;
@@ -17,4 +17,5 @@ function init(el, opts) {
     return lc;
 }
 
-module.exports = init;
+
+export default init;

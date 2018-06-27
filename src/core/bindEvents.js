@@ -1,11 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-let bindEvents;
 const coordsForTouchEvent = function(el, e) {
     const tx = e.changedTouches[0].clientX;
     const ty = e.changedTouches[0].clientY;
@@ -32,7 +24,7 @@ const buttonIsDown = function(e) {
 };
 
 
-export default (bindEvents = function(lc, canvas, panWithKeyboard) {
+const bindEvents = function(lc, canvas, panWithKeyboard) {
     if (panWithKeyboard == null) { panWithKeyboard = false }
     const unsubs = [];
 
@@ -70,12 +62,12 @@ export default (bindEvents = function(lc, canvas, panWithKeyboard) {
 
     const touchMoveListener = function(e) {
         e.preventDefault();
-        return lc.pointerMove(...Array.from(coordsForTouchEvent(canvas, e) || []));
+        return lc.pointerMove(...coordsForTouchEvent(canvas, e));
     };
 
     var touchEndListener = function(e) {
         e.preventDefault();
-        lc.pointerUp(...Array.from(coordsForTouchEvent(canvas, e) || []));
+        lc.pointerUp(...coordsForTouchEvent(canvas, e));
         document.removeEventListener("touchmove", touchMoveListener);
         document.removeEventListener("touchend", touchEndListener);
         return document.removeEventListener("touchcancel", touchEndListener);
@@ -85,12 +77,12 @@ export default (bindEvents = function(lc, canvas, panWithKeyboard) {
         if (e.target.tagName.toLowerCase() !== "canvas") { return }
         e.preventDefault();
         if (e.touches.length === 1) {
-            lc.pointerDown(...Array.from(coordsForTouchEvent(canvas, e) || []));
+            lc.pointerDown(...coordsForTouchEvent(canvas, e));
             document.addEventListener("touchmove", touchMoveListener);
             document.addEventListener("touchend", touchEndListener);
             return document.addEventListener("touchcancel", touchEndListener);
         } else {
-            return lc.pointerMove(...Array.from(coordsForTouchEvent(canvas, e) || []));
+            return lc.pointerMove(...coordsForTouchEvent(canvas, e));
         }
     });
 
@@ -110,5 +102,8 @@ export default (bindEvents = function(lc, canvas, panWithKeyboard) {
         unsubs.push(() => document.removeEventListener(listener));
     }
 
-    return () => Array.from(unsubs).map((f) => f());
-});
+    return () => unsubs.map((f) => f());
+};
+
+
+export default bindEvents;

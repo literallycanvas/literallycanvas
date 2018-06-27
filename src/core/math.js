@@ -1,11 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-import { Point } from "./shapes";
-import util from "./util";
-
 const math = {};
 
 math.toPoly = function(line) {
@@ -13,7 +5,7 @@ math.toPoly = function(line) {
     let polyRight = [];
 
     let index = 0;
-    for (let point of Array.from(line)) {
+    for (let point of line) {
         const n = normals(point, _slope(line, index));
         polyLeft = polyLeft.concat([n[0]]);
         polyRight = [n[1]].concat(polyRight);
@@ -61,5 +53,6 @@ math.scalePositionScalar = function(val, viewportSize, oldScale, newScale) {
     const newSize = viewportSize * newScale;
     return val + ((oldSize - newSize) / 2);
 };
+
 
 export default math;

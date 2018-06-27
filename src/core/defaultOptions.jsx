@@ -1,4 +1,15 @@
-module.exports = {
+import Ellipse from "../tools/Ellipse";
+import Eraser from "../tools/Eraser";
+import Eyedropper from "../tools/Eyedropper";
+import Line from "../tools/Line";
+import Pan from "../tools/Pan";
+import Pencil from "../tools/Pencil";
+import Polygon from "../tools/Polygon";
+import Rectangle from "../tools/Rectangle";
+import Text from "../tools/Text";
+
+
+const defaultOptions = {
     imageURLPrefix: "lib/img",
     primaryColor: "hsla(0, 0%, 0%, 1)",
     secondaryColor: "hsla(0, 0%, 100%, 1)",
@@ -15,16 +26,20 @@ module.exports = {
     zoomMax: 4.0,
     zoomStep: 0.2,
     snapshot: null,
-    onInit: function() { },
+    onInit: (() => {}),
+
     tools: [
-        require("../tools/Pencil"),
-        require("../tools/Eraser"),
-        require("../tools/Line"),
-        require("../tools/Rectangle"),
-        require("../tools/Ellipse"),
-        require("../tools/Text"),
-        require("../tools/Polygon"),
-        require("../tools/Pan"),
-        require("../tools/Eyedropper")
+        Pencil,
+        Eraser,
+        Line,
+        Rectangle,
+        Ellipse,
+        Text,
+        Polygon,
+        Pan,
+        Eyedropper
     ]
 };
+
+
+export default defaultOptions;

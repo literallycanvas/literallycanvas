@@ -1,11 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import "./fontmetrics.js";
 
 
@@ -14,7 +6,7 @@ const parseFontString = function(font) {
 
     let fontSize = 0;
 
-    for (let item of Array.from(fontItems)) {
+    for (let item of fontItems) {
         const maybeSize = parseInt(item.replace("px", ""), 10);
         if (!isNaN(maybeSize)) {
             fontSize = maybeSize;
@@ -93,13 +85,12 @@ const getLinesToRender = function(ctx, text, forcedWidth) {
     const textSplitOnLines = text.split(/\r\n|\r|\n/g);
 
     const lines = [];
-    for (let textLine of Array.from(textSplitOnLines)) {
-        let [nextLine, remainingText] = Array.from(getNextLine(ctx, textLine, forcedWidth));
+    for (let textLine of textSplitOnLines) {
+        let [nextLine, remainingText] = getNextLine(ctx, textLine, forcedWidth);
         if (nextLine) {
             while (nextLine) {
                 lines.push(nextLine);
-                [nextLine, remainingText] = Array.from(getNextLine(
-                    ctx, remainingText, forcedWidth));
+                [nextLine, remainingText] = getNextLine(ctx, remainingText, forcedWidth);
             }
         } else {
             lines.push(textLine);
@@ -130,17 +121,17 @@ class TextRenderer {
         });
 
         this.metrics = {
-            ascent: Math.max(...Array.from(this.metricses.map(({ascent}) => ascent) || [])),
-            descent: Math.max(...Array.from(this.metricses.map(({descent}) => descent) || [])),
-            fontsize: Math.max(...Array.from(this.metricses.map(({fontsize}) => fontsize) || [])),
-            leading: Math.max(...Array.from(this.metricses.map(({leading}) => leading) || [])),
-            width: Math.max(...Array.from(this.metricses.map(({width}) => width) || [])),
-            height: Math.max(...Array.from(this.metricses.map(({height}) => height) || [])),
+            ascent: Math.max(...this.metricses.map(({ascent}) => ascent)),
+            descent: Math.max(...this.metricses.map(({descent}) => descent)),
+            fontsize: Math.max(...this.metricses.map(({fontsize}) => fontsize)),
+            leading: Math.max(...this.metricses.map(({leading}) => leading)),
+            width: Math.max(...this.metricses.map(({width}) => width)),
+            height: Math.max(...this.metricses.map(({height}) => height)),
             bounds: {
-                minx: Math.min(...Array.from(this.metricses.map(({bounds}) => bounds.minx) || [])),
-                miny: Math.min(...Array.from(this.metricses.map(({bounds}) => bounds.miny) || [])),
-                maxx: Math.max(...Array.from(this.metricses.map(({bounds}) => bounds.maxx) || [])),
-                maxy: Math.max(...Array.from(this.metricses.map(({bounds}) => bounds.maxy) || []))
+                minx: Math.min(...this.metricses.map(({bounds}) => bounds.minx)),
+                miny: Math.min(...this.metricses.map(({bounds}) => bounds.miny)),
+                maxx: Math.max(...this.metricses.map(({bounds}) => bounds.maxx)),
+                maxy: Math.max(...this.metricses.map(({bounds}) => bounds.maxy))
             }
         };
 
@@ -152,8 +143,9 @@ class TextRenderer {
         ctx.font = this.font;
         let i = 0;
         return (() => {
+            // FIXME: Decaffeinate IIFE
             const result = [];
-            for (let line of Array.from(this.lines)) {
+            for (let line of this.lines) {
                 ctx.fillText(line, x, y + (i * this.metrics.leading));
                 result.push(i += 1);
             }

@@ -1,10 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import "./ie_customevent";
 import "./ie_setLineDash";
 
@@ -20,6 +13,18 @@ import renderSnapshotToSVG from "./core/renderSnapshotToSVG";
 
 import { localize } from "./core/localization";
 
+import Ellipse from "../tools/Ellipse";
+import Eraser from "../tools/Eraser";
+import Eyedropper from "../tools/Eyedropper";
+import Line from "../tools/Line";
+import Pan from "../tools/Pan";
+import Pencil from "../tools/Pencil";
+import Polygon from "../tools/Polygon";
+import Rectangle from "../tools/Rectangle";
+import Text from "../tools/Text";
+import SelectShape from "../tools/SelectShape";
+import {Tool, ToolWithStroke} from "./tools/base";
+
 // @ifdef INCLUDE_GUI
 import LiterallyCanvasReactComponent from "./reactGUI/LiterallyCanvas";
 import initReactDOM from "./reactGUI/initDOM";
@@ -34,27 +39,26 @@ import { defineOptionsStyle } from "./optionsStyles/optionsStyles";
 
 var conversion = {
     snapshotToShapes(snapshot) {
-        return Array.from(snapshot.shapes).map((shape) => shapes.JSONToShape(shape));
+        return snapshot.shapes.map((shape) => shapes.JSONToShape(shape));
     },
     snapshotJSONToShapes(json) { return conversion.snapshotToShapes(JSON.parse(json)) }
 };
 
 
-const baseTools = require("./tools/base");
 const tools = {
-    Pencil: require("./tools/Pencil"),
-    Eraser: require("./tools/Eraser"),
-    Line: require("./tools/Line"),
-    Rectangle: require("./tools/Rectangle"),
-    Ellipse: require("./tools/Ellipse"),
-    Text: require("./tools/Text"),
-    Polygon: require("./tools/Polygon"),
-    Pan: require("./tools/Pan"),
-    Eyedropper: require("./tools/Eyedropper"),
-    SelectShape: require("./tools/SelectShape"),
+    Pencil,
+    Eraser,
+    Line,
+    Rectangle,
+    Ellipse,
+    Text,
+    Polygon,
+    Pan,
+    Eyedropper,
+    SelectShape,
 
-    Tool: baseTools.Tool,
-    ToolWithStroke: baseTools.ToolWithStroke
+    Tool,
+    ToolWithStroke,
 };
 
 
@@ -76,12 +80,12 @@ const init = function(el, opts) {
 
     // Destroy all children of the element we're using
 
-    for (let child of Array.from(el.children)) {
+    for (let child of el.children) {
         el.removeChild(child);
     }
 
     // @ifdef INCLUDE_GUI
-    return require("./reactGUI/initDOM")(el, opts);
+    return initReactDOM(el, opts);
     // @endif
     // @ifndef INCLUDE_GUI
     return initWithoutGUI(el, opts);
@@ -110,7 +114,7 @@ var initWithoutGUI = function(el, opts) {
     const lc = new LiterallyCanvasModel(drawingViewElement, opts);
     lc.teardown = function() {
         lc._teardown();
-        for (let child of Array.from(el.children)) {
+        for (let child of el.children) {
             el.removeChild(child);
         }
         return el.className = originalClassName;

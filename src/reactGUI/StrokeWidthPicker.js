@@ -1,16 +1,10 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
 import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
 import { classSet } from "../core/util";
 
 
-export default createReactClass({
+const StrokeWidthPicker = createReactClass({
     displayName: "StrokeWidthPicker",
 
     getState(tool) { if (tool == null) { ({ tool } = this.props) } return {strokeWidth: tool.strokeWidth} },
@@ -33,12 +27,12 @@ export default createReactClass({
                 return (div({
                     key: strokeWidth
                 },
-                    (div( 
+                    (div(
                         {
                             className: buttonClassName,
                             onClick: () => this.props.lc.trigger("setStrokeWidth", strokeWidth)
                         },
-                        (svg( 
+                        (svg(
                             {
                                 width: buttonSize-2,
                                 height: buttonSize-2,
@@ -58,3 +52,6 @@ export default createReactClass({
         ));
     }
 });
+
+
+export default StrokeWidthPicker;

@@ -1,8 +1,9 @@
-const createReactClass = require("../reactGUI/createReactClass-shim");
-const React = require("../reactGUI/React-shim");
-const { defineOptionsStyle } = require("./optionsStyles");
-const createSetStateOnEventMixin = require("../reactGUI/createSetStateOnEventMixin");
-const _ = require("../core/localization")._;
+import createReactClass from "../reactGUI/createReactClass-shim";
+import React from "../reactGUI/React-shim";
+import { defineOptionsStyle } from "./optionsStyles";
+import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
+import { _ } from "../core/localization";
+
 
 defineOptionsStyle("stroke-or-fill", createReactClass({
     displayName: "StrokeOrFillPicker",
@@ -39,5 +40,3 @@ defineOptionsStyle("stroke-or-fill", createReactClass({
         </form>;
     }
 }));
-
-module.exports = {};

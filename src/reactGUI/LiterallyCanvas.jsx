@@ -1,18 +1,18 @@
-const React = require("../reactGUI/React-shim");
-const createReactClass = require("../reactGUI/createReactClass-shim");
-const { findDOMNode } = require("../reactGUI/ReactDOM-shim");
-const { classSet } = require("../core/util");
-const Picker = require("./Picker");
-const Options = require("./Options");
-const createToolButton = require("./createToolButton");
-const LiterallyCanvasModel = require("../core/LiterallyCanvas");
-const defaultOptions = require("../core/defaultOptions");
+import React from "../reactGUI/React-shim";
+import createReactClass from "../reactGUI/createReactClass-shim";
+import { findDOMNode } from "../reactGUI/ReactDOM-shim";
+import { classSet } from "../core/util";
+import Picker from "./Picker";
+import Options from "./Options";
+import createToolButton from "./createToolButton";
+import LiterallyCanvasModel from "../core/LiterallyCanvas";
+import defaultOptions from "../core/defaultOptions";
 
-require("../optionsStyles/font");
-require("../optionsStyles/stroke-width");
-require("../optionsStyles/line-options-and-stroke-width");
-require("../optionsStyles/polygon-and-stroke-width");
-require("../optionsStyles/null");
+import "../optionsStyles/font";
+import "../optionsStyles/stroke-width";
+import "../optionsStyles/line-options-and-stroke-width";
+import "../optionsStyles/polygon-and-stroke-width";
+import "../optionsStyles/null";
 
 
 const CanvasContainer = createReactClass({
@@ -95,5 +95,4 @@ const LiterallyCanvas = createReactClass({
 });
 
 
-
-module.exports = LiterallyCanvas;
+export default LiterallyCanvas;

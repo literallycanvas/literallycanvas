@@ -1,28 +1,28 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import util from "./util";
 import { JSONToShape } from "./shapes";
 
+
 const INFINITE = "infinite";
-export default function(snapshot, opts) {
+
+
+const renderSnapshotToSVG = function(snapshot, opts) {
     let s;
     if (opts == null) { opts = {} }
     const shapes = ((() => {
+        // FIXME: Decaffeinate IIFE
         const result = [];
-        for (s of Array.from(snapshot.shapes)) {       result.push(JSONToShape(s));
+        for (s of snapshot.shapes) {
+            result.push(JSONToShape(s));
         }
         return result;
     })());
     let backgroundShapes = [];
     if (snapshot.backgroundShapes) {
         backgroundShapes = ((() => {
+            // FIXME: Decaffeinate IIFE
             const result1 = [];
-            for (s of Array.from(snapshot.backgroundShapes)) {         result1.push(JSONToShape(s));
+            for (s of snapshot.backgroundShapes) {
+                result1.push(JSONToShape(s));
             }
             return result1;
         })());
@@ -45,8 +45,10 @@ export default function(snapshot, opts) {
     } else {
         opts.rect = util.getDefaultImageRect(
             ((() => {
+                // FIXME: Decaffeinate IIFE
                 const result2 = [];
-                for (s of Array.from(allShapes)) {         result2.push(s.getBoundingRect(ctx));
+                for (s of allShapes) {
+                    result2.push(s.getBoundingRect(ctx));
                 }
                 return result2;
             })()),
@@ -57,4 +59,7 @@ export default function(snapshot, opts) {
 
     return util.renderShapesToSVG(
         backgroundShapes.concat(shapes), opts.rect, colors.background);
-}
+};
+
+
+export default renderSnapshotToSVG;

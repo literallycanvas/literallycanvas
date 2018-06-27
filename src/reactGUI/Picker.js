@@ -1,18 +1,13 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import React from "./React-shim";
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
+import { _ } from "../core/localization";
 
+const ColorWell = React.createFactory(require("./ColorWell"));
 const ClearButton = React.createFactory(require("./ClearButton"));
 const UndoRedoButtons = React.createFactory(require("./UndoRedoButtons"));
 const ZoomButtons = React.createFactory(require("./ZoomButtons"));
 
-const {_} = require("../core/localization");
-const ColorWell = React.createFactory(require("./ColorWell"));
 
 const ColorPickers = React.createFactory(createReactClass({
     displayName: "ColorPickers",
@@ -37,7 +32,7 @@ const Picker = createReactClass({
         const {toolButtonComponents, lc, imageURLPrefix} = this.props;
         return (div({className: "lc-picker-contents"},
             toolButtonComponents.map((component, ix) => {
-                return (component( 
+                return (component(
                     {
                         lc, imageURLPrefix,
                         key: ix,

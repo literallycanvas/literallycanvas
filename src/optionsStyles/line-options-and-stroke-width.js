@@ -1,15 +1,11 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import React from "../reactGUI/React-shim";
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
 import { defineOptionsStyle } from "./optionsStyles";
 const StrokeWidthPicker = React.createFactory(require("../reactGUI/StrokeWidthPicker"));
-const createSetStateOnEventMixin = require("../reactGUI/createSetStateOnEventMixin");
-const {classSet} = require("../core/util");
+import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
+import { classSet } from "../core/util";
+
 
 defineOptionsStyle("line-options-and-stroke-width", createReactClass({
     displayName: "LineOptionsAndStrokeWidth",

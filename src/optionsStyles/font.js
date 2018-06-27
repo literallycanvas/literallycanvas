@@ -1,11 +1,9 @@
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
  * DS201: Simplify complex destructure assignments
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
+
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
 import { defineOptionsStyle } from "./optionsStyles";
@@ -22,7 +20,7 @@ const SANS_SERIF_FONTS = [
     ["Tahoma", "Tahoma,Verdana,Segoe,sans-serif"],
     ["Trebuchet MS", '"Trebuchet MS","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Tahoma,sans-serif'],
     ["Verdana", "Verdana,Geneva,sans-serif"],
-].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value} });
+].map(function(...args) { let name, value; [name, value] = args[0]; return {name: _(name), value} });
 
 const SERIF_FONTS = [
     ["Baskerville", 'Baskerville,"Baskerville Old Face","Hoefler Text",Garamond,"Times New Roman",serif'],
@@ -32,19 +30,19 @@ const SERIF_FONTS = [
     ["Lucida Bright", '"Lucida Bright",Georgia,serif'],
     ["Palatino", 'Palatino,"Palatino Linotype","Palatino LT STD","Book Antiqua",Georgia,serif'],
     ["Times New Roman", 'TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif'],
-].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value} });
+].map(function(...args) { let name, value; [name, value] = args[0]; return {name: _(name), value} });
 
 const MONOSPACE_FONTS = [
     ["Consolas/Monaco", 'Consolas,monaco,"Lucida Console",monospace'],
     ["Courier New", '"Courier New",Courier,"Lucida Sans Typewriter","Lucida Typewriter",monospace'],
     ["Lucida Sans Typewriter", '"Lucida Sans Typewriter","Lucida Console",monaco,"Bitstream Vera Sans Mono",monospace'],
-].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value} });
+].map(function(...args) { let name, value; [name, value] = args[0]; return {name: _(name), value} });
 
 const OTHER_FONTS = [
     ["Copperplate", 'Copperplate,"Copperplate Gothic Light",fantasy'],
     ["Papyrus", "Papyrus,fantasy"],
     ["Script", '"Brush Script MT",cursive'],
-].map(function(...args) { let name, value; [name, value] = Array.from(args[0]); return {name: _(name), value} });
+].map(function(...args) { let name, value; [name, value] = args[0]; return {name: _(name), value} });
 
 const ALL_FONTS = [
     [_("Sans Serif"), SANS_SERIF_FONTS],
@@ -54,16 +52,16 @@ const ALL_FONTS = [
 ];
 
 const FONT_NAME_TO_VALUE = {};
-for (var {name, value} of Array.from(SANS_SERIF_FONTS)) {
+for (var {name, value} of SANS_SERIF_FONTS) {
     FONT_NAME_TO_VALUE[name] = value;
 }
-for ({name, value} of Array.from(SERIF_FONTS)) {
+for ({name, value} of SERIF_FONTS) {
     FONT_NAME_TO_VALUE[name] = value;
 }
-for ({name, value} of Array.from(MONOSPACE_FONTS)) {
+for ({name, value} of MONOSPACE_FONTS) {
     FONT_NAME_TO_VALUE[name] = value;
 }
-for ({name, value} of Array.from(OTHER_FONTS)) {
+for ({name, value} of OTHER_FONTS) {
     FONT_NAME_TO_VALUE[name] = value;
 }
 
@@ -141,13 +139,13 @@ defineOptionsStyle("font", createReactClass({
                 ALL_FONTS.map((...args) => {
                     let fonts;
                     let label;
-                    [label, fonts] = Array.from(args[0]);
+                    [label, fonts] = args[0];
                     return (optgroup({key: label, label}, fonts.map((family, ix) => option({value: family.name, key: ix}, family.name))));
                 })
             )),
             (span({},
                 (label({htmlFor: "italic"}, _("italic"))),
-                (input( 
+                (input(
                     {
                         type: "checkbox",
                         id: "italic",
@@ -158,7 +156,7 @@ defineOptionsStyle("font", createReactClass({
             )),
             (span({},
                 (label({htmlFor: "bold"}, _("bold"))),
-                (input( 
+                (input(
                     {
                         type: "checkbox",
                         id: "bold",

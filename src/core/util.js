@@ -1,13 +1,6 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-const { slice } = Array.prototype;
 import { renderShapeToContext } from "./canvasRenderer";
 import { renderShapeToSVG } from "./svgRenderer";
+
 
 var util = {
 
@@ -24,7 +17,7 @@ var util = {
 
     last(array, n = null) {
         if (n) {
-            return slice.call(array, Math.max(array.length - n, 0));
+            return Array.slice.call(array, Math.max(array.length - n, 0));
         } else {
             return array[array.length - 1];
         }
@@ -43,7 +36,7 @@ var util = {
     matchElementSize(elementToMatch, elementsToResize, scale, callback) {
         if (callback == null) { callback = function() {} }
         const resize = () => {
-            for (let el of Array.from(elementsToResize)) {
+            for (let el of elementsToResize) {
                 el.style.width = `${elementToMatch.offsetWidth}px`;
                 el.style.height = `${elementToMatch.offsetHeight}px`;
                 if (el.width != null) {
@@ -65,13 +58,13 @@ var util = {
         const c = document.createElement("canvas");
         c.width = canvases[0].width;
         c.height = canvases[0].height;
-        for (var canvas of Array.from(canvases)) {
+        for (var canvas of canvases) {
             c.width = Math.max(canvas.width, c.width);
             c.height = Math.max(canvas.height, c.height);
         }
         const ctx = c.getContext("2d");
 
-        for (canvas of Array.from(canvases)) {
+        for (canvas of canvases) {
             ctx.drawImage(canvas, 0, 0);
         }
         return c;
@@ -85,7 +78,7 @@ var util = {
         const ctx = canvas.getContext("2d");
         ctx.translate(-bounds.x * scale, -bounds.y * scale);
         ctx.scale(scale, scale);
-        for (let shape of Array.from(shapes)) {
+        for (let shape of shapes) {
             renderShapeToContext(ctx, shape);
         }
         return canvas;
@@ -115,7 +108,7 @@ ${shapes.map(renderShapeToSVG).join("")} \
         let minY = rects[0].y;
         let maxX = rects[0].x + rects[0].width;
         let maxY = rects[0].y + rects[0].height;
-        for (let rect of Array.from(rects)) {
+        for (let rect of rects) {
             minX = Math.floor(Math.min(rect.x, minX));
             minY = Math.floor(Math.min(rect.y, minY));
             maxX = Math.ceil(Math.max(maxX, rect.x + rect.width));

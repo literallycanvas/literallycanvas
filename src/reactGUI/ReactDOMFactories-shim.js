@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 let DOM;
 try {
     DOM = require("react-dom-factories");
@@ -24,5 +19,6 @@ if (DOM == null) {
 if (DOM == null) {
     throw "Can't find DOM";
 }
+
 
 export default DOM;

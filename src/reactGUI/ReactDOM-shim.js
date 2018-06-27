@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 let ReactDOM;
 try {
     ReactDOM = require("react-dom");
@@ -22,5 +17,6 @@ if (ReactDOM == null) {
 if (ReactDOM == null) {
     throw "Can't find ReactDOM";
 }
-  
+
+
 export default ReactDOM;

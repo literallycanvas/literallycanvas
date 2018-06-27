@@ -1,12 +1,7 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import lineEndCapShapes from "./lineEndCapShapes";
-const renderers = {};
 
+
+const renderers = {};
 
 // shapeToSVG(shape) -> string
 const defineSVGRenderer = (shapeName, shapeToSVGFunc) => renderers[shapeName] = shapeToSVGFunc;
@@ -65,7 +60,7 @@ stroke-width='${shape.strokeWidth}' />\
 });
 
 
-defineSVGRenderer("SelectionBox", shape => "");
+defineSVGRenderer("SelectionBox", (() => {}));
 
 
 defineSVGRenderer("Ellipse", function(shape) {
@@ -146,7 +141,7 @@ stroke-width='${shape.points[0].size}' />\
 
 
 // silently skip erasers
-defineSVGRenderer("ErasedLinePath", shape => "");
+defineSVGRenderer("ErasedLinePath", (() => {}));
 
 
 defineSVGRenderer("Polygon", function(shape) {

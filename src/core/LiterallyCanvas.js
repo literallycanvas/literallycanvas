@@ -1,26 +1,16 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
-let LiterallyCanvas;
 import actions from "./actions";
 import bindEvents from "./bindEvents";
-import math from "./math";
-import { createShape, shapeToJSON, JSONToShape } from "./shapes";
+import { JSONToShape, shapeToJSON } from "./shapes";
 import { renderShapeToContext } from "./canvasRenderer";
-import { renderShapeToSVG } from "./svgRenderer";
 import renderSnapshotToImage from "./renderSnapshotToImage";
 import renderSnapshotToSVG from "./renderSnapshotToSVG";
-import Pencil from "../tools/Pencil";
 import util from "./util";
+
 
 const INFINITE = "infinite";
 
-export default (LiterallyCanvas = class LiterallyCanvas {
+
+class LiterallyCanvas {
 
     constructor(arg1, arg2) {
         this.setImageSize = this.setImageSize.bind(this);
@@ -261,8 +251,8 @@ export default (LiterallyCanvas = class LiterallyCanvas {
     saveShape(shape, triggerShapeSaveEvent, previousShapeId=null) {
         if (triggerShapeSaveEvent == null) { triggerShapeSaveEvent = true }
         if (!previousShapeId) {
-            previousShapeId = this.shapes.length 
-                ? this.shapes[this.shapes.length-1].id 
+            previousShapeId = this.shapes.length
+                ? this.shapes[this.shapes.length-1].id
                 : null;
         }
         this.execute(new actions.AddShapeAction(this, shape, previousShapeId));
@@ -378,7 +368,7 @@ export default (LiterallyCanvas = class LiterallyCanvas {
 
                 this.clipped((() => {
                     return this.transformed((() => {
-                        return Array.from(this._shapesInProgress).map((shape) =>
+                        return this._shapesInProgress.map((shape) =>
                             renderShapeToContext(
                                 this.ctx, shape, {bufferCtx: this.bufferCtx, shouldOnlyDrawLatest: true}));
                     }
@@ -430,7 +420,7 @@ export default (LiterallyCanvas = class LiterallyCanvas {
     draw(shapes, ctx, retryCallback) {
         if (!shapes.length) { return }
         const drawShapes = () => {
-            return Array.from(shapes).map((shape) =>
+            return shapes.map((shape) =>
                 renderShapeToContext(ctx, shape, {retryCallback}));
         };
         return this.clipped((() => this.transformed(drawShapes, ctx)), ctx);
@@ -442,16 +432,10 @@ export default (LiterallyCanvas = class LiterallyCanvas {
     clipped(fn, ...contexts) {
         const x = this.width === INFINITE ? 0 : this.position.x;
         const y = this.height === INFINITE ? 0 : this.position.y;
-        const width = (() => { switch (this.width) {
-        case INFINITE: return this.canvas.width;
-        default: return this.width * this.getRenderScale();
-        } })();
-        const height = (() => { switch (this.height) {
-        case INFINITE: return this.canvas.height;
-        default: return this.height * this.getRenderScale();
-        } })();
+        const width = (this.width === INFINITE) ? this.canvas.width : this.width * this.getRenderScale();
+        const height = (this.height === INFINITE) ? this.canvas.height : this.height * this.getRenderScale();
 
-        for (var ctx of Array.from(contexts)) {
+        for (var ctx of contexts) {
             ctx.save();
             ctx.beginPath();
             ctx.rect(x, y, width, height);
@@ -461,8 +445,9 @@ export default (LiterallyCanvas = class LiterallyCanvas {
         fn();
 
         return (() => {
+            // FIXME: Decaffeinate IIFE
             const result = [];
-            for (ctx of Array.from(contexts)) {
+            for (ctx of contexts) {
                 result.push(ctx.restore());
             }
             return result;
@@ -472,7 +457,7 @@ export default (LiterallyCanvas = class LiterallyCanvas {
     // Executes the given function after translating and scaling the context.
     // The context is restored to its original state before returning.
     transformed(fn, ...contexts) {
-        for (var ctx of Array.from(contexts)) {
+        for (var ctx of contexts) {
             ctx.save();
             ctx.translate(Math.floor(this.position.x), Math.floor(this.position.y));
             const scale = this.getRenderScale();
@@ -482,8 +467,9 @@ export default (LiterallyCanvas = class LiterallyCanvas {
         fn();
 
         return (() => {
+            // FIXME: Decaffeinate IIFE
             const result = [];
-            for (ctx of Array.from(contexts)) {
+            for (ctx of contexts) {
                 result.push(ctx.restore());
             }
             return result;
@@ -553,7 +539,7 @@ export default (LiterallyCanvas = class LiterallyCanvas {
         if (explicitSize == null) { explicitSize = {width: 0, height: 0} }
         if (margin == null) { margin = {top: 0, right: 0, bottom: 0, left: 0} }
         return util.getDefaultImageRect(
-            (Array.from(this.shapes.concat(this.backgroundShapes)).map((s) => s.getBoundingRect(this.ctx))),
+            (this.shapes.concat(this.backgroundShapes).map((s) => s.getBoundingRect(this.ctx))),
             explicitSize,
             margin );
     }
@@ -587,25 +573,29 @@ export default (LiterallyCanvas = class LiterallyCanvas {
         if (keys == null) { keys = ["shapes", "imageSize", "colors", "position", "scale", "backgroundShapes"] }
         const snapshot = {};
         for (let k of ["colors", "position", "scale"]) {
-            if (Array.from(keys).includes(k)) { snapshot[k] = this[k] }
+            if (keys.includes(k)) { snapshot[k] = this[k] }
         }
-        if (Array.from(keys).includes("shapes")) {
+        if (keys.includes("shapes")) {
             snapshot.shapes = ((() => {
+                // FIXME: Decaffeinate IIFE
                 const result = [];
-                for (shape of Array.from(this.shapes)) {           result.push(shapeToJSON(shape));
+                for (shape of this.shapes) {
+                    result.push(shapeToJSON(shape));
                 }
                 return result;
             })());
         }
-        if (Array.from(keys).includes("backgroundShapes")) {
+        if (keys.includes("backgroundShapes")) {
             snapshot.backgroundShapes = ((() => {
+                // FIXME: Decaffeinate IIFE
                 const result1 = [];
-                for (shape of Array.from(this.backgroundShapes)) {           result1.push(shapeToJSON(shape));
+                for (shape of this.backgroundShapes) {
+                    result1.push(shapeToJSON(shape));
                 }
                 return result1;
             })());
         }
-        if (Array.from(keys).includes("imageSize")) {
+        if (keys.includes("imageSize")) {
             snapshot.imageSize = {width: this.width, height: this.height};
         }
 
@@ -633,14 +623,14 @@ export default (LiterallyCanvas = class LiterallyCanvas {
             // reset undostack aswell when loading a snapshot
             this.undostack = [];
 
-            for (let shapeRepr of Array.from(snapshot.shapes)) {
+            for (let shapeRepr of snapshot.shapes) {
                 const shape = JSONToShape(shapeRepr);
                 if (shape) { this.execute(new actions.AddShapeAction(this, shape)) }
             }
         }
 
         if (snapshot.backgroundShapes) {
-            this.backgroundShapes = (Array.from(snapshot.backgroundShapes).map((s) => JSONToShape(s)));
+            this.backgroundShapes = (snapshot.backgroundShapes.map((s) => JSONToShape(s)));
         }
 
         if (snapshot.imageSize) {
@@ -660,4 +650,7 @@ export default (LiterallyCanvas = class LiterallyCanvas {
         console.warn("lc.loadSnapshotJSON() is deprecated. use lc.loadSnapshot(JSON.parse(snapshot)) instead.");
         return this.loadSnapshot(JSON.parse(str));
     }
-});
+}
+
+
+export default LiterallyCanvas;

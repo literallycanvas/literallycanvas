@@ -1,15 +1,10 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import React from "../reactGUI/React-shim";
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
 import { defineOptionsStyle } from "./optionsStyles";
 const StrokeWidthPicker = React.createFactory(require("../reactGUI/StrokeWidthPicker"));
-const createSetStateOnEventMixin = require("../reactGUI/createSetStateOnEventMixin");
+import createSetStateOnEventMixin from "../reactGUI/createSetStateOnEventMixin";
+
 
 defineOptionsStyle("polygon-and-stroke-width", createReactClass({
     displayName: "PolygonAndStrokeWidth",
@@ -23,7 +18,7 @@ defineOptionsStyle("polygon-and-stroke-width", createReactClass({
     componentDidMount() {
         const unsubscribeFuncs = [];
         this.unsubscribe = () => {
-            return Array.from(unsubscribeFuncs).map((func) =>
+            return unsubscribeFuncs.map((func) =>
                 func());
         };
 

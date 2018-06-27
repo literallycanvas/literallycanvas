@@ -1,20 +1,16 @@
 /*
  * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
  * DS201: Simplify complex destructure assignments
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
+
 import util from "./util";
 import TextRenderer from "./TextRenderer";
-import lineEndCapShapes from "./lineEndCapShapes";
 import { defineCanvasRenderer, renderShapeToContext } from "./canvasRenderer";
 import { defineSVGRenderer, renderShapeToSVG } from "./svgRenderer";
 
-const shapes = {};
 
+const shapes = {};
 
 const defineShape = function(name, props) {
     // improve Chrome JIT perf by not using arguments object
@@ -111,7 +107,7 @@ var _refine = function(points) {
     const refined = [];
 
     let index = 0;
-    for (let point of Array.from(points)) {
+    for (let point of points) {
         refined[index * 2] = point;
         if (points[index + 1]) { refined[(index * 2) + 1] = _mid(point, points[index + 1]) }
         index += 1;
@@ -124,7 +120,7 @@ var _dual = function(points) {
     const dualed = [];
 
     let index = 0;
-    for (let point of Array.from(points)) {
+    for (let point of points) {
         if (points[index + 1]) { dualed[index] = _mid(point, points[index + 1]) }
         index += 1;
     }
@@ -305,7 +301,7 @@ const _doAllPointsShareStyle = function(points) {
     if (!points.length) { return false }
     const { size } = points[0];
     const { color } = points[0];
-    for (let point of Array.from(points)) {
+    for (let point of points) {
         if ((point.size !== size) || (point.color !== color)) {
             console.log(size, color, point.size, point.color);
         }
@@ -319,17 +315,19 @@ const _createLinePathFromData = function(shapeName, data) {
     let x, y;
     let points = null;
     if (data.points) {
-        points = (Array.from(data.points).map((pointData) => JSONToShape(pointData)));
+        points = (data.points.map((pointData) => JSONToShape(pointData)));
     } else if (data.pointCoordinatePairs) {
         points = ((() => {
+            // FIXME: Decaffeinate IIFE
             const result = [];
-            for ([x, y] of Array.from(data.pointCoordinatePairs)) {         result.push(JSONToShape({
-                className: "Point",
-                data: {
-                    x, y, size: data.pointSize, color: data.pointColor,
-                    smooth: data.smooth
-                }
-            }));
+            for ([x, y] of data.pointCoordinatePairs) {
+                result.push(JSONToShape({
+                    className: "Point",
+                    data: {
+                        x, y, size: data.pointSize, color: data.pointColor,
+                        smooth: data.smooth
+                    }
+                }));
             }
             return result;
         })());
@@ -338,14 +336,16 @@ const _createLinePathFromData = function(shapeName, data) {
     let smoothedPoints = null;
     if (data.smoothedPointCoordinatePairs) {
         smoothedPoints = ((() => {
+            // FIXME: Decaffeinate IIFE
             const result1 = [];
-            for ([x, y] of Array.from(data.smoothedPointCoordinatePairs)) {         result1.push(JSONToShape({
-                className: "Point",
-                data: {
-                    x, y, size: data.pointSize, color: data.pointColor,
-                    smooth: data.smooth
-                }
-            }));
+            for ([x, y] of data.smoothedPointCoordinatePairs) {
+                result1.push(JSONToShape({
+                    className: "Point",
+                    data: {
+                        x, y, size: data.pointSize, color: data.pointColor,
+                        smooth: data.smooth
+                    }
+                }));
             }
             return result1;
         })());
@@ -378,8 +378,7 @@ const linePathFuncs = {
             return this.smoothedPoints = args.smoothedPoints;
         } else {
             this.points = [];
-            return Array.from(points).map((point) =>
-                this.addPoint(point));
+            return points.map((point) => this.addPoint(point));
         }
     },
 
@@ -398,15 +397,19 @@ const linePathFuncs = {
             return {
                 order: this.order, tailSize: this.tailSize, smooth: this.smooth,
                 pointCoordinatePairs: ((() => {
+                    // FIXME: Decaffeinate IIFE
                     const result = [];
-                    for (point of Array.from(this.points)) {             result.push([point.x, point.y]);
+                    for (point of this.points) {
+                        result.push([point.x, point.y]);
                     }
                     return result;
                 })()),
                 smoothedPointCoordinatePairs: ((() => {
+                    // FIXME: Decaffeinate IIFE
                     const result1 = [];
-          
-                    for (point of Array.from(this.smoothedPoints)) {             result1.push([point.x, point.y]);
+
+                    for (point of this.smoothedPoints) {
+                        result1.push([point.x, point.y]);
                     }
                     return result1;
                 })()),
@@ -414,7 +417,7 @@ const linePathFuncs = {
                 pointColor: this.points[0].color
             };
         } else {
-            return {order: this.order, tailSize: this.tailSize, smooth: this.smooth, points: (Array.from(this.points).map((p) => shapeToJSON(p)))};
+            return {order: this.order, tailSize: this.tailSize, smooth: this.smooth, points: (this.points.map((p) => shapeToJSON(p)))};
         }
     },
 
@@ -454,7 +457,7 @@ const linePathFuncs = {
             pts = this.smoothedPoints;
         }
 
-        for (let pt of Array.from(pts)) {
+        for (let pt of pts) {
             pt.move(moveInfo);
         }
 
@@ -525,9 +528,10 @@ defineShape("Polygon", {
         this.isClosed = args.isClosed;
 
         // ignore point values
+        // FIXME: Decaffeinate IIFE
         return (() => {
             const result = [];
-            for (let point of Array.from(this.points)) {
+            for (let point of this.points) {
                 point.color = this.strokeColor;
                 result.push(point.size = this.strokeWidth);
             }
@@ -551,7 +555,7 @@ defineShape("Polygon", {
     },
     fromJSON(data) {
         data.points = data.pointCoordinatePairs.map(function(...args) {
-            const [x, y] = Array.from(args[0]);
+            const [x, y] = args[0];
             return createShape("Point", {
                 x, y, size: data.strokeWidth, color: data.strokeColor
             });
@@ -561,7 +565,7 @@ defineShape("Polygon", {
 
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
-        return Array.from(this.points).map((pt) =>
+        return this.points.map((pt) =>
             pt.move(moveInfo));
     },
 

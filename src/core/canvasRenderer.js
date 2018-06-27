@@ -1,13 +1,7 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import lineEndCapShapes from "./lineEndCapShapes";
-const renderers = {};
 
+
+const renderers = {};
 
 // drawFunc(ctx, shape, retryCallback)
 // drawLatest(ctx, bufferCtx, shape, retryCallback)
@@ -188,7 +182,7 @@ const _drawRawLinePath = function(ctx, points, close, lineCap) {
         ctx.moveTo(points[0].x+0.5, points[0].y+0.5);
     }
 
-    for (let point of Array.from(points.slice(1))) {
+    for (let point of points.slice(1)) {
         if ((points[0].size % 2) === 0) {
             ctx.lineTo(point.x, point.y);
         } else {

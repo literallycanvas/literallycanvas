@@ -1,13 +1,9 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import DOM from "../reactGUI/ReactDOMFactories-shim";
 import createReactClass from "../reactGUI/createReactClass-shim";
 import createSetStateOnEventMixin from "./createSetStateOnEventMixin";
 import { _ } from "../core/localization";
 import { classSet } from "../core/util";
+
 
 const ClearButton = createReactClass({
     displayName: "ClearButton",

@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 let createReactClass;
 try {
     createReactClass = require("create-react-class");
@@ -24,5 +19,5 @@ if (createReactClass == null) {
 if (createReactClass == null) {
     throw "Can't find createReactClass";
 }
-  
+
 export default createReactClass;

@@ -1,13 +1,6 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import util from "./util";
 import { JSONToShape } from "./shapes";
+
 
 // mostly copypasta from LiterallyCanvas.coffee
 const INFINITE = "infinite";
@@ -21,22 +14,26 @@ const renderWatermark = function(ctx, image, scale) {
     return ctx.restore();
 };
 
-export default function(snapshot, opts) {
+const renderSnapshotToImage = function(snapshot, opts) {
     let s;
     if (opts == null) { opts = {} }
     if (opts.scale == null) { opts.scale = 1 }
 
     const shapes = ((() => {
+        // FIXME: Decaffeinate IIFE
         const result = [];
-        for (s of Array.from(snapshot.shapes)) {       result.push(JSONToShape(s));
+        for (s of snapshot.shapes) {
+            result.push(JSONToShape(s));
         }
         return result;
     })());
     let backgroundShapes = [];
     if (snapshot.backgroundShapes) {
         backgroundShapes = ((() => {
+            // FIXME: Decaffeinate IIFE
             const result1 = [];
-            for (s of Array.from(snapshot.backgroundShapes)) {         result1.push(JSONToShape(s));
+            for (s of snapshot.backgroundShapes) {
+                result1.push(JSONToShape(s));
             }
             return result1;
         })());
@@ -59,8 +56,10 @@ export default function(snapshot, opts) {
     } else {
         opts.rect = util.getDefaultImageRect(
             ((() => {
+                // FIXME: Decaffeinate IIFE
                 const result2 = [];
-                for (s of Array.from(allShapes)) {         result2.push(s.getBoundingRect(watermarkCtx));
+                for (s of allShapes) {
+                    result2.push(s.getBoundingRect(watermarkCtx));
                 }
                 return result2;
             })()),
@@ -86,4 +85,7 @@ export default function(snapshot, opts) {
         watermarkCanvas,
         util.renderShapes(backgroundShapes, opts.rect, opts.scale),
         util.renderShapes(shapes, opts.rect, opts.scale));
-}
+};
+
+
+export default renderSnapshotToImage;
