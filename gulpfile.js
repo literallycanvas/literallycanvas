@@ -4,27 +4,16 @@ var connect = require("gulp-connect");
 var rename = require("gulp-rename");
 var sass = require("gulp-sass");
 var source = require("vinyl-source-stream");
-var streamify = require("gulp-streamify");
 var uglify = require("gulp-uglify");
-var coffee = require("gulp-coffee");
 var babel = require("gulp-babel");
 var preprocess = require("gulp-preprocess");
 var preprocessify = require("preprocessify");
-var merge = require("merge-stream");
 
 gulp.task("commonjs", function() {
-    // https://github.com/gulpjs/gulp/blob/master/docs/recipes/using-multiple-sources-in-one-task.md
-    var babelTrans = gulp.src(["./src/**/*.js", "./src/**/*.jsx"])
+    return gulp.src(["./src/**/*.js", "./src/**/*.jsx"])
         .pipe(preprocess({context: { INCLUDE_GUI: true }}))
         .pipe(babel())
         .pipe(gulp.dest("./lib/js/"));
-
-    var coffeeTrans = gulp.src("./src/**/*.coffee")
-        .pipe(preprocess({context: { INCLUDE_GUI: true }}))
-        .pipe(coffee({ bare: true }))
-        .pipe(gulp.dest("./lib/js/"));
-
-    return merge(babelTrans, coffeeTrans);
 });
 
 gulp.task("sass", function() {
@@ -37,15 +26,14 @@ gulp.task("sass", function() {
 
 gulp.task("browserify-lc-main", function() {
     var bundleStream = browserify({
-        basedir: "src", extensions: [".js", ".jsx", ".coffee"], debug: true, standalone: "LC",
+        basedir: "src", extensions: [".js", ".jsx"], debug: true, standalone: "LC",
         debug: false
-    }).add("./index.coffee")
+    }).add("./index.js")
         .external("create-react-class")
         .external("react")
         .external("react-dom")
         .external("react-dom-factories")
-        .transform(preprocessify({ INCLUDE_GUI: true }, {includeExtensions: [".coffee"], type: "coffee"}))
-        .transform("coffeeify")
+        .transform(preprocessify({ INCLUDE_GUI: true }))
         .transform("babelify")
         .bundle()
         .on("error", function (err) {
@@ -55,7 +43,7 @@ gulp.task("browserify-lc-main", function() {
         });
 
     return bundleStream
-        .pipe(source("./src/index.coffee"))
+        .pipe(source("./src/index.js"))
         .pipe(rename("literallycanvas.js"))
         .pipe(gulp.dest("./lib/js/"))
         .pipe(connect.reload());
@@ -63,11 +51,10 @@ gulp.task("browserify-lc-main", function() {
 
 gulp.task("browserify-lc-core", function() {
     var bundleStream = browserify({
-        basedir: "src", extensions: [".js", ".jsx", ".coffee"], debug: true, standalone: "LC",
+        basedir: "src", extensions: [".js", ".jsx"], debug: true, standalone: "LC",
         debug: false
-    }).add("./index.coffee")
-        .transform(preprocessify({}, {includeExtensions: [".coffee"], type: "coffee"}))
-        .transform("coffeeify")
+    }).add("./index.js")
+        .transform(preprocessify({}))
         .transform("babelify")
         .bundle()
         .on("error", function (err) {
@@ -77,7 +64,7 @@ gulp.task("browserify-lc-core", function() {
         });
 
     return bundleStream
-        .pipe(source("./src/index.coffee"))
+        .pipe(source("./src/index.js"))
         .pipe(rename("literallycanvas-core.js"))
         .pipe(gulp.dest("./lib/js/"))
         .pipe(connect.reload());
@@ -104,7 +91,7 @@ gulp.task("demo-reload", function () {
 
 
 gulp.task("watch", function() {
-    gulp.watch(["src/*.coffee", "src/*/*.coffee", "src/*.js", "src/*/*.js"], ["browserify-lc-main", "browserify-lc-core"]);
+    gulp.watch(["src/*.js", "src/*/*.js"], ["browserify-lc-main", "browserify-lc-core"]);
     gulp.watch("scss/*.scss", ["sass"]);
     gulp.watch("demo/*", ["demo-reload"]);
 });
