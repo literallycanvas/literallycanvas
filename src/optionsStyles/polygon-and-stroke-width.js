@@ -5,24 +5,21 @@ import StrokeWidthPicker from "../reactGUI/StrokeWidthPicker";
 
 class PolygonAndStrokeWidth extends React.Component {
 
-    getState() {
+    constructor() {
+        super();
+
+        this.state = { strokeWidth: 0, inProgress: false };
+    }
+
+    static getDerivedStateFromProps(props) {
         return {
-            strokeWidth: this.props.tool.strokeWidth,
-            inProgress: false
+            strokeWidth: props.tool.strokeWidth,
+            inProgress: false,
         };
     }
 
-    getInitialState() {
-        return this.getState();
-    }
-
     componentDidMount() {
-        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState(this.getState()));
-    }
 
-    componentWillUnmount() { this.unsubscribe() }
-
-    componentDidMount() {
         const unsubscribeFuncs = [];
         this.unsubscribe = () => {
             return unsubscribeFuncs.map((func) =>
@@ -35,10 +32,13 @@ class PolygonAndStrokeWidth extends React.Component {
 
         const hidePolygonTools = () => {
             return this.setState({ inProgress: false });
+        const resetState = () => {
+            this.setState( PolygonAndStrokeWidth.getDerivedStateFromProps(this.props) );
         };
 
         unsubscribeFuncs.push(this.props.lc.on("lc-polygon-started", showPolygonTools));
-        return unsubscribeFuncs.push(this.props.lc.on("lc-polygon-stopped", hidePolygonTools));
+        unsubscribeFuncs.push(this.props.lc.on("lc-polygon-stopped", hidePolygonTools));
+        unsubscribeFuncs.push(this.props.lc.on("toolChange", resetState));
     }
 
     componentWillUnmount() {

@@ -31,9 +31,9 @@ class Eyedropper extends Tool {
     continue(x, y, lc) { return this.readColor(x, y, lc) }
 }
 
-Eyedropper.name = "Eyedropper";
-Eyedropper.iconName = "eyedropper";
-Eyedropper.optionsStyle = "stroke-or-fill";
+Eyedropper.prototype.name = "Eyedropper";
+Eyedropper.prototype.iconName = "eyedropper";
+Eyedropper.prototype.optionsStyle = "stroke-or-fill";
 
 
 export default Eyedropper;

@@ -1,4 +1,6 @@
 class Tool {
+    constructor() {}
+
     // called when the user starts dragging
     begin(x, y, lc) {}
 
@@ -12,10 +14,10 @@ class Tool {
     willBecomeInactive(lc) {}
 }
 
-Tool.name = null;  // for debugging
-Tool.iconName = null;  // {imageURLPrefix}/{iconName}.png
-Tool.usesSimpleAPI = true;
-Tool.optionsStyle = null;  // kind of options GUI to display
+Tool.prototype.name = null;  // for debugging
+Tool.prototype.iconName = null;  // {imageURLPrefix}/{iconName}.png
+Tool.prototype.usesSimpleAPI = true;
+Tool.prototype.optionsStyle = null;  // kind of options GUI to display
 
 
 class ToolWithStroke extends Tool {
@@ -43,7 +45,7 @@ class ToolWithStroke extends Tool {
     }
 }
 
-ToolWithStroke.optionsStyle = "stroke-width";
+ToolWithStroke.prototype.optionsStyle = "stroke-width";
 
 
 export { Tool, ToolWithStroke };

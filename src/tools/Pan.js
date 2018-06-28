@@ -35,9 +35,9 @@ class Pan extends Tool {
     }
 }
 
-Pan.name = "Pan";
-Pan.iconName = "pan";
-Pan.usesSimpleAPI = false;
+Pan.prototype.name = "Pan";
+Pan.prototype.iconName = "pan";
+Pan.prototype.usesSimpleAPI = false;
 
 
 export default Pan;

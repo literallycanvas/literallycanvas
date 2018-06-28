@@ -139,10 +139,10 @@ class Polygon extends ToolWithStroke {
     }
 }
 
-Polygon.name = "Polygon";
-Polygon.iconName = "polygon";
-Polygon.usesSimpleAPI = false;
-Polygon.optionsStyle = "polygon-and-stroke-width";
+Polygon.prototype.name = "Polygon";
+Polygon.prototype.iconName = "polygon";
+Polygon.prototype.usesSimpleAPI = false;
+Polygon.prototype.optionsStyle = "polygon-and-stroke-width";
 
 
 export default Polygon;

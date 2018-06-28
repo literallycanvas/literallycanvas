@@ -26,8 +26,8 @@ class Ellipse extends ToolWithStroke {
     }
 }
 
-Ellipse.name = "Ellipse";
-Ellipse.iconName = "ellipse";
+Ellipse.prototype.name = "Ellipse";
+Ellipse.prototype.iconName = "ellipse";
 
 
 export default Ellipse;

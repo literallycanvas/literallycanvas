@@ -5,6 +5,25 @@ import { _ } from "../core/localization";
 
 class UndoRedoButton extends React.Component {
 
+    constructor() {
+        super();
+
+        this.state = { isEnabled: false };
+    }
+
+    static getDerivedStateFromProps(props) {
+        let isEnabled =
+            (props.action === "undo")
+                ? props.lc.canUndo()
+                : props.lc.canRedo();
+
+        return { isEnabled };
+    }
+
+    getState() {
+        return UndoRedoButton.getDerivedStateFromProps(this.props);
+    }
+
     // We do this a lot, even though it reads as a React no-no.
     // The reason is that '@props.lc' is a monolithic state bucket for
     // Literally Canvas, and does not offer opportunities for encapsulation.
@@ -12,18 +31,6 @@ class UndoRedoButton extends React.Component {
     // However, this component really does read and write only to the 'undo'
     // part of the state bucket, and we have to get react to update somehow, and
     // we don't want the parent to have to worry about this, so it's in @state.
-    getState() {
-        return {
-            isEnabled:
-                (this.props.action === "undo")
-                    ? this.props.lc.canUndo()
-                    : this.props.lc.canRedo(),
-        };
-    }
-
-    getInitialState() {
-        return this.getState();
-    }
 
     componentDidMount() {
         this.unsubscribe = this.props.lc.on("drawingChange", () => this.setState(this.getState()));

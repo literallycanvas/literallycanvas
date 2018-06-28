@@ -3,15 +3,21 @@ import { classSet } from "../core/util";
 
 
 class StrokeWidthPicker extends React.Component {
-    getState(tool) {
-        if (tool == null)
-            tool = this.props.tool;
 
-        return {strokeWidth: tool.strokeWidth};
+    constructor() {
+        super();
+
+        this.state = { strokeWidth: 1 };
     }
 
-    getInitialState() {
-        return this.getState();
+    static getDerivedStateFromProps(props) {
+        return {
+            strokeWidth: props.tool.strokeWidth,
+        };
+    }
+
+    getState() {
+        return StrokeWidthPicker.getDerivedStateFromProps(this.props);
     }
 
     componentDidMount() {
@@ -19,10 +25,6 @@ class StrokeWidthPicker extends React.Component {
     }
 
     componentWillUnmount() { this.unsubscribe() }
-
-    UNSAFE_componentWillReceiveProps(props) {
-        return this.setState(this.getState(props.tool));
-    }
 
     render() {
         const { strokeWidths } = this.props.lc.opts;

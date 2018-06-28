@@ -75,8 +75,24 @@ class ColorGrid extends React.PureComponent {
 
 
 class ColorWell extends React.PureComponent {
-    getInitialState() {
-        const colorString = this.props.lc.colors[this.props.colorName];
+    constructor() {
+        super();
+
+        this.closePicker = this.closePicker.bind(this);
+        this.togglePicker = this.togglePicker.bind(this);
+
+        this.state = {
+            colorString: null,
+            alpha: 1,
+            sat: 100,
+            isPickerVisible: false,
+            hsla: { alpha: 1, sat: 100, hue: 0, light: 50 },
+        };
+    }
+
+    static getDerivedStateFromProps(props) {
+        const colorString = props.lc.colors[props.colorName];
+
         let hsla = parseHSLAString(colorString);
         if (hsla == null) { hsla = {} }
         if (hsla.alpha == null) { hsla.alpha = 1 }

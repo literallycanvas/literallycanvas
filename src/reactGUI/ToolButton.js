@@ -4,16 +4,12 @@ import { _ } from "../core/localization";
 
 
 class ToolButton extends React.Component {
-    getDefaultProps() {
-        return {isSelected: false, lc: null};
-    }
-
     UNSAFE_componentWillMount() {
         if (this.props.isSelected) {
             // prevent race condition with options, tools getting set
             // (I've already forgotten the specifics of this; should reinvestigate
             // and explain here. --steve)
-            return this.props.lc.setTool(tool);
+            return this.props.lc.setTool(this.props.tool);
         }
     }
 
@@ -37,6 +33,11 @@ class ToolButton extends React.Component {
         );
     }
 }
+
+ToolButton.defaultProps = {
+    isSelected: false,
+    lc: null,
+};
 
 
 export default ToolButton;

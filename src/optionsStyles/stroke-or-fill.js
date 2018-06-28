@@ -6,19 +6,16 @@ import { _ } from "../core/localization";
 class StrokeOrFillPicker extends React.Component {
     constructor() {
         super();
+
         this.onChange = this.onChange.bind(this);
-    }
 
-    getState() {
-        return {strokeOrFill: "stroke"};
-    }
-
-    getInitialState() {
-        return this.getState();
+        this.state = {
+            strokeOrFill: "stroke"
+        };
     }
 
     componentDidMount() {
-        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState(this.getState()));
+        this.unsubscribe = this.props.lc.on("toolChange", () => this.setState({ strokeOrFill: "stroke" }));
     }
 
     componentWillUnmount() { this.unsubscribe() }

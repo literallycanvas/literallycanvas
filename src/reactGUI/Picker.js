@@ -22,8 +22,9 @@ class ColorPickers extends React.Component {
 
 
 class Picker extends React.Component {
-    getInitialState() {
-        return {selectedToolIndex: 0};
+    constructor() {
+        super();
+        this.state = {selectedToolIndex: 0};
     }
 
     renderBody() {

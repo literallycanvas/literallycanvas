@@ -5,12 +5,20 @@ import { classSet } from "../core/util";
 
 class ClearButton extends React.Component {
 
-    getState() {
-        return {isEnabled: this.props.lc.canUndo()};
+    constructor() {
+        super();
+
+        this.state = { isEnabled: false };
     }
 
-    getInitialState() {
-        return this.getState();
+    static getDerivedStateFromProps(props) {
+        return {
+            isEnabled: props.lc.canUndo()
+        };
+    }
+
+    getState() {
+        return ClearButton.getDerivedStateFromProps(this.props);
     }
 
     componentDidMount() {

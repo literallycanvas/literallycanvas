@@ -318,9 +318,9 @@ class Text extends Tool {
     }
 }
 
-Text.name = "Text";
-Text.iconName = "text";
-Text.optionsStyle = "font";
+Text.prototype.name = "Text";
+Text.prototype.iconName = "text";
+Text.prototype.optionsStyle = "font";
 
 
 export default Text;

@@ -29,10 +29,6 @@ class CanvasContainer extends React.Component {
 
 
 class LiterallyCanvas extends React.Component {
-    getDefaultProps() {
-        return defaultOptions
-    }
-
     bindToModel() {
         const canvasContainerEl = findDOMNode(this.canvas);
         const opts = this.props;
@@ -52,10 +48,17 @@ class LiterallyCanvas extends React.Component {
             this.lc = new LiterallyCanvasModel(this.props);
         }
 
-        this.toolButtonComponents = this.lc.opts.tools.map(ToolClass => {
-            // FIXME: the tool must now be supplied as prop on the component
-            return ToolButton(new ToolClass(this.lc));
-        });
+        this.toolButtonComponents = this.lc.opts.tools.map(
+            (ToolClass) => {
+                let tool = new ToolClass(this.lc);
+                return (props) => (
+                    <ToolButton
+                        {...props}
+                        tool={ tool }
+                    />
+                );
+            }
+        );
     }
 
     componentDidMount() {
@@ -94,6 +97,8 @@ class LiterallyCanvas extends React.Component {
         );
     }
 }
+
+LiterallyCanvas.defaultProps = defaultOptions;
 
 
 export default LiterallyCanvas;

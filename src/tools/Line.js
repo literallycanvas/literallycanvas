@@ -29,9 +29,9 @@ class Line extends ToolWithStroke {
     }
 }
 
-Line.name = "Line";
-Line.iconName = "line";
-Line.optionsStyle = "line-options-and-stroke-width";
+Line.prototype.name = "Line";
+Line.prototype.iconName = "line";
+Line.prototype.optionsStyle = "line-options-and-stroke-width";
 
 
 export default Line;

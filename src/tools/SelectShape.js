@@ -136,8 +136,8 @@ class SelectShape extends Tool {
     }
 }
 
-SelectShape.name = "SelectShape";
-SelectShape.usesSimpleAPI = false;
+SelectShape.prototype.name = "SelectShape";
+SelectShape.prototype.usesSimpleAPI = false;
 
 
 export default SelectShape;

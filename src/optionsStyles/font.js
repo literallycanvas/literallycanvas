@@ -73,14 +73,12 @@ class FontOptions extends React.Component {
         this.handleFontSize = this.handleFontSize.bind(this);
         this.handleBold = this.handleBold.bind(this);
         this.handleItalic = this.handleItalic.bind(this);
-    }
 
-    getInitialState() {
-        return {
+        this.state = {
             isItalic: false,
             isBold: false,
             fontName: "Helvetica",
-            fontSizeIndex: 4
+            fontSizeIndex: 4,
         };
     }
 

@@ -32,9 +32,9 @@ class Pencil extends ToolWithStroke {
     makeShape() { return createShape("LinePath") }
 }
 
-Pencil.name = "Pencil";
-Pencil.iconName = "pencil";
-Pencil.eventTimeThreshold = 10;
+Pencil.prototype.name = "Pencil";
+Pencil.prototype.iconName = "pencil";
+Pencil.prototype.eventTimeThreshold = 10;
 
 
 export default Pencil;

@@ -5,16 +5,24 @@ import { classSet } from "../core/util";
 
 
 class LineOptionsAndStrokeWidth extends React.Component {
-    getState() {
+
+    constructor() {
+        super();
+
+        this.state = { strokeWidth: 0, isDashed: false, hasEndArrow: true, };
+    }
+
+    static getDerivedStateFromProps(props) {
+        let tool = props.tool;
         return {
-            strokeWidth: this.props.tool.strokeWidth,
-            isDashed: this.props.tool.isDashed,
-            hasEndArrow: this.props.tool.hasEndArrow,
+            strokeWidth: tool.strokeWidth,
+            isDashed: tool.isDashed,
+            hasEndArrow: tool.hasEndArrow,
         };
     }
 
-    getInitialState() {
-        return this.getState();
+    getState() {
+        return LineOptionsAndStrokeWidth.getDerivedStateFromProps(this.props);
     }
 
     componentDidMount() {

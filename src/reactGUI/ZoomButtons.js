@@ -4,17 +4,24 @@ import { _ } from "../core/localization";
 
 
 class ZoomButton extends React.Component {
-    getState() {
-        return {
-            isEnabled:
-                (this.props.action === "in")
-                    ? this.props.lc.scale < this.props.lc.config.zoomMax
-                    : this.props.lc.scale > this.props.lc.config.zoomMin,
-        };
+
+    constructor() {
+        super();
+
+        this.state = { isEnabled: false };
     }
 
-    getInitialState() {
-        return this.getState();
+    static getDerivedStateFromProps(props) {
+        let isEnabled =
+            (props.action === "in")
+                ? props.lc.scale < props.lc.config.zoomMax
+                : props.lc.scale > props.lc.config.zoomMin;
+
+        return { isEnabled };
+    }
+
+    getState() {
+        return ZoomButton.getDerivedStateFromProps(this.props);
     }
 
     componentDidMount() {

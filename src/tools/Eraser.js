@@ -9,8 +9,8 @@ class Eraser extends Pencil {
     makeShape() { return createShape("ErasedLinePath") }
 }
 
-Eraser.name = "Eraser";
-Eraser.iconName = "eraser";
+Eraser.prototype.name = "Eraser";
+Eraser.prototype.iconName = "eraser";
 
 
 export default Eraser;

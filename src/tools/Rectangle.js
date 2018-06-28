@@ -25,8 +25,8 @@ class Rectangle extends ToolWithStroke {
     }
 }
 
-Rectangle.name = "Rectangle";
-Rectangle.iconName = "rectangle";
+Rectangle.prototype.name = "Rectangle";
+Rectangle.prototype.iconName = "rectangle";
 
 
 export default Rectangle;
