@@ -91,7 +91,7 @@ gulp.task("demo-reload", function () {
 
 
 gulp.task("watch", function() {
-    gulp.watch(["src/*.js", "src/*/*.js"], ["browserify-lc-main", "browserify-lc-core"]);
+    gulp.watch(["src/*.js", "src/*/*.js", "src/*.jsx", "src/*/*.jsx"], ["browserify-lc-main", "browserify-lc-core"]);
     gulp.watch("scss/*.scss", ["sass"]);
     gulp.watch("demo/*", ["demo-reload"]);
 });
