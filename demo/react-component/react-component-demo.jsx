@@ -12,11 +12,11 @@ const DemoApp = createReactClass({
                 toolbarPosition: 'bottom',
                 snapshot: JSON.parse(localStorage.getItem('drawing')),
                 backgroundShapes: [
-                  LC.createShape(
-                    'Image', {image: backgroundImage, x: 100, y: 100, scale: 2}),
-                  LC.createShape(
-                    'Rectangle',
-                    {x: 0, y: 0, width: 100, height: 100, strokeColor: '#000'})
+                    LC.createShape(
+                        'Image', {image: backgroundImage, x: 100, y: 100, scale: 2}),
+                    LC.createShape(
+                        'Rectangle',
+                        {x: 0, y: 0, width: 100, height: 100, strokeColor: '#000'})
                 ],
                 onInit: this.onInit,
                 imageURLPrefix: "/lib/img"
@@ -70,7 +70,7 @@ const DemoApp = createReactClass({
             <br />
             <div className="svg-container" dangerouslySetInnerHTML={{__html: this.state.svgText}} />
         </div>;
-    } 
+    }
 });
 
 

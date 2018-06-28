@@ -29,10 +29,8 @@ gulp.task("browserify-lc-main", function() {
         basedir: "src", extensions: [".js", ".jsx"], debug: true, standalone: "LC",
         debug: false
     }).add("./index.js")
-        .external("create-react-class")
-        .external("react")
-        .external("react-dom")
-        .external("react-dom-factories")
+        .exclude("react")
+        .exclude("react-dom")
         .transform(preprocessify({ INCLUDE_GUI: true }))
         .transform("babelify")
         .bundle()

@@ -29,6 +29,7 @@
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
     "browserify": "~13.0.0",
+    "browserify-shim": "^3.8.14",
     "coffeeify": "^2.0.1",
     "create-react-class": "^15.6.2",
     "envify": "~3.4.0",
@@ -53,8 +54,20 @@
     "vinyl-source-stream": "~1.1.0",
     "watchify": "~3.7.0"
   },
+  "dependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
+  },
   "peerDependencies": {
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
+  },
+  "browserify-shim": {
+      "react": "global:React",
+      "react-dom": "global:ReactDOM"
+  },
+  "browserify": {
+      "transform": [ "browserify-shim" ]
+  },
   }
 }
