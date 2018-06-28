@@ -49,9 +49,9 @@ class UndoRedoButton extends React.Component {
         });
 
         const onClick =
-            this.state.isEnabled
+            !this.state.isEnabled
                 ? (() => {})
-                : (this.undoOrRedo !== "undo")
+                : (this.props.action === "undo")
                     ? (() => lc.undo())
                     : (() => lc.redo());
 

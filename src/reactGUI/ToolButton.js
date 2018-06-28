@@ -22,13 +22,13 @@ class ToolButton extends React.Component {
             "thin-button": true,
             "selected": isSelected
         });
-        const src = `${imageURLPrefix}/${tool.imageName}.png`;
+        const src = `${imageURLPrefix}/${tool.iconName}.png`;
         return (
             <div
                 className={className}
                 style={{"backgroundImage": `url(${src})`}}
                 onClick={ () => { return onSelect(tool) } }
-                title={_(tool.displayName)}
+                title={_(tool.name)}
             />
         );
     }

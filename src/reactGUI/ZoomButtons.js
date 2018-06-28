@@ -41,7 +41,7 @@ class ZoomButton extends React.Component {
         });
 
         const onClick =
-            this.state.isEnabled
+            !this.state.isEnabled
                 ? (() => {})
                 : this.props.action === "in"
                     ? () => lc.zoom(lc.config.zoomStep)
