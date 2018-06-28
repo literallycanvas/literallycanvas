@@ -8,4 +8,4 @@ const _ = function(string) {
 };
 
 
-export default { localize, _ };
+export { localize, _ };

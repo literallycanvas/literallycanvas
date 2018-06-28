@@ -732,3 +732,4 @@ defineShape("SelectionBox", {
 
 
 export default {defineShape, createShape, JSONToShape, shapeToJSON};
+export {defineShape, createShape, JSONToShape, shapeToJSON};

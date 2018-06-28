@@ -46,4 +46,4 @@ class ToolWithStroke extends Tool {
 ToolWithStroke.optionsStyle = "stroke-width";
 
 
-export default { Tool, ToolWithStroke };
+export { Tool, ToolWithStroke };

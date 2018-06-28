@@ -13,16 +13,16 @@ import renderSnapshotToSVG from "./core/renderSnapshotToSVG";
 
 import { localize } from "./core/localization";
 
-import Ellipse from "../tools/Ellipse";
-import Eraser from "../tools/Eraser";
-import Eyedropper from "../tools/Eyedropper";
-import Line from "../tools/Line";
-import Pan from "../tools/Pan";
-import Pencil from "../tools/Pencil";
-import Polygon from "../tools/Polygon";
-import Rectangle from "../tools/Rectangle";
-import Text from "../tools/Text";
-import SelectShape from "../tools/SelectShape";
+import Ellipse from "./tools/Ellipse";
+import Eraser from "./tools/Eraser";
+import Eyedropper from "./tools/Eyedropper";
+import Line from "./tools/Line";
+import Pan from "./tools/Pan";
+import Pencil from "./tools/Pencil";
+import Polygon from "./tools/Polygon";
+import Rectangle from "./tools/Rectangle";
+import Text from "./tools/Text";
+import SelectShape from "./tools/SelectShape";
 import {Tool, ToolWithStroke} from "./tools/base";
 
 // @ifdef INCLUDE_GUI
@@ -148,7 +148,25 @@ if (typeof window !== "undefined") {
 }
 
 
-export default {
+const defineShape = shapes.defineShape;
+const createShape = shapes.createShape;
+const JSONToShape = shapes.JSONToShape;
+const shapeToJSON = shapes.shapeToJSON;
+
+const defineCanvasRenderer = canvasRenderer.defineCanvasRenderer;
+const renderShapeToContext = canvasRenderer.renderShapeToContext;
+const renderShapeToCanvas = canvasRenderer.renderShapeToCanvas;
+const renderShapesToCanvas = util.renderShapes;
+
+const defineSVGRenderer = svgRenderer.defineSVGRenderer;
+const renderShapeToSVG = svgRenderer.renderShapeToSVG;
+const renderShapesToSVG = util.renderShapesToSVG;
+
+const snapshotToShapes = conversion.snapshotToShapes;
+const snapshotJSONToShapes = conversion.snapshotJSONToShapes;
+
+
+export {
     init, registerJQueryPlugin, util, tools,
     setDefaultImageURLPrefix, defaultTools,
     // @ifdef INCLUDE_GUI
@@ -156,22 +174,22 @@ export default {
     LiterallyCanvasReactComponent,
     // @endif
 
-    defineShape: shapes.defineShape,
-    createShape: shapes.createShape,
-    JSONToShape: shapes.JSONToShape,
-    shapeToJSON: shapes.shapeToJSON,
+    defineShape,
+    createShape,
+    JSONToShape,
+    shapeToJSON,
 
-    defineCanvasRenderer:  canvasRenderer.defineCanvasRenderer,
-    renderShapeToContext: canvasRenderer.renderShapeToContext,
-    renderShapeToCanvas: canvasRenderer.renderShapeToCanvas,
-    renderShapesToCanvas: util.renderShapes,
+    defineCanvasRenderer,
+    renderShapeToContext,
+    renderShapeToCanvas,
+    renderShapesToCanvas,
 
-    defineSVGRenderer: svgRenderer.defineSVGRenderer,
-    renderShapeToSVG: svgRenderer.renderShapeToSVG,
-    renderShapesToSVG: util.renderShapesToSVG,
+    defineSVGRenderer,
+    renderShapeToSVG,
+    renderShapesToSVG,
 
-    snapshotToShapes: conversion.snapshotToShapes,
-    snapshotJSONToShapes: conversion.snapshotJSONToShapes,
+    snapshotToShapes,
+    snapshotJSONToShapes,
 
     renderSnapshotToImage,
     renderSnapshotToSVG,
