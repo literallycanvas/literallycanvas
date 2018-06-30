@@ -8,7 +8,7 @@ function addImageOnload(img, fn) {
         if (typeof oldOnload === "function") {
             oldOnload();
         }
-        return fn();
+        fn();
     };
     return img;
 }
@@ -42,7 +42,7 @@ function matchElementSize(elementToMatch, elementsToResize, scale, callback) {
                 el.setAttribute("height", el.offsetHeight * scale);
             }
         }
-        return callback();
+        callback();
     };
 
     elementToMatch.addEventListener("resize", resize);
@@ -152,7 +152,7 @@ function getBackingScale(context) {
 
 function getGUID() {
     const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    return () => s4() + s4() + "-" +
+    return s4() + s4() + "-" +
     s4() + "-" +
     s4() + "-" +
     s4() + "-" +
@@ -168,11 +168,11 @@ function requestAnimationFrame(f) {
 }
 
 function cancelAnimationFrame(f) {
-    if (window.cancelAnimationFrame) { return window.cancelAnimationFrame(f) }
-    if (window.webkitCancelRequestAnimationFrame) { return window.webkitCancelRequestAnimationFrame(f) }
-    if (window.webkitCancelAnimationFrame) { return window.webkitCancelAnimationFrame(f) }
-    if (window.mozCancelAnimationFrame) { return window.mozCancelAnimationFrame(f) }
-    return clearTimeout(f);
+    if (window.cancelAnimationFrame) { window.cancelAnimationFrame(f) }
+    if (window.webkitCancelRequestAnimationFrame) { window.webkitCancelRequestAnimationFrame(f) }
+    if (window.webkitCancelAnimationFrame) { window.webkitCancelAnimationFrame(f) }
+    if (window.mozCancelAnimationFrame) { window.mozCancelAnimationFrame(f) }
+    clearTimeout(f);
 }
 
 

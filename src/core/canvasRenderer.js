@@ -19,13 +19,13 @@ const renderShapeToContext = function(ctx, shape, opts) {
 
     if (renderers[shape.className]) {
         if (opts.shouldOnlyDrawLatest && renderers[shape.className].drawLatestFunc) {
-            return renderers[shape.className].drawLatestFunc(
+            renderers[shape.className].drawLatestFunc(
                 ctx, bufferCtx, shape, opts.retryCallback);
         } else {
-            return renderers[shape.className].drawFunc(ctx, shape, opts.retryCallback);
+            renderers[shape.className].drawFunc(ctx, shape, opts.retryCallback);
         }
     } else if (opts.shouldIgnoreUnsupportedShapes) {
-        return console.warn(`Can't render shape of type ${shape.className} to canvas`);
+        console.warn(`Can't render shape of type ${shape.className} to canvas`);
     } else {
         throw `Can't render shape of type ${shape.className} to canvas`;
     }
@@ -47,7 +47,7 @@ defineCanvasRenderer("Rectangle", function(ctx, shape) {
     ctx.fillRect(x, y, shape.width, shape.height);
     ctx.lineWidth = shape.strokeWidth;
     ctx.strokeStyle = shape.strokeColor;
-    return ctx.strokeRect(x, y, shape.width, shape.height);
+    ctx.strokeRect(x, y, shape.width, shape.height);
 });
 
 
@@ -69,7 +69,7 @@ defineCanvasRenderer("Ellipse", function(ctx, shape) {
     ctx.fill();
     ctx.lineWidth = shape.strokeWidth;
     ctx.strokeStyle = shape.strokeColor;
-    return ctx.stroke();
+    ctx.stroke();
 });
 
 
@@ -80,7 +80,7 @@ defineCanvasRenderer("SelectionBox", (function() {
         ctx.fillStyle = "#fff";
         ctx.fillRect(x, y, handleSize, handleSize);
         ctx.strokeStyle = "#000";
-        return ctx.strokeRect(x, y, handleSize, handleSize);
+        ctx.strokeRect(x, y, handleSize, handleSize);
     };
 
     return function(ctx, shape) {
@@ -104,7 +104,7 @@ defineCanvasRenderer("SelectionBox", (function() {
             shape._br.x - shape.margin, shape._br.y - shape.margin,
             shape._br.width + (shape.margin * 2), shape._br.height + (shape.margin * 2));
 
-        return ctx.setLineDash([]);
+        ctx.setLineDash([]);
     };
 })()
 );
@@ -113,14 +113,14 @@ defineCanvasRenderer("SelectionBox", (function() {
 defineCanvasRenderer("Image", function(ctx, shape, retryCallback) {
     if (shape.image.width) {
         if (shape.scale === 1) {
-            return ctx.drawImage(shape.image, shape.x, shape.y);
+            ctx.drawImage(shape.image, shape.x, shape.y);
         } else {
             return ctx.drawImage(
                 shape.image, shape.x, shape.y,
                 shape.image.width * shape.scale, shape.image.height * shape.scale);
         }
     } else if (retryCallback) {
-        return shape.image.onload = retryCallback;
+        shape.image.onload = retryCallback;
     }
 });
 
@@ -158,7 +158,7 @@ defineCanvasRenderer("Line", function(ctx, shape) {
             ctx, x1, y1, Math.atan2(y1 - y2, x1 - x2), arrowWidth, shape.color);
     }
     if (shape.endCapShapes[1]) {
-        return lineEndCapShapes[shape.endCapShapes[1]].drawToCanvas(
+        lineEndCapShapes[shape.endCapShapes[1]].drawToCanvas(
             ctx, x2, y2, Math.atan2(y2 - y1, x2 - x1), arrowWidth, shape.color);
     }
 });
@@ -191,14 +191,14 @@ const _drawRawLinePath = function(ctx, points, close, lineCap) {
     }
 
     if (close) {
-        return ctx.closePath();
+        ctx.closePath();
     }
 };
 
 
 const drawLinePath = function(ctx, shape) {
     _drawRawLinePath(ctx, shape.smoothedPoints);
-    return ctx.stroke();
+    ctx.stroke();
 };
 const drawLinePathLatest = function(ctx, bufferCtx, shape) {
     if (shape.tail) {
@@ -210,10 +210,10 @@ const drawLinePathLatest = function(ctx, bufferCtx, shape) {
         const drawEnd = segmentStart + shape.segmentSize + 1;
 
         _drawRawLinePath(bufferCtx, shape.smoothedPoints.slice(drawStart, drawEnd));
-        return bufferCtx.stroke();
+        bufferCtx.stroke();
     } else {
         _drawRawLinePath(bufferCtx, shape.smoothedPoints);
-        return bufferCtx.stroke();
+        bufferCtx.stroke();
     }
 };
 
@@ -226,7 +226,7 @@ const drawErasedLinePath = function(ctx, shape) {
     ctx.save();
     ctx.globalCompositeOperation = "destination-out";
     drawLinePath(ctx, shape);
-    return ctx.restore();
+    ctx.restore();
 };
 const drawErasedLinePathLatest = function(ctx, bufferCtx, shape) {
     ctx.save();
@@ -237,7 +237,7 @@ const drawErasedLinePathLatest = function(ctx, bufferCtx, shape) {
     drawLinePathLatest(ctx, bufferCtx, shape);
 
     ctx.restore();
-    return bufferCtx.restore();
+    bufferCtx.restore();
 };
 
 
@@ -248,7 +248,7 @@ defineCanvasRenderer(
 defineCanvasRenderer("Text", function(ctx, shape) {
     if (!shape.renderer) { shape._makeRenderer(ctx) }
     ctx.fillStyle = shape.color;
-    return shape.renderer.draw(ctx, shape.x, shape.y);
+    shape.renderer.draw(ctx, shape.x, shape.y);
 });
 
 
@@ -256,7 +256,7 @@ defineCanvasRenderer("Polygon", function(ctx, shape) {
     ctx.fillStyle = shape.fillColor;
     _drawRawLinePath(ctx, shape.points, shape.isClosed, "butt");
     ctx.fill();
-    return ctx.stroke();
+    ctx.stroke();
 });
 
 

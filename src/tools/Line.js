@@ -5,7 +5,7 @@ import { createShape } from "../core/shapes";
 class Line extends ToolWithStroke {
 
     begin(x, y, lc) {
-        return this.currentShape = createShape("Line", {
+        this.currentShape = createShape("Line", {
             x1: x, y1: y, x2: x, y2: y, strokeWidth: this.strokeWidth,
             dash: (!this.isDashed) ? [this.strokeWidth * 2, this.strokeWidth * 4] : null,
             endCapShapes: this.hasEndArrow ? [null, "arrow"] : null,
@@ -15,7 +15,7 @@ class Line extends ToolWithStroke {
     continue(x, y, lc) {
         this.currentShape.x2 = x;
         this.currentShape.y2 = y;
-        return lc.drawShapeInProgress(this.currentShape);
+        lc.drawShapeInProgress(this.currentShape);
     }
 
     end(x, y, lc) {
@@ -25,7 +25,7 @@ class Line extends ToolWithStroke {
         if (sameX && sameY) {
             return;
         }
-        return lc.saveShape(this.currentShape);
+        lc.saveShape(this.currentShape);
     }
 }
 

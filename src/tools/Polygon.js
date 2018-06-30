@@ -7,15 +7,14 @@ class Polygon extends ToolWithStroke {
         super.didBecomeActive(lc);
         const polygonUnsubscribeFuncs = [];
         this.polygonUnsubscribe = () => {
-            return polygonUnsubscribeFuncs.map((func) =>
-                func());
+            polygonUnsubscribeFuncs.map((func) => func());
         };
 
         this.points = null;
         this.maybePoint = null;
 
         const onUp = () => {
-            if (this._getWillFinish()) { return this._close(lc) }
+            if (this._getWillFinish()) { this._close(lc) }
             lc.trigger("lc-polygon-started");
 
             if (this.points) {
@@ -26,7 +25,7 @@ class Polygon extends ToolWithStroke {
 
             this.maybePoint = {x: this.maybePoint.x, y: this.maybePoint.y};
             lc.setShapesInProgress(this._getShapes(lc));
-            return lc.repaintLayer("main");
+            lc.repaintLayer("main");
         };
 
         const onMove = ({x, y}) => {
@@ -34,28 +33,28 @@ class Polygon extends ToolWithStroke {
                 this.maybePoint.x = x;
                 this.maybePoint.y = y;
                 lc.setShapesInProgress(this._getShapes(lc));
-                return lc.repaintLayer("main");
+                lc.repaintLayer("main");
             }
         };
 
         const onDown = ({x, y}) => {
             this.maybePoint = {x, y};
             lc.setShapesInProgress(this._getShapes(lc));
-            return lc.repaintLayer("main");
+            lc.repaintLayer("main");
         };
 
         const polygonFinishOpen = () => {
             this.maybePoint = {x: Infinity, y: Infinity};
-            return this._close(lc);
+            this._close(lc);
         };
 
         const polygonFinishClosed = () => {
             this.maybePoint = this.points[0];
-            return this._close(lc);
+            this._close(lc);
         };
 
         const polygonCancel = () => {
-            return this._cancel(lc);
+            this._cancel(lc);
         };
 
         polygonUnsubscribeFuncs.push(lc.on("drawingChange", () => this._cancel(lc)));
@@ -66,13 +65,13 @@ class Polygon extends ToolWithStroke {
 
         polygonUnsubscribeFuncs.push(lc.on("lc-polygon-finishopen", polygonFinishOpen));
         polygonUnsubscribeFuncs.push(lc.on("lc-polygon-finishclosed", polygonFinishClosed));
-        return polygonUnsubscribeFuncs.push(lc.on("lc-polygon-cancel", polygonCancel));
+        polygonUnsubscribeFuncs.push(lc.on("lc-polygon-cancel", polygonCancel));
     }
 
     willBecomeInactive(lc) {
         super.willBecomeInactive(lc);
         if (this.points || this.maybePoint) { this._cancel(lc) }
-        return this.polygonUnsubscribe();
+        this.polygonUnsubscribe();
     }
 
     _getArePointsClose(a, b) {
@@ -90,7 +89,7 @@ class Polygon extends ToolWithStroke {
         if (!this.maybePoint) { return false }
         return (
             this._getArePointsClose(this.points[0], this.maybePoint) ||
-    this._getArePointsClose(this.points[this.points.length - 1], this.maybePoint));
+                this._getArePointsClose(this.points[this.points.length - 1], this.maybePoint));
     }
 
     _cancel(lc) {
@@ -98,7 +97,7 @@ class Polygon extends ToolWithStroke {
         this.maybePoint = null;
         this.points = null;
         lc.setShapesInProgress([]);
-        return lc.repaintLayer("main");
+        lc.repaintLayer("main");
     }
 
     _close(lc) {
@@ -106,7 +105,7 @@ class Polygon extends ToolWithStroke {
         lc.setShapesInProgress([]);
         if (this.points.length > 2) { lc.saveShape(this._getShape(lc, false)) }
         this.maybePoint = null;
-        return this.points = null;
+        this.points = null;
     }
 
     _getShapes(lc, isInProgress) {

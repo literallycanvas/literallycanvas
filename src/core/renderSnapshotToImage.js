@@ -11,7 +11,7 @@ const renderWatermark = function(ctx, image, scale) {
     ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
     ctx.scale(scale, scale);
     ctx.drawImage(image, -image.width / 2, -image.height / 2);
-    return ctx.restore();
+    ctx.restore();
 };
 
 const renderSnapshotToImage = function(snapshot, opts) {

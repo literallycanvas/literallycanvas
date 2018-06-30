@@ -11,7 +11,7 @@ const getPoints = (x, y, angle, width, length) => [
         x: x + ((Math.cos(angle - (Math.PI / 2)) * width) / 2),
         y: y + ((Math.sin(angle - (Math.PI / 2)) * width) / 2),
     }
-] ;
+];
 
 const arrow = {
     drawToCanvas(ctx, x, y, angle, width, color, length) {
@@ -27,7 +27,7 @@ const arrow = {
         ctx.moveTo(points[0].x, points[0].y);
         ctx.lineTo(points[1].x, points[1].y);
         ctx.lineTo(points[2].x, points[2].y);
-        return ctx.fill();
+        ctx.fill();
     },
 
     svg(x, y, angle, width, color, length) {

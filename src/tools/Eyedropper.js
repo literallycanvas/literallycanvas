@@ -21,14 +21,14 @@ class Eyedropper extends Tool {
             {x: x - offset.x, y: y - offset.y});
         const color = newColor || lc.getColor("background");
         if (this.strokeOrFill === "stroke") {
-            return lc.setColor("primary", newColor);
+            lc.setColor("primary", newColor);
         } else {
-            return lc.setColor("secondary", newColor);
+            lc.setColor("secondary", newColor);
         }
     }
 
-    begin(x, y, lc) { return this.readColor(x, y, lc) }
-    continue(x, y, lc) { return this.readColor(x, y, lc) }
+    begin(x, y, lc) { this.readColor(x, y, lc) }
+    continue(x, y, lc) { this.readColor(x, y, lc) }
 }
 
 Eyedropper.prototype.name = "Eyedropper";

@@ -31,7 +31,7 @@ const bindEvents = function(lc, canvas, panWithKeyboard) {
     const mouseMoveListener = e => {
         e.preventDefault();
         const p = position(canvas, e);
-        return lc.pointerMove(p.left, p.top);
+        lc.pointerMove(p.left, p.top);
     };
 
     var mouseUpListener = e => {
@@ -42,7 +42,7 @@ const bindEvents = function(lc, canvas, panWithKeyboard) {
         document.removeEventListener("mousemove", mouseMoveListener);
         document.removeEventListener("mouseup", mouseUpListener);
 
-        return canvas.addEventListener("mousemove", mouseMoveListener);
+        canvas.addEventListener("mousemove", mouseMoveListener);
     };
 
     canvas.addEventListener("mousedown", e => {
@@ -56,13 +56,13 @@ const bindEvents = function(lc, canvas, panWithKeyboard) {
 
         canvas.removeEventListener("mousemove", mouseMoveListener);
         document.addEventListener("mousemove", mouseMoveListener);
-        return document.addEventListener("mouseup", mouseUpListener);
+        document.addEventListener("mouseup", mouseUpListener);
     });
 
 
     const touchMoveListener = function(e) {
         e.preventDefault();
-        return lc.pointerMove(...coordsForTouchEvent(canvas, e));
+        lc.pointerMove(...coordsForTouchEvent(canvas, e));
     };
 
     var touchEndListener = function(e) {
@@ -70,7 +70,7 @@ const bindEvents = function(lc, canvas, panWithKeyboard) {
         lc.pointerUp(...coordsForTouchEvent(canvas, e));
         document.removeEventListener("touchmove", touchMoveListener);
         document.removeEventListener("touchend", touchEndListener);
-        return document.removeEventListener("touchcancel", touchEndListener);
+        document.removeEventListener("touchcancel", touchEndListener);
     };
 
     canvas.addEventListener("touchstart", function(e) {
@@ -80,9 +80,9 @@ const bindEvents = function(lc, canvas, panWithKeyboard) {
             lc.pointerDown(...coordsForTouchEvent(canvas, e));
             document.addEventListener("touchmove", touchMoveListener);
             document.addEventListener("touchend", touchEndListener);
-            return document.addEventListener("touchcancel", touchEndListener);
+            document.addEventListener("touchcancel", touchEndListener);
         } else {
-            return lc.pointerMove(...coordsForTouchEvent(canvas, e));
+            lc.pointerMove(...coordsForTouchEvent(canvas, e));
         }
     });
 
@@ -95,7 +95,7 @@ const bindEvents = function(lc, canvas, panWithKeyboard) {
             case 39: lc.pan(10, 0); break;
             case 40: lc.pan(0, 10); break;
             }
-            return lc.repaintAllLayers();
+            lc.repaintAllLayers();
         };
 
         document.addEventListener("keydown", listener);

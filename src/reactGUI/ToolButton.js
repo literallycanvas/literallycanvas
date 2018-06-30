@@ -9,7 +9,7 @@ class ToolButton extends React.Component {
             // prevent race condition with options, tools getting set
             // (I've already forgotten the specifics of this; should reinvestigate
             // and explain here. --steve)
-            return this.props.lc.setTool(this.props.tool);
+            this.props.lc.setTool(this.props.tool);
         }
     }
 
@@ -27,7 +27,7 @@ class ToolButton extends React.Component {
             <div
                 className={className}
                 style={{"backgroundImage": `url(${src})`}}
-                onClick={ () => { return onSelect(tool) } }
+                onClick={ () => { onSelect(tool) } }
                 title={_(tool.name)}
             />
         );

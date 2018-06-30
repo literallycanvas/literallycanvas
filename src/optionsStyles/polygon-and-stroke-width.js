@@ -22,16 +22,17 @@ class PolygonAndStrokeWidth extends React.Component {
 
         const unsubscribeFuncs = [];
         this.unsubscribe = () => {
-            return unsubscribeFuncs.map((func) =>
-                func());
+            unsubscribeFuncs.map((func) => func());
         };
 
         const showPolygonTools = () => {
-            if (!this.state.inProgress) { return this.setState({ inProgress: true }) }
+            if (!this.state.inProgress) { this.setState({ inProgress: true }) }
         };
 
         const hidePolygonTools = () => {
-            return this.setState({ inProgress: false });
+            this.setState({ inProgress: false });
+        };
+
         const resetState = () => {
             this.setState( PolygonAndStrokeWidth.getDerivedStateFromProps(this.props) );
         };
@@ -41,23 +42,21 @@ class PolygonAndStrokeWidth extends React.Component {
         unsubscribeFuncs.push(this.props.lc.on("toolChange", resetState));
     }
 
-    componentWillUnmount() {
-        return this.unsubscribe();
-    }
+    componentWillUnmount() { this.unsubscribe() }
 
     render() {
         const { lc } = this.props;
 
         const polygonFinishOpen = () => {
-            return lc.trigger("lc-polygon-finishopen");
+            lc.trigger("lc-polygon-finishopen");
         };
 
         const polygonFinishClosed = () => {
-            return lc.trigger("lc-polygon-finishclosed");
+            lc.trigger("lc-polygon-finishclosed");
         };
 
         const polygonCancel = () => {
-            return lc.trigger("lc-polygon-cancel");
+            lc.trigger("lc-polygon-cancel");
         };
 
         let polygonToolStyle = {};

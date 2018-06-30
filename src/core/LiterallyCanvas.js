@@ -97,7 +97,7 @@ class LiterallyCanvas {
 
         const repaintAll = () => {
             this.keepPanInImageBounds();
-            return this.repaintAllLayers();
+            this.repaintAllLayers();
         };
 
         this.respondToSizeChange = util.matchElementSize(
@@ -111,7 +111,7 @@ class LiterallyCanvas {
             this.tool.didBecomeActive(this);
         }
 
-        return repaintAll();
+        repaintAll();
     }
 
     _teardown() {
@@ -123,7 +123,7 @@ class LiterallyCanvas {
         }
         this.tool = null;
         this.containerEl = null;
-        return this.isBound = false;
+        this.isBound = false;
     }
 
     trigger(name, data) {
@@ -137,7 +137,7 @@ class LiterallyCanvas {
         const wrapper = e => fn(e.detail);
         this.canvas.addEventListener(name, wrapper);
         return () => {
-            return this.canvas.removeEventListener(name, wrapper);
+            this.canvas.removeEventListener(name, wrapper);
         };
     }
 
@@ -165,7 +165,7 @@ class LiterallyCanvas {
         this.height = height || INFINITE;
         this.keepPanInImageBounds();
         this.repaintAllLayers();
-        return this.trigger("imageSizeChange", {width: this.width, height: this.height});
+        this.trigger("imageSizeChange", {width: this.width, height: this.height});
     }
 
     setTool(tool) {
@@ -177,37 +177,39 @@ class LiterallyCanvas {
         this.tool = tool;
         this.trigger("toolChange", {tool});
         if (this.isBound) {
-            return this.tool.didBecomeActive(this);
+            this.tool.didBecomeActive(this);
         }
     }
 
-    setShapesInProgress(newVal) { return this._shapesInProgress = newVal }
+    setShapesInProgress(newVal) { this._shapesInProgress = newVal }
 
     pointerDown(x, y) {
         const p = this.clientCoordsToDrawingCoords(x, y);
         if (this.tool.usesSimpleAPI) {
             this.tool.begin(p.x, p.y, this);
             this.isDragging = true;
-            return this.trigger("drawStart", {tool: this.tool});
+            this.trigger("drawStart", {tool: this.tool});
         } else {
             this.isDragging = true;
-            return this.trigger("lc-pointerdown", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+            this.trigger("lc-pointerdown", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
         }
     }
 
     pointerMove(x, y) {
-        return util.requestAnimationFrame(() => {
+        // FIXME: requestAnimationFrame returns a value to be used in order to
+        // cancel animationFrame when it is no longer required...
+        util.requestAnimationFrame(() => {
             const p = this.clientCoordsToDrawingCoords(x, y);
             if (this.tool != null ? this.tool.usesSimpleAPI : undefined) {
                 if (this.isDragging) {
                     this.tool.continue(p.x, p.y, this);
-                    return this.trigger("drawContinue", {tool: this.tool});
+                    this.trigger("drawContinue", {tool: this.tool});
                 }
             } else {
                 if (this.isDragging) {
-                    return this.trigger("lc-pointerdrag", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+                    this.trigger("lc-pointerdrag", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
                 } else {
-                    return this.trigger("lc-pointermove", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+                    this.trigger("lc-pointermove", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
                 }
             }
         });
@@ -219,11 +221,11 @@ class LiterallyCanvas {
             if (this.isDragging) {
                 this.tool.end(p.x, p.y, this);
                 this.isDragging = false;
-                return this.trigger("drawEnd", {tool: this.tool});
+                this.trigger("drawEnd", {tool: this.tool});
             }
         } else {
             this.isDragging = false;
-            return this.trigger("lc-pointerup", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
+            this.trigger("lc-pointerup", {tool: this.tool, x: p.x, y: p.y, rawX: x, rawY: y});
         }
     }
 
@@ -243,7 +245,7 @@ class LiterallyCanvas {
             break;
         }
         this.trigger(`${name}ColorChange`, this.colors[name]);
-        if (name === "background") { return this.trigger("drawingChange") }
+        if (name === "background") { this.trigger("drawingChange") }
     }
 
     getColor(name) { return this.colors[name] }
@@ -259,12 +261,12 @@ class LiterallyCanvas {
         if (triggerShapeSaveEvent) {
             this.trigger("shapeSave", {shape, previousShapeId});
         }
-        return this.trigger("drawingChange");
+        this.trigger("drawingChange");
     }
 
     pan(x, y) {
     // Subtract because we are moving the viewport
-        return this.setPan(this.position.x - x, this.position.y - y);
+        this.setPan(this.position.x - x, this.position.y - y);
     }
 
     keepPanInImageBounds() {
@@ -287,14 +289,14 @@ class LiterallyCanvas {
             }
         }
 
-        return this.position = {x, y};
+        this.position = {x, y};
     }
 
     setPan(x, y) {
         this.position = {x, y};
         this.keepPanInImageBounds();
         this.repaintAllLayers();
-        return this.trigger("pan", {x: this.position.x, y: this.position.y});
+        this.trigger("pan", {x: this.position.x, y: this.position.y});
     }
 
     zoom(factor) {
@@ -302,7 +304,7 @@ class LiterallyCanvas {
         newScale = Math.max(newScale, this.config.zoomMin);
         newScale = Math.min(newScale, this.config.zoomMax);
         newScale = Math.round(newScale * 100) / 100;
-        return this.setZoom(newScale);
+        this.setZoom(newScale);
     }
 
     setZoom(scale) {
@@ -316,13 +318,13 @@ class LiterallyCanvas {
         this.keepPanInImageBounds();
 
         this.repaintAllLayers();
-        return this.trigger("zoom", {oldScale, newScale: this.scale});
+        this.trigger("zoom", {oldScale, newScale: this.scale});
     }
 
     setWatermarkImage(newImage) {
         this.watermarkImage = newImage;
         util.addImageOnload(newImage, () => this.repaintLayer("background"));
-        if (newImage.width) { return this.repaintLayer("background") }
+        if (newImage.width) { this.repaintLayer("background") }
     }
 
     repaintAllLayers() {
@@ -362,13 +364,13 @@ class LiterallyCanvas {
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
                 this.clipped((() => {
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                    return this.ctx.drawImage(this.buffer, 0, 0);
+                    this.ctx.drawImage(this.buffer, 0, 0);
                 }
                 ), this.ctx);
 
                 this.clipped((() => {
-                    return this.transformed((() => {
-                        return this._shapesInProgress.map((shape) =>
+                    this.transformed((() => {
+                        this._shapesInProgress.map((shape) =>
                             renderShapeToContext(
                                 this.ctx, shape, {bufferCtx: this.bufferCtx, shouldOnlyDrawLatest: true}));
                     }
@@ -379,7 +381,7 @@ class LiterallyCanvas {
             break;
         }
 
-        return this.trigger("repaint", {layerKey: repaintLayerKey});
+        this.trigger("repaint", {layerKey: repaintLayerKey});
     }
 
     _renderWatermark(ctx, worryAboutRetina, retryCallback) {
@@ -395,7 +397,7 @@ class LiterallyCanvas {
         if (worryAboutRetina) { ctx.scale(this.backingScale, this.backingScale) }
         ctx.drawImage(
             this.watermarkImage, -this.watermarkImage.width / 2, -this.watermarkImage.height / 2);
-        return ctx.restore();
+        ctx.restore();
     }
 
     // Redraws the back buffer to the screen in its current state
@@ -405,9 +407,9 @@ class LiterallyCanvas {
     // The context is restored to its original state before returning.
     drawShapeInProgress(shape) {
         this.repaintLayer("main", false);
-        return this.clipped((() => {
-            return this.transformed((() => {
-                return renderShapeToContext(
+        this.clipped((() => {
+            this.transformed((() => {
+                renderShapeToContext(
                     this.ctx, shape, {bufferCtx: this.bufferCtx, shouldOnlyDrawLatest: true});
             }
             ), this.ctx, this.bufferCtx);
@@ -420,10 +422,10 @@ class LiterallyCanvas {
     draw(shapes, ctx, retryCallback) {
         if (!shapes.length) { return }
         const drawShapes = () => {
-            return shapes.map((shape) =>
+            shapes.map((shape) =>
                 renderShapeToContext(ctx, shape, {retryCallback}));
         };
-        return this.clipped((() => this.transformed(drawShapes, ctx)), ctx);
+        this.clipped((() => this.transformed(drawShapes, ctx)), ctx);
     }
 
     // Executes the given function after clipping the canvas to the image size.
@@ -444,7 +446,7 @@ class LiterallyCanvas {
 
         fn();
 
-        return (() => {
+        (() => {
             // FIXME: Decaffeinate IIFE
             const result = [];
             for (ctx of contexts) {
@@ -466,7 +468,7 @@ class LiterallyCanvas {
 
         fn();
 
-        return (() => {
+        (() => {
             // FIXME: Decaffeinate IIFE
             const result = [];
             for (ctx of contexts) {
@@ -486,13 +488,13 @@ class LiterallyCanvas {
         if (triggerClearEvent) {
             this.trigger("clear", null);
         }
-        return this.trigger("drawingChange", {});
+        this.trigger("drawingChange", {});
     }
 
     execute(action) {
         this.undoStack.push(action);
         action.do();
-        return this.redoStack = [];
+        this.redoStack = [];
     }
 
     undo() {
@@ -501,7 +503,7 @@ class LiterallyCanvas {
         action.undo();
         this.redoStack.push(action);
         this.trigger("undo", {action});
-        return this.trigger("drawingChange", {});
+        this.trigger("drawingChange", {});
     }
 
     redo() {
@@ -510,7 +512,7 @@ class LiterallyCanvas {
         this.undoStack.push(action);
         action.do();
         this.trigger("redo", {action});
-        return this.trigger("drawingChange", {});
+        this.trigger("drawingChange", {});
     }
 
     canUndo() { return !!this.undoStack.length }
@@ -643,12 +645,12 @@ class LiterallyCanvas {
 
         this.repaintAllLayers();
         this.trigger("snapshotLoad");
-        return this.trigger("drawingChange", {});
+        this.trigger("drawingChange", {});
     }
 
     loadSnapshotJSON(str) {
         console.warn("lc.loadSnapshotJSON() is deprecated. use lc.loadSnapshot(JSON.parse(snapshot)) instead.");
-        return this.loadSnapshot(JSON.parse(str));
+        this.loadSnapshot(JSON.parse(str));
     }
 }
 

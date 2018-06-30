@@ -39,9 +39,9 @@ import { defineOptionsStyle } from "./optionsStyles/optionsStyles";
 
 var conversion = {
     snapshotToShapes(snapshot) {
-        return snapshot.shapes.map((shape) => shapes.JSONToShape(shape));
+        snapshot.shapes.map((shape) => shapes.JSONToShape(shape));
     },
-    snapshotJSONToShapes(json) { return conversion.snapshotToShapes(JSON.parse(json)) }
+    snapshotJSONToShapes(json) { conversion.snapshotToShapes(JSON.parse(json)) }
 };
 
 
@@ -66,7 +66,7 @@ const defaultTools = defaultOptions.tools;
 let defaultImageURLPrefix = defaultOptions.imageURLPrefix;
 const setDefaultImageURLPrefix = function(newDefault) {
     defaultImageURLPrefix = newDefault;
-    return defaultOptions.imageURLPrefix = newDefault;
+    defaultOptions.imageURLPrefix = newDefault;
 };
 
 
@@ -117,7 +117,7 @@ var initWithoutGUI = function(el, opts) {
         for (let child of el.children) {
             el.removeChild(child);
         }
-        return el.className = originalClassName;
+        el.className = originalClassName;
     };
 
     if ("onInit" in opts) {
@@ -132,7 +132,7 @@ const registerJQueryPlugin = _$ =>
     _$.fn.literallycanvas = function(opts) {
         if (opts == null) { opts = {} }
         this.each((ix, el) => {
-            return el.literallycanvas = init(el, opts);
+            el.literallycanvas = init(el, opts);
         });
         return this;
     }

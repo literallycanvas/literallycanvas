@@ -18,8 +18,7 @@ class SelectShape extends Tool {
     didBecomeActive(lc) {
         const selectShapeUnsubscribeFuncs = [];
         this._selectShapeUnsubscribe = () => {
-            return selectShapeUnsubscribeFuncs.map((func) =>
-                func());
+            selectShapeUnsubscribeFuncs.map((func) => func());
         };
 
         const onDown = ({ x, y }) => {
@@ -41,7 +40,7 @@ class SelectShape extends Tool {
                     x: x - br.x,
                     y: y - br.y
                 };
-                return this.initialPosition = {
+                this.initialPosition = {
                     x: br.x,
                     y: br.y
                 };
@@ -60,7 +59,7 @@ class SelectShape extends Tool {
                     shape: this.selectedShape,
                     handleSize: 0
                 })]);
-                return lc.repaintLayer("main");
+                lc.repaintLayer("main");
             }
         };
 
@@ -82,7 +81,7 @@ class SelectShape extends Tool {
                 lc.trigger("shapeMoved", { shape: this.selectedShape });
                 lc.trigger("drawingChange", {});
                 lc.repaintLayer("main");
-                return this._drawSelectCanvas(lc);
+                this._drawSelectCanvas(lc);
             }
         };
 
@@ -90,12 +89,12 @@ class SelectShape extends Tool {
         selectShapeUnsubscribeFuncs.push(lc.on("lc-pointerdrag", onDrag));
         selectShapeUnsubscribeFuncs.push(lc.on("lc-pointerup", onUp));
 
-        return this._drawSelectCanvas(lc);
+        this._drawSelectCanvas(lc);
     }
 
     willBecomeInactive(lc) {
         this._selectShapeUnsubscribe();
-        return lc.setShapesInProgress([]);
+        lc.setShapesInProgress([]);
     }
 
     _drawSelectCanvas(lc) {
@@ -109,7 +108,7 @@ class SelectShape extends Tool {
                 backgroundColor: `#${this._intToHex(index)}`
             });
         });
-        return lc.draw(shapes, this.selectCtx);
+        lc.draw(shapes, this.selectCtx);
     }
 
     _intToHex(i) {

@@ -25,7 +25,7 @@ const defineShape = function(name, props) {
     if (props.draw) {
         const legacyDrawFunc = props.draw;
         const legacyDrawLatestFunc = props.draw || function(ctx, bufferCtx, retryCallback) {
-            return this.draw(ctx, bufferCtx, retryCallback);
+            this.draw(ctx, bufferCtx, retryCallback);
         };
         const drawFunc = (ctx, shape, retryCallback) => legacyDrawFunc.call(shape, ctx, retryCallback);
         const drawLatestFunc = (ctx, bufferCtx, shape, retryCallback) => legacyDrawLatestFunc.call(shape, ctx, bufferCtx, retryCallback);
@@ -44,14 +44,14 @@ const defineShape = function(name, props) {
     }
 
     Shape.prototype.draw = function(ctx, retryCallback) {
-        return renderShapeToContext(ctx, this, {retryCallback});
+        renderShapeToContext(ctx, this, {retryCallback});
     };
     Shape.prototype.drawLatest = function(ctx, bufferCtx, retryCallback) {
-        return renderShapeToContext(
+        renderShapeToContext(
             ctx, this, {retryCallback, bufferCtx, shouldOnlyDrawLatest: true});
     };
     Shape.prototype.toSVG = function() {
-        return renderShapeToSVG(this);
+        renderShapeToSVG(this);
     };
 
     for (let k in props) {
@@ -146,7 +146,7 @@ defineShape("Image", {
         this.y = args.y || 0;
         this.scale = args.scale || 1;
         this.image = args.image || null;
-        return this.crossOrigin = (args.image && args.image.crossOrigin) || null;
+        this.crossOrigin = (args.image && args.image.crossOrigin) || null;
     },
     getBoundingRect() {
         return {x: this.x, y: this.y, width: this.image.width * this.scale, height: this.image.height * this.scale};
@@ -174,12 +174,12 @@ defineShape("Image", {
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
         this.x = this.x - moveInfo.xDiff;
-        return this.y = this.y - moveInfo.yDiff;
+        this.y = this.y - moveInfo.yDiff;
     },
     setUpperLeft(upperLeft) {
         if (upperLeft == null) { upperLeft = {} }
         this.x = upperLeft.x;
-        return this.y = upperLeft.y;
+        this.y = upperLeft.y;
     }
 }
 );
@@ -194,7 +194,7 @@ defineShape("Rectangle", {
         this.height = args.height || 0;
         this.strokeWidth = args.strokeWidth || 1;
         this.strokeColor = args.strokeColor || "black";
-        return this.fillColor = args.fillColor || "transparent";
+        this.fillColor = args.fillColor || "transparent";
     },
 
     getBoundingRect() { return {
@@ -208,12 +208,12 @@ defineShape("Rectangle", {
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
         this.x = this.x - moveInfo.xDiff;
-        return this.y = this.y - moveInfo.yDiff;
+        this.y = this.y - moveInfo.yDiff;
     },
     setUpperLeft(upperLeft) {
         if (upperLeft == null) { upperLeft = {} }
         this.x = upperLeft.x;
-        return this.y = upperLeft.y;
+        this.y = upperLeft.y;
     }
 }
 );
@@ -229,7 +229,7 @@ defineShape("Ellipse", {
         this.height = args.height || 0;
         this.strokeWidth = args.strokeWidth || 1;
         this.strokeColor = args.strokeColor || "black";
-        return this.fillColor = args.fillColor || "transparent";
+        this.fillColor = args.fillColor || "transparent";
     },
 
     getBoundingRect() { return {
@@ -243,12 +243,12 @@ defineShape("Ellipse", {
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
         this.x = this.x - moveInfo.xDiff;
-        return this.y = this.y - moveInfo.yDiff;
+        this.y = this.y - moveInfo.yDiff;
     },
     setUpperLeft(upperLeft) {
         if (upperLeft == null) { upperLeft = {} }
         this.x = upperLeft.x;
-        return this.y = upperLeft.y;
+        this.y = upperLeft.y;
     }
 }
 );
@@ -265,7 +265,7 @@ defineShape("Line", {
         this.color = args.color || "black";
         this.capStyle = args.capStyle || "round";
         this.endCapShapes = args.endCapShapes || [null, null];
-        return this.dash = args.dash || null;
+        this.dash = args.dash || null;
     },
 
     getBoundingRect() { return {
@@ -283,14 +283,14 @@ defineShape("Line", {
         this.x1 = this.x1 - moveInfo.xDiff;
         this.y1 = this.y1 - moveInfo.yDiff;
         this.x2 = this.x2 - moveInfo.xDiff;
-        return this.y2 = this.y2 - moveInfo.yDiff;
+        this.y2 = this.y2 - moveInfo.yDiff;
     },
     setUpperLeft(upperLeft) {
         if (upperLeft == null) { upperLeft = {} }
         const br = this.getBoundingRect();
         const xDiff = br.x - upperLeft.x;
         const yDiff = br.y - upperLeft.y;
-        return this.move({ xDiff, yDiff });
+        this.move({ xDiff, yDiff });
     }
 }
 );
@@ -375,10 +375,10 @@ const linePathFuncs = {
 
         if (args.smoothedPoints) {
             this.points = args.points;
-            return this.smoothedPoints = args.smoothedPoints;
+            this.smoothedPoints = args.smoothedPoints;
         } else {
             this.points = [];
-            return points.map((point) => this.addPoint(point));
+            points.map((point) => this.addPoint(point));
         }
     },
 
@@ -432,7 +432,7 @@ const linePathFuncs = {
         }
 
         if (!this.smoothedPoints || (this.points.length < this.sampleSize)) {
-            return this.smoothedPoints = bspline(this.points, this.order);
+            this.smoothedPoints = bspline(this.points, this.order);
         } else {
             this.tail = util.last(
                 bspline(util.last(this.points, this.sampleSize), this.order),
@@ -442,7 +442,7 @@ const linePathFuncs = {
             // then concat the tail. This is done because smoothed points
             // close to the end of the path will change as new points are
             // added.
-            return this.smoothedPoints = this.smoothedPoints.slice(
+            this.smoothedPoints = this.smoothedPoints.slice(
                 0, this.smoothedPoints.length - (this.segmentSize * (this.tailSize - 1))
             ).concat(this.tail);
         }
@@ -461,7 +461,7 @@ const linePathFuncs = {
             pt.move(moveInfo);
         }
 
-        return this.points = this.smoothedPoints;
+        this.points = this.smoothedPoints;
     },
 
     setUpperLeft(upperLeft) {
@@ -469,7 +469,7 @@ const linePathFuncs = {
         const br = this.getBoundingRect();
         const xDiff = br.x - upperLeft.x;
         const yDiff = br.y - upperLeft.y;
-        return this.move({ xDiff, yDiff });
+        this.move({ xDiff, yDiff });
     }
 };
 
@@ -494,7 +494,7 @@ defineShape("Point", {
         this.x = args.x || 0;
         this.y = args.y || 0;
         this.size = args.size || 0;
-        return this.color = args.color || "";
+        this.color = args.color || "";
     },
     getBoundingRect() {
         return {x: this.x - (this.size / 2), y: this.y - (this.size / 2), width: this.size, height: this.size};
@@ -504,12 +504,12 @@ defineShape("Point", {
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
         this.x = this.x - moveInfo.xDiff;
-        return this.y = this.y - moveInfo.yDiff;
+        this.y = this.y - moveInfo.yDiff;
     },
     setUpperLeft(upperLeft) {
         if (upperLeft == null) { upperLeft = {} }
         this.x = upperLeft.x;
-        return this.y = upperLeft.y;
+        this.y = upperLeft.y;
     }
 }
 );
@@ -540,7 +540,8 @@ defineShape("Polygon", {
     },
 
     addPoint(x, y) {
-        return this.points.push(LC.createShape("Point", {x, y}));
+        // FIXME:  LC not defined
+        this.points.push(LC.createShape("Point", {x, y}));
     },
 
     getBoundingRect() {
@@ -565,8 +566,7 @@ defineShape("Polygon", {
 
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
-        return this.points.map((pt) =>
-            pt.move(moveInfo));
+        this.points.map((pt) => pt.move(moveInfo));
     },
 
     setUpperLeft(upperLeft) {
@@ -574,7 +574,7 @@ defineShape("Polygon", {
         const br = this.getBoundingRect();
         const xDiff = br.x - upperLeft.x;
         const yDiff = br.y - upperLeft.y;
-        return this.move({ xDiff, yDiff });
+        this.move({ xDiff, yDiff });
     }
 }
 );
@@ -590,7 +590,7 @@ defineShape("Text", {
         this.color = args.color || "black";
         this.font  = args.font || "18px sans-serif";
         this.forcedWidth = args.forcedWidth || null;
-        return this.forcedHeight = args.forcedHeight || null;
+        this.forcedHeight = args.forcedHeight || null;
     },
 
     _makeRenderer(ctx) {
@@ -608,23 +608,23 @@ defineShape("Text", {
 
     setText(text) {
         this.text = text;
-        return this.renderer = null;
+        this.renderer = null;
     },
 
     setFont(font) {
         this.font = font;
-        return this.renderer = null;
+        this.renderer = null;
     },
 
     setPosition(x, y) {
         this.x = x;
-        return this.y = y;
+        this.y = y;
     },
 
     setSize(forcedWidth, forcedHeight) {
         this.forcedWidth = Math.max(forcedWidth, 0);
         this.forcedHeight = Math.max(forcedHeight, 0);
-        return this.renderer = null;
+        this.renderer = null;
     },
 
     enforceMaxBoundingRect(lc) {
@@ -639,7 +639,7 @@ defineShape("Text", {
         if ((br.x + br.width) > (lcBoundingRect.x + lcBoundingRect.width)) {
             const dx = br.x - lcBoundingRect.x;
             this.forcedWidth = lcBoundingRect.width - dx - 10;
-            return this.renderer = null;
+            this.renderer = null;
         }
     },
 
@@ -664,12 +664,12 @@ defineShape("Text", {
     move( moveInfo ) {
         if (moveInfo == null) { moveInfo = {} }
         this.x = this.x - moveInfo.xDiff;
-        return this.y = this.y - moveInfo.yDiff;
+        this.y = this.y - moveInfo.yDiff;
     },
     setUpperLeft(upperLeft) {
         if (upperLeft == null) { upperLeft = {} }
         this.x = upperLeft.x;
-        return this.y = upperLeft.y;
+        this.y = upperLeft.y;
     }
 }
 );
@@ -686,7 +686,7 @@ defineShape("SelectionBox", {
         }
         this.margin = 4;
         this.backgroundColor = args.backgroundColor || null;
-        return this._br = this.shape.getBoundingRect(args.ctx);
+        this._br = this.shape.getBoundingRect(args.ctx);
     },
 
     toJSON() { return {shape: shapeToJSON(this.shape), backgroundColor: this.backgroundColor} },

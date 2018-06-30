@@ -4,7 +4,7 @@ import { createShape } from "../core/shapes";
 
 class Rectangle extends ToolWithStroke {
     begin(x, y, lc) {
-        return this.currentShape = createShape("Rectangle", {
+        this.currentShape = createShape("Rectangle", {
             x, y, strokeWidth: this.strokeWidth,
             strokeColor: lc.getColor("primary"),
             fillColor: lc.getColor("secondary")});
@@ -13,7 +13,7 @@ class Rectangle extends ToolWithStroke {
     continue(x, y, lc) {
         this.currentShape.width = x - this.currentShape.x;
         this.currentShape.height = y - this.currentShape.y;
-        return lc.drawShapeInProgress(this.currentShape);
+        lc.drawShapeInProgress(this.currentShape);
     }
 
     end(x, y, lc) {
@@ -21,7 +21,7 @@ class Rectangle extends ToolWithStroke {
         if ((this.currentShape.height === 0) || (this.currentShape.width === 0)) {
             return;
         }
-        return lc.saveShape(this.currentShape);
+        lc.saveShape(this.currentShape);
     }
 }
 

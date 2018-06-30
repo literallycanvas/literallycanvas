@@ -29,19 +29,18 @@ class ToolWithStroke extends Tool {
     didBecomeActive(lc) {
         const unsubscribeFuncs = [];
         this.unsubscribe = () => {
-            return unsubscribeFuncs.map((func) =>
-                func());
+            unsubscribeFuncs.map((func) => func());
         };
 
-        return unsubscribeFuncs.push(lc.on("setStrokeWidth", strokeWidth => {
+        unsubscribeFuncs.push(lc.on("setStrokeWidth", strokeWidth => {
             this.strokeWidth = strokeWidth;
-            return lc.trigger("toolDidUpdateOptions");
+            lc.trigger("toolDidUpdateOptions");
         })
         );
     }
 
     willBecomeInactive(lc) {
-        return this.unsubscribe();
+        this.unsubscribe();
     }
 }
 

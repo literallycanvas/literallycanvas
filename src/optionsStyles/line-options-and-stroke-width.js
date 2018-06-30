@@ -34,11 +34,11 @@ class LineOptionsAndStrokeWidth extends React.Component {
     render() {
         const toggleIsDashed = () => {
             this.props.tool.isDashed = !this.props.tool.isDashed;
-            return this.setState(this.getState());
+            this.setState(this.getState());
         };
         const togglehasEndArrow = () => {
             this.props.tool.hasEndArrow = !this.props.tool.hasEndArrow;
-            return this.setState(this.getState());
+            this.setState(this.getState());
         };
 
         const dashButtonClass = classSet({

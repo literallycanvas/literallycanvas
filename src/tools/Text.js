@@ -27,14 +27,13 @@ class Text extends Tool {
     didBecomeActive(lc) {
         const unsubscribeFuncs = [];
         this.unsubscribe = () => {
-            return unsubscribeFuncs.map((func) =>
-                func());
+            unsubscribeFuncs.map((func) => func());
         };
 
         const switchAway = () => {
             this._ensureNotEditing(lc);
             this._clearCurrentShape(lc);
-            return lc.repaintLayer("main");
+            lc.repaintLayer("main");
         };
 
         const updateInputEl = () => this._updateInputEl(lc);
@@ -44,7 +43,7 @@ class Text extends Tool {
         unsubscribeFuncs.push(lc.on("imageSizeChange", updateInputEl));
         unsubscribeFuncs.push(lc.on("snapshotLoad", () => {
             this._clearCurrentShape(lc);
-            return lc.repaintLayer("main");
+            lc.repaintLayer("main");
         })
         );
 
@@ -52,17 +51,17 @@ class Text extends Tool {
             if (!this.currentShape) { return }
             this.currentShape.color = newColor;
             this._updateInputEl(lc);
-            return lc.repaintLayer("main");
+            lc.repaintLayer("main");
         })
         );
 
-        return unsubscribeFuncs.push(lc.on("setFont", font => {
+        unsubscribeFuncs.push(lc.on("setFont", font => {
             if (!this.currentShape) { return }
             this.font = font;
             this.currentShape.setFont(font);
             this._setShapesInProgress(lc);
             this._updateInputEl(lc);
-            return lc.repaintLayer("main");
+            lc.repaintLayer("main");
         })
         );
     }
@@ -72,16 +71,16 @@ class Text extends Tool {
             this._ensureNotEditing(lc);
             this.commit(lc);
         }
-        return this.unsubscribe();
+        this.unsubscribe();
     }
 
     setText(text) {
-        return this.text = text;
+        this.text = text;
     }
 
     _ensureNotEditing(lc) {
         if (this.currentShapeState === "editing") {
-            return this._exitEditingState(lc);
+            this._exitEditingState(lc);
         }
     }
 
@@ -89,13 +88,13 @@ class Text extends Tool {
         this.currentShape = null;
         this.initialShapeBoundingRect = null;
         this.currentShapeState = null;
-        return lc.setShapesInProgress([]);
+        lc.setShapesInProgress([]);
     }
 
     commit(lc) {
         if (this.currentShape.text) { lc.saveShape(this.currentShape) }
         this._clearCurrentShape(lc);
-        return lc.repaintLayer("main");
+        lc.repaintLayer("main");
     }
 
     _getSelectionShape(ctx, backgroundColor=null) {
@@ -105,11 +104,14 @@ class Text extends Tool {
     _setShapesInProgress(lc) {
         switch (this.currentShapeState) {
         case "selected":
-            return lc.setShapesInProgress([this._getSelectionShape(lc.ctx), this.currentShape]);
+            lc.setShapesInProgress([this._getSelectionShape(lc.ctx), this.currentShape]);
+            break;
         case "editing":
-            return lc.setShapesInProgress([this._getSelectionShape(lc.ctx, "#fff")]);
+            lc.setShapesInProgress([this._getSelectionShape(lc.ctx, "#fff")]);
+            break;
         default:
-            return lc.setShapesInProgress([this.currentShape]);
+            lc.setShapesInProgress([this.currentShape]);
+            break;
         }
     }
 
@@ -161,7 +163,7 @@ class Text extends Tool {
         };
 
         this._setShapesInProgress(lc);
-        return lc.repaintLayer("main");
+        lc.repaintLayer("main");
     }
 
     continue(x, y, lc) {
@@ -211,7 +213,7 @@ class Text extends Tool {
         this._setShapesInProgress(lc);
         lc.repaintLayer("main");
 
-        return this._updateInputEl(lc);
+        this._updateInputEl(lc);
     }
 
     end(x, y, lc) {
@@ -228,7 +230,7 @@ class Text extends Tool {
 
         this._setShapesInProgress(lc);
         lc.repaintLayer("main");
-        return this._updateInputEl(lc);
+        this._updateInputEl(lc);
     }
 
     _enterEditingState(lc) {
@@ -260,7 +262,7 @@ class Text extends Tool {
             this._setShapesInProgress(lc);
             lc.repaintLayer("main");
             this._updateInputEl(lc);
-            return e.stopPropagation();
+            e.stopPropagation();
         };
 
         this.inputEl.addEventListener("keydown", () => this._updateInputEl(lc, true));
@@ -272,7 +274,7 @@ class Text extends Tool {
         lc.containerEl.appendChild(this.inputEl);
         this.inputEl.focus();
 
-        return this._setShapesInProgress(lc);
+        this._setShapesInProgress(lc);
     }
 
     _exitEditingState(lc) {
@@ -281,7 +283,7 @@ class Text extends Tool {
         this.inputEl = null;
 
         this._setShapesInProgress(lc);
-        return lc.repaintLayer("main");
+        lc.repaintLayer("main");
     }
 
     _updateInputEl(lc, withMargin) {
@@ -311,10 +313,10 @@ class Text extends Tool {
 
         const transformString = `scale(${lc.scale})`;
         this.inputEl.style.transform = transformString;
-        this.inputEl.style.webkitTransform= transformString;
-        this.inputEl.style.MozTransform= transformString;
-        this.inputEl.style.msTransform= transformString;
-        return this.inputEl.style.OTransform= transformString;
+        this.inputEl.style.webkitTransform = transformString;
+        this.inputEl.style.MozTransform = transformString;
+        this.inputEl.style.msTransform = transformString;
+        this.inputEl.style.OTransform = transformString;
     }
 }
 

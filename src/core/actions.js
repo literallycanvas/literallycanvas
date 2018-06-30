@@ -10,12 +10,12 @@ class ClearAction {
 
     do() {
         this.lc.shapes = this.newShapes;
-        return this.lc.repaintLayer("main");
+        this.lc.repaintLayer("main");
     }
 
     undo() {
         this.lc.shapes = this.oldShapes;
-        return this.lc.repaintLayer("main");
+        this.lc.repaintLayer("main");
     }
 }
 
@@ -34,7 +34,7 @@ class MoveAction {
             x: this.newPosition.x,
             y: this.newPosition.y
         });
-        return this.lc.repaintLayer("main");
+        this.lc.repaintLayer("main");
     }
 
     undo() {
@@ -42,7 +42,7 @@ class MoveAction {
             x: this.previousPosition.x,
             y: this.previousPosition.y
         });
-        return this.lc.repaintLayer("main");
+        this.lc.repaintLayer("main");
     }
 }
 
@@ -78,7 +78,7 @@ class AddShapeAction {
             }
             this.lc.shapes = newShapes;
         }
-        return this.lc.repaintLayer("main");
+        this.lc.repaintLayer("main");
     }
 
     undo() {
@@ -93,7 +93,7 @@ class AddShapeAction {
             }
             lc.shapes = newShapes;
         }
-        return this.lc.repaintLayer("main");
+        this.lc.repaintLayer("main");
     }
 }
 

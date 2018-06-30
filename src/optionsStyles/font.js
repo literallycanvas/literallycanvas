@@ -102,13 +102,13 @@ class FontOptions extends React.Component {
         items.push(`${fontSize}px`);
         items.push(FONT_NAME_TO_VALUE[newState.fontName]);
         this.props.lc.tool.font = items.join(" ");
-        return this.props.lc.trigger("setFont", items.join(" "));
+        this.props.lc.trigger("setFont", items.join(" "));
     }
 
     handleFontSize(event) {
         const newState = {fontSizeIndex: event.target.value};
         this.setState(newState);
-        return this.updateTool(newState);
+        this.updateTool(newState);
     }
 
     handleFontFamily(event) {
@@ -116,23 +116,23 @@ class FontOptions extends React.Component {
             fontName: event.target.selectedOptions[0].innerHTML,
         };
         this.setState(newState);
-        return this.updateTool(newState);
+        this.updateTool(newState);
     }
 
     handleItalic(event) {
         const newState = {isItalic: !this.state.isItalic};
         this.setState(newState);
-        return this.updateTool(newState);
+        this.updateTool(newState);
     }
 
     handleBold(event) {
         const newState = {isBold: !this.state.isBold};
         this.setState(newState);
-        return this.updateTool(newState);
+        this.updateTool(newState);
     }
 
     componentDidMount() {
-        return this.updateTool();
+        this.updateTool();
     }
 
     render() {

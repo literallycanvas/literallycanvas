@@ -142,7 +142,7 @@ class TextRenderer {
         ctx.textBaseline = "top";
         ctx.font = this.font;
         let i = 0;
-        return (() => {
+        (() => {
             // FIXME: Decaffeinate IIFE
             const result = [];
             for (let line of this.lines) {

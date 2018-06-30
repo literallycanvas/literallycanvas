@@ -50,7 +50,7 @@ class ColorGrid extends React.PureComponent {
                                     const update = e => {
                                         this.props.onChange(cellColor, colorString);
                                         e.stopPropagation();
-                                        return e.preventDefault();
+                                        e.preventDefault();
                                     };
 
                                     return (
@@ -111,41 +111,41 @@ class ColorWell extends React.PureComponent {
 
     // our color state tracks lc's
     componentDidMount() {
-        return this.unsubscribe = this.props.lc.on(`${this.props.colorName}ColorChange`, () => {
+        this.unsubscribe = this.props.lc.on(`${this.props.colorName}ColorChange`, () => {
             const colorString = this.props.lc.colors[this.props.colorName];
             this.setState({colorString});
-            return this.setHSLAFromColorString(colorString);
+            this.setHSLAFromColorString(colorString);
         });
     }
 
     componentWillUnmount() {
-        return this.unsubscribe();
+        this.unsubscribe();
     }
 
     setHSLAFromColorString(c) {
         const hsla = parseHSLAString(c);
         if (hsla) {
-            return this.setState({hsla, alpha: hsla.alpha, sat: hsla.sat});
+            this.setState({hsla, alpha: hsla.alpha, sat: hsla.sat});
         } else {
-            return this.setState({hsla: null, alpha: 1, sat: 100});
+            this.setState({hsla: null, alpha: 1, sat: 100});
         }
     }
 
     closePicker() {
-        return this.setState({isPickerVisible: false});
+        this.setState({isPickerVisible: false});
     }
 
     togglePicker() {
         const isPickerVisible = !this.state.isPickerVisible;
         const shouldResetSat = isPickerVisible && (this.state.sat === 0);
         this.setHSLAFromColorString(this.state.colorString);
-        return this.setState({isPickerVisible, sat: shouldResetSat ? 100 : this.state.sat});
+        this.setState({isPickerVisible, sat: shouldResetSat ? 100 : this.state.sat});
     }
 
     setColor(c) {
         this.setState({colorString: c});
         this.setHSLAFromColorString(c);
-        return this.props.lc.setColor(this.props.colorName, c);
+        this.props.lc.setColor(this.props.colorName, c);
     }
 
     setAlpha(alpha) {
@@ -154,7 +154,7 @@ class ColorWell extends React.PureComponent {
             const { hsla } = this.state;
             hsla.alpha = alpha;
             this.setState({hsla});
-            return this.setColor(getHSLAString(hsla));
+            this.setColor(getHSLAString(hsla));
         }
     }
 
@@ -165,7 +165,7 @@ class ColorWell extends React.PureComponent {
             const { hsla } = this.state;
             hsla.sat = sat;
             this.setState({hsla});
-            return this.setColor(getHSLAString(hsla));
+            this.setColor(getHSLAString(hsla));
         }
     }
 

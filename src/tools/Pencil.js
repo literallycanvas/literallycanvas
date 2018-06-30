@@ -8,7 +8,7 @@ class Pencil extends ToolWithStroke {
         this.color = lc.getColor("primary");
         this.currentShape = this.makeShape();
         this.currentShape.addPoint(this.makePoint(x, y, lc));
-        return this.lastEventTime = Date.now();
+        this.lastEventTime = Date.now();
     }
 
     continue(x, y, lc) {
@@ -17,13 +17,13 @@ class Pencil extends ToolWithStroke {
         if (timeDiff > this.eventTimeThreshold) {
             this.lastEventTime += timeDiff;
             this.currentShape.addPoint(this.makePoint(x, y, lc));
-            return lc.drawShapeInProgress(this.currentShape);
+            lc.drawShapeInProgress(this.currentShape);
         }
     }
 
     end(x, y, lc) {
         lc.saveShape(this.currentShape);
-        return this.currentShape = undefined;
+        this.currentShape = undefined;
     }
 
     makePoint(x, y, lc) {
