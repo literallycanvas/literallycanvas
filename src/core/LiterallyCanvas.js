@@ -446,14 +446,9 @@ class LiterallyCanvas {
 
         fn();
 
-        (() => {
-            // FIXME: Decaffeinate IIFE
-            const result = [];
-            for (ctx of contexts) {
-                result.push(ctx.restore());
-            }
-            return result;
-        })();
+        for (ctx of contexts) {
+            ctx.restore();
+        }
     }
 
     // Executes the given function after translating and scaling the context.
@@ -468,14 +463,9 @@ class LiterallyCanvas {
 
         fn();
 
-        (() => {
-            // FIXME: Decaffeinate IIFE
-            const result = [];
-            for (ctx of contexts) {
-                result.push(ctx.restore());
-            }
-            return result;
-        })();
+        for (ctx of contexts) {
+            ctx.restore();
+        }
     }
 
     clear(triggerClearEvent) {
@@ -571,31 +561,16 @@ class LiterallyCanvas {
     }
 
     getSnapshot(keys=null) {
-        let shape;
         if (keys == null) { keys = ["shapes", "imageSize", "colors", "position", "scale", "backgroundShapes"] }
         const snapshot = {};
         for (let k of ["colors", "position", "scale"]) {
             if (keys.includes(k)) { snapshot[k] = this[k] }
         }
         if (keys.includes("shapes")) {
-            snapshot.shapes = ((() => {
-                // FIXME: Decaffeinate IIFE
-                const result = [];
-                for (shape of this.shapes) {
-                    result.push(shapeToJSON(shape));
-                }
-                return result;
-            })());
+            snapshot.shapes = this.shapes.map( (shape) => shapeToJSON(shape) );
         }
         if (keys.includes("backgroundShapes")) {
-            snapshot.backgroundShapes = ((() => {
-                // FIXME: Decaffeinate IIFE
-                const result1 = [];
-                for (shape of this.backgroundShapes) {
-                    result1.push(shapeToJSON(shape));
-                }
-                return result1;
-            })());
+            snapshot.backgroundShapes = this.backgroundShapes.map( (shape) => shapeToJSON(shape) );
         }
         if (keys.includes("imageSize")) {
             snapshot.imageSize = {width: this.width, height: this.height};

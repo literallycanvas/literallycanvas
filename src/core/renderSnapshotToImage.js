@@ -19,25 +19,8 @@ const renderSnapshotToImage = function(snapshot, opts) {
     if (opts == null) { opts = {} }
     if (opts.scale == null) { opts.scale = 1 }
 
-    const shapes = ((() => {
-        // FIXME: Decaffeinate IIFE
-        const result = [];
-        for (s of snapshot.shapes) {
-            result.push(JSONToShape(s));
-        }
-        return result;
-    })());
-    let backgroundShapes = [];
-    if (snapshot.backgroundShapes) {
-        backgroundShapes = ((() => {
-            // FIXME: Decaffeinate IIFE
-            const result1 = [];
-            for (s of snapshot.backgroundShapes) {
-                result1.push(JSONToShape(s));
-            }
-            return result1;
-        })());
-    }
+    const shapes = snapshot.shapes.map((s) => JSONToShape(s));
+    let backgroundShapes = snapshot.backgroundShapes.map((s) => JSONToShape(s));
 
     if (opts.margin == null) { opts.margin = {top: 0, right: 0, bottom: 0, left: 0} }
     const imageSize = snapshot.imageSize || {width: INFINITE, height: INFINITE};
@@ -55,14 +38,7 @@ const renderSnapshotToImage = function(snapshot, opts) {
         opts.rect.height += opts.margin.top + opts.margin.bottom;
     } else {
         opts.rect = util.getDefaultImageRect(
-            ((() => {
-                // FIXME: Decaffeinate IIFE
-                const result2 = [];
-                for (s of allShapes) {
-                    result2.push(s.getBoundingRect(watermarkCtx));
-                }
-                return result2;
-            })()),
+            allShapes.map((s) => s.getBoundingRect(watermarkCtx)),
             imageSize,
             opts.margin
         );

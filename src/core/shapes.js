@@ -317,38 +317,24 @@ const _createLinePathFromData = function(shapeName, data) {
     if (data.points) {
         points = (data.points.map((pointData) => JSONToShape(pointData)));
     } else if (data.pointCoordinatePairs) {
-        points = ((() => {
-            // FIXME: Decaffeinate IIFE
-            const result = [];
-            for ([x, y] of data.pointCoordinatePairs) {
-                result.push(JSONToShape({
-                    className: "Point",
-                    data: {
-                        x, y, size: data.pointSize, color: data.pointColor,
-                        smooth: data.smooth
-                    }
-                }));
+        points = data.pointCoordinatePairs.map(([x, y]) => JSONToShape({
+            className: "Point",
+            data: {
+                x, y, size: data.pointSize, color: data.pointColor,
+                smooth: data.smooth
             }
-            return result;
-        })());
+        }));
     }
 
     let smoothedPoints = null;
     if (data.smoothedPointCoordinatePairs) {
-        smoothedPoints = ((() => {
-            // FIXME: Decaffeinate IIFE
-            const result1 = [];
-            for ([x, y] of data.smoothedPointCoordinatePairs) {
-                result1.push(JSONToShape({
-                    className: "Point",
-                    data: {
-                        x, y, size: data.pointSize, color: data.pointColor,
-                        smooth: data.smooth
-                    }
-                }));
+        smoothedPoints = data.smoothedPointCoordinatePairs.map(([x, y]) => JSONToShape({
+            className: "Point",
+            data: {
+                x, y, size: data.pointSize, color: data.pointColor,
+                smooth: data.smooth
             }
-            return result1;
-        })());
+        }));
     }
 
     if (!points[0]) { return null }
@@ -392,27 +378,11 @@ const linePathFuncs = {
     },
 
     toJSON() {
-        let point;
         if (_doAllPointsShareStyle(this.points)) {
             return {
                 order: this.order, tailSize: this.tailSize, smooth: this.smooth,
-                pointCoordinatePairs: ((() => {
-                    // FIXME: Decaffeinate IIFE
-                    const result = [];
-                    for (point of this.points) {
-                        result.push([point.x, point.y]);
-                    }
-                    return result;
-                })()),
-                smoothedPointCoordinatePairs: ((() => {
-                    // FIXME: Decaffeinate IIFE
-                    const result1 = [];
-
-                    for (point of this.smoothedPoints) {
-                        result1.push([point.x, point.y]);
-                    }
-                    return result1;
-                })()),
+                pointCoordinatePairs: this.points.map((point) => [point.x, point.y]),
+                smoothedPointCoordinatePairs: this.smoothedPoints.map((point) => [point.x, point.y]),
                 pointSize: this.points[0].size,
                 pointColor: this.points[0].color
             };
@@ -528,15 +498,10 @@ defineShape("Polygon", {
         this.isClosed = args.isClosed;
 
         // ignore point values
-        // FIXME: Decaffeinate IIFE
-        return (() => {
-            const result = [];
-            for (let point of this.points) {
-                point.color = this.strokeColor;
-                result.push(point.size = this.strokeWidth);
-            }
-            return result;
-        })();
+        this.points.foreach( (point) => {
+            point.color = this.strokeColor;
+            point.size = this.strokeWidth;
+        });
     },
 
     addPoint(x, y) {
@@ -602,7 +567,7 @@ defineShape("Text", {
             console.log("repairing baseline");
             this.v = 1;
             this.x -= this.renderer.metrics.bounds.minx;
-            return this.y -= this.renderer.metrics.leading - this.renderer.metrics.descent;
+            this.y -= this.renderer.metrics.leading - this.renderer.metrics.descent;
         }
     },
 

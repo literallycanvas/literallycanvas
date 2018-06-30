@@ -6,27 +6,9 @@ const INFINITE = "infinite";
 
 
 const renderSnapshotToSVG = function(snapshot, opts) {
-    let s;
     if (opts == null) { opts = {} }
-    const shapes = ((() => {
-        // FIXME: Decaffeinate IIFE
-        const result = [];
-        for (s of snapshot.shapes) {
-            result.push(JSONToShape(s));
-        }
-        return result;
-    })());
-    let backgroundShapes = [];
-    if (snapshot.backgroundShapes) {
-        backgroundShapes = ((() => {
-            // FIXME: Decaffeinate IIFE
-            const result1 = [];
-            for (s of snapshot.backgroundShapes) {
-                result1.push(JSONToShape(s));
-            }
-            return result1;
-        })());
-    }
+    const shapes = snapshot.shapes.map((s) => JSONToShape(s));
+    const backgroundShapes = snapshot.backgroundShapes.map((s) => JSONToShape(s));
 
     if (opts.margin == null) { opts.margin = {top: 0, right: 0, bottom: 0, left: 0} }
     const imageSize = snapshot.imageSize || {width: INFINITE, height: INFINITE};
@@ -44,14 +26,7 @@ const renderSnapshotToSVG = function(snapshot, opts) {
         opts.rect.height += opts.margin.top + opts.margin.bottom;
     } else {
         opts.rect = util.getDefaultImageRect(
-            ((() => {
-                // FIXME: Decaffeinate IIFE
-                const result2 = [];
-                for (s of allShapes) {
-                    result2.push(s.getBoundingRect(ctx));
-                }
-                return result2;
-            })()),
+            allShapes.map((s) => s.getBoundingRect(ctx)),
             imageSize,
             opts.margin
         );

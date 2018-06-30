@@ -10,14 +10,8 @@ const parseHSLAString = function(s) {
     const firstParen = s.indexOf("(");
     const lastParen = s.indexOf(")");
     const insideParens = s.substring(firstParen + 1, (lastParen - firstParen) + 4);
-    const components = ((() => {
-        // FIXME: Decaffeinate IIFE
-        const result = [];
-        for (s of insideParens.split(",")) {
-            result.push(s.trim());
-        }
-        return result;
-    })());
+    const components = insideParens.split(",").map((ss) => ss.trim());
+
     return {
         hue: parseInt(components[0], 10),
         sat: parseInt(components[1].substring(0, components[1].length - 1), 10),

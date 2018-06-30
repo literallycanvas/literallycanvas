@@ -142,15 +142,10 @@ class TextRenderer {
         ctx.textBaseline = "top";
         ctx.font = this.font;
         let i = 0;
-        (() => {
-            // FIXME: Decaffeinate IIFE
-            const result = [];
-            for (let line of this.lines) {
-                ctx.fillText(line, x, y + (i * this.metrics.leading));
-                result.push(i += 1);
-            }
-            return result;
-        })();
+
+        for (let line of this.lines) {
+            ctx.fillText(line, x, y + (i++ * this.metrics.leading));
+        }
     }
 
     getWidth(isEditing) {
