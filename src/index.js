@@ -99,7 +99,7 @@ var initWithoutGUI = function(el, opts) {
         el.className = el.className + " literally";
     }
 
-    if (el.className.includes("toolbar-hidden") === false) {
+    if (el.className.indexOf("toolbar-hidden") === -1) {
         el.className = el.className + " toolbar-hidden";
     }
 

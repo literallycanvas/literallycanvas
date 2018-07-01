@@ -564,15 +564,15 @@ class LiterallyCanvas {
         if (keys == null) { keys = ["shapes", "imageSize", "colors", "position", "scale", "backgroundShapes"] }
         const snapshot = {};
         for (let k of ["colors", "position", "scale"]) {
-            if (keys.includes(k)) { snapshot[k] = this[k] }
+            if (keys.indexOf(k) >= 0) { snapshot[k] = this[k] }
         }
-        if (keys.includes("shapes")) {
+        if (keys.indexOf("shapes") >= 0) {
             snapshot.shapes = this.shapes.map( (shape) => shapeToJSON(shape) );
         }
-        if (keys.includes("backgroundShapes")) {
+        if (keys.indexOf("backgroundShapes") >= 0) {
             snapshot.backgroundShapes = this.backgroundShapes.map( (shape) => shapeToJSON(shape) );
         }
-        if (keys.includes("imageSize")) {
+        if (keys.indexOf("imageSize") >= 0) {
             snapshot.imageSize = {width: this.width, height: this.height};
         }
 
