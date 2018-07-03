@@ -27,7 +27,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
     {div, img} = DOM
     {lc, imageURLPrefix} = @props
     title = if undoOrRedo == 'undo' then 'Undo' else 'Redo'
-    
+    title = _(title)
     className = "lc-#{undoOrRedo} " + classSet
       'toolbar-button': true
       'thin-button': true
@@ -39,7 +39,7 @@ createUndoRedoButtonComponent = (undoOrRedo) -> createReactClass
     src = "#{imageURLPrefix}/#{undoOrRedo}.png"
     style = {backgroundImage: "url(#{src})"}
 
-    (div {className, onClick, _(title), style})
+    (div {className, onClick, title, style})
 
 
 UndoButton = React.createFactory createUndoRedoButtonComponent('undo')
