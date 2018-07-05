@@ -67,7 +67,7 @@ const getNextLine = function(ctx, text, forcedWidth) {
                 return [text, ""];
             } else if (lastGoodIndex > 0) {
                 let nextWordStartIndex = lastGoodIndex + 1;
-                while ((nextWordStartIndex < text.length) && text[nextWordStartIndex].match("/\s/")) {
+                while ((nextWordStartIndex < text.length) && text[nextWordStartIndex].match(/\s/)) {
                     nextWordStartIndex += 1;
                 }
                 return [

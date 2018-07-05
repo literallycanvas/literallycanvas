@@ -32,7 +32,7 @@ const entityMap = {
     "=": "&#x3D;"
 };
 
-const escapeHTML = string => String(string).replace(/[&<>"'`=\/]/g, s => entityMap[s]);
+const escapeHTML = string => String(string).replace(/[&<>"'`=/]/g, s => entityMap[s]);
 
 
 defineSVGRenderer("Rectangle", function(shape) {
