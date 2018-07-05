@@ -14,7 +14,11 @@ class Polygon extends ToolWithStroke {
         this.maybePoint = null;
 
         const onUp = () => {
-            if (this._getWillFinish()) { this._close(lc) }
+            if (this._getWillFinish()) {
+                this._close(lc);
+                return;
+            }
+
             lc.trigger("lc-polygon-started");
 
             if (this.points) {
