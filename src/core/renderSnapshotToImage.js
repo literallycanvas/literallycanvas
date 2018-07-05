@@ -1,4 +1,4 @@
-import util from "./util";
+import {renderShapes, combineCanvases, getDefaultImageRect} from "./util";
 import { JSONToShape } from "./shapes";
 
 
@@ -37,7 +37,7 @@ const renderSnapshotToImage = function(snapshot, opts) {
         opts.rect.width += opts.margin.left + opts.margin.right;
         opts.rect.height += opts.margin.top + opts.margin.bottom;
     } else {
-        opts.rect = util.getDefaultImageRect(
+        opts.rect = getDefaultImageRect(
             allShapes.map((s) => s.getBoundingRect(watermarkCtx)),
             imageSize,
             opts.margin
@@ -57,10 +57,10 @@ const renderSnapshotToImage = function(snapshot, opts) {
         renderWatermark(watermarkCtx, opts.watermarkImage, opts.watermarkScale);
     }
 
-    return util.combineCanvases(
+    return combineCanvases(
         watermarkCanvas,
-        util.renderShapes(backgroundShapes, opts.rect, opts.scale),
-        util.renderShapes(shapes, opts.rect, opts.scale));
+        renderShapes(backgroundShapes, opts.rect, opts.scale),
+        renderShapes(shapes, opts.rect, opts.scale));
 };
 
 

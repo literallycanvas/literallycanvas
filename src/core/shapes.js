@@ -4,7 +4,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
-import util from "./util";
+import {getGUID, last, getBoundingRect} from "./util";
 import TextRenderer from "./TextRenderer";
 import { defineCanvasRenderer, renderShapeToContext } from "./canvasRenderer";
 import { defineSVGRenderer, renderShapeToSVG } from "./svgRenderer";
@@ -68,7 +68,7 @@ const defineShape = function(name, props) {
 // improve Chrome JIT perf by not using arguments object
 const createShape = function(name, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
     const s = new (shapes[name])(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p);
-    s.id = util.getGUID();
+    s.id = getGUID();
     return s;
 };
 
@@ -103,7 +103,7 @@ var bspline = function(points, order) {
 };
 
 var _refine = function(points) {
-    points = [points[0]].concat(points).concat(util.last(points));
+    points = [points[0]].concat(points).concat(last(points));
     const refined = [];
 
     let index = 0;
@@ -369,7 +369,7 @@ const linePathFuncs = {
     },
 
     getBoundingRect() {
-        return util.getBoundingRect(this.points.map(p => ({
+        return getBoundingRect(this.points.map(p => ({
             x: p.x - (p.size / 2),
             y: p.y - (p.size / 2),
             width: p.size,
@@ -404,8 +404,8 @@ const linePathFuncs = {
         if (!this.smoothedPoints || (this.points.length < this.sampleSize)) {
             this.smoothedPoints = bspline(this.points, this.order);
         } else {
-            this.tail = util.last(
-                bspline(util.last(this.points, this.sampleSize), this.order),
+            this.tail = last(
+                bspline(last(this.points, this.sampleSize), this.order),
                 this.segmentSize * this.tailSize);
 
             // Remove the last @tailSize - 1 segments from @smoothedPoints
@@ -498,19 +498,18 @@ defineShape("Polygon", {
         this.isClosed = args.isClosed;
 
         // ignore point values
-        this.points.foreach( (point) => {
+        this.points.forEach( (point) => {
             point.color = this.strokeColor;
             point.size = this.strokeWidth;
         });
     },
 
     addPoint(x, y) {
-        // FIXME:  LC not defined
-        this.points.push(LC.createShape("Point", {x, y}));
+        this.points.push(createShape("Point", {x, y}));
     },
 
     getBoundingRect() {
-        return util.getBoundingRect(this.points.map(p => p.getBoundingRect()));
+        return getBoundingRect(this.points.map(p => p.getBoundingRect()));
     },
 
     toJSON() {
@@ -696,5 +695,4 @@ defineShape("SelectionBox", {
 });
 
 
-export default {defineShape, createShape, JSONToShape, shapeToJSON};
 export {defineShape, createShape, JSONToShape, shapeToJSON};

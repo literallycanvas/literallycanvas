@@ -176,22 +176,6 @@ function cancelAnimationFrame(f) {
 }
 
 
-export default {
-    addImageOnload,
-    last,
-    classSet,
-    matchElementSize,
-    combineCanvases,
-    renderShapes,
-    renderShapesToSVG,
-    getBoundingRect,
-    getDefaultImageRect,
-    getBackingScale,
-    getGUID,
-    requestAnimationFrame,
-    cancelAnimationFrame,
-};
-
 export {
     addImageOnload,
     last,

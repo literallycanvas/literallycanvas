@@ -67,7 +67,8 @@
       "react-dom": "global:ReactDOM"
   },
   "browserify": {
-      "transform": [ "browserify-shim" ]
-  },
+    "transform": [
+      "browserify-shim"
+    ]
   }
 }

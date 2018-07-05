@@ -1,4 +1,4 @@
-import util from "./util";
+import { getDefaultImageRect, renderShapesToSVG } from "./util";
 import { JSONToShape } from "./shapes";
 
 
@@ -25,14 +25,14 @@ const renderSnapshotToSVG = function(snapshot, opts) {
         opts.rect.width += opts.margin.left + opts.margin.right;
         opts.rect.height += opts.margin.top + opts.margin.bottom;
     } else {
-        opts.rect = util.getDefaultImageRect(
+        opts.rect = getDefaultImageRect(
             allShapes.map((s) => s.getBoundingRect(ctx)),
             imageSize,
             opts.margin
         );
     }
 
-    return util.renderShapesToSVG(
+    return renderShapesToSVG(
         backgroundShapes.concat(shapes), opts.rect, colors.background);
 };
 

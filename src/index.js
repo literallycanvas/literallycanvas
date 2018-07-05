@@ -4,10 +4,24 @@ import "./ie_setLineDash";
 import LiterallyCanvasModel from "./core/LiterallyCanvas";
 import defaultOptions from "./core/defaultOptions";
 
-import canvasRenderer from "./core/canvasRenderer";
-import svgRenderer from "./core/svgRenderer";
-import shapes from "./core/shapes";
-import util from "./core/util";
+import { defineCanvasRenderer, renderShapeToCanvas, renderShapeToContext } from "./core/canvasRenderer";
+import { defineSVGRenderer, renderShapeToSVG } from "./core/svgRenderer";
+import { defineShape, createShape, JSONToShape, shapeToJSON } from "./core/shapes";
+import {
+    addImageOnload,
+    last,
+    classSet,
+    matchElementSize,
+    combineCanvases,
+    renderShapes,
+    renderShapesToSVG,
+    getBoundingRect,
+    getDefaultImageRect,
+    getBackingScale,
+    getGUID,
+    requestAnimationFrame,
+    cancelAnimationFrame,
+} from "./core/util";
 import renderSnapshotToImage from "./core/renderSnapshotToImage";
 import renderSnapshotToSVG from "./core/renderSnapshotToSVG";
 
@@ -39,7 +53,7 @@ import { defineOptionsStyle } from "./optionsStyles/optionsStyles";
 
 var conversion = {
     snapshotToShapes(snapshot) {
-        snapshot.shapes.map((shape) => shapes.JSONToShape(shape));
+        snapshot.shapes.map((shape) => JSONToShape(shape));
     },
     snapshotJSONToShapes(json) { conversion.snapshotToShapes(JSON.parse(json)) }
 };
@@ -147,24 +161,25 @@ if (typeof window !== "undefined") {
     }
 }
 
-
-const defineShape = shapes.defineShape;
-const createShape = shapes.createShape;
-const JSONToShape = shapes.JSONToShape;
-const shapeToJSON = shapes.shapeToJSON;
-
-const defineCanvasRenderer = canvasRenderer.defineCanvasRenderer;
-const renderShapeToContext = canvasRenderer.renderShapeToContext;
-const renderShapeToCanvas = canvasRenderer.renderShapeToCanvas;
-const renderShapesToCanvas = util.renderShapes;
-
-const defineSVGRenderer = svgRenderer.defineSVGRenderer;
-const renderShapeToSVG = svgRenderer.renderShapeToSVG;
-const renderShapesToSVG = util.renderShapesToSVG;
-
 const snapshotToShapes = conversion.snapshotToShapes;
 const snapshotJSONToShapes = conversion.snapshotJSONToShapes;
 
+// This one is for backward compatibility
+const util = {
+    addImageOnload,
+    last,
+    classSet,
+    matchElementSize,
+    combineCanvases,
+    renderShapes,
+    renderShapesToSVG,
+    getBoundingRect,
+    getDefaultImageRect,
+    getBackingScale,
+    getGUID,
+    requestAnimationFrame,
+    cancelAnimationFrame,
+};
 
 export {
     init, registerJQueryPlugin, util, tools,
@@ -182,7 +197,7 @@ export {
     defineCanvasRenderer,
     renderShapeToContext,
     renderShapeToCanvas,
-    renderShapesToCanvas,
+    renderShapes as renderShapesToCanvas,
 
     defineSVGRenderer,
     renderShapeToSVG,
@@ -194,5 +209,5 @@ export {
     renderSnapshotToImage,
     renderSnapshotToSVG,
 
-    localize
+    localize,
 };

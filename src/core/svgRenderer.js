@@ -207,5 +207,4 @@ ${escapeHTML(line)} \
 });
 
 
-export default {defineSVGRenderer, renderShapeToSVG};
 export {defineSVGRenderer, renderShapeToSVG};

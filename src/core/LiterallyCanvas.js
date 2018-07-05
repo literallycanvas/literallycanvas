@@ -4,7 +4,15 @@ import { JSONToShape, shapeToJSON } from "./shapes";
 import { renderShapeToContext } from "./canvasRenderer";
 import renderSnapshotToImage from "./renderSnapshotToImage";
 import renderSnapshotToSVG from "./renderSnapshotToSVG";
-import util from "./util";
+import {
+    getBackingScale,
+    matchElementSize,
+    requestAnimationFrame,
+    addImageOnload,
+    getBoundingRect,
+    getDefaultImageRect,
+    combineCanvases
+} from "./util";
 
 
 const INFINITE = "infinite";
@@ -51,7 +59,7 @@ class LiterallyCanvas {
         this.ctx = this.canvas.getContext("2d");
         this.bufferCtx = this.buffer.getContext("2d");
 
-        this.backingScale = util.getBackingScale(this.ctx);
+        this.backingScale = getBackingScale(this.ctx);
 
         this.backgroundShapes = opts.backgroundShapes || [];
         this._shapesInProgress = [];
@@ -100,7 +108,7 @@ class LiterallyCanvas {
             this.repaintAllLayers();
         };
 
-        this.respondToSizeChange = util.matchElementSize(
+        this.respondToSizeChange = matchElementSize(
             this.containerEl, [this.backgroundCanvas, this.canvas], this.backingScale, repaintAll);
 
         if (this.watermarkImage) {
@@ -198,7 +206,7 @@ class LiterallyCanvas {
     pointerMove(x, y) {
         // FIXME: requestAnimationFrame returns a value to be used in order to
         // cancel animationFrame when it is no longer required...
-        util.requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
             const p = this.clientCoordsToDrawingCoords(x, y);
             if (this.tool != null ? this.tool.usesSimpleAPI : undefined) {
                 if (this.isDragging) {
@@ -323,7 +331,7 @@ class LiterallyCanvas {
 
     setWatermarkImage(newImage) {
         this.watermarkImage = newImage;
-        util.addImageOnload(newImage, () => this.repaintLayer("background"));
+        addImageOnload(newImage, () => this.repaintLayer("background"));
         if (newImage.width) { this.repaintLayer("background") }
     }
 
@@ -519,7 +527,7 @@ class LiterallyCanvas {
     }
 
     getContentBounds() {
-        return util.getBoundingRect(
+        return getBoundingRect(
             (this.shapes.concat(this.backgroundShapes)).map(s => s.getBoundingRect()),
             this.width === INFINITE ? 0 : this.width,
             this.height === INFINITE ? 0 : this.height);
@@ -530,7 +538,7 @@ class LiterallyCanvas {
         margin) {
         if (explicitSize == null) { explicitSize = {width: 0, height: 0} }
         if (margin == null) { margin = {top: 0, right: 0, bottom: 0, left: 0} }
-        return util.getDefaultImageRect(
+        return getDefaultImageRect(
             (this.shapes.concat(this.backgroundShapes).map((s) => s.getBoundingRect(this.ctx))),
             explicitSize,
             margin );
@@ -553,11 +561,11 @@ class LiterallyCanvas {
 
     canvasForExport() {
         this.repaintAllLayers();
-        return util.combineCanvases(this.backgroundCanvas, this.canvas);
+        return combineCanvases(this.backgroundCanvas, this.canvas);
     }
 
     canvasWithBackground(backgroundImageOrCanvas) {
-        return util.combineCanvases(backgroundImageOrCanvas, this.canvasForExport());
+        return combineCanvases(backgroundImageOrCanvas, this.canvasForExport());
     }
 
     getSnapshot(keys=null) {

@@ -263,6 +263,3 @@ defineCanvasRenderer("Polygon", function(ctx, shape) {
 export {
     defineCanvasRenderer, renderShapeToCanvas, renderShapeToContext
 };
-export default {
-    defineCanvasRenderer, renderShapeToCanvas, renderShapeToContext
-};
