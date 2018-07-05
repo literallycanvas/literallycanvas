@@ -21,7 +21,7 @@
     "rules": {
         "strict": 0,
         "indent": [
-            "error",
+            "warn",
             4
         ],
         "linebreak-style": [
@@ -29,17 +29,29 @@
             "unix"
         ],
         "quotes": [
-            "error",
+            "warn",
             "double",
             { "avoidEscape": true }
         ],
         "semi": [
-            "error",
+            "warn",
             "always",
             { "omitLastInOneLineBlock": true }
         ],
         "no-console": [
             "off"
+        ],
+        "react/prop-types": [
+            "warn"
+        ],
+        "no-unused-vars": [
+            "warn"
+        ],
+        "no-constant-condition": [
+            "warn"
+        ],
+        "no-empty": [
+            "warn"
         ]
     }
 }

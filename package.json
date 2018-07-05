@@ -4,6 +4,7 @@
   "description": "HTML5 drawing widget",
   "main": "lib/js",
   "scripts": {
+    "build": "webpack",
     "prepublish": "gulp commonjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "gulp dev",
@@ -24,7 +25,10 @@
     "url": "https://github.com/literallycanvas/literallycanvas/issues"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.5",
+    "babel-loader": "^7.1.5",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
@@ -34,6 +38,7 @@
     "create-react-class": "^15.6.2",
     "envify": "~3.4.0",
     "eslint": "^5.0.1",
+    "eslint-loader": "^2.0.0",
     "eslint-plugin-react": "^7.10.0",
     "gulp": "~3.9.0",
     "gulp-babel": "^6.1.1",
@@ -52,7 +57,11 @@
     "streamify": "~0.2.5",
     "uglify-js": "~2.6.1",
     "vinyl-source-stream": "~1.1.0",
-    "watchify": "~3.7.0"
+    "watchify": "~3.7.0",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4",
+    "webpack-hot-middleware": "^2.22.2"
   },
   "dependencies": {
     "react": "^16.0.0",
@@ -63,8 +72,8 @@
     "react-dom": "^16.0.0"
   },
   "browserify-shim": {
-      "react": "global:React",
-      "react-dom": "global:ReactDOM"
+    "react": "global:React",
+    "react-dom": "global:ReactDOM"
   },
   "browserify": {
     "transform": [
