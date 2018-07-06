@@ -22,7 +22,7 @@ class CanvasContainer extends React.Component {
 
     render() {
         return (
-            <div key="literallycanvas" className="lc-drawing with-gui" />
+            <div key="literallycanvas" className="lc-drawing with-gui" ref={this.props.canvasRef} />
         );
     }
 }
@@ -30,9 +30,7 @@ class CanvasContainer extends React.Component {
 
 class LiterallyCanvas extends React.Component {
     bindToModel() {
-        const canvasContainerEl = findDOMNode(this.canvas);
-        const opts = this.props;
-        this.lc.bindToElement(canvasContainerEl);
+        this.lc.bindToElement(this.canvas);
 
         if (typeof this.lc.opts.onInit === "function") {
             this.lc.opts.onInit(this.lc);
@@ -90,7 +88,7 @@ class LiterallyCanvas extends React.Component {
 
         return (
             <div className={`literally ${topOrBottomClassName}`} style={style}>
-                <CanvasContainer ref={item => this.canvas = item} />
+                <CanvasContainer canvasRef={item => this.canvas = item} />
                 <Picker {...pickerProps} />
                 <Options lc={lc} imageURLPrefix={imageURLPrefix} />
             </div>

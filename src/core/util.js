@@ -159,7 +159,6 @@ function getGUID() {
     s4() + s4() + s4() ;
 }
 
-let requestAnimationFrame = (window.requestAnimationFrame || window.setTimeout).bind(window);
 function requestAnimationFrame(f) {
     if (window.requestAnimationFrame) { return window.requestAnimationFrame(f) }
     if (window.webkitRequestAnimationFrame) { return window.webkitRequestAnimationFrame(f) }
