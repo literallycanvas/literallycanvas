@@ -91,7 +91,7 @@ class AddShapeAction {
             for (let shape of this.lc.shapes) {
                 if (shape.id !== this.shape.id) { newShapes.push(shape) }
             }
-            lc.shapes = newShapes;
+            this.lc.shapes = newShapes;
         }
         this.lc.repaintLayer("main");
     }

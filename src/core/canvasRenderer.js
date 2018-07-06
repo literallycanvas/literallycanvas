@@ -98,7 +98,7 @@ defineCanvasRenderer("SelectionBox", (function() {
                 shape._br.height + (shape.margin * 2));
         }
         ctx.lineWidth = 1;
-        ctx.strokeStyle = "#000";
+        ctx.strokeStyle = shape.backgroundColor || "#000";
         ctx.setLineDash([2, 4]);
         ctx.strokeRect(
             shape._br.x - shape.margin, shape._br.y - shape.margin,
