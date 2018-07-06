@@ -90,7 +90,7 @@ defineCanvasRenderer 'SelectionBox', do ->
         shape._br.width + shape.margin * 2,
         shape._br.height + shape.margin * 2)
     ctx.lineWidth = 1
-    ctx.strokeStyle = '#000'
+    ctx.strokeStyle = shape.backgroundColor or '#000'
     ctx.setLineDash([2, 4])
     ctx.strokeRect(
       shape._br.x - shape.margin, shape._br.y - shape.margin,
