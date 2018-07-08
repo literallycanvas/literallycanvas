@@ -66,7 +66,7 @@ class AddShapeAction
       newShapes = []
       for shape in @lc.shapes
         newShapes.push(shape) if shape.id != @shape.id
-      lc.shapes = newShapes
+      @lc.shapes = newShapes
     @lc.repaintLayer('main')
 
 
