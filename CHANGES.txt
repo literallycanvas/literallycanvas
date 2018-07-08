@@ -1,6 +1,10 @@
-v0.*.* (Upcoming release)
- * Reset undostack when loadSnapshot is called
- * Store moving a shape with the SelectTool in undoStack
+v0.5.2
+ * Reset undo stack when loadSnapshot is called, fixing a memory leak
+ * Moving shapes with the selection tool is on the undo stack
+
+v0.5.1:
+ * Fixes for React dependency
+ * Undo support for moving selected shapes
 
 v0.5.0:
  * Support for React 15 & 16
