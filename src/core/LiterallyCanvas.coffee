@@ -248,7 +248,7 @@ module.exports = class LiterallyCanvas
     { clientWidth: containerWidth, clientHeight: containerHeight } = @containerEl
     xPan = containerWidth / 2 - clientX
     yPan = containerHeight / 2 - clientY
-    lc.setPan(xPan, yPan)
+    @setPan(xPan, yPan)
 
   # Pans to center a given shape
   panToShape: (shape) ->
