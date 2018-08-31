@@ -241,6 +241,20 @@ module.exports = class LiterallyCanvas
     @repaintAllLayers()
     @trigger('pan', {x: @position.x, y: @position.y})
 
+  # Pans to center a point in Drawing Space
+  panTo: (x, y) ->
+    @setPan 0, 0
+    { x: clientX, y: clientY } = @drawingCoordsToClientCoords(x,y)
+    { clientWidth: containerWidth, clientHeight: containerHeight } = @containerEl
+    xPan = containerWidth / 2 - clientX
+    yPan = containerHeight / 2 - clientY
+    @setPan(xPan, yPan)
+
+  # Pans to center a given shape
+  panToShape: (shape) ->
+    { x, y, width, height } = shape.getBoundingRect()
+    @panTo( x + 0.5 * width, y + 0.5 * height )
+
   zoom: (factor) ->
     newScale = @scale + factor
     newScale = Math.max(newScale, @config.zoomMin)
