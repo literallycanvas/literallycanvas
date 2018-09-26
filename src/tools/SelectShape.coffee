@@ -79,7 +79,7 @@ module.exports = class SelectShape extends Tool
         @_drawSelectCanvas(lc)
 
     selectShapeUnsubscribeFuncs.push lc.on 'lc-pointerdown', onDown
-    selectShapeUnsubscribeFuncs.push lc.on 'lc-pointerdrag', onDrag
+    # selectShapeUnsubscribeFuncs.push lc.on 'lc-pointerdrag', onDrag
     selectShapeUnsubscribeFuncs.push lc.on 'lc-pointerup', onUp
 
     @_drawSelectCanvas(lc)
