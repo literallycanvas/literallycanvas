@@ -40,7 +40,7 @@
         color: #000;
         text-align: center;
         text-decoration: none;
-        position: relative; // give after context later
+        position: relative; /* give after context later */
       }
 
       .tool.current {
@@ -102,6 +102,7 @@
         <a href="javascript:void(0);" class='tool' id="tool-rectangle">Rectangle</a>
         <a href="javascript:void(0);" class='tool' id="tool-polygon">Polygon</a>
         <a href="javascript:void(0);" class='tool' id="tool-select">Select</a>
+        <a href="javscript:void(0);" class='tool' id="tool-newSelect">New Select</a>
       </div>
 
 <!-- SIZES WON'T WORK UNTIL SIZE EVENT PR IS MERGED! -->
@@ -264,6 +265,11 @@
             name: 'tool-select',
             el: document.getElementById('tool-select'),
             tool: new LC.tools.SelectShape(lc)
+          },
+          {
+            name: 'tool-newSelect',
+            el: document.getElementById('tool-newSelect'),
+            tool: new LC.tool.NewSelectShape(lc)
           }
         ];
 
