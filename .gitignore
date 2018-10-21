@@ -3,6 +3,5 @@ literallycanvas/
 *.sublime-workspace
 node_modules/
 core/
-core/fontmetrics.js
 *.log
 package-lock.json
