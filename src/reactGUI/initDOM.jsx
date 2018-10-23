@@ -1,6 +1,6 @@
 const React = require('./React-shim');
 const ReactDOM = require('./ReactDOM-shim');
-const LiterallyCanvasModel = require('../core/LiterallyCanvas');
+const {default: LiterallyCanvasModel} = require('../core/LiterallyCanvas');
 const LiterallyCanvasReactComponent = require('./LiterallyCanvas');
 
 function init(el, opts) {

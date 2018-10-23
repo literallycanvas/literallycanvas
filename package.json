@@ -1,10 +1,11 @@
 {
   "name": "literallycanvas",
-  "version": "0.5.2",
+  "version": "1.0.0",
   "description": "HTML5 drawing widget",
   "main": "lib/js",
   "scripts": {
-    "prepublish": "gulp commonjs",
+    "buildcore": "gulp newcore",
+    "prepublish": "yarn buildcore && gulp commonjs",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "gulp dev",
     "gulp": "gulp"
@@ -51,6 +52,7 @@
     "watchify": "~3.7.0"
   },
   "dependencies": {
+    "literallycanvas-core": "^1.0.1",
     "react-addons-pure-render-mixin": "^15.1"
   },
   "peerDependencies": {

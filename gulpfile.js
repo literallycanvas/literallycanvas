@@ -12,6 +12,13 @@ var preprocess = require('gulp-preprocess');
 var preprocessify = require('preprocessify');
 var merge = require('merge-stream');
 
+gulp.task('newcore', function() {
+  return gulp.src(['./node_modules/literallycanvas-core/src/**/*.js'])
+    .pipe(preprocess({context: { INCLUDE_GUI: true }}))
+    .pipe(babel())
+    .pipe(gulp.dest('./src/core/'));
+});
+
 gulp.task('commonjs', function() {
   // https://github.com/gulpjs/gulp/blob/master/docs/recipes/using-multiple-sources-in-one-task.md
   var babelTrans = gulp.src(['./src/**/*.js', './src/**/*.jsx'])
