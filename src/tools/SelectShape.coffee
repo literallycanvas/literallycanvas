@@ -20,6 +20,7 @@ setShapePosition = (shape,x,y) ->
 
 module.exports = class SelectShape extends Tool
   name: 'SelectShape'
+  iconName:'select'
   usesSimpleAPI: false
 
   constructor: (lc) ->

@@ -164,7 +164,7 @@ defineShape 'Rectangle',
     @y = @y - moveInfo.yDiff
   setUpperLeft: (upperLeft={}) ->
     @x = upperLeft.x
-    @y = upperLeft.y
+    @y = upperLeft.y 
 
 
 # this is pretty similar to the Rectangle shape. maybe consolidate somehow.

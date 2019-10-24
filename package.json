@@ -16,7 +16,9 @@
     "canvas",
     "drawing"
   ],
-  "author": "Steve Johnson and Cameron Paul",
+  "author": {
+    "name": "Steve Johnson and Cameron Paul"
+  },
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/literallycanvas/literallycanvas/issues"
@@ -39,18 +41,46 @@
     "gulp-uglify": "~1.5.1",
     "merge-stream": "^1.0.0",
     "preprocessify": "0.0.6",
-    "react": "^15.1",
-    "react-dom": "^15.1",
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6",
     "streamify": "~0.2.5",
     "uglify-js": "~2.6.1",
     "vinyl-source-stream": "~1.1.0",
     "watchify": "~3.7.0"
   },
   "dependencies": {
-    "react-addons-pure-render-mixin": "^15.1"
+    "react-addons-pure-render-mixin": "^0.14.6"
   },
   "peerDependencies": {
-    "react": "^0.14.6 || ^15.1",
-    "react-dom": "^0.14.6 || ^15.1"
-  }
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6"
+  },
+  "gitHead": "c4bd8beb9b743fe229493e8d55bb277c0b90344a",
+  "homepage": "https://github.com/literallycanvas/literallycanvas#readme",
+  "_id": "literallycanvas@0.4.14",
+  "_shasum": "ab44cd0a64bbff07dff2d7a3ded3c5c38506d341",
+  "_from": "literallycanvas@>=0.4.13 <0.5.0",
+  "_npmVersion": "3.9.5",
+  "_nodeVersion": "4.1.1",
+  "_npmUser": {
+    "name": "stevejohnson",
+    "email": "steve@steveasleep.com"
+  },
+  "dist": {
+    "shasum": "ab44cd0a64bbff07dff2d7a3ded3c5c38506d341",
+    "tarball": "https://registry.npmjs.org/literallycanvas/-/literallycanvas-0.4.14.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "stevejohnson",
+      "email": "steve@steveasleep.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/literallycanvas-0.4.14.tgz_1465424543572_0.05288269859738648"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/literallycanvas/-/literallycanvas-0.4.14.tgz",
+  "readme": "ERROR: No README data found!"
 }
