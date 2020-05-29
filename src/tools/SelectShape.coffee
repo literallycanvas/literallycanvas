@@ -7,6 +7,7 @@ module.exports = class SelectShape extends Tool
   usesSimpleAPI: false
 
   constructor: (lc) ->
+    super()
     # This is a 'shadow' canvas -- we'll reproduce the shapes here, each shape
     # with a different color that corresponds to their index. That way we'll
     # be able to find which shape to select on the main canvas by pixel color.

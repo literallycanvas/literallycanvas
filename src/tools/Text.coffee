@@ -16,6 +16,7 @@ module.exports = class Text extends Tool
   iconName: 'text'
 
   constructor: ->
+    super()
     @text = ''
     @font = 'bold 18px sans-serif'
     @currentShape = null
